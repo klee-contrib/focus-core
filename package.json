@@ -1,0 +1,25 @@
+{
+  "name": "spa-fmk",
+  "version": "0.0.1",
+  "description": "Simple framework for backbone applications.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pierr/spa-fmk.git"
+  },
+  "keywords": [
+    "fmk",
+    "spa",
+    "JavaScript"
+  ],
+  "author": "Pierre Besson <pierre.besson7@gmail.com>",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "gitHead": "f4c5ebe4c70f20bacefc074049e33011829121a7"
+}
