@@ -1,5 +1,5 @@
 exports.config = 
-  jsWrapper: 'raw'
+  #jsWrapper: 'raw'
   files:
     javascripts:
       joinTo: 'app.js'

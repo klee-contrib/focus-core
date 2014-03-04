@@ -24,7 +24,8 @@
   "gitHead": "f4c5ebe4c70f20bacefc074049e33011829121a7",
   "dependencies": {
     "javascript-brunch": "~1.7.1",
-    "coffee-script-brunch": "~1.8.0"
+    "coffee-script-brunch": "~1.8.0",
+    "connect": "~2.13.0"
   },
   "devDependencies": {
     "gulp": "~3.5.5",
@@ -32,6 +33,11 @@
     "gulp-if": "0.0.5",
     "gulp-coffee": "~1.4.1",
     "gulp-concat": "~2.1.7",
-    "gulp-util": "~2.2.14"
+    "gulp-util": "~2.2.14",
+    "jshint-stylish": "~0.1.5",
+    "gulp-coffeelint": "~0.3.1",
+    "tiny-lr": "0.0.5",
+    "express": "~3.4.8",
+    "connect-livereload": "~0.3.2"
   }
 }
