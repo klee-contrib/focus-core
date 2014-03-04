@@ -1,9 +1,11 @@
-window.Fmk = {
-  Models: {},
-  Views: {},
-  Services: {},
-  Helpers: {}
-};
+(function initialization(container) {
+  container.Fmk = {
+    Models: {},
+    Views: {},
+    Services: {},
+    Helpers: {}
+  };
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
