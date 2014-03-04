@@ -11,7 +11,7 @@ var stylish = require('jshint-stylish');
 var coffeelint = require('gulp-coffeelint');
 
 // JS hint task
-gulp.task('jshint', function() {
+gulp.task('lint', function() {
   //Js linting.
   gulp.src('./lib/*/*.js')
     .pipe(jshint())
@@ -25,7 +25,7 @@ gulp.task('jshint', function() {
 //Build all the javascripts file.
 gulp.task('build', function() {
   //Build the js file for the browser.
-  gulp.src(['./lib/main.js','./lib/helpers/*'])
+  gulp.src(['./lib/main.js', './lib/models/*', './lib/helpers/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log)
     .pipe(concat('app.js'))
     .pipe(gulp.dest('./dist/browser/'))
