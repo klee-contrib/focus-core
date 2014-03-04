@@ -21,5 +21,13 @@
   "author": "Pierre Besson <pierre.besson7@gmail.com>",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "gitHead": "f4c5ebe4c70f20bacefc074049e33011829121a7"
+  "gitHead": "f4c5ebe4c70f20bacefc074049e33011829121a7",
+  "dependencies": {
+    "javascript-brunch": "~1.7.1",
+    "coffee-script-brunch": "~1.8.0"
+  },
+  "devDependencies": {
+    "gulp": "~3.5.5",
+    "gulp-jshint": "~1.5.0"
+  }
 }
