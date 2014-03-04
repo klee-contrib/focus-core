@@ -4,6 +4,279 @@ window.Fmk = {
   Services: {},
   Helpers: {}
 };
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(NS) {
+    var Model, isInBrowser;
+    NS = NS || {};
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports;
+    Model = (function(_super) {
+      __extends(Model, _super);
+
+      function Model() {
+        return Model.__super__.constructor.apply(this, arguments);
+      }
+
+      Model.prototype.unsetErrors = function() {
+        return this.unset('errors', {
+          silent: true
+        });
+      };
+
+      Model.prototype.setErrors = function(errors) {
+        if (errors != null) {
+          return this.set({
+            'errors': errors
+          });
+        }
+      };
+
+      Model.prototype.modelName = void 0;
+
+      Model.prototype.toJSON = function() {
+        var jsonModel;
+        jsonModel = Model.__super__.toJSON.call(this);
+        jsonModel.metadatas = this.metadatas;
+        jsonModel.modelName = this.modelName;
+        return jsonModel;
+      };
+
+      return Model;
+
+    })(Backbone.Model);
+    if (isInBrowser) {
+      NS.Models = NS.Models || {};
+      return NS.Models.Model = Model;
+    } else {
+      return module.exports = Model;
+    }
+  })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+
+}).call(this);
+
+/*global Backbone*/
+
+(function(NS) {
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+
+  //Notification model
+  Notifications = Backbone.Model.extend({
+    defaults: {
+      type: undefined, //error/warning/success...
+      message: undefined, // The message which have to be display.
+    },
+    initialize: function initializeNotification() {
+      this.set({
+        creationDate: new Date()
+      }, {
+        silent: true
+      });
+    }
+  });
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Models = NS.Models || {};
+    NS.Models.Notification = Notification;
+  } else {
+    module.exports = Notification;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+	/*global _, Backbone*/
+
+	(function(NS) {
+		NS = NS || {};
+		//Dependency gestion depending on the fact that we are in the browser or in node.
+		var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+		var Notification = isInBrowser ? NS.Models.Notifications : require('/.notification');
+
+		//This collection will contains all the message which will be display in the application.
+		var Notifications = Backbone.Collection.extend({
+			model: Notification,
+			// Return a constructed object filtered by error type.
+			getMessagesByType: function filterByTypeMessage() {
+				var jsonCollection = this.toJSON();
+				var messages = {};
+				messages.errorMessages = _.where(jsonCollection, {
+					'type': 'error'
+				});
+				messages.warningMessages = _.where(jsonCollection, {
+					'type': 'warning'
+				});
+				messages.infoMessages = _.where(jsonCollection, {
+					'type': 'info'
+				});
+				messages.successMessages = _.where(jsonCollection, {
+					'type': 'success'
+				});
+				return messages;
+			},
+			//Create a comparatot method in order to be able to sort them on their type
+			comparator: function comparator(notification) {
+				return notification.get("creationDate");
+			}
+		});
+
+		// Differenciating export for node or browser.
+		if (isInBrowser) {
+			NS.Models = NS.Models || {};
+			NS.Models.Notifications = Notifications;
+		} else {
+			module.exports = Notifications;
+		}
+	})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global $*/
+(function(NS) {
+  NS = NS || {};
+
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  PaginatedCollection = Backbone.Collection.extend({
+    //first number of page
+    firstPage: 0,
+    //the page loaded
+    currentPage: 0,
+    // number of records par page
+    perPage: 3,
+    // total number og pages. default initialization
+    totalPages: 10,
+    //sort fields
+    sortField: {},
+
+    pageInfo: function pageInfo() {
+      var info = {
+        // If parse() method is implemented and totalRecords is set to the length
+        // of the records returned, make it available. Else, default it to 0
+        totalRecords: this.totalRecords || 0,
+        currentPage: this.currentPage,
+        firstPage: this.firstPage,
+        totalPages: Math.ceil(this.totalRecords / this.perPage),
+        lastPage: this.totalPages, // should use totalPages in template
+        perPage: this.perPage,
+        previous: false,
+        next: false,
+        sortField: this.sortField
+      };
+
+      if (this.currentPage > 1) {
+        info.previous = this.currentPage - 1;
+      }
+
+      if (this.currentPage < info.totalPages) {
+        info.next = this.currentPage + 1;
+      }
+
+      // left around for backwards compatibility
+      info.hasNext = info.next;
+      info.hasPrevious = info.next;
+
+      this.information = info;
+      return info;
+    },
+
+    setPage: function setPage(page) {
+      page = page || 0;
+      this.currentPage = page;
+    },
+
+    setNextPage: function setNextPage() {
+      //TODO : controller si pas de page suivante
+      this.currentPage++;
+    },
+
+    setPreviousPage: function setPreviousPage() {
+      //TODO: controller si pas de page précedente
+      this.currentPage--;
+    },
+
+    setSortField: function setSortField(field, order) {
+      order = order || "asc";
+      if (field === undefined || (order !== "asc" && order !== "desc")) {
+        throw new ArgumentInvalidException("sort arguments invalid");
+      }
+      this.sortField = {
+        field: field,
+        order: order
+      };
+
+      this.currentPage = this.firstPage;
+    },
+
+    setTotalRecords: function setTotalRecords(totalRecords) {
+      this.totalRecords = totalRecords;
+    }
+  });
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Models = NS.Models || {};
+    NS.Models.PaginatedCollection = PaginatedCollection;
+  } else {
+    module.exports = PaginatedCollection;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global Backbone*/
+
+(function(NS) {
+	NS = NS || {};
+	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+	var template = function(){}; //require('./templates/notifications'); //Todo: call a handlebars function.
+	var NotificationsView = Backbone.View.extend({
+		tagName: 'div',
+		className: 'notifications',
+		template: template,
+		//Render each type of notification.
+		render: function() {
+			var messages = this.model.getMessagesByType();
+			/*We have to add css property to the message in order  to use the same template.*/
+			var messageToPrint = {};
+			messageToPrint.errorMessages = {
+				messages: messages.errorMessages,
+				cssMessageType: 'danger'
+			};
+			messageToPrint.warningMessages = {
+				messages: messages.warningMessages,
+				cssMessageType: 'warning'
+			};
+			messageToPrint.successMessages = {
+				messages: messages.successMessages,
+				cssMessageType: 'success'
+			};
+			messageToPrint.infoMessages = {
+				messages: messages.infoMessages,
+				cssMessageType: 'info'
+			};
+			this.$el.html('');
+			//In order to call the templat only if needed.
+			function printMessageIfExists(messageContainerName, context) {
+				if (messages[messageContainerName].length > 0) {
+					context.$el.append(template(messageToPrint[messageContainerName]));
+				}
+			}
+			printMessageIfExists('errorMessages', this); //The this is put into a closure in order to not lose it.
+			printMessageIfExists('warningMessages', this);
+			printMessageIfExists('infoMessages', this);
+			printMessageIfExists('successMessages', this);
+			return this;
+		},
+		initialize: function initialize() {
+			//We bind the model changes to a render.
+			this.model.on('change', function() {
+				this.render();
+			});
+		}
+	});
+
+
+	if (isInBrowser) {
+		NS.Views = NS.Views || {};
+		NS.Views.NotificationsView = NotificationsView;
+	} else {
+		module.exports = NotificationsView;
+	}
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global $*/
 (function(NS) {
   NS = NS || {};
@@ -140,104 +413,10 @@ window.Fmk = {
 
 }).call(this);
 
-module.exports = {
-	"virtualMachine": {
-		"name": {
-			"domain": "DO_TEXTE_50",
-			"required": true
-		},
-		"nbCpu": {
-			"domain": "DO_ENTIER",
-			"required": true
-		},
-		"osId": {
-			"domain": "DO_ID",
-			"required": true
-		},
-		"memory": {
-			"domain": "DO_ENTIER",
-			"required": true
-		},
-		"diskCapacity": {
-			"domain": "DO_ENTIER",
-			"required": true
-		},
-		"users": {
-			"domain": "DO_LISTE",
-			"required": true
-		},
-		"startDate": {
-			"domain": "DO_DATE",
-			"required": true
-		},
-		"endDate": {
-			"domain": "DO_DATE"
-		}
-	},
-	"virtualMachineSearch": {
-		"name": {
-			"domain": "DO_TEXTE_30",
-			"required": true
-		}
-	},
-	"reference": {
-		"id": {
-			"domain": "DO_ID",
-			"required": true
-		},
-		"name": {
-			"domain": "DO_TEXTE_30",
-			"required": true
-		},
-		"translationKey": {
-			"domain": "DO_TEXTE_30",
-			"required": true
-		}
-	},
-	"nantissement": {
-		"critereRecherchePret": {
-			"isTopListeRouge": {
-			    "domain": "DO_BOOLEEN"
-                
-			},
-			"isTopConvention": {
-				"domain": "DO_BOOLEEN"
-			},
-			"isNanti": {
-				"domain": "DO_BOOLEEN"
-			},
-			"identificationUESLPret": {
-				"domain": "DO_TEXTE_30"
-			},
-			"identificationCILPret": {
-				"domain": "DO_TEXTE_30"
-			},
-			"montantNominalMin": {
-				"domain": "DO_DEVISE"
-			},
-			"montantNominalMax": {
-				"domain": "DO_DEVISE"
-			},
-			"dateContratMin":{
-				"domain": "DO_DATE"
-			},
-			"dateContratMax":{
-				"domain": "DO_DATE"
-			},
-			"dateDerniereEcheanceMin":{
-				"domain": "DO_DATE"
-			},
-			"dateDerniereEcheanceMax":{
-				"domain": "DO_DATE"
-			}
-		}
-	}
-
-};
 /*global _*/
 (function(NS) {
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-
+	NS = NS || {};
 	var BackboneNotification = isInBrowser ? NS.Helpers.BackboneNotification : require('./backbone_notification');
 	// transform errors send by API to application errors.
 	function manageResponseErrors(response, options) {
@@ -310,13 +489,16 @@ module.exports = {
 		display: displayErrors,
 		setModelErrors: setModelErrors
 	};
-	if(isInBrowser){
-		_.extend(NS.Helpers, errorHelper);
-	}else{
+	if (isInBrowser) {
+		NS.Helpers = NS.Helpers || {};
+		NS.Helpers.errorHelper = errorHelper;
+	} else {
 		module.exports = errorHelper;
 	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function(NS) {
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  NS = NS || {};
   // #Module de Helper pour l'ensemble des formulaires.
   // formModelBinder permet de convertir l'ensemble des éléments d'un formulaire en model en fonction de leur attribut data-name.
   // inputs must be a selector with inputs inside and model a BackBone model.
@@ -919,56 +1101,56 @@ module.exports = {
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 
-//*This helper has a dependency on underscore and jQuery.*/
-var urlHelper = {};
-// Generate an url with all the parameters
-urlHelper.generateUrl = function generateUrl(route, params) {
-	var url = '',
-		SEP = '/',
-		PARAM = '?',
-		ET = '&';
-	for (var i = 0, routeLength = route.length; i < routeLength; i++) {
-		url += (route[i] + SEP);
-	}
-	if (typeof params !== "undefined" && params !== null && !_.isEmpty(params)) {
-		url += PARAM;
-		for (var propt in params) {
-			url += (propt + '=' + params[propt] + ET);
-		}
-	}
-	return url.slice(0, -1); //Remove the last ET.
-};
+  //*This helper has a dependency on underscore and jQuery.*/
+  var urlHelper = {};
+  // Generate an url with all the parameters
+  urlHelper.generateUrl = function generateUrl(route, params) {
+    var url = '',
+      SEP = '/',
+      PARAM = '?',
+      ET = '&';
+    for (var i = 0, routeLength = route.length; i < routeLength; i++) {
+      url += (route[i] + SEP);
+    }
+    if (typeof params !== "undefined" && params !== null && !_.isEmpty(params)) {
+      url += PARAM;
+      for (var propt in params) {
+        url += (propt + '=' + params[propt] + ET);
+      }
+    }
+    return url.slice(0, -1); //Remove the last ET.
+  };
 
-//Parse the parameters of the url.
-urlHelper.parseParam = function parseParam(params) {
-	var result = {};
-	var paramsLength = params.length;
-	//If the string params are not in the chain wich starts with a ?
-	if (paramsLength === 0 || '?' !== params[0]) {
-		throw "parseParam : the params is not well formated : " + params;
-	}
-	var namedParams = params.slice(1).split('&');
-	//For each name param (param=value) we put it in an object, we get pack the parameter we have given in the url.
-	$.each(namedParams, function(index, value) {
-		if (value) {
-			/**/
-			var param = value.split('=');
-			if (param[1] === 'true') {
-				param[1] = true;
-			} else if (param[1] === 'false') {
-				param[1] = false;
-			}
-			result[param[0]] = param[1];
-		}
-	});
-	return result;
-};
+  //Parse the parameters of the url.
+  urlHelper.parseParam = function parseParam(params) {
+    var result = {};
+    var paramsLength = params.length;
+    //If the string params are not in the chain wich starts with a ?
+    if (paramsLength === 0 || '?' !== params[0]) {
+      throw "parseParam : the params is not well formated : " + params;
+    }
+    var namedParams = params.slice(1).split('&');
+    //For each name param (param=value) we put it in an object, we get pack the parameter we have given in the url.
+    $.each(namedParams, function(index, value) {
+      if (value) {
+        /**/
+        var param = value.split('=');
+        if (param[1] === 'true') {
+          param[1] = true;
+        } else if (param[1] === 'false') {
+          param[1] = false;
+        }
+        result[param[0]] = param[1];
+      }
+    });
+    return result;
+  };
 
-// Differenciating export for node or browser.
-  if(isInBrowser){
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
     NS.Helpers = NS.Helpers || {};
     NS.Helpers.urlHelper = urlHelper;
-  }else {
+  } else {
     module.exports = urlHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
@@ -1114,4 +1296,527 @@ urlHelper.parseParam = function parseParam(params) {
 		module.exports = validators;
 	}
 
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global Backbone*/
+//var template = require("../template/collection-pagination");
+(function(NS) {
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var CollectionPaginationView = Backbone.View.extend({
+    Service: undefined,
+    initialize: function initializePagination() {
+
+    },
+    events: {},
+    goToPage: function goToPage(page) {
+      this.model.setPage(page);
+    },
+    nextPage: function nextPage() {
+      this.model.setNextPage();
+    },
+    previousPage: function PreviousPage() {
+      this.model.setPreviousPage();
+    },
+    render: function renderPagination() {
+      if (this.model.length === 0) {
+        this.$el.html("");
+      } else {
+        this.$el.html(this.template(this.model.pageInfo()));
+      }
+    }
+  });
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Views = NS.Views || {};
+    NS.Views.CollectionPaginationView = CollectionPaginationView;
+  } else {
+    module.exports = CollectionPaginationView;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+(function(NS) {
+	NS = NS || {};
+	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+
+	var DetailConsultView = Backbone.View.extend({
+		tagName: 'div',
+		className: 'consultView',
+		getModel: undefined,
+		deleteModel: undefined,
+
+		initialize: function initializeConsult() {
+			//render view when the model is loaded
+			this.model.on('change', this.render, this);
+			if (this.model.has('id')) {
+				var view = this;
+				this.getModel(this.model.get('id'))
+					.then(function success(jsonModel) {
+						view.model.set(jsonModel);
+					}).
+				catch (function error(error) {
+					console.log('erreur : ' + error);
+				});
+			}
+		},
+
+		events: {
+			"click button#btnEdit": "edit",
+			"click button#btnDelete": "delete"
+		},
+
+		//JSON data to attach to the template.
+		getRenderData: function getRenderDataConsult() {
+			throw new NotImplementedException('getRenderData');
+		},
+
+		//genarate navigation url.
+		generateEditUrl: function generateEditUrl() {
+			return this.model.modelName + "/edit/" + this.model.get('id');
+		},
+
+		edit: function editVm(event) {
+			event.preventDefault();
+			Backbone.history.navigate(this.generateEditUrl(), true);
+		},
+
+		delete: function deleteConsult(event) {
+			event.preventDefault();
+			var view = this;
+			//call suppression service
+			this.deleteModel()
+				.then(function success(success) {
+					view.deleteSuccess(success);
+				}, function error(errorResponse) {
+					view.deleteError(errorResponse);
+				})
+		},
+
+		//Generate delete navigation url.
+		generateDeleteUrl: function generateDeleteUrl() {
+			return "/";
+		},
+
+		// Actions after a delete success.
+		deleteSuccess: function deleteConsultSuccess(response) {
+			//remove the view from the DOM
+			this.remove();
+			//navigate to next page
+			Backbone.history.navigate(generateDeleteUrl(), true);
+		},
+
+		// Actions after a delete error. 
+		deleteError: function deleteConsultError(errorResponse) {
+			ErrorHelper.manageResponseErrors(errorResponse, {
+				isDisplay: true
+			});
+		},
+
+		render: function renderVirtualMachine() {
+			var jsonModel = this.getRenderData();
+			this.$el.html(this.template(jsonModel));
+			return this;
+		}
+	});
+
+
+	// Differenciating export for node or browser.
+	if (isInBrowser) {
+		NS.Views = NS.Views || {};
+		NS.Views.DetailConsultView = DetailConsultView;
+	} else {
+		module.exports = DetailConsultView;
+	}
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global Backbone, _, $, i18n*/
+(function(NS) {
+	NS = NS || {};
+	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+	var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
+	var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
+	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
+
+
+
+	var DetailEditView = Backbone.View.extend({
+		tagName: 'div',
+		className: 'editView',
+		saveModel: undefined, //VmSvc.save
+		getModel: undefined, //VmSvc.get
+
+		initialize: function initializeEdit() {
+			this.model.on('change', this.render, this);
+			this.listenTo(this.model, 'validated:valid', this.modelValid);
+			this.listenTo(this.model, 'validated:invalid', this.modelInValid);
+			if (this.model.has('id')) {
+				var view = this;
+				this.getModel(this.model.get('id'))
+					.then(function success(jsonModel) {
+						view.model.set(jsonModel);
+					});
+			}
+		},
+
+		events: {
+			"click button[type='submit']": "save",
+			"click button#btnCancel": "cancelEdition",
+		},
+
+		//JSON data to attach to the template.
+		getRenderData: function getRenderDataEdit() {
+			throw new NotImplementedException('getRenderData');
+		},
+
+		save: function saveEdit(event) {
+			event.preventDefault();
+			form_helper.formModelBinder({
+				inputs: $('input', this.$el)
+			}, this.model);
+
+			var currentView = this;
+			ModelValidator.validate(currentView.model)
+				.then(function() {
+					currentView.model.unsetErrors();
+					currentView.saveModel(currentView.model.toJSON())
+						.then(function success(jsonModel) {
+							currentView.saveSuccess(jsonModel);
+						})
+						.
+					catch (function error(responseError) {
+						currentView.saveError(responseError);
+					});
+				})
+				.
+			catch (function error(errors) {
+				currentView.model.setErrors(errors);
+			});
+		},
+
+		//Actions on save success.
+		saveSuccess: function saveSuccess(jsonModel) {
+			Backbone.Notification.addNotification({
+				type: 'success',
+				message: i18n.t('virtualMachine.save.' + (jsonModel.isCreate ? 'create' : 'update') + 'success')
+			});
+			var url = this.generateNavigationUrl();
+			Backbone.history.navigate(url, true);
+		},
+
+		//Actions on save error
+		saveError: function saveError(errors) {
+			ErrorHelper.manageResponseErrors(errors, {
+				model: this.model
+			});
+		},
+
+		generateNavigationUrl: function generateNavigationUrl() {
+			if (this.model.get('id') === null || this.model.get('id') === undefined) {
+				return "/";
+			}
+			return _url.generateUrl(["virtualMachine", this.model.get("id")], {});
+		},
+
+		cancelEdition: function cancelEdition() {
+			var url = this.generateNavigationUrl();
+			Backbone.Notification.clearNotifications();
+			Backbone.history.navigate(url, true);
+		},
+
+		render: function renderEdit() {
+			var jsonModel = this.getRenderData();
+			this.$el.html(this.template(jsonModel));
+			return this;
+		}
+	});
+
+	if (isInBrowser) {
+		NS.Views = NS.Views || {};
+		NS.Views.DetailEditView = DetailEditView;
+	} else {
+		module.exports = DetailEditView;
+	}
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global Backbone, i18n, $*/
+
+(function(NS) {
+	NS = NS || {};
+	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+	var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
+	var templatePagination = function() {}; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
+
+	var SearchResultsView = Backbone.View.extend({
+		tagName: 'div',
+		className: 'resultView',
+		resultsPagination: 'div#pagination',
+		templatePagination: templatePagination,
+		initialize: function initializeSearchResult(options) {
+			this.listenTo(this.model, "reset", function() {
+				this.render({
+					isSearchTriggered: true
+				});
+			}, this);
+		},
+		events: {
+			'click tbody tr': 'lineSelection',
+			'click .pagination li': 'goToPage',
+			'click a.sortColumn': 'sortCollection'
+		},
+
+		sortCollection: function sortCollection(event) {
+			event.preventDefault();
+			var collectionInfos = this.model.pageInfo();
+			var sortField = event.target.getAttribute("data-name");
+			var currentSort = collectionInfos.sortField;
+			var order = "asc";
+			if (currentSort !== undefined && sortField === currentSort.field && currentSort.order === "asc") {
+				order = "desc";
+			}
+			this.model.setSortField(sortField, order);
+			this.fetchDemand();
+		},
+
+		goToPage: function goToPage(event) {
+			event.preventDefault();
+			var page = +event.target.getAttribute("data-page");
+			this.model.setPage(page);
+			this.fetchDemand();
+		},
+
+		nextPage: function nextPage(event) {
+			event.preventDefault();
+			this.model.setNextPage();
+			this.fetchDemand();
+		},
+
+		previousPage: function PreviousPage(event) {
+			event.preventDefault();
+			this.model.setPreviousPage();
+			this.fetchDemand();
+		},
+
+		fetchDemand: function fetchDemand() {
+			this.trigger('results:fetchDemand');
+		},
+
+		lineSelection: function lineSelectionSearchResults(event) {
+			event.preventDefault();
+			//throw new NotImplementedException('lineSelection');
+			var id = +event.target.parentElement.getAttribute('id');
+			//Navigate 
+			var url = _url.generateUrl([this.model.model.prototype.modelName, id]);
+			//Backbone.Notification.clearNotifications();
+			Backbone.history.navigate(url, true);
+		},
+
+		render: function renderSearchResults(options) {
+			options = options || {};
+			//If the research was not launch triggered.
+			if (!options.isSearchTriggered) {
+				return this;
+			}
+			//If there is no result.
+			if (this.model.length === 0) {
+				//Is recherche launched.
+				this.$el.html("<p>No results...</p>");
+				Backbone.Notification.addNotification({
+					type: 'info',
+					message: i18n.t('search.noResult')
+				}, true);
+			} else {
+				//the template must have named property to iterate over it
+				var infos = this.model.pageInfo();
+				this.$el.html(this.template({
+					collection: this.model.toJSON(),
+					sortField: infos.sortField.field,
+					order: infos.sortField.order
+				}));
+
+				//render pagination
+				$(this.resultsPagination, this.$el).html(this.templatePagination(this.model.pageInfo())); //TODO : this.model.pageInfo() {currentPage: 0, firstPage: 0, totalPages: 10}
+			}
+			return this;
+		}
+	});
+
+	// Differenciating export for node or browser.
+	if (isInBrowser) {
+		NS.Views = NS.Views || {};
+		NS.Views.SearchResultsView = SearchResultsView;
+	} else {
+		module.exports = SearchResultsView;
+	}
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global Backbone, _, $, Promise*/
+
+(function(NS) {
+	NS = NS || {};
+	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+	var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
+	var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
+	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
+	var RefHelper = isInBrowser ? NS.Helpers.referenceHelper : require('../helpers/reference_helper');
+
+	var SearchView = Backbone.View.extend({
+		tagName: 'div',
+		className: 'searchView',
+		ResultsView: undefined,
+		Results: undefined,
+		search: undefined,
+		resultsSelector: 'div#results',
+		isMoreCriteria: false,
+		referenceNames: undefined,
+		initialize: function initializeSearch(options) {
+			options = options || {};
+			this.isSearchTriggered = options.isSearchTriggered || false;
+			this.isReadOnly = options.isReadOnly || false;
+			this.model.set({
+				isCriteriaReadonly: false
+			}, {
+				silent: true
+			});
+
+			//init results collection
+			this.searchResults = new this.Results();
+			//handle the clear criteria action
+			this.listenTo(this.model, 'change', this.render);
+			//initialization of the result view 
+			this.searchResultsView = new this.ResultsView({
+				model: this.searchResults,
+				criteria: this.model
+			});
+			this.listenTo(this.searchResultsView, 'results:fetchDemand', function() {
+				this.runSearch(null, {
+					isFormBinded: false
+				});
+			});
+			if (this.isSearchTriggered) {
+				this.runSearch(null, {
+					isFormBinded: false
+				});
+			}
+			//Load all the references lists which are defined in referenceNames.
+
+			var currentView = this;
+			Promise.all(RefHelper.loadMany(this.referenceNames)).then(function(results) {
+				var res = {}; //Container for all the results.
+				for (var i = 0, l = results.length; i < l; i++) {
+					res[currentView.referenceNames[i].name] = results[i];
+					//The results are save into an object with a name for each reference list.
+				}
+				currentView.model.set(res); //This trigger a render due to model change.
+				currentView.isReady = true; //Inform the view that we are ready to render well.
+			}).
+			catch (function(e) {
+				console.error("error when getting your stuff", e);
+			});
+		},
+
+		events: {
+			"submit form": 'runSearch', // Launch the search.
+			"click button#btnReset": 'clearSearchCriteria', // Reset all the criteria.
+			"click button#btnEditCriteria": 'editCriteria', //Deal with the edit mode.
+			"click button.toogleCriteria": 'toogleMoreCriteria' // Deal with the more / less criteria.
+		},
+		//Change the fact that the view is in the mode mode or less criteria.
+		toogleMoreCriteria: function toogleMoreCriteria() {
+			this.isMoreCriteria = !this.isMoreCriteria;
+			form_helper.formModelBinder({
+				inputs: $('input', this.$el)
+			}, this.model);
+			this.render();
+		},
+		//get the JSON to attach to the template
+		getRenderData: function getRenderDataSearch() {
+			throw new NotImplementedException('getRenderData');
+		},
+
+		editCriteria: function editCriteria() {
+			this.model.set({
+				isCriteriaReadonly: false
+			});
+		},
+
+		searchSuccess: function searchSuccess(jsonResponse) {
+			this.searchResults.setTotalRecords(jsonResponse.totalRecords);
+			this.searchResults.reset(jsonResponse.values);
+		},
+		searchError: function searchError(response) {
+			ErrorHelper.manageResponseErrors(response, {
+				isDisplay: true
+			});
+		},
+
+		runSearch: function runSearch(event, options) {
+			if (event !== undefined && event !== null) {
+				event.preventDefault();
+			}
+			options = options || {};
+			var isFormBinded = options.isFormBinded || true;
+			//bind form fields on model
+			if (isFormBinded) {
+				form_helper.formModelBinder({
+					inputs: $('input', this.$el)
+				}, this.model);
+			}
+			var currentView = this;
+			ModelValidator
+				.validate(this.model)
+				.then(function(model) {
+					currentView.model.unsetErrors();
+					currentView.search(currentView.model.toJSON(), currentView.searchResults.pageInfo())
+						.then(function success(jsonResponse) {
+							return currentView.searchSuccess(jsonResponse);
+						}).
+					catch (function error(errorResponse) {
+						currentView.searchError(errorResponse);
+					});
+				}).
+			catch (function error(errors) {
+				currentView.model.setErrors(errors);
+			});
+			if (this.isReadOnly) {
+				this.model.set({
+					isCriteriaReadonly: true
+				});
+			}
+		},
+
+		clearSearchCriteria: function clearSearchCriteria(event) {
+			event.preventDefault();
+			//Backbone.Notification.clearNotifications();
+			this.model.clear();
+			this.initialize(); //Call initialize again in order to refresh the view with criteria lists.
+		},
+
+		render: function renderSearch() {
+			this.$el.html(this.template(_.extend({
+				isMoreCriteria: this.isMoreCriteria
+			}, this.getRenderData())));
+			$(this.resultsSelector, this.$el).html(this.searchResultsView.render().el);
+			return this;
+		}
+	});
+
+	/*ModelValidator.validate(this.model)
+			.catch (currentView.model.setErrors)
+			.then(function(model) {
+				currentView.model.unsetErrors();
+				currentView.search(currentView.model.toJSON())
+					//.then(currentView.searchSuccess.bind(currentView))
+					.then(currentView.searchResults.reset.bind(currentView.searchResults))
+					.catch (currentView.searchError.bind(currentView))
+			});*/
+
+	// Differenciating export for node or browser.
+	if (isInBrowser) {
+		NS.Views = NS.Views || {};
+		NS.Views.SearchView = SearchView;
+	} else {
+		module.exports = SearchView;
+	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);

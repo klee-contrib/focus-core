@@ -57,4 +57,4 @@
     NS.Helpers.MetadataBuilder = MetadataBuilder
   else
     module.exports = MetadataBuilder
-)(if typeof module is 'undefined' and typeof window isnt 'undefined' then window.Fmk else module.exports);
+)(if typeof module is 'undefined' and typeof window isnt 'undefined' then window.Fmk else module.exports)

@@ -25,7 +25,7 @@ gulp.task('lint', function() {
 //Build all the javascripts file.
 gulp.task('build', function() {
   //Build the js file for the browser.
-  gulp.src(['./lib/main.js', './lib/models/*', './lib/helpers/*'])
+  gulp.src(['./lib/main.js', './lib/models/*', 'lib/views/notifications-view.js','./lib/helpers/*', './lib/views/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log)
     .pipe(concat('app.js'))
     .pipe(gulp.dest('./dist/browser/'))
