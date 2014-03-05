@@ -68,8 +68,8 @@
 
   if(isInBrowser){
     NS.Helpers = NS.Helpers || {};
-    NS.Helpers.modelValidationPromise = validate;
+    NS.Helpers.modelValidationPromise = {validate: validate};
   }else {
-    module.exports = validate;
+    module.exports = {validate: validate};
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);

@@ -98,9 +98,14 @@ describe('# MetadataBuilder', function() {
 			mb.domainAttributes(new ModelWithName());
 			spy.should.have.callCount(1);
 		});
+		it('should have metadata ', function() {
 
+		});
 	});
-	describe("## constructModelMetaDatas", function() {
-
+	describe("## getMetadas", function() {
+		var model = new Model();
+		console.log("metadata", metadataBuilder);
+		metadatas = metadataBuilder.getMetadas(model);
+		
 	});
 });
