@@ -1,11 +1,9 @@
 /*global describe, it, beforeEach, afterEach, sinon, _*/
 require('../initialize-globals').load();
 //Require the module to test.
-var MetadataBuilder = require('../../app/lib/metadata_builder');
-//Require the basic model and extend it.
-var Mdl = require('../../app/models/model');
-var Model = Mdl.extend({
-	metadatas: {
+var domains = require('../../example/domains');
+var metadatas = {
+	coreModel: {
 		id: {
 			metadata: {
 				"domain": "DO_ID",
@@ -32,14 +30,27 @@ var Model = Mdl.extend({
 			isValidationOff: true
 		}
 	}
+};
+var MetadataBuilder = require('../../lib/helpers/metadata_builder');
+//Metadata builder needs domains, metadatas.
+var metadataBuilder = new MetadataBuilder({
+	domains: domains,
+	metadatas: metadatas
 });
+//Require the basic model and extend it.
+var Mdl = require('../../lib/models/model');
 
+
+var Model = Mdl.extend({
+	modelName: "coreModel",
+	metadatas: metadatas.coreModel
+});
 
 describe('# MetadataBuilder', function() {
 	describe('## getDomainsValidationAttrs', function() {
 		//Initialisation
 		var model = new Model();
-		var validators = MetadataBuilder.getDomainsValidationAttrs(model);
+		var validators = metadataBuilder.getDomainsValidationAttrs(model);
 		it('Should have validators for each property', function() {
 			validators.should.have.property('id');
 			validators.should.have.property('name');
@@ -87,6 +98,9 @@ describe('# MetadataBuilder', function() {
 			mb.domainAttributes(new ModelWithName());
 			spy.should.have.callCount(1);
 		});
+
+	});
+	describe("## constructModelMetaDatas", function() {
 
 	});
 });
