@@ -1,6 +1,6 @@
 ((NS)->
   NS = NS or {}
-  isInBrowser = if typeof module is 'undefined' and typeof window isnt 'undefined' then window.Fmk else module.exports
+  isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Base class for all models. Define all transverses methods on the model.
   class Model extends Backbone.Model
     #Define a method in order to be able to quickly remove errors form the model.

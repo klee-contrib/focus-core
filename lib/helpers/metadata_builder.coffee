@@ -1,24 +1,27 @@
 ((NS)->
   NS = NS or {}
-  isInBrowser = if typeof module is 'undefined' and typeof window isnt 'undefined' then window.Fmk else module.exports
+  isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exceptions
   ArgumentNullException = if isInBrowser then NS.Helpers.Exceptions.ArgumentNullException else require("./custom_exception").ArgumentNullException
   # Get the domains definition.
   class MetadataBuilder
-    constructor: (@domains)->
-      throw new ArgumentNullException('The metadata builder needs domains.') if not @domains?
+    constructor: (options)->
+      throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.') if not options?
+      throw new ArgumentNullException('The metadata builder needs domains in options.') if not options.domains?
+      throw new ArgumentNullException('The metadata builder needs metadatas in options.') if not options.metadatas?
+      @domains = options.domains
+      @metadatas = options.metadatas
     # Proxy in order to have 
     proxyValidationContainer = {}
-
     # Get the validation attributes from the domain.
-    getDomainsValidationAttrs = (model)->
+    getDomainsValidationAttrs: (model)->
       #console.log('called')
       return new ArgumentNullException('The model should exists and have a metadatas property.') if not model?
       #Get the metadatas from the model.
       metadatas = model.metadatas
       throw new ArgumentNullException('The model should have metadatas.') if (not metadatas?) #or (not tryConstructModelMetaDatasFromModelName(model)?)
       if (not metadatas?)
-        metadatas = constructModelMetaDatas()
+        metadatas = @constructModelMetaDatas()
       #Container for the validation rules of the domain of each property.
       valDomAttrs = {}
       # Lopping through all attributes of th model in order to build their validators.
@@ -40,18 +43,15 @@
          # Set the validators inide the container associated with the field.
          valDomAttrs[attr] = validators;
       return valDomAttrs
-
-      constructModelMetaDatas = (model)->
-        return require(model.modelName)  if model.modelName?
-
-
-      proxyDomainValidationAttrs = (model)->
+    constructModelMetaDatas: (model)->
+      return require(model.modelName)  if model.modelName?
+    proxyDomainValidationAttrs: (model)->
+      return getDomainsValidationAttrs(model)
+      return proxyValidationContainer[model.modelName] if(model.modelName? and proxyValidationContainer[model.modelName]?)
+      if model.modelName?
+        return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model)
+      else
         return getDomainsValidationAttrs(model)
-        return proxyValidationContainer[model.modelName] if(model.modelName? and proxyValidationContainer[model.modelName]?)
-        if model.modelName?
-          return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model)
-        else
-          return getDomainsValidationAttrs(model)
   if isInBrowser
     NS.Helpers = NS.Helpers or {}
     NS.Helpers.MetadataBuilder = MetadataBuilder

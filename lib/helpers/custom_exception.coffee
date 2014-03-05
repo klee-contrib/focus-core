@@ -1,7 +1,7 @@
 #global $, _
 ((NS)->
   NS = NS or {}
-  isInBrowser = if typeof module is 'undefined' and typeof window isnt 'undefined' then window.Fmk else module.exports
+  isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exception class
   class CustomException
     constructor:(@name, @message,@options)->
