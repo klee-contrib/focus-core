@@ -13,9 +13,9 @@ exports.load = (options)->
     global.Promise = require 'bluebird'
     global.Backbone.Validation = require 'backbone-validation'
     global.config = require '../lib/config'
-    ###global.i18n = require('i18next')
+    global.i18n = require('i18next')
     #Initialization of the translations.
-    i18n.init({resStore: require('../app/internationalization/all'), lng: config.lang}, (content)-> console.log('Translation correctly initialized.'))###
+    #i18n.init({resStore: require('../app/internationalization/all'), lng: config.lang}, (content)-> console.log('Translation correctly initialized.'))###
 
     # Autorize the model validation. 
     _.extend(Backbone.Model.prototype, Backbone.Validation.mixin)

@@ -1,7 +1,7 @@
 /*global describe, it*/
 require('../initialize-globals').load();
-var Md = require('../../app/models/model');
-var ModelValidator = require('../../app/lib/model-validation-promise');
+var Md = require('../../lib/models/model');
+var ModelValidator = require('../../lib/helpers/model_validation_promise');
 
 describe('#model-validation-promise', function() {
   describe('##validation on metadatas', function() {

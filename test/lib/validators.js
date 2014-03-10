@@ -1,6 +1,6 @@
 /*global describe, it*/
 require('../initialize-globals').load();
-var validator = require('../../app/lib/validators');
+var validator = require('../../lib/helpers/validators');
 describe('Validator', function() {
   var validate = validator.validate;
   describe('#validate', function() {
