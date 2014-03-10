@@ -2,18 +2,18 @@
 require('../initialize-globals').load();
 //Require the module to test.
 var domains = require('../../example/domains');
-var metadatas = {
+var modelMetadatas = {
 	coreModel: {
 		id: {
 			metadata: {
 				"domain": "DO_ID",
-				"required": true
+				"required": false
 			}
 		},
 		name: {
 			metadata: {
 				"domain": "DO_ID",
-				"required": false
+				"required": true
 			}
 		},
 		age: {
@@ -26,27 +26,93 @@ var metadatas = {
 			//domain: ''
 		},
 		attrNoVal: {
-			metadata: "DO_ID",
-			isValidationOff: true
+			domain: "DO_ID",
+			isValidationOff: true,
+			decorator: "rien",
+			style: 'beauty'
 		}
 	}
 };
-var MetadataBuilder = require('../../lib/helpers/metadata_builder');
+var metadatas = {
+	coreModel: {
+		id: {
+			"domain": "DO_ID",
+			"required": true
+		},
+		name: {
+			"domain": "DO_ID",
+			"required": false
+		},
+		age: {
+			domain: "DO_ENTIER",
+			required: false
+		}
+	}
+};
+var MetadataBuilder = require('../../lib/helpers/metadata_builder').MetadataBuilder;
 //Metadata builder needs domains, metadatas.
-var metadataBuilder = new MetadataBuilder({
+var metadataBuilder = new MetadataBuilder()
+metadataBuilder.initialize({
 	domains: domains,
 	metadatas: metadatas
 });
 //Require the basic model and extend it.
 var Mdl = require('../../lib/models/model');
-
+var ArgumentNullException = require('../../lib/helpers/custom_exception').ArgumentNullException;
 
 var Model = Mdl.extend({
 	modelName: "coreModel",
-	metadatas: metadatas.coreModel
+	metadatas: modelMetadatas.coreModel
 });
 
-describe('# MetadataBuilder', function() {
+describe.only('# MetadataBuilder', function() {
+	describe("##new instance", function() {
+		it('The constructor shoud not define any domins and metadata', function() {
+			//new MetadataBuilder().should.throw(ArgumentNullException);
+
+		});
+	});
+	describe("##initialize", function() {
+		it('The initilization should work with domains and metadatas', function() {
+			var mb = new MetadataBuilder();
+			mb.initialize({
+				domains: domains,
+				metadatas: metadatas
+			});
+			mb.should.have.a.property('domains');
+			mb.should.have.a.property('metadatas');
+		});
+
+	});
+	describe("##getMetadatas", function() {
+		it('shoud return empty object when a false model model name and no metadatas', function() {
+			var model = new Mdl();
+			model.modelName = "nothing"
+			var mdlMetadatas = metadataBuilder.getMetadatas(model);
+			mdlMetadatas.should.be.deep.equal({});
+		});
+		it('should return the metadatas content when only the right modle name is set', function() {
+			var model = new Mdl();
+			model.modelName = 'coreModel';
+			var mdlMetadatas = metadataBuilder.getMetadatas(model);
+			//console.log('metadatas', mdlMetadatas);
+			mdlMetadatas.should.have.property('id').not.undefined;
+			mdlMetadatas.should.have.property('name').not.undefined;
+			mdlMetadatas.should.have.property('age').not.undefined;
+			//console.log('mdts', mdlMetadatas);
+		});
+		it('should return the metadatas content when only the right modle name is set', function() {
+			var model = new Model();
+			var mdlMetadatas = metadataBuilder.getMetadatas(model);
+			//console.log('metadatas', mdlMetadatas);
+			mdlMetadatas.should.have.property('id').not.undefined;
+			mdlMetadatas.should.have.property('name').not.undefined;
+			mdlMetadatas.should.have.property('age').not.undefined;
+			//console.log('mdtsMdl', mdlMetadatas);
+		});
+
+	});
+
 	describe('## getDomainsValidationAttrs', function() {
 		//Initialisation
 		var model = new Model();
@@ -102,10 +168,5 @@ describe('# MetadataBuilder', function() {
 
 		});
 	});
-	describe("## getMetadas", function() {
-		var model = new Model();
-		console.log("metadata", metadataBuilder);
-		metadatas = metadataBuilder.getMetadas(model);
-		
-	});
+
 });
