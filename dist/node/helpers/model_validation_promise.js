@@ -2,13 +2,13 @@
 
 (function(NS) {
   NS = NS || {};
-  
+
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder');
+  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
   var validators = isInBrowser ? NS.Helpers.validators : require('./validators');
-  var validate = function validateModel (model) {
+  var validate = function validateModel(model) {
     var errors = {};
     //Looping through each attributes.
     validateDomainAttributes(model, errors);
@@ -32,7 +32,8 @@
     if (!model) {
       throw new ArgumentNullException('The model should exist');
     }
-    for (var attr in getValidatedAttrs(model)) {
+    //Validating only the model at
+    for (var attr in model.attributes) {
       //console.log("Attr", attr);
       if (!model.isValid(attr)) {
         var domainMessage = errors[attr] !== null && errors[attr] !== undefined ? errors[attr] : '';
@@ -51,9 +52,10 @@
 
   //Validate the validation domains attributes.
   var validateDomainAttributes = function validateDomainAttributes(model, errors) {
-    var validatorsOfDomain = metadataBuilder.domainAttributes(model);
+    var validatorsOfDomain = metadataBuilder.getDomainsValidationAttrs(model);
     //console.log("validators %j", validatorsOfDomain);
-    for (var attr in validatorsOfDomain) {
+    //Validate only the attributes of the model not all the validators int he metdadaga of the model.
+    for (var attr in model.attributes) {
       //Validate the model only of there is the attribute on the model.
       var valRes = validators.validate({
         name: attr,
@@ -66,10 +68,21 @@
     }
   };
 
-  if(isInBrowser){
+  // Initialize the domains and the metadatas.
+  var initialize = function initializeModelValiationPromise(options) {
+    metadataBuilder.initialize(options);
+  };
+
+  if (isInBrowser) {
     NS.Helpers = NS.Helpers || {};
-    NS.Helpers.modelValidationPromise = {validate: validate};
-  }else {
-    module.exports = {validate: validate};
+    NS.Helpers.modelValidationPromise = {
+      validate: validate,
+      initialize: initialize
+    };
+  } else {
+    module.exports = {
+      validate: validate,
+      initialize: initialize
+    };
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);

@@ -1,9 +1,14 @@
+/*global window*/
 (function initialization(container) {
   container.Fmk = {
     Models: {},
     Views: {},
     Services: {},
-    Helpers: {}
+    Helpers: {},
+    initialize: function initialize(options){
+      this.Helpers.metadataHelper.initialize(options);
+      this.Helpers.modelValidationPromiseHelper.initialize(options);
+    }
   };
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 (function() {
@@ -13,7 +18,7 @@
   (function(NS) {
     var Model, isInBrowser;
     NS = NS || {};
-    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports;
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     Model = (function(_super) {
       __extends(Model, _super);
 
@@ -344,7 +349,7 @@
   (function(NS) {
     var ArgumentInvalidException, ArgumentNullException, CustomException, DependencyException, NotImplementedException, isInBrowser, mod;
     NS = NS || {};
-    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports;
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     CustomException = (function() {
       function CustomException(name, message, options) {
         this.name = name;
@@ -632,78 +637,146 @@
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function() {
   (function(NS) {
-    var ArgumentNullException, MetadataBuilder, isInBrowser;
+    var ArgumentNullException, MetadataBuilder, isInBrowser, proxyValidationContainer;
     NS = NS || {};
-    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports;
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+    proxyValidationContainer = {};
     MetadataBuilder = (function() {
-      var getDomainsValidationAttrs, proxyValidationContainer;
+      function MetadataBuilder() {}
 
-      function MetadataBuilder(domains) {
-        this.domains = domains;
-        if (this.domains == null) {
-          throw new ArgumentNullException('The metadata builder needs domains.');
+      MetadataBuilder.prototype.initialize = function(options, cb) {
+        if (options == null) {
+          throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.');
         }
-      }
+        if (options.domains == null) {
+          throw new ArgumentNullException('The metadata builder needs domains in options.');
+        }
+        if (options.metadatas == null) {
+          throw new ArgumentNullException('The metadata builder needs metadatas in options.');
+        }
+        this.domains = options.domains;
+        this.metadatas = options.metadatas;
+        if (cb != null) {
+          return cb(this.domains, this.metadatas);
+        }
+      };
 
-      proxyValidationContainer = {};
-
-      getDomainsValidationAttrs = function(model) {
-        var attr, constructModelMetaDatas, md, metadata, metadatas, proxyDomainValidationAttrs, valDomAttrs, validators;
+      MetadataBuilder.prototype.getDomainsValidationAttrs = function(model) {
+        var attr, md, metadatas, valDomAttrs, validators;
         if (model == null) {
           return new ArgumentNullException('The model should exists and have a metadatas property.');
         }
-        metadatas = model.metadatas;
-        if (metadatas == null) {
-          throw new ArgumentNullException('The model should have metadatas.');
-        }
-        if (metadatas == null) {
-          metadatas = constructModelMetaDatas();
-        }
+        metadatas = this.getMetadatas(model);
         valDomAttrs = {};
         for (attr in metadatas) {
-          metadata = {};
           md = metadatas[attr] || {};
           if (((md.isValidationOff != null) && md.isValidationOff === false) || (md.isValidationOff == null)) {
-            if (md.metadata != null) {
-              _.extend(metadata, md.metadata);
-            }
-            if (md.domain != null) {
-              metadata.domain = md.domain;
-            }
-            if (md.required != null) {
-              metadata.required = md.required;
-            }
+
+            /*_.extend(metadata, md.metadata) if md.metadata?
+            (metadata.domain = md.domain) if md.domain?
+            (metadata.required = md.required) if md.required?
+             */
             validators = [];
-            if (metadata.required) {
+            if (md.required === true) {
               validators.push({
                 "type": "required",
                 "value": true
               });
             }
-            if ((metadata.domain != null) && (this.domains[metadata.domain] != null)) {
-              validators = _.union(validators, this.domains[metadata.domain].validation);
+            if ((md.domain != null) && (this.domains[md.domain] != null)) {
+              validators = _.union(validators, this.domains[md.domain].validation);
             }
             valDomAttrs[attr] = validators;
           }
         }
         return valDomAttrs;
-        constructModelMetaDatas = function(model) {
-          if (model.modelName != null) {
-            return require(model.modelName);
+      };
+
+      MetadataBuilder.prototype.getMetadatas = function(model) {
+        var entityAttrMetadata, entityMetadatas, mdlMetadata, mdlMetadataAttr, metadata, metadatas, metadatasAttrs, overridenProperties, _i, _len;
+        entityMetadatas = this.constructEntityMetaDatas(model);
+        metadatas = _.clone(entityMetadatas);
+        metadatasAttrs = _.keys(metadatas);
+        if (model.metadatas != null) {
+          metadatasAttrs = _.union(metadatasAttrs, _.keys(model.metadatas));
+        }
+        for (_i = 0, _len = metadatasAttrs.length; _i < _len; _i++) {
+          mdlMetadataAttr = metadatasAttrs[_i];
+          entityAttrMetadata = entityMetadatas[mdlMetadataAttr];
+          mdlMetadata = (model.metadatas != null) && (model.metadatas[mdlMetadataAttr] != null) ? model.metadatas[mdlMetadataAttr] : void 0;
+          metadata = {};
+          _.extend(metadata, entityAttrMetadata);
+          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+          if (mdlMetadata != null) {
+            if (mdlMetadata.metadata != null) {
+              _.extend(metadata, mdlMetadata.metadata);
+            }
+            _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+            overridenProperties = {};
+            if (mdlMetadata.domain != null) {
+              _.extend(overridenProperties, {
+                domain: mdlMetadata.domain
+              });
+              _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
+            }
+            if (mdlMetadata.required != null) {
+              _.extend(overridenProperties, {
+                required: mdlMetadata.required
+              });
+            }
+            if (mdlMetadata.label != null) {
+              _.extend(overridenProperties, {
+                label: mdlMetadata.label
+              });
+            }
+            if (mdlMetadata.isValidationOff != null) {
+              _.extend(overridenProperties, {
+                isValidationOff: mdlMetadata.isValidationOff
+              });
+            }
+            if (mdlMetadata.style != null) {
+              _.extend(overridenProperties, {
+                style: mdlMetadata.style
+              });
+            }
+            if (mdlMetadata.decorator != null) {
+              _.extend(overridenProperties, {
+                decorator: mdlMetadata.decorator
+              });
+            }
+            if (!_.isEmpty(overridenProperties)) {
+              _.extend(metadata, overridenProperties);
+            }
           }
-        };
-        return proxyDomainValidationAttrs = function(model) {
-          return getDomainsValidationAttrs(model);
-          if ((model.modelName != null) && (proxyValidationContainer[model.modelName] != null)) {
-            return proxyValidationContainer[model.modelName];
-          }
-          if (model.modelName != null) {
-            return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model);
+          metadatas[mdlMetadataAttr] = metadata;
+        }
+        return metadatas;
+      };
+
+      MetadataBuilder.prototype.constructEntityMetaDatas = function(model) {
+        if (model.modelName != null) {
+          if (this.metadatas[model.modelName] != null) {
+            return this.metadatas[model.modelName];
           } else {
-            return getDomainsValidationAttrs(model);
+            console.warn("The metadatas does not have properties for this model name.");
+            return {};
           }
-        };
+        } else {
+          throw new ArgumentNullException('The model sould have a model name in order to build its metadatas');
+        }
+      };
+
+      MetadataBuilder.prototype.proxyDomainValidationAttrs = function(model) {
+        return getDomainsValidationAttrs(model);
+        if ((model.modelName != null) && (proxyValidationContainer[model.modelName] != null)) {
+          return proxyValidationContainer[model.modelName];
+        }
+        if (model.modelName != null) {
+          return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model);
+        } else {
+          return getDomainsValidationAttrs(model);
+        }
       };
 
       return MetadataBuilder;
@@ -711,9 +784,13 @@
     })();
     if (isInBrowser) {
       NS.Helpers = NS.Helpers || {};
-      return NS.Helpers.MetadataBuilder = MetadataBuilder;
+      NS.Helpers.MetadataBuilder = MetadataBuilder;
+      return NS.Helpers.metadataBuilder = new MetadataBuilder();
     } else {
-      return module.exports = MetadataBuilder;
+      return module.exports = {
+        MetadataBuilder: MetadataBuilder,
+        metadataBuilder: new MetadataBuilder()
+      };
     }
   })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 
@@ -723,13 +800,13 @@
 
 (function(NS) {
   NS = NS || {};
-  
+
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder');
+  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
   var validators = isInBrowser ? NS.Helpers.validators : require('./validators');
-  var validate = function validateModel (model) {
+  var validate = function validateModel(model) {
     var errors = {};
     //Looping through each attributes.
     validateDomainAttributes(model, errors);
@@ -753,7 +830,8 @@
     if (!model) {
       throw new ArgumentNullException('The model should exist');
     }
-    for (var attr in getValidatedAttrs(model)) {
+    //Validating only the model at
+    for (var attr in model.attributes) {
       //console.log("Attr", attr);
       if (!model.isValid(attr)) {
         var domainMessage = errors[attr] !== null && errors[attr] !== undefined ? errors[attr] : '';
@@ -772,9 +850,10 @@
 
   //Validate the validation domains attributes.
   var validateDomainAttributes = function validateDomainAttributes(model, errors) {
-    var validatorsOfDomain = metadataBuilder.domainAttributes(model);
+    var validatorsOfDomain = metadataBuilder.getDomainsValidationAttrs(model);
     //console.log("validators %j", validatorsOfDomain);
-    for (var attr in validatorsOfDomain) {
+    //Validate only the attributes of the model not all the validators int he metdadaga of the model.
+    for (var attr in model.attributes) {
       //Validate the model only of there is the attribute on the model.
       var valRes = validators.validate({
         name: attr,
@@ -787,11 +866,22 @@
     }
   };
 
-  if(isInBrowser){
+  // Initialize the domains and the metadatas.
+  var initialize = function initializeModelValiationPromise(options) {
+    metadataBuilder.initialize(options);
+  };
+
+  if (isInBrowser) {
     NS.Helpers = NS.Helpers || {};
-    NS.Helpers.modelValidationPromise = validate;
-  }else {
-    module.exports = validate;
+    NS.Helpers.modelValidationPromise = {
+      validate: validate,
+      initialize: initialize
+    };
+  } else {
+    module.exports = {
+      validate: validate,
+      initialize: initialize
+    };
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global _, $*/
@@ -1236,7 +1326,8 @@
 				case "number":
 					return numberValidation(property.value, validator.options);
 				case "string":
-					return stringLength(property.value, validator.options);
+					var stringToValidate = property.value || "";
+					return stringLength(stringToValidate, validator.options);
 				case "function":
 					return validator.value(property.value, validator.options);
 				default:
