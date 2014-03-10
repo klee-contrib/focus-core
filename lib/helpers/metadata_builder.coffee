@@ -103,11 +103,19 @@
       return metadata
     constructEntityMetaDatas: (model)->
       if model.modelName?
-        if @metadatas[model.modelName]?
-          return @metadatas[model.modelName]
+        mdName = model.modelName.split('.')
+        if mdName.length is 1
+          if @metadatas[model.modelName]?
+            return @metadatas[model.modelName]
+          else
+            console.warn("The metadatas does not have properties for this model name.")
+            return {}
         else
-          console.warn("The metadatas does not have properties for this model name.")
-          return {}
+          if @metadatas[mdName[0]][mdName[1]]?
+            return @metadatas[mdName[0]][mdName[1]]
+          else
+            console.warn("The metadatas does not have properties for this model name.")
+            return {}
       else
         throw new ArgumentNullException('The model sould have a model name in order to build its metadatas') 
 
