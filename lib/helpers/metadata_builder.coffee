@@ -3,17 +3,17 @@
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exceptions
   ArgumentNullException = if isInBrowser then NS.Helpers.Exceptions.ArgumentNullException else require("./custom_exception").ArgumentNullException
+  proxyValidationContainer = {}
   # Get the domains definition.
   class MetadataBuilder
     #Initialize the dependencies from the project: the domains and the metadatas.
-    initialize: (options)->
+    initialize: (options, cb)->
       throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.') if not options?
       throw new ArgumentNullException('The metadata builder needs domains in options.') if not options.domains?
       throw new ArgumentNullException('The metadata builder needs metadatas in options.') if not options.metadatas?
       @domains = options.domains
       @metadatas = options.metadatas
-    # Proxy in order to have 
-    proxyValidationContainer = {}
+      cb(@domains, @metadatas) if cb?
     # Get the validation attributes from the domain.
     getDomainsValidationAttrs: (model)->
       #console.log('called')
@@ -46,30 +46,35 @@
       entityMetadatas = @constructEntityMetaDatas(model)
       metadatas = _.clone(entityMetadatas)
       # If the models has metadatas the metadatas given by its definitions will extend them. 
+      metadatasAttrs = _.keys(metadatas)
       if model.metadatas?
-        for mdlMetadataAttr in model.metadatas
-          entityAttrMetadata = entityMetadatas[mdlMetadataAttr] # Get the introspected metadatas.
-          mdlMetadata = model.metadatas[mdlMetadataAttr] 
-          metadata = {} # Create a container for the metadatas.
-          _.extend(metadata,  entityAttrMetadata) # Inject into metadata the entitydefinitions metadata attributes.
-          _.extend(metadata, _.omit(@domains[metadata.domain], 'validators')) #override the metadata with the metadata inside the domain style, validators,....
-          if mdlMetadata?
-            _.extend(metadata, mdlMetadata.metadata)  if mdlMetadata.metadata?
-            # Extend the "overriden" metadatas
-            # Property that can be overriden: required, label, domain, isValidationOff
-            overridenProperties = {}
-            if mdlMetadata.domain?
-              _.extend(overridenProperties, {domain: mdlMetadata.domain}) # Change the domain.
-              _.extend(overridenProperties, _.omit(@domains[mdlMetadata.domain], 'validators')) # Change the metadatas of the domain.
-            _.extend(overridenProperties, {required: mdlMetadata.required}) if mdlMetadata.required?
-            _.extend(overridenProperties, {label: mdlMetadata.label}) if mdlMetadata.label?
-            _.extend(overridenProperties, {isValidationOff: mdlMetadata.isValidationOff}) if mdlMetadata.isValidationOff? #Turn off the model validations.
-            _.extend(overridenProperties, {style: mdlMetadata.style}) if mdlMetadata.style?
-            _.extend(overridenProperties, {decorator: mdlMetadata.decorator}) if mdlMetadata.decorator?
-            # If at least one property has been defined.
-            _.extend(metadata, overridenProperties) if _.isEmpty(overridenProperties)
-          #Update the global metadatas<
-          metadatas[mdlMetadataAttr] = metadata;
+        metadatasAttrs = _.union(metadatasAttrs, _.keys(model.metadatas))
+      for mdlMetadataAttr in metadatasAttrs
+        entityAttrMetadata = entityMetadatas[mdlMetadataAttr] # Get the introspected metadatas.
+        mdlMetadata = if model.metadatas? and model.metadatas[mdlMetadataAttr]? then model.metadatas[mdlMetadataAttr] else undefined
+        metadata = {} # Create a container for the metadatas.
+        _.extend(metadata,  entityAttrMetadata) # Inject validationinto metadata the entitydefinitions metadata attributes.
+        #console.log("metadata",metadata,  metadata.domain, "domains", _.omit(@domains[metadata.domain]))
+        _.extend(metadata, _.omit(@domains[metadata.domain], 'validation')) #override the metadata with the metadata inside the domain style, validators,....
+        if mdlMetadata?
+          _.extend(metadata, mdlMetadata.metadata)  if mdlMetadata.metadata?
+          _.extend(metadata, _.omit(@domains[metadata.domain], 'validation')) #override the metadata with the metadata inside the domain style, validators,....
+          # Extend the "overriden" metadatas
+          # Property that can be overriden: required, label, domain, isValidationOff
+          overridenProperties = {}
+          #console.log 'mdlMetadatamdlMetadata', mdlMetadata
+          if mdlMetadata.domain?
+            _.extend(overridenProperties, {domain: mdlMetadata.domain}) # Change the domain.
+            _.extend(overridenProperties, _.omit(@domains[mdlMetadata.domain], 'validation')) # Change the metadatas of the domain.
+          _.extend(overridenProperties, {required: mdlMetadata.required}) if mdlMetadata.required?
+          _.extend(overridenProperties, {label: mdlMetadata.label}) if mdlMetadata.label?
+          _.extend(overridenProperties, {isValidationOff: mdlMetadata.isValidationOff}) if mdlMetadata.isValidationOff? #Turn off the model validations.
+          _.extend(overridenProperties, {style: mdlMetadata.style}) if mdlMetadata.style?
+          _.extend(overridenProperties, {decorator: mdlMetadata.decorator}) if mdlMetadata.decorator?
+          # If at least one property has been defined.
+          _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
+        #Update the global metadatas<
+        metadatas[mdlMetadataAttr] = metadata
       return metadatas
 
     constructEntityMetaDatas: (model)->
@@ -78,7 +83,7 @@
           return @metadatas[model.modelName]
         else
           console.warn("The metadatas does not have properties for this model name.")
-          return {}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+          return {}
       else
         throw new ArgumentNullException('The model sould have a model name in order to build its metadatas') 
 
