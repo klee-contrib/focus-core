@@ -34,7 +34,7 @@
          #Container for the validators.
          validators = [];
          #If the required filed is set, add a validator
-         validators.push({"type": "required","value": true}) if md.required
+         validators.push({"type": "required","value": true}) if md.required is true
          # Extend the validators 
          (validators = _.union(validators, @domains[md.domain].validation)) if md.domain? and @domains[md.domain]?
          # Set the validators inide the container associated with the field.

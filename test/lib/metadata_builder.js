@@ -65,7 +65,7 @@ var Model = Mdl.extend({
 	metadatas: modelMetadatas.coreModel
 });
 
-describe.only('# MetadataBuilder', function() {
+describe('# MetadataBuilder', function() {
 	describe("##new instance", function() {
 		it('The constructor shoud not define any domins and metadata', function() {
 			//new MetadataBuilder().should.throw(ArgumentNullException);
