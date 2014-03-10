@@ -75,7 +75,32 @@
         #Update the global metadatas<
         metadatas[mdlMetadataAttr] = metadata
       return metadatas
-
+    #Get the attributes for one property of a metadata.
+    getMetadataForAttribute: (model, attribute)->
+      entityAttrMetadata = @constructEntityMetaDatas(model)[attribute]
+      mdlMetadata = if model.metadatas? and model.metadatas[attribute]? then model.metadatas[attribute] else undefined
+      metadata = {} # Create a container for the metadatas.
+      _.extend(metadata,  entityAttrMetadata) # Inject validationinto metadata the entitydefinitions metadata attributes.
+      #console.log("metadata",metadata,  metadata.domain, "domains", _.omit(@domains[metadata.domain]))
+      _.extend(metadata, _.omit(@domains[metadata.domain], 'validation')) #override the metadata with the metadata inside the domain style, validators,....
+      if mdlMetadata?
+        _.extend(metadata, mdlMetadata.metadata)  if mdlMetadata.metadata?
+        _.extend(metadata, _.omit(@domains[metadata.domain], 'validation')) #override the metadata with the metadata inside the domain style, validators,....
+        # Extend the "overriden" metadatas
+        # Property that can be overriden: required, label, domain, isValidationOff
+        overridenProperties = {}
+        #console.log 'mdlMetadatamdlMetadata', mdlMetadata
+        if mdlMetadata.domain?
+          _.extend(overridenProperties, {domain: mdlMetadata.domain}) # Change the domain.
+          _.extend(overridenProperties, _.omit(@domains[mdlMetadata.domain], 'validation')) # Change the metadatas of the domain.
+        _.extend(overridenProperties, {required: mdlMetadata.required}) if mdlMetadata.required?
+        _.extend(overridenProperties, {label: mdlMetadata.label}) if mdlMetadata.label?
+        _.extend(overridenProperties, {isValidationOff: mdlMetadata.isValidationOff}) if mdlMetadata.isValidationOff? #Turn off the model validations.
+        _.extend(overridenProperties, {style: mdlMetadata.style}) if mdlMetadata.style?
+        _.extend(overridenProperties, {decorator: mdlMetadata.decorator}) if mdlMetadata.decorator?
+        # If at least one property has been defined.
+        _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
+      return metadata
     constructEntityMetaDatas: (model)->
       if model.modelName?
         if @metadatas[model.modelName]?
