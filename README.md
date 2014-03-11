@@ -1,5 +1,6 @@
 spa-fmk
 =======
+ [![Build Status](https://secure.travis-ci.org/KleeGroup/spa-fmk.png)](http://travis-ci.org/Kleegroup/spa-fmk)
 
 **Currently in dev**
 
