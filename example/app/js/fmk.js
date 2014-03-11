@@ -754,13 +754,75 @@
         return metadatas;
       };
 
+      MetadataBuilder.prototype.getMetadataForAttribute = function(model, attribute) {
+        var entityAttrMetadata, mdlMetadata, metadata, overridenProperties;
+        entityAttrMetadata = this.constructEntityMetaDatas(model)[attribute];
+        mdlMetadata = (model.metadatas != null) && (model.metadatas[attribute] != null) ? model.metadatas[attribute] : void 0;
+        metadata = {};
+        _.extend(metadata, entityAttrMetadata);
+        _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+        if (mdlMetadata != null) {
+          if (mdlMetadata.metadata != null) {
+            _.extend(metadata, mdlMetadata.metadata);
+          }
+          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+          overridenProperties = {};
+          if (mdlMetadata.domain != null) {
+            _.extend(overridenProperties, {
+              domain: mdlMetadata.domain
+            });
+            _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
+          }
+          if (mdlMetadata.required != null) {
+            _.extend(overridenProperties, {
+              required: mdlMetadata.required
+            });
+          }
+          if (mdlMetadata.label != null) {
+            _.extend(overridenProperties, {
+              label: mdlMetadata.label
+            });
+          }
+          if (mdlMetadata.isValidationOff != null) {
+            _.extend(overridenProperties, {
+              isValidationOff: mdlMetadata.isValidationOff
+            });
+          }
+          if (mdlMetadata.style != null) {
+            _.extend(overridenProperties, {
+              style: mdlMetadata.style
+            });
+          }
+          if (mdlMetadata.decorator != null) {
+            _.extend(overridenProperties, {
+              decorator: mdlMetadata.decorator
+            });
+          }
+          if (!_.isEmpty(overridenProperties)) {
+            _.extend(metadata, overridenProperties);
+          }
+        }
+        return metadata;
+      };
+
       MetadataBuilder.prototype.constructEntityMetaDatas = function(model) {
+        var mdName;
         if (model.modelName != null) {
-          if (this.metadatas[model.modelName] != null) {
-            return this.metadatas[model.modelName];
+          mdName = model.modelName.split('.');
+          if (mdName.length === 1) {
+            if (this.metadatas[model.modelName] != null) {
+              return this.metadatas[model.modelName];
+            } else {
+              console.warn("The metadatas does not have properties for this model name.");
+              return {};
+            }
           } else {
-            console.warn("The metadatas does not have properties for this model name.");
-            return {};
+            if (this.metadatas[mdName[0]][mdName[1]] != null) {
+              return this.metadatas[mdName[0]][mdName[1]];
+            } else {
+              console.warn("The metadatas does not have properties for this model name.");
+              return {};
+            }
           }
         } else {
           throw new ArgumentNullException('The model sould have a model name in order to build its metadatas');
@@ -1022,6 +1084,42 @@
     } else {
         module.exports = odataHelper;
     }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global window.*/
+(function(NS) {
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
+  var callPostRenderingForEachAttributes =  function(model){
+    //Get all the metadatas of the model.
+    var metadatas = metadataBuilder.getMetadatas(model);
+    //Iterate through each attributes of the model.
+  };
+
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global window.*/
+(function(NS) {
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  //Container for all the post renderings functions.
+  var postRenderingHelpers = {};
+  //Register a helper inside the application.
+  var registerHelper = function registerHelper(name, fn){
+    postRenderingHelpers[name] = fn;
+  };
+  //Options must have a selector property and a helperName one.
+  var callHelper = function (selector, helperName){
+    selector.postRenderingHelpers[helperName]();
+  };
+  var mdl = {registerHelper: registerHelper, callHelper: callHelper}
+  // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.postRendering = mdl;
+    } else {
+        module.exports = mdl;
+    }
+
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, Promise, _*/
 
@@ -1427,7 +1525,7 @@
     module.exports = CollectionPaginationView;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global Backbone */
+/*global Backbone, _, window */
 (function(NS) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -1435,8 +1533,11 @@
   //View which is the default view for each view.
   //This view is able to deal with errors and to render the default json moodel.
   var CoreView = Backbone.View.extend({
+    super: CoreView,
     //The handlebars template has to be defined here.
-    template: function emptyTemplate(json){return "<p>Your template has to be implemented.</p>"}, // Example: require('./templates/coreView')
+    template: function emptyTemplate(json) {
+      return "<p>Your template has to be implemented.</p>"
+    }, // Example: require('./templates/coreView')
     //Defaults events.
     events: {
       "focus input": "inputFocus", //Deal with the focus in the field.
@@ -1465,7 +1566,11 @@
     //Render function  by default call the getRenderData and inject it into the view dom element.
     render: function renderCoreView() {
       this.$el.html(this.template(this.getRenderData()));
+      _.defer(this.afterRender);
       return this;
+    },
+    afterRender: function afterRenderCoreView() {
+      
     }
   });
 
