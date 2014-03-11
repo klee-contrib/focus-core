@@ -1,6 +1,8 @@
 spa-fmk
 =======
 
+**Currently in dev**
+
 Fmk for spa application.
 
 ## What's inside
