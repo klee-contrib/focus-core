@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "./node_modules/mocha/bin/mocha",
     "build": "gulp build"
   },
   "repository": {
@@ -34,7 +34,8 @@
     "backbone-validation": "~0.9.1",
     "chai": "~1.9.0",
     "i18next": "~1.7.1",
-    "sinon": "~1.8.2"
+    "sinon": "~1.8.2",
+    "mocha": "^1.17.1"
   },
   "devDependencies": {
     "gulp": "~3.5.5",
