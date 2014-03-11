@@ -16,7 +16,8 @@ module.exports = {
 				"maxLength": 50
 			}
 		}],
-		"style": ["cssClassDomain1", "cssClassDomain2"]
+		"style": ["cssClassDomain1", "cssClassDomain2"],
+		"decorator": "testHelper"
 	},
 	"DO_LISTE": {
 		"type": "number",

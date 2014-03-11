@@ -6,8 +6,8 @@
     Services: {},
     Helpers: {},
     initialize: function initialize(options){
-      this.Helpers.metadataHelper.initialize(options);
-      this.Helpers.modelValidationPromiseHelper.initialize(options);
+      this.Helpers.metadataBuilder.initialize(options);
+      this.Helpers.modelValidationPromise.initialize(options);
     }
   };
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
@@ -1085,40 +1085,61 @@
         module.exports = odataHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window.*/
+/*global window*/
 (function(NS) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
-  var callPostRenderingForEachAttributes =  function(model){
+  var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require('./post_rendering_helper').metadataBuilder;
+  //Options must contain a model and a viewSelecrot property.
+  var postRenderingBuilder = function(options) {
     //Get all the metadatas of the model.
-    var metadatas = metadataBuilder.getMetadatas(model);
-    //Iterate through each attributes of the model.
+    var metadatas = metadataBuilder.getMetadatas(options.model);
+    //Iterate through each attributes of the modoptions.modelel.
+    for (var attr in options.model.attributes) {
+      var mdt = metadatas[attr];
+      /*Check for any of the metadata.*/
+      if (mdt !== undefined && mdt !== null) {
+        if (mdt.decorator) {
+          postRenderingHelper.callHelper(mdt.decorator, $('[data-name:' + attr + ']', options.viewSelector));
+          //$('[data-name:'+attr+']', viewSelector)
+        }
+      }
+    }
   };
+   if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.postRenderingBuilder = postRenderingBuilder;
+  } else {
+    module.exports = postRenderingBuilder;
+  }
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window.*/
+/*global window*/
 (function(NS) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   //Container for all the post renderings functions.
   var postRenderingHelpers = {};
   //Register a helper inside the application.
-  var registerHelper = function registerHelper(name, fn){
-    postRenderingHelpers[name] = fn;
+  var registerHelper = function registerHelper(helper) {
+    postRenderingHelpers[helper.name] = helper.fn;
   };
   //Options must have a selector property and a helperName one.
-  var callHelper = function (selector, helperName){
-    selector.postRenderingHelpers[helperName]();
+  var callHelper = function( config, options) {
+    config.selector[postRenderingHelpers[config.helperName]](options);
   };
-  var mdl = {registerHelper: registerHelper, callHelper: callHelper}
-  // Differenciating export for node or browser.
-    if (isInBrowser) {
-        NS.Helpers = NS.Helpers || {};
-        NS.Helpers.postRendering = mdl;
-    } else {
-        module.exports = mdl;
-    }
+  var mdl = {
+    registerHelper: registerHelper,
+    callHelper: callHelper
+  };
+    // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.postRenderingHelper = mdl;
+  } else {
+    module.exports = mdl;
+  }
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, Promise, _*/
