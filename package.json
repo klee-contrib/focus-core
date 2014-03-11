@@ -23,7 +23,7 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "gitHead": "f4c5ebe4c70f20bacefc074049e33011829121a7",
-   "bin": {
+  "bin": {
     "mocha": "/node_modules/mocha/bin/mocha",
     "_mocha": "/node_modules/mocha/bin/_mocha"
   },
@@ -39,7 +39,8 @@
     "chai": "~1.9.0",
     "i18next": "~1.7.1",
     "sinon": "~1.8.2",
-    "mocha": "^1.17.1"
+    "mocha": "^1.17.1",
+    "coffee-script": "^1.7.1"
   },
   "devDependencies": {
     "gulp": "~3.5.5",
