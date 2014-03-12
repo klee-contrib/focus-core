@@ -69,7 +69,7 @@ jQuery.fn.test = function() {
     return this;
 };
 
-Fmk.Helpers.postRenderingHelper.registerHelper({name: "testHelper", fn: "test"});
+Fmk.Helpers.postRenderingHelper.registerHelper({name: "testHelper", fn: "test", options: "test"});
 var TestModel = Fmk.Models.Model.extend({
   modelName: "test",
   metadatas:{
