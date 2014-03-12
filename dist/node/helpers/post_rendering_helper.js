@@ -6,11 +6,11 @@
   var postRenderingHelpers = {};
   //Register a helper inside the application.
   var registerHelper = function registerHelper(helper) {
-    postRenderingHelpers[helper.name] = helper.fn;
+    postRenderingHelpers[helper.name] = {fn: helper.fn, options: helper.options};
   };
   //Options must have a selector property and a helperName one.
-  var callHelper = function( config, options) {
-    config.selector[postRenderingHelpers[config.helperName]](options);
+  var callHelper = function( config) {
+    config.selector[postRenderingHelpers[config.helperName].fn](postRenderingHelpers[config.helperName].options);
     //config.selector[config.helperName](options);
   };
   var mdl = {

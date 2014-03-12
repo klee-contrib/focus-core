@@ -292,11 +292,11 @@
   var postRenderingHelpers = {};
   //Register a helper inside the application.
   var registerHelper = function registerHelper(helper) {
-    postRenderingHelpers[helper.name] = helper.fn;
+    postRenderingHelpers[helper.name] = {fn: helper.fn, options: helper.options};
   };
   //Options must have a selector property and a helperName one.
-  var callHelper = function( config, options) {
-    config.selector[postRenderingHelpers[config.helperName]](options);
+  var callHelper = function( config) {
+    config.selector[postRenderingHelpers[config.helperName].fn](postRenderingHelpers[config.helperName].options);
     //config.selector[config.helperName](options);
   };
   var mdl = {
@@ -1124,7 +1124,7 @@
     //Get all the metadatas of the model.
     var metadatas = metadataBuilder.getMetadatas(options.model);
     //Iterate through each attributes of the modoptions.modelel.
-    for (var attr in options.model.attributes) {
+    for (var attr in metadatas) {
       var mdt = metadatas[attr];
       /*Check for any of the metadata.*/
       if (mdt !== undefined && mdt !== null) {
@@ -1564,8 +1564,8 @@
       /*Register after renger.*/
       _.bindAll(this, 'render', 'afterRender');
       var _this = this;
-      this.render = _.wrap(this.render, function(render) {
-        render();
+      this.render = _.wrap(this.render, function(render, options) {
+        render(options);
         _this.afterRender();
         return _this;
       });

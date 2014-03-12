@@ -9,7 +9,7 @@
     //Get all the metadatas of the model.
     var metadatas = metadataBuilder.getMetadatas(options.model);
     //Iterate through each attributes of the modoptions.modelel.
-    for (var attr in options.model.attributes) {
+    for (var attr in metadatas) {
       var mdt = metadatas[attr];
       /*Check for any of the metadata.*/
       if (mdt !== undefined && mdt !== null) {
