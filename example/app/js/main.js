@@ -1,3 +1,4 @@
+/*global Fmk, jQuery, $*/
 var domains = {
   "DO_ENTIER": {
     "type": "number",
@@ -59,16 +60,6 @@ var domains = {
 
 };
 Fmk.initialize({domains: domains, metadatas: {}});
-var TestView = Fmk.Views.CoreView.extend({
-  metadatas:{
-    firstName: "DO_TEXTE_50",
-    template: function(){ return "<p>Test template!!!</p>"}
-  }
-
-});
-var view = new TestView({model :new Fmk.Models.Model({firstName: "Jon", lastName: "Jiap"})});
-console.log(view.render().el);
-
 jQuery.fn.test = function() {
     console.log('JQURY PLUGIN TEST');
     this.each(function() {
@@ -76,6 +67,18 @@ jQuery.fn.test = function() {
     });
 
     return this;
-}
+};
 
-Fmk.Helpers.postRenderingHelper.registerHelper({name: "testHelper", fn: jQuery.fn.test})
+Fmk.Helpers.postRenderingHelper.registerHelper({name: "testHelper", fn: "test"});
+var TestModel = Fmk.Models.Model.extend({
+  modelName: "test",
+  metadatas:{
+    firstName: {domain: "DO_TEXTE_50", decorator: "testHelper"}
+  }
+});
+var TestView = Fmk.Views.CoreView.extend({
+   template: function(){ return "<p data-name='firstName'>Test template!!!</p>";}
+});
+var view = new TestView({model :new TestModel({firstName: "Jon", lastName: "Jiap"})});
+console.log(view.render().el);
+
