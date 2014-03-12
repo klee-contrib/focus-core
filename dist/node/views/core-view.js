@@ -6,9 +6,24 @@
   //View which is the default view for each view.
   //This view is able to deal with errors and to render the default json moodel.
   var CoreView = Backbone.View.extend({
+    toogleIsHidden: function(options) {
+      this.isHidden = !this.isHidden;
+      this.render(options);
+    },
+    initialize: function initializeCoreView() {
+      this.on('toogleIsHidden', this.toogleIsHidden);
+      /*Register after renger.*/
+      _.bindAll(this, 'render', 'afterRender');
+      var _this = this;
+      this.render = _.wrap(this.render, function(render) {
+        render();
+        _this.afterRender();
+        return _this;
+      });
+    },
     //The handlebars template has to be defined here.
     template: function emptyTemplate(json) {
-      return "<p>Your template has to be implemented.</p>"
+      return "<p>Your template has to be implemented.</p>";
     }, // Example: require('./templates/coreView')
     //Defaults events.
     events: {
@@ -38,11 +53,14 @@
     //Render function  by default call the getRenderData and inject it into the view dom element.
     render: function renderCoreView() {
       this.$el.html(this.template(this.getRenderData()));
-      _.defer(this.afterRender, this);
+      //_.defer(this.afterRender, this);
       return this;
     },
     afterRender: function afterRenderCoreView(currentView) {
-      postRenderingBuilder({model: currentView.model, viewSelector: currentView.$el});
+      postRenderingBuilder({
+        model: this.model,
+        viewSelector: this.$el
+      });
     }
   });
 
