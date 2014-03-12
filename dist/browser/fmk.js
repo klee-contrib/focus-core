@@ -284,6 +284,34 @@
 		module.exports = NotificationsView;
 	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global window*/
+(function(NS) {
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  //Container for all the post renderings functions.
+  var postRenderingHelpers = {};
+  //Register a helper inside the application.
+  var registerHelper = function registerHelper(helper) {
+    postRenderingHelpers[helper.name] = helper.fn;
+  };
+  //Options must have a selector property and a helperName one.
+  var callHelper = function( config, options) {
+    config.selector[postRenderingHelpers[config.helperName]](options);
+    //config.selector[config.helperName](options);
+  };
+  var mdl = {
+    registerHelper: registerHelper,
+    callHelper: callHelper
+  };
+    // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.postRenderingHelper = mdl;
+  } else {
+    module.exports = mdl;
+  }
+
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global $*/
 (function(NS) {
   NS = NS || {};
@@ -1085,7 +1113,7 @@
         module.exports = odataHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window*/
+/*global window, $*/
 (function(NS) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -1101,7 +1129,7 @@
       /*Check for any of the metadata.*/
       if (mdt !== undefined && mdt !== null) {
         if (mdt.decorator) {
-          postRenderingHelper.callHelper(mdt.decorator, $('[data-name:' + attr + ']', options.viewSelector));
+          postRenderingHelper.callHelper({helperName: mdt.decorator, selector: $('[data-name=' + attr + ']', options.viewSelector)});
           //$('[data-name:'+attr+']', viewSelector)
         }
       }
@@ -1112,33 +1140,6 @@
     NS.Helpers.postRenderingBuilder = postRenderingBuilder;
   } else {
     module.exports = postRenderingBuilder;
-  }
-
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window*/
-(function(NS) {
-  NS = NS || {};
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  //Container for all the post renderings functions.
-  var postRenderingHelpers = {};
-  //Register a helper inside the application.
-  var registerHelper = function registerHelper(helper) {
-    postRenderingHelpers[helper.name] = helper.fn;
-  };
-  //Options must have a selector property and a helperName one.
-  var callHelper = function( config, options) {
-    config.selector[postRenderingHelpers[config.helperName]](options);
-  };
-  var mdl = {
-    registerHelper: registerHelper,
-    callHelper: callHelper
-  };
-    // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Helpers = NS.Helpers || {};
-    NS.Helpers.postRenderingHelper = mdl;
-  } else {
-    module.exports = mdl;
   }
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
@@ -1550,11 +1551,10 @@
 (function(NS) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-
+  var postRenderingBuilder = isInBrowser ? NS.Helpers.postRenderingBuilder : require('../helpers/post_rendering_builder');
   //View which is the default view for each view.
   //This view is able to deal with errors and to render the default json moodel.
   var CoreView = Backbone.View.extend({
-    super: CoreView,
     //The handlebars template has to be defined here.
     template: function emptyTemplate(json) {
       return "<p>Your template has to be implemented.</p>"
@@ -1587,11 +1587,11 @@
     //Render function  by default call the getRenderData and inject it into the view dom element.
     render: function renderCoreView() {
       this.$el.html(this.template(this.getRenderData()));
-      _.defer(this.afterRender);
+      _.defer(this.afterRender, this);
       return this;
     },
-    afterRender: function afterRenderCoreView() {
-      
+    afterRender: function afterRenderCoreView(currentView) {
+      postRenderingBuilder({model: currentView.model, viewSelector: currentView.$el});
     }
   });
 

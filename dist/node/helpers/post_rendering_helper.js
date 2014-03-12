@@ -11,6 +11,7 @@
   //Options must have a selector property and a helperName one.
   var callHelper = function( config, options) {
     config.selector[postRenderingHelpers[config.helperName]](options);
+    //config.selector[config.helperName](options);
   };
   var mdl = {
     registerHelper: registerHelper,

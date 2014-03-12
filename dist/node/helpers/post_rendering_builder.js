@@ -1,4 +1,4 @@
-/*global window*/
+/*global window, $*/
 (function(NS) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -14,7 +14,7 @@
       /*Check for any of the metadata.*/
       if (mdt !== undefined && mdt !== null) {
         if (mdt.decorator) {
-          postRenderingHelper.callHelper(mdt.decorator, $('[data-name:' + attr + ']', options.viewSelector));
+          postRenderingHelper.callHelper({helperName: mdt.decorator, selector: $('[data-name=' + attr + ']', options.viewSelector)});
           //$('[data-name:'+attr+']', viewSelector)
         }
       }
