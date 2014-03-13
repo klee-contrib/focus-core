@@ -628,6 +628,46 @@
     module.exports = formHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+(function() {
+  (function(NS) {
+    var format, formaters, isInBrowser;
+    NS = NS || {};
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    format = {
+      date: 'DD/MM/YYYY',
+      currency: '0 0.00',
+      dateTime: 'DD/MM/YYYY HH:mm:ss'
+    };
+    formaters = {};
+    formaters.configure = function(options) {
+      return _.extend(format, options);
+    };
+    formaters.date = function(prop, options) {
+      var dateFormat;
+      options = options || {};
+      dateFormat = options.dateFormat || format.date;
+      return moment(prop).format(dateFormat);
+    };
+    formaters.dateTime = function(prop, options) {
+      var dateTimeFormat;
+      options = options || {};
+      dateTimeFormat = options.dateTimeFormat;
+      return moment(prop).format(dateTimeFormat);
+    };
+    formaters.currency = function(prop, options) {
+      options = options || {};
+      return prop;
+    };
+    if (isInBrowser) {
+      NS.Helpers = NS.Helpers || {};
+      return NS.Helpers.formaters = formaters;
+    } else {
+      return module.exports = formaters;
+    }
+  })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+
+}).call(this);
+
 (function(NS) {
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.

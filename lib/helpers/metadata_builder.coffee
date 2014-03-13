@@ -98,6 +98,7 @@
         _.extend(overridenProperties, {isValidationOff: mdlMetadata.isValidationOff}) if mdlMetadata.isValidationOff? #Turn off the model validations.
         _.extend(overridenProperties, {style: mdlMetadata.style}) if mdlMetadata.style?
         _.extend(overridenProperties, {decorator: mdlMetadata.decorator}) if mdlMetadata.decorator?
+        _.extend(overridenProperties, {decorator: mdlMetadata.symbol}) if mdlMetadata.symbol?
         # If at least one property has been defined.
         _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
       return metadata

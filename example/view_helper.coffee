@@ -64,9 +64,11 @@ Handlebars.registerHelper "display_for", (property, options) ->
     #console.log "metadataClass", metadataClass
     if this[property]?
       propValue = this[property]
-      console.log "prop", property,  metadata.format
+      #console.log "prop", property,  metadata.format  
       if metadata.format?
         propValue =  metadata.format(propValue)
+      if metadata.symbol?
+        propValue = propValue + i18n.t(metadata.symbol)
       if dataType is "checkbox"
          iconChecked = if this[property] then "-check" else ""
          return "<i class='fa fa#{iconChecked}-square-o'></i>"
@@ -92,7 +94,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
   #Read all the options if they exists
   opt = options.hash or {}
   metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this,property)
-  console.log "metadata",metadata
+  #console.log "metadata",metadata
   domain = domains_definition[metadata.domain] or {}
   #console.log "domain", domain
   isDisplayRequired = false
@@ -103,6 +105,13 @@ Handlebars.registerHelper "input_for", (property, options) ->
     else if metadata.required?
       isDisplayRequired = metadata.required
     return if isDisplayRequired then "<span class='input-group-addon'>*</span>" else ""
+  symbol = ()=>
+    isSymbol = false
+    if opt.symbol?
+      isSymbol = opt.symbol
+    else if metadata.symbol?
+      isSymbol = metadata.symbol
+    return if isSymbol then "<span class='input-group-addon'>#{isSymbol}</span>" else ""
   #isRequired = if !opt.isRequired? or !opt.isRequired then "" else "<span class='input-group-addon'>*</span>"
   translationRoot = opt.translationRoot or undefined
   dataType = opt.dataType or domain.type or "text"
@@ -125,18 +134,21 @@ Handlebars.registerHelper "input_for", (property, options) ->
     else
       inputSizeValue = 12 - labelSizeValue
       inputSize = opt.inputSize or "col-sm-#{inputSizeValue} col-md-#{inputSizeValue} col-lg-#{inputSizeValue}"
-
-  isAddOnInput = opt.icon? or (opt.isRequired || metadata.required) is true
+  # Define all the case where there is an input addon.
+  # todo:pbn maybe remove the isAddOnInput because there if ther is a mix of symbol and no symbol the input size is different.
+  isAddOnInput = true or opt.icon? or ((opt.isRequired || metadata.required)) is true or ((opt.symbol || metadata.symbol))?
   #Get the value of the property
   propertyValue =  ()=>
     if this[property]?
+      propValue = this[property]
+      if metadata.format?
+        propValue =  metadata.format(propValue)
       if dataType is "checkbox"
-        if this[property] then return 'checked'
-      if dataType is "date" and this[property] isnt ""
-        formatedDate = moment(this[property]).format("YYYY-MM-DD")
-        return "value='" + formatedDate + "'"
-      else return "value='#{_.escape(this[property])}'"
-    "" 
+        if propValue then return 'checked'
+      if dataType is "date" and propValue isnt ""
+        return "value='" + propValue + "'"
+      else return "value='#{_.escape(propValue)}'"
+    ""
   #Get the value of the transalated label.
   translationKey =()=>
     translation = metadata.label or ("#{this['modelName']}.#{property}" if this['modelName']?) or ""
@@ -157,7 +169,9 @@ Handlebars.registerHelper "input_for", (property, options) ->
       return "<label class='control-label #{labelSize}' for='#{property}'>#{translationKey()}</label>"
     #if not opt.isNoLabel? then "<label class='control-label #{labelSize}' for='#{property}'> #{translationKey} </label>" else ""
   #By default there is a placeholder or if the preperty is true.
-  placeholder = if !opt.placeholder? or opt.placeholder then "placeholder='#{translationKey()}'" else ""
+  placeholder = if (!opt.placeholder? and opt.isNoLabel) or opt.placeholder then "placeholder='#{translationKey()}'" else ""
+  #console.log "placeholder", placeholder, (!opt.isNoLabel? or !opt.isNolabel)
+  
   #Initialize the errors variables => Is there an error, if yes what is the message.
   error = ""
   error = "has-error" if @errors? and @errors[property]?
@@ -180,6 +194,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
             <div class='#{if isAddOnInput then 'input-group' else ""} #{inputSize()} #{containerCss}' #{containerAttribs}>
                #{icon()}
               <input id='#{property}' class='form-control input-sm' data-name='#{property}' type='#{dataType}' #{inputAttributes} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>
+              #{symbol()}
               #{isRequired()}
             </div>
             #{errors()}
@@ -345,6 +360,24 @@ Handlebars.registerHelper "paginate", (property, options)->
           </div>
           <div class='col-md-2 pagination'>
             #{generatePageFilter()}
+          </div>"
+  return new Handlebars.SafeString(html)
+
+# `{totalRecords: totalRecords}`
+Handlebars.registerHelper "tableHeaderAction", (property, options)->
+  options = options or {}
+  options = options.hash or {}
+  totalRecords = this.totalRecords
+  generateTotal = ()->
+    resultString = i18n.t('search.result')
+    return "#{resultString} <span class='badge'>#{totalRecords}</span>"
+  html = "<div class='tableAction'>
+            <div class='pull-left'>
+                #{generateTotal()}
+            </div>
+            <div class='pull-right export'>
+                <button type='button' class='btn btn-primary'>#{i18n.t('search.export')} <i class='fa fa-table'></i></button>
+            </div>
           </div>"
   return new Handlebars.SafeString(html)
 
