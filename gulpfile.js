@@ -65,36 +65,15 @@ gulp.task('templates', function(){
     .pipe(gulp.dest('example/app/js/'));
 });
 
+gulp.task('serve', startExpress);
+function startExpress() {
+ 
+  var express = require('express');
+  var app = express();
+  app.use(express.static(__dirname + '/example/app/'));
+  app.listen(4000);
+}
 
 
 // The default task (called when you run `gulp` from cli)
-gulp.task('default', ['build']);
-
-var express = require('express');
-var path = require('path');
-var lrserver = require('tiny-lr')(),
-  express = require('express'),
-  livereload = require('connect-livereload'),
-  livereloadport = 35729,
-  serverport = 5000;
-
-//We only configure the server here and start it only when running the watch task
-var server = express();
-//Add livereload middleware before static-middleware
-server.use(livereload({
-  port: livereloadport
-}));
-// simple logger
-server.use(function(req, res, next) {
-  gutil.log('%s %s', req.method, req.url);
-  next();
-});
-server.use(express.static(__dirname + '/example/app/'));
-
-gulp.task('serve', function() {
-  //Set up your static fileserver, which serves files in the build dir
-  server.listen(serverport);
-
-  //Set up your livereload server
-  lrserver.listen(livereloadport);
-});
+gulp.task('default', ['build', 'serve']);
