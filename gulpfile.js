@@ -45,8 +45,27 @@ gulp.task('node-build', function() {
 
 });
 
-//
-gulp.task('build', ['browser-build', 'node-build']);
+//All tasks by default.
+gulp.task('build', ['browser-build', 'node-build', 'templates']);
+
+//Gulp build example templates into a template.js file
+var handlebars = require('gulp-handlebars');
+var defineModule = require('gulp-define-module');
+var declare = require('gulp-declare');
+var concat = require('gulp-concat');
+
+gulp.task('templates', function(){
+  gulp.src(['example/app/templates/*.hbs'])
+    .pipe(handlebars())
+    .pipe(defineModule('plain'))
+    .pipe(declare({
+      namespace: 'Example.templates'
+    }))
+    .pipe(concat('templates.js'))
+    .pipe(gulp.dest('example/app/js/'));
+});
+
+
 
 // The default task (called when you run `gulp` from cli)
 gulp.task('default', ['build']);
