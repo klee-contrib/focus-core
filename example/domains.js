@@ -43,7 +43,8 @@ module.exports = {
 			"options": {
 				"minLength": 4
 			}
-		}]
+		}],
+		"symbol": "@"
 	},
 	"DO_BOOLEEN":{
 		"type": "boolean"

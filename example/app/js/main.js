@@ -18,7 +18,8 @@ var domains = {
       }
     }],
     "style": ["cssClassDomain1", "cssClassDomain2"],
-    "decorator": "testHelper"
+    "decorator": "testHelper",
+    "symbol": "t50"
   },
   "DO_LISTE": {
     "type": "number",
@@ -59,17 +60,19 @@ var domains = {
   }
 
 };
+//Initialize metadatas and 
 Fmk.initialize({domains: domains, metadatas: {}});
 jQuery.fn.test = function() {
     console.log('JQURY PLUGIN TEST');
     this.each(function() {
        $(this).css("background-color", "#ff00ff");
     });
-
     return this;
 };
 
+//Registering a helper for post rendering.
 Fmk.Helpers.postRenderingHelper.registerHelper({name: "testHelper", fn: "test", options: "test"});
+//Creation of a test model.
 var TestModel = Fmk.Models.Model.extend({
   modelName: "test",
   metadatas:{
