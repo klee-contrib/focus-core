@@ -63,15 +63,16 @@
 
 }).call(this);
 
-/*global Backbone*/
-
+/*global Backbone, window, module*/
+"use strict";
 (function(NS) {
+  /* Filename: models/notification.js */
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 
   //Notification model
-  Notifications = Backbone.Model.extend({
+  var Notification = Backbone.Model.extend({
     defaults: {
       type: undefined, //error/warning/success...
       message: undefined, // The message which have to be display.
@@ -96,6 +97,7 @@
 	/*global _, Backbone*/
 
 	(function(NS) {
+		  /* Filename: models/notifications.js */
 		NS = NS || {};
 		//Dependency gestion depending on the fact that we are in the browser or in node.
 		var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -138,6 +140,7 @@
 	})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global $*/
 (function(NS) {
+  /* Filename: models/paginatedCollection.js */
   NS = NS || {};
 
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -152,7 +155,7 @@
     totalPages: 10,
     //sort fields
     sortField: {},
-
+    //Page informations
     pageInfo: function pageInfo() {
       var info = {
         // If parse() method is implemented and totalRecords is set to the length
@@ -296,6 +299,13 @@
   };
   //Options must have a selector property and a helperName one.
   var callHelper = function( config) {
+    //If there is nothing selected.
+    if(config.selector === undefined || config.selector.size() === 0){
+      return;
+    }
+    if(config.selector[postRenderingHelpers[config.helperName].fn] === undefined){
+      return;
+    }
     config.selector[postRenderingHelpers[config.helperName].fn](postRenderingHelpers[config.helperName].options);
     //config.selector[config.helperName](options);
   };
@@ -864,6 +874,11 @@
           if (mdlMetadata.decorator != null) {
             _.extend(overridenProperties, {
               decorator: mdlMetadata.decorator
+            });
+          }
+          if (mdlMetadata.symbol != null) {
+            _.extend(overridenProperties, {
+              decorator: mdlMetadata.symbol
             });
           }
           if (!_.isEmpty(overridenProperties)) {
@@ -1550,6 +1565,519 @@
 	}
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+(function() {
+  var S4, domains_definition, guid, metadaBuilder;
+
+  domains_definition = window.domains;
+
+  metadaBuilder = Fmk.Helpers.metadataBuilder;
+
+  Handlebars.registerHelper('pick', function(val, options) {
+    return options.hash[val];
+  });
+
+  Handlebars.registerHelper("t", function(i18n_key, options) {
+    var maxLength, opt, result;
+    opt = options.hash || {};
+    maxLength = opt.max;
+    result = i18n.t(i18n_key);
+    if ((maxLength != null) && maxLength < result.length) {
+      result = "" + (result.slice(0, +maxLength)) + "...";
+    }
+    return new Handlebars.SafeString(result);
+  });
+
+  Handlebars.registerHelper("debug", function(optionalValue) {
+    console.log("Current Context");
+    console.log("====================");
+    console.log(this);
+    if (optionalValue) {
+      console.log("Value");
+      console.log("====================");
+      return console.log(optionalValue);
+    }
+  });
+
+
+  /*------------------------------------------- FORM FOR THE INPUTS ------------------------------------------- */
+
+  Handlebars.registerHelper("display_for", function(property, options) {
+    var containerAttribs, containerCss, dataType, domain, html, inputSize, label, labelSize, labelSizeValue, metadata, opt, propertyValue, translationKey, translationRoot;
+    opt = options.hash || {};
+    metadata = metadaBuilder.getMetadataForAttribute(this, property);
+    domain = domains_definition[metadata.domain] || {};
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
+    }
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    propertyValue = (function(_this) {
+      return function() {
+        var formatedDate, iconChecked, metadataClass, propValue;
+        metadataClass = metadata.style != null ? metadata.style : "";
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if (metadata.format != null) {
+            propValue = metadata.format(propValue);
+          }
+          if (metadata.symbol != null) {
+            propValue = propValue + i18n.t(metadata.symbol);
+          }
+          if (dataType === "checkbox") {
+            iconChecked = _this[property] ? "-check" : "";
+            return "<i class='fa fa" + iconChecked + "-square-o'></i>";
+          }
+          if (dataType === "date" && _this[property] !== "") {
+            formatedDate = moment(_this[property]).format("YYYY-MM-DD");
+            return "<div class='" + metadataClass + "'>" + formatedDate + "</div>";
+          } else {
+            return "<div class='" + metadataClass + "'>" + (_.escape(propValue)) + "</div>";
+          }
+        }
+        return "";
+      };
+    })(this);
+    html = "<div class='form-group'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <p class='form-control-static'>" + (propertyValue()) + "<p> </div> </div> ";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("input_for", function(property, options) {
+    var containerAttribs, containerCss, dataType, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
+    html = void 0;
+    translationRoot = void 0;
+    dataType = void 0;
+    opt = options.hash || {};
+    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
+    domain = domains_definition[metadata.domain] || {};
+    isDisplayRequired = false;
+    isRequired = (function(_this) {
+      return function() {
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    symbol = (function(_this) {
+      return function() {
+        var isSymbol;
+        isSymbol = false;
+        if (opt.symbol != null) {
+          isSymbol = opt.symbol;
+        } else if (metadata.symbol != null) {
+          isSymbol = metadata.symbol;
+        }
+        if (isSymbol) {
+          return "<span class='input-group-addon'>" + isSymbol + "</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
+    }
+    readonly = opt.readonly || false;
+    readonly = readonly ? "readonly" : "";
+    disabled = opt.disabled || false;
+    disabled = disabled ? "disabled" : "";
+    inputAttributes = opt.inputAttributes || "";
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true || ((opt.symbol || metadata.symbol) != null);
+    propertyValue = (function(_this) {
+      return function() {
+        var propValue;
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if (metadata.format != null) {
+            propValue = metadata.format(propValue);
+          }
+          if (dataType === "checkbox") {
+            if (propValue) {
+              return 'checked';
+            }
+          }
+          if (dataType === "date" && propValue !== "") {
+            return "value='" + propValue + "'";
+          } else {
+            return "value='" + (_.escape(propValue)) + "'";
+          }
+        }
+        return "";
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + "  fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errorSize = (function(_this) {
+      return function() {
+        var errorLength, offsetError;
+        errorLength = 12 - labelSizeValue;
+        offsetError = labelSizeValue;
+        return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
+      };
+    })(this);
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    html = "<div class='form-group " + error + "'> " + (label()) + " <div class='" + (isAddOnInput ? 'input-group' : "") + " " + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> " + (icon()) + " <input id='" + property + "' class='form-control input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/> " + (symbol()) + " " + (isRequired()) + " </div> " + (errors()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("options_selected", function(property, options) {
+    var addOption, dataMapping, domain, elt, error, errorValue, errors, html, icon, inputSize, inputSizeValue, isAddOnInput, isAtLine, isRequired, jsonGiven, label, labelSize, labelSizeValue, list, metadata, opt, optMapping, optName, optToTriggerListKey, optToTriggerName, readonly, selected, translationKey, translationRoot, _i, _len;
+    opt = options.hash || {};
+    optName = opt.optName != null ? "data-name='" + opt.optName + "'" : "";
+    optToTriggerName = opt.optToTriggerName != null ? "data-opttotrigger-name='" + opt.optToTriggerName + "'" : "";
+    optToTriggerListKey = opt.optToTriggerListKey != null ? "data-opttotrigger-listkey='" + opt.optToTriggerListKey + "'" : "";
+    optMapping = opt.optMapping != null ? this[opt.optMapping] : null;
+    dataMapping = optMapping != null ? "data-mapping=" + optMapping : "";
+    list = this[opt.listKey] || [];
+    selected = this[property] || opt.selected || void 0;
+    if (opt.addDefault) {
+      list = [
+        {
+          id: void 0,
+          label: ''
+        }
+      ].concat(list);
+    }
+    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
+    domain = domains_definition[metadata.domain] || {};
+    isRequired = (function(_this) {
+      return function() {
+        var isDisplayRequired;
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    isAtLine = opt.isAtLine || false;
+    readonly = opt.readonly || false;
+    readonly = readonly ? "disabled" : "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    inputSizeValue = 12 - labelSizeValue;
+    inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + " fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    isAddOnInput = (opt.icon != null) || (opt.isRequired || metadata.required) === true;
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel == null) {
+          if (isAtLine) {
+            return "<div class='row'><label class='control-label for='" + property + "'> " + (translationKey()) + " </label></div>";
+          } else {
+            return "<label class='control-label " + labelSize + "' for='" + property + "'> " + (translationKey()) + " </label>";
+          }
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    jsonGiven = this;
+    addOption = function(elt) {
+      var id, isSelected, prop;
+      id = elt.id;
+      prop = elt.label;
+      isSelected = (selected != null) && (id != null) && id.toString() === selected.toString() ? "selected" : "";
+      html += "<option value= '" + id + "' data-name='" + property + "' " + isSelected + ">" + prop + "</option>";
+      return void 0;
+    };
+    html = "<div class='form-group " + error + "'> " + (label()) + " <div class='controls " + inputSize + "'> <div class='input-group'> " + (icon()) + " <select id='" + property + "' " + readonly + " " + optName + " " + optToTriggerName + " " + optToTriggerListKey + " " + dataMapping + " class='form-control input-sm'>";
+    for (_i = 0, _len = list.length; _i < _len; _i++) {
+      elt = list[_i];
+      addOption(elt);
+    }
+    html += "</select>" + (isRequired()) + " </div> " + (errors()) + " </div> </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("dateFormat", function(_date, options) {
+    var format, formatedDate, opt;
+    formatedDate = '';
+    if (_date) {
+      opt = options.hash || {};
+      format = opt.format || require('../config').dateFormat;
+      formatedDate = moment(_date).format(format);
+    }
+    return new Handlebars.SafeString(formatedDate);
+  });
+
+  S4 = function() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  };
+
+  guid = function() {
+    return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
+  };
+
+  Handlebars.registerHelper("button", function(text_key, options) {
+    var button, cssClass, cssId, icon, isScript, opt, script, type;
+    opt = options.hash || {};
+    isScript = typeof opt.isScript === "undefined" ? true : opt.isScript;
+    cssClass = opt["class"] || "";
+    cssId = opt.id || guid();
+    type = opt.type || "button";
+    script = function() {
+      if (isScript && type === 'submit') {
+        return "<script type='text/javascript'>$('#" + cssId + "').on('click', function(){$(this).button('loading');});</script>";
+      } else {
+        return "";
+      }
+    };
+    icon = function() {
+      if (opt.icon != null) {
+        return "<i class='fa fa-fw fa-" + opt.icon + "'></i>";
+      } else {
+        return "";
+      }
+    };
+    button = "<button type='" + type + "' class='btn " + cssClass + "' id='" + cssId + "' data-loading-text='" + (i18n.t('button.loading')) + "'>" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>" + (script());
+    return new Handlebars.SafeString(button);
+  });
+
+  Handlebars.registerHelper("paginate", function(property, options) {
+    var currentPage, endPage, firstPage, generateLeftArrow, generatePageFilter, generatePageNumber, generateRigthArrow, generateTotal, html, perPage, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    currentPage = this.currentPage;
+    firstPage = this.firstPage || 0;
+    endPage = (this.totalPages || 0) + firstPage;
+    perPage = this.perPage || 10;
+    totalRecords = this.totalRecords;
+    generateLeftArrow = function() {
+      var className;
+      className = currentPage === firstPage ? "disabled" : "";
+      return "<li class='" + className + "' data-page='" + firstPage + "'><a href='#' data-bypass>&laquo;</a></li>";
+    };
+    generatePageNumber = function() {
+      var html, i, _i;
+      html = "";
+      for (i = _i = firstPage; firstPage <= endPage ? _i <= endPage : _i >= endPage; i = firstPage <= endPage ? ++_i : --_i) {
+        html += "<li class='" + (i === currentPage ? 'active' : '') + "'><a href='#' data-bypass data-page='" + i + "'>" + i + "</a></li>";
+      }
+      return html;
+    };
+    generateRigthArrow = function() {
+      var className;
+      className = currentPage === endPage ? "disabled" : "";
+      return "<li class='" + className + "' data-page='" + endPage + "'><a href='#' data-bypass>&raquo;</a></li>";
+    };
+    generatePageFilter = function() {
+      var generateOptions, pageString;
+      pageString = i18n.t("application.pages");
+      generateOptions = function() {
+        var html, i, _i;
+        html = "";
+        for (i = _i = 1; _i <= 4; i = ++_i) {
+          html += "<option value='" + (5 * i) + "' " + (5 * i === perPage ? 'selected' : void 0) + ">" + (5 * i) + " " + pageString + "</option>";
+        }
+        return html;
+      };
+      return "<select class='form-control'> " + (generateOptions()) + " </select>";
+    };
+    generateTotal = function() {
+      var resultString;
+      resultString = i18n.t('search.result');
+      return "<div class='badgeResult'>" + resultString + " <span class='badge'>" + totalRecords + "</span></div>";
+    };
+    html = "<div class='col-md-8'> <ul class='pagination'>" + (generateLeftArrow()) + (generatePageNumber()) + (generateRigthArrow()) + "</ul> </div> <div class='col-md-2 pagination'> " + (generateTotal()) + " </div> <div class='col-md-2 pagination'> " + (generatePageFilter()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("tableHeaderAction", function(property, options) {
+    var generateTotal, html, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    totalRecords = this.totalRecords;
+    generateTotal = function() {
+      var resultString;
+      resultString = i18n.t('search.result');
+      return "" + resultString + " <span class='badge'>" + totalRecords + "</span>";
+    };
+    html = "<div class='tableAction'> <div class='pull-left'> " + (generateTotal()) + " </div> <div class='pull-right export'> <button type='button' class='btn btn-primary'>" + (i18n.t('search.export')) + " <i class='fa fa-table'></i></button> </div> </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("sortColumn", function(property, options) {
+    var generateSortPosition, order, sortField, translationKey;
+    options = options.hash || {};
+    sortField = this.sortField;
+    order = this.order || "asc";
+    translationKey = options.translationKey || void 0;
+    generateSortPosition = function() {
+      var icon;
+      icon = "fa fa-sort";
+      if (property === sortField) {
+        icon += "-" + order;
+      }
+      return "<i class='" + icon + "' data-name='" + property + "'></i>";
+    };
+    return new Handlebars.SafeString("<a class='sortColumn' href='#' data-name='" + property + "' data-bypass>" + (i18n.t(translationKey)) + " " + (generateSortPosition()) + "</a>");
+  });
+
+
+  /*Handlebars.registerHelper "currency",(property, options) ->  
+    currencySymbol = ''
+    value = ''
+    if (+this[property])? or +this[property] is 0
+      value = +this[property]
+    if typeof value is 'number'
+      value = numeral(value).format(require('./configuration').getConfiguration().format.currency) if value isnt ''#value.toFixed('2') 
+      new Lawnchair({name: 'products'}, $.noop).get('currency', (curr)-> currencySymbol = curr.currencySymbol)
+    html = "<div class='currency'><div class='right'>#{value} #{currencySymbol}</div></div>"
+    new Handlebars.SafeString(html)
+   */
+
+}).call(this);
+
 /*global Backbone*/
 //var template = require("../template/collection-pagination");
 (function(NS) {
