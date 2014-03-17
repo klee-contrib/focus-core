@@ -1,5 +1,0 @@
-D:\Sources\tfsKlee\SPA-Fmk\Main\Sources\SPA-fmk\bin\Debug\SPA-fmk.dll
-D:\Sources\tfsKlee\SPA-Fmk\Main\Sources\SPA-fmk\bin\Debug\SPA-fmk.pdb
-D:\Sources\tfsKlee\SPA-Fmk\Main\Sources\SPA-fmk\obj\Debug\SPA-fmk.csprojResolveAssemblyReference.cache
-D:\Sources\tfsKlee\SPA-Fmk\Main\Sources\SPA-fmk\obj\Debug\SPA-fmk.dll
-D:\Sources\tfsKlee\SPA-Fmk\Main\Sources\SPA-fmk\obj\Debug\SPA-fmk.pdb
