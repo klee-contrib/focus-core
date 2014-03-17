@@ -1055,19 +1055,19 @@
             if (this.metadatas[model.modelName] != null) {
               return this.metadatas[model.modelName];
             } else {
-              console.warn("The metadatas does not have properties for this model name.");
+              console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
               return {};
             }
           } else {
             if (this.metadatas[mdName[0]][mdName[1]] != null) {
               return this.metadatas[mdName[0]][mdName[1]];
             } else {
-              console.warn("The metadatas does not have properties for this model name.");
+              console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
               return {};
             }
           }
         } else {
-          throw new ArgumentNullException('The model sould have a model name in order to build its metadatas');
+          throw new ArgumentNullException('The model should have a model name in order to build its metadatas');
         }
       };
 
@@ -1589,6 +1589,81 @@
   } else {
     module.exports = urlHelper;
   }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+﻿/*global _*/
+(function(NS) {
+    /* Filename: helpers/util_helper.js */
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    NS = NS || {};
+    var JSON = {};
+
+    // Unflatten a json object.
+    JSON.unflatten = function (data) {
+        if (Object(data) !== data || Array.isArray(data))
+            return data;
+        if ("" in data)
+            return data[""];
+        var result = {}, cur, prop, idx, last, temp;
+        for (var p in data) {
+            cur = result, prop = "", last = 0;
+            do {
+                idx = p.indexOf(".", last);
+                temp = p.substring(last, idx !== -1 ? idx : undefined);
+                cur = cur[prop] || (cur[prop] = (!isNaN(parseInt(temp)) ? [] : {}));
+                prop = temp;
+                last = idx + 1;
+            } while (idx >= 0);
+            cur[prop] = data[p];
+        }
+        return result[""];
+    };
+
+    //Flatten a json object.
+    JSON.flatten = function (data) {
+        var result = {};
+        function recurse(cur, prop) {
+            if (Object(cur) !== cur) {
+                result[prop] = cur;
+            } else if (Array.isArray(cur)) {
+                for (var i = 0, l = cur.length; i < l; i++)
+                    recurse(cur[i], prop ? prop + "." + i : "" + i);
+                if (l == 0)
+                    result[prop] = [];
+            } else {
+                var isEmpty = true;
+                for (var p in cur) {
+                    isEmpty = false;
+                    recurse(cur[p], prop ? prop + "." + p : p);
+                }
+                if (isEmpty)
+                    result[prop] = {};
+            }
+        }
+        recurse(data, "");
+        return result;
+    };
+    //Combine two json.
+    function combine(json1, json2) {
+        var res = {};
+        _.extend(
+             res,
+             JSON.flatten(json1),
+             JSON.flatten(json2)
+        );
+        return JSON.unflatten(res);
+    }
+    //Util helper.
+    var utilHelper = {
+        flatten: JSON.flatten,
+        unflatten: JSON.unflatten,
+        combine: combine
+    };
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.utilHelper = utilHelper;
+    } else {
+        module.exports = utilHelper;
+    }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone*/
 //var template = require("../template/collection-pagination");

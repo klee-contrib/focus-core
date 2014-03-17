@@ -96,6 +96,7 @@
     <Content Include="lib\helpers\promisify_helper.js" />
     <Content Include="lib\helpers\reference_helper.js" />
     <Content Include="lib\helpers\url_helper.js" />
+    <Content Include="lib\helpers\util_helper.js" />
     <Content Include="lib\helpers\validators.js" />
     <Content Include="lib\main.js" />
     <Content Include="lib\models\notification.js" />

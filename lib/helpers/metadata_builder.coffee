@@ -113,16 +113,16 @@
           if @metadatas[model.modelName]?
             return @metadatas[model.modelName]
           else
-            console.warn("The metadatas does not have properties for this model name.")
+            console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
             return {}
         else
           if @metadatas[mdName[0]][mdName[1]]?
             return @metadatas[mdName[0]][mdName[1]]
           else
-            console.warn("The metadatas does not have properties for this model name.")
+            console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
             return {}
       else
-        throw new ArgumentNullException('The model sould have a model name in order to build its metadatas') 
+        throw new ArgumentNullException('The model should have a model name in order to build its metadatas') 
 
     proxyDomainValidationAttrs: (model)->
       return getDomainsValidationAttrs(model)
