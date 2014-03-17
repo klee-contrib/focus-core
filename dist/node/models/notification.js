@@ -10,7 +10,7 @@
   var Notification = Backbone.Model.extend({
     defaults: {
       type: undefined, //error/warning/success...
-      message: undefined, // The message which have to be display.
+      message: undefined // The message which have to be display.
     },
     initialize: function initializeNotification() {
       this.set({

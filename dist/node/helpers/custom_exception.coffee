@@ -1,5 +1,6 @@
 #global $, _
 ((NS)->
+  # Filename: helpers/error_helper.js */
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exception class

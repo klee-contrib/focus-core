@@ -17,17 +17,16 @@
 				var view = this;
 				this.getModel(this.model.get('id'))
 					.then(function success(jsonModel) {
-						view.model.set(jsonModel);
-					}).
-				catch (function error(error) {
-					console.log('erreur : ' + error);
-				});
+					    view.model.set(jsonModel);
+					}).then(null, function error(error) {
+					    console.log('erreur : ' + error);
+				    });
 			}
 		},
 
 		events: {
 			"click button#btnEdit": "edit",
-			"click button#btnDelete": "delete"
+			"click button#btnDelete": "deleteItem"
 		},
 
 		//JSON data to attach to the template.
@@ -45,7 +44,7 @@
 			Backbone.history.navigate(this.generateEditUrl(), true);
 		},
 
-		delete: function deleteConsult(event) {
+		deleteItem: function deleteConsult(event) {
 			event.preventDefault();
 			var view = this;
 			//call suppression service

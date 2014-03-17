@@ -1,4 +1,5 @@
 /*global window*/
+/* Filename: post_rendering_helper.js */
 (function(NS) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';

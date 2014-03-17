@@ -2,7 +2,7 @@
 var gulp = require('gulp');
 
 // include plug-ins
-var jshint = require('gulp-jshint');
+//var jshint = require('gulp-jshint');
 var gulpif = require('gulp-if');
 var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
@@ -11,25 +11,27 @@ var stylish = require('jshint-stylish');
 var coffeelint = require('gulp-coffeelint');
 
 // JS and coffee lint task
-gulp.task('lint', function() {
-  //Js linting.
-  gulp.src('./lib/*/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter(stylish));
-  //Coffee linting
-  gulp.src('./lib/*/*.coffee')
-    .pipe(coffeelint())
-    .pipe(coffeelint.reporter());
-});
+//gulp.task('lint', function() {
+//  //Js linting.
+//  gulp.src('./lib/*/*.js')
+//    .pipe(jshint())
+//    .pipe(jshint.reporter(stylish));
+//  //Coffee linting
+//  gulp.src('./lib/*/*.coffee')
+//    .pipe(coffeelint())
+//    .pipe(coffeelint.reporter());
+//});
 
 //Build all the javascripts file.
 gulp.task('browser-build', function() {
   //Build the js file for the browser.
-  gulp.src(['./lib/main.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', './lib/helpers/*', './lib/views/*'])
+  gulp.src([ './lib/main.js', 'lib/helpers/custom_exception.coffee','lib/helpers/validators.js','./lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', './lib/helpers/*', './lib/views/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
   .pipe(concat('fmk.js'))
     .pipe(gulp.dest('./dist/browser/'))
-    .pipe(gulp.dest('./example/app/js/'));
+    .pipe(gulp.dest('./example/app/js/'))
+    //Destination du projet.
+    .pipe(gulp.dest('../../../../UESL_Gimini/Main/Sources/Nantissement.SPA/vendor/'));
 });
 
 gulp.task('node-build', function() {

@@ -1,3 +1,4 @@
+// Filename: helpers/metadata_builder.coffee
 (function(NS) {
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.

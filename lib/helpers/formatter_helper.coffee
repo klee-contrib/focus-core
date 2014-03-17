@@ -1,4 +1,5 @@
 ((NS)->
+  # Filename: helpers/formatter_helper.coffee
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   

@@ -1,3 +1,4 @@
+# Filename: helpers/metadata_builder.coffee
 ((NS)->
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'

@@ -1,8 +1,9 @@
 /*global _*/
 (function(NS) {
+	/* Filename: helpers/error_helper.js */
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 	NS = NS || {};
-	var BackboneNotification = isInBrowser ? NS.Helpers.BackboneNotification : require('./backbone_notification');
+	var BackboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require('./backbone_notification');
 	// transform errors send by API to application errors.
 	function manageResponseErrors(response, options) {
 		options = options || {};

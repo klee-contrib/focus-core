@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3B85E086-F932-4E7B-8089-CBA7477739F3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SPA_fmk</RootNamespace>
+    <AssemblyName>SPA-fmk</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="dist\browser\fmk.js" />
+    <Content Include="dist\node\helpers\backbone_notification.js" />
+    <Content Include="dist\node\helpers\error_helper.js" />
+    <Content Include="dist\node\helpers\form_helper.js" />
+    <Content Include="dist\node\helpers\header_helper.js" />
+    <Content Include="dist\node\helpers\model_validation_promise.js" />
+    <Content Include="dist\node\helpers\odata_helper.js" />
+    <Content Include="dist\node\helpers\post_rendering_builder.js" />
+    <Content Include="dist\node\helpers\post_rendering_helper.js" />
+    <Content Include="dist\node\helpers\promisify_helper.js" />
+    <Content Include="dist\node\helpers\reference_helper.js" />
+    <Content Include="dist\node\helpers\url_helper.js" />
+    <Content Include="dist\node\helpers\validators.js" />
+    <Content Include="dist\node\models\notification.js" />
+    <Content Include="dist\node\models\notifications.js" />
+    <Content Include="dist\node\models\paginatedCollection.js" />
+    <Content Include="dist\node\views\collection-pagination-view.js" />
+    <Content Include="dist\node\views\core-view.js" />
+    <Content Include="dist\node\views\detail-consult-view.js" />
+    <Content Include="dist\node\views\detail-edit-view.js" />
+    <Content Include="dist\node\views\notifications-view.js" />
+    <Content Include="dist\node\views\search-results-view.js" />
+    <Content Include="dist\node\views\search-view.js" />
+    <Content Include="example\app\css\main.css" />
+    <Content Include="example\app\css\normalize.css" />
+    <Content Include="example\app\css\normalize.min.css" />
+    <Content Include="example\app\index.html" />
+    <Content Include="example\app\js\app.js" />
+    <Content Include="example\app\js\fmk.js" />
+    <Content Include="example\app\js\main.js" />
+    <Content Include="example\app\js\vendor\backbone.js" />
+    <Content Include="example\app\js\vendor\jquery-1.10.1.min.js" />
+    <Content Include="example\app\js\vendor\modernizr-2.6.2.min.js" />
+    <Content Include="example\app\js\vendor\underscore.js" />
+    <Content Include="example\domains.js" />
+    <Content Include="example\entity_definitions.js" />
+    <Content Include="example\site_description.js" />
+    <Content Include="example\URL.js" />
+    <Content Include="gulpfile.js" />
+    <Content Include="lib\helpers\backbone_notification.js" />
+    <Content Include="lib\helpers\error_helper.js" />
+    <Content Include="lib\helpers\form_helper.js" />
+    <Content Include="lib\helpers\header_helper.js" />
+    <Content Include="lib\helpers\model_validation_promise.js" />
+    <Content Include="lib\helpers\odata_helper.js" />
+    <Content Include="lib\helpers\post_rendering_builder.js" />
+    <Content Include="lib\helpers\post_rendering_helper.js" />
+    <Content Include="lib\helpers\promisify_helper.js" />
+    <Content Include="lib\helpers\reference_helper.js" />
+    <Content Include="lib\helpers\url_helper.js" />
+    <Content Include="lib\helpers\validators.js" />
+    <Content Include="lib\main.js" />
+    <Content Include="lib\models\notification.js" />
+    <Content Include="lib\models\notifications.js" />
+    <Content Include="lib\models\paginatedCollection.js" />
+    <Content Include="lib\views\collection-pagination-view.js" />
+    <Content Include="lib\views\core-view.js" />
+    <Content Include="lib\views\detail-consult-view.js" />
+    <Content Include="lib\views\detail-edit-view.js" />
+    <Content Include="lib\views\notifications-view.js" />
+    <Content Include="lib\views\search-results-view.js" />
+    <Content Include="lib\views\search-view.js" />
+    <Content Include="test\assets\test\index.html" />
+    <Content Include="test\lib\metadata_builder.js" />
+    <Content Include="test\lib\model-validation-promise.js" />
+    <Content Include="test\lib\validators.js" />
+    <Content Include="test\models\model.js" />
+    <Content Include="test\vendor\scripts\chai-1.5.0.js" />
+    <Content Include="test\vendor\scripts\mocha-1.8.2.js" />
+    <Content Include="test\vendor\scripts\sinon-1.6.0.js" />
+    <Content Include="test\vendor\scripts\sinon-chai-2.3.1.js" />
+    <Content Include="test\vendor\scripts\test-helper.js" />
+    <Content Include="test\vendor\styles\mocha-1.8.2.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dist\node\helpers\custom_exception.coffee" />
+    <None Include="dist\node\helpers\formatter_helper.coffee" />
+    <None Include="dist\node\helpers\metadata_builder.coffee" />
+    <None Include="dist\node\models\model.coffee" />
+    <None Include="example\view_helper.coffee" />
+    <None Include="lib\config.coffee" />
+    <None Include="lib\helpers\custom_exception.coffee" />
+    <None Include="lib\helpers\formatter_helper.coffee" />
+    <None Include="lib\helpers\metadata_builder.coffee" />
+    <None Include="lib\models\model.coffee" />
+    <None Include="package.json" />
+    <None Include="test\initialize-globals.coffee" />
+    <None Include="test\initialize.coffee" />
+    <None Include="test\mocha.opts" />
+    <None Include="test\views\header-view-test.coffee" />
+    <None Include="test\views\home-page-view-test.coffee" />
+    <None Include="test\views\site-view-test.coffee" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="example\api\" />
+    <Folder Include="example\app\img\" />
+    <Folder Include="lib\services\" />
+    <Folder Include="test\models\accueil\" />
+    <Folder Include="test\models\administration\" />
+    <Folder Include="test\models\nantissement\" />
+    <Folder Include="test\models\paiement_echeance\" />
+    <Folder Include="test\models\refinancement\" />
+    <Folder Include="test\models\reporting\" />
+    <Folder Include="test\services\accueil\" />
+    <Folder Include="test\services\administration\" />
+    <Folder Include="test\services\nantissement\" />
+    <Folder Include="test\services\paiement_echeance\" />
+    <Folder Include="test\services\refinancement\" />
+    <Folder Include="test\services\reporting\" />
+    <Folder Include="test\views\accueil\" />
+    <Folder Include="test\views\administration\" />
+    <Folder Include="test\views\nantissement\" />
+    <Folder Include="test\views\paiement_echeance\" />
+    <Folder Include="test\views\refinancement\" />
+    <Folder Include="test\views\reporting\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>cd $(ProjectDir)
+npm run build</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

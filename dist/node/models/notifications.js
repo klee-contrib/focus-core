@@ -1,11 +1,11 @@
 	/*global _, Backbone*/
 
 	(function(NS) {
-		  /* Filename: models/notifications.js */
+		/* Filename: models/notifications.js */
 		NS = NS || {};
 		//Dependency gestion depending on the fact that we are in the browser or in node.
 		var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-		var Notification = isInBrowser ? NS.Models.Notifications : require('/.notification');
+		var Notification = isInBrowser ? NS.Models.Notification : require('/.notification');
 
 		//This collection will contains all the message which will be display in the application.
 		var Notifications = Backbone.Collection.extend({

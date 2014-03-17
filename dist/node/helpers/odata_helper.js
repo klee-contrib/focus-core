@@ -1,6 +1,5 @@
 /*global _, $*/
-
-
+/* Filename: helpers/odata_helper.js*/
 (function(NS) {
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -10,7 +9,7 @@
         type: 'GET',
 
         // the type of reply (json by default)
-        dataType: 'json',
+        dataType: 'json'
     };
 
     function createOdataOptions(criteria, pagesInfo, options) {
@@ -55,7 +54,7 @@
             // what format would you like to request results in?
             '$format': 'json',
             // custom parameters
-            '$inlinecount': 'allpages',
+            '$inlinecount': 'allpages'
             //callback odata
             //'$callback': 'callback'
         };
@@ -106,7 +105,7 @@
 
         queryOptions = _.extend(queryOptions, {
             data: decodeURIComponent($.param(queryAttributes)),
-            processData: false,
+            processData: false
             //url: _.result(queryOptions, 'url')
         }, options);
 
