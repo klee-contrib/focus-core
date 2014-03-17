@@ -1,6 +1,7 @@
 	/*global _, Backbone*/
 
 	(function(NS) {
+		  /* Filename: models/notifications.js */
 		NS = NS || {};
 		//Dependency gestion depending on the fact that we are in the browser or in node.
 		var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';

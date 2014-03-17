@@ -11,6 +11,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "firstName", options) : helperMissing.call(depth0, "input_for", "firstName", options)))
     + "\n";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "lastName", options) : helperMissing.call(depth0, "input_for", "lastName", options)));
+  buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "lastName", options) : helperMissing.call(depth0, "input_for", "lastName", options)))
+    + "\n";
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "email", options) : helperMissing.call(depth0, "input_for", "email", options)));
   return buffer;
   });;

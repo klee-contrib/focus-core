@@ -1,7 +1,7 @@
 /*global Fmk, jQuery, $*/
 
 //Initialize metadatas and 
-Fmk.initialize({domains: domains, metadatas: {}});
+Fmk.initialize({domains: domains, metadatas: entityDefinitions});
 jQuery.fn.test = function() {
     console.log('JQURY PLUGIN TEST');
     this.each(function() {
@@ -15,9 +15,10 @@ Fmk.Helpers.postRenderingHelper.registerHelper({name: "testHelper", fn: "test", 
 //Creation of a test model.
 var TestModel = Fmk.Models.Model.extend({
   modelName: "test",
-  metadatas:{
-    firstName: {domain: "DO_TEXTE_50", decorator: "testHelper"},
-    age: {domain: "DO"}
+  metadatas: {
+    email:{
+      symbol: "@"
+    }
   }
 });
 var TestView = Fmk.Views.CoreView.extend({

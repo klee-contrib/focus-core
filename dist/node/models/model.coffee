@@ -1,4 +1,5 @@
 ((NS)->
+  # Filename: models/notifications.js
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Base class for all models. Define all transverses methods on the model.

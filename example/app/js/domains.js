@@ -59,3 +59,11 @@ window.domains = {
   }
 
 };
+
+window.entityDefinitions = {
+  test: {
+    firstName: {domain: "DO_TEXTE_50", decorator: "testHelper"},
+    age: {domain: "DO_NUMBER"},
+    email: {domain: "DO_EMAIL"}
+  }
+};

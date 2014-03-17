@@ -303,6 +303,7 @@
     if(config.selector === undefined || config.selector.size() === 0){
       return;
     }
+    //If the function  desn not exist on the selection.
     if(config.selector[postRenderingHelpers[config.helperName].fn] === undefined){
       return;
     }
@@ -823,10 +824,16 @@
                 decorator: mdlMetadata.decorator
               });
             }
+            if (mdlMetadata.symbol != null) {
+              _.extend(overridenProperties, {
+                symbol: mdlMetadata.symbol
+              });
+            }
             if (!_.isEmpty(overridenProperties)) {
               _.extend(metadata, overridenProperties);
             }
           }
+          console.log("metadata", metadata);
           metadatas[mdlMetadataAttr] = metadata;
         }
         return metadatas;
@@ -878,7 +885,7 @@
           }
           if (mdlMetadata.symbol != null) {
             _.extend(overridenProperties, {
-              decorator: mdlMetadata.symbol
+              symbol: mdlMetadata.symbol
             });
           }
           if (!_.isEmpty(overridenProperties)) {
@@ -1707,6 +1714,7 @@
       return function() {
         var isSymbol;
         isSymbol = false;
+        console.log(metadata, isSymbol);
         if (opt.symbol != null) {
           isSymbol = opt.symbol;
         } else if (metadata.symbol != null) {

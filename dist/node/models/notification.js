@@ -1,12 +1,13 @@
-/*global Backbone*/
-
+/*global Backbone, window, module*/
+"use strict";
 (function(NS) {
+  /* Filename: models/notification.js */
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 
   //Notification model
-  Notifications = Backbone.Model.extend({
+  var Notification = Backbone.Model.extend({
     defaults: {
       type: undefined, //error/warning/success...
       message: undefined, // The message which have to be display.
