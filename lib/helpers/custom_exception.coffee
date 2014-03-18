@@ -1,4 +1,5 @@
 #global $, _
+"use strict"
 ((NS)->
   # Filename: helpers/error_helper.js */
   NS = NS or {}

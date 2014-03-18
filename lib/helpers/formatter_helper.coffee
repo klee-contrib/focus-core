@@ -1,3 +1,4 @@
+"use strict"
 ((NS)->
   # Filename: helpers/formatter_helper.coffee
   NS = NS or {}
@@ -5,8 +6,8 @@
   
   # Default confifuration of the formaters.
   format =
-    date: 'DD/MM/YYYY' 
-    currency: '0 0.00' 
+    date: 'DD/MM/YYYY'
+    currency: '0 0.00'
     dateTime: 'DD/MM/YYYY HH:mm:ss'
     
   # Container for all the formaters.

@@ -1,5 +1,6 @@
-# Filename: helpers/metadata_builder.coffee
+"use strict"
 ((NS)->
+  # Filename: helpers/metadata_builder.coffee
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exceptions
@@ -24,22 +25,22 @@
       #Container for the validation rules of the domain of each property.
       valDomAttrs = {}
       # Lopping through all attributes of th model in order to build their validators.
-      for attr of metadatas 
+      for attr of metadatas
         # Construct the metadata object
         md = metadatas[attr] or {}
         if (md.isValidationOff? and md.isValidationOff is false) or (not md.isValidationOff?)
-         ###_.extend(metadata, md.metadata) if md.metadata?
-         (metadata.domain = md.domain) if md.domain?
-         (metadata.required = md.required) if md.required?
-         ###        
-         #Container for the validators.
-         validators = [];
-         #If the required filed is set, add a validator
-         validators.push({"type": "required","value": true}) if md.required is true
-         # Extend the validators 
-         (validators = _.union(validators, @domains[md.domain].validation)) if md.domain? and @domains[md.domain]?
-         # Set the validators inide the container associated with the field.
-         valDomAttrs[attr] = validators;
+          ###_.extend(metadata, md.metadata) if md.metadata?
+          (metadata.domain = md.domain) if md.domain?
+          (metadata.required = md.required) if md.required?
+          ###        
+          #Container for the validators.
+          validators = [];
+          #If the required filed is set, add a validator
+          validators.push({"type": "required","value": true}) if md.required is true
+          # Extend the validators 
+          (validators = _.union(validators, @domains[md.domain].validation)) if md.domain? and @domains[md.domain]?
+          # Set the validators inide the container associated with the field.
+          valDomAttrs[attr] = validators;
       return valDomAttrs
     getMetadatas: (model)->
       # Construct the metadatas obtained with the model name. 
