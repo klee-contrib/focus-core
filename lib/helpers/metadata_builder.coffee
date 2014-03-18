@@ -1,5 +1,5 @@
 "use strict"
-((NS)->
+((NS) ->
   # Filename: helpers/metadata_builder.coffee
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
@@ -9,7 +9,7 @@
   # Get the domains definition.
   class MetadataBuilder
     #Initialize the dependencies from the project: the domains and the metadatas.
-    initialize: (options, cb)->
+    initialize: (options, cb) ->
       throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.') if not options?
       throw new ArgumentNullException('The metadata builder needs domains in options.') if not options.domains?
       throw new ArgumentNullException('The metadata builder needs metadatas in options.') if not options.metadatas?
@@ -17,7 +17,7 @@
       @metadatas = options.metadatas
       cb(@domains, @metadatas) if cb?
     # Get the validation attributes from the domain.
-    getDomainsValidationAttrs: (model)->
+    getDomainsValidationAttrs: (model) ->
       #console.log('called')
       return new ArgumentNullException('The model should exists and have a metadatas property.') if not model?
       #Get the metadatas from the model.
@@ -42,7 +42,7 @@
           # Set the validators inide the container associated with the field.
           valDomAttrs[attr] = validators
       return valDomAttrs
-    getMetadatas: (model)->
+    getMetadatas: (model) ->
       # Construct the metadatas obtained with the model name.
       entityMetadatas = @constructEntityMetaDatas(model)
       metadatas = _.clone(entityMetadatas)
@@ -80,7 +80,7 @@
         metadatas[mdlMetadataAttr] = metadata
       return metadatas
     #Get the attributes for one property of a metadata.
-    getMetadataForAttribute: (model, attribute)->
+    getMetadataForAttribute: (model, attribute) ->
       entityAttrMetadata = @constructEntityMetaDatas(model)[attribute]
       mdlMetadata = if model.metadatas? and model.metadatas[attribute]? then model.metadatas[attribute] else undefined
       metadata = {} # Create a container for the metadatas.
@@ -106,7 +106,7 @@
         # If at least one property has been defined.
         _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
       return metadata
-    constructEntityMetaDatas: (model)->
+    constructEntityMetaDatas: (model) ->
       # TODO: pbn => Use a flatten function in order to flatten @metadatas and be ablt to access it without any problem.
       if model.modelName?
         mdName = model.modelName.split('.')
@@ -125,7 +125,7 @@
       else
         throw new ArgumentNullException('The model should have a model name in order to build its metadatas')
 
-    proxyDomainValidationAttrs: (model)->
+    proxyDomainValidationAttrs: (model) ->
       return getDomainsValidationAttrs(model)
       return proxyValidationContainer[model.modelName] if(model.modelName? and proxyValidationContainer[model.modelName]?)
       if model.modelName?

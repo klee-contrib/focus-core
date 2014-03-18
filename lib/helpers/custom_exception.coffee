@@ -1,28 +1,28 @@
 #global $, _
 "use strict"
-((NS)->
+((NS) ->
   # Filename: helpers/error_helper.js */
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exception class
   class CustomException
-    constructor:(@name, @message,@options)->
-    log:->
+    constructor:(@name, @message,@options) ->
+    log: ->
       console.log("name", @name, "message", @message, "options", @options)
   # Exception for a not implemented method.
   class NotImplementedException extends CustomException
-    constructor:(message, options)->
+    constructor:(message, options) ->
       super("NotImplementedException", message, options)
   # Exception class for an argument null exeption.
   class ArgumentNullException extends CustomException
-    constructor:(message)->
+    constructor:(message) ->
       super("ArgumentNull", message)
   # Exception for a invalid argument exeption
   class ArgumentInvalidException extends CustomException
-    constructor:(message, options)->
+    constructor:(message, options) ->
       super("ArgumentInvalidException", message, options)
   class DependencyException extends CustomException
-    constructor:(message)->
+    constructor:(message) ->
       super("DependencyException", message)
   mod = {
     CustomException: CustomException

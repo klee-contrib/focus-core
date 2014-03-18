@@ -1,5 +1,5 @@
 "use strict"
-((NS)->
+((NS) ->
   # Filename: helpers/formatter_helper.coffee
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
@@ -14,23 +14,23 @@
   formaters = {}
   
   #Update the configuration or the formater with the configuration given in option.
-  formaters.configure = (options)->
+  formaters.configure = (options) ->
     _.extend(format, options)
 
   #Format date
-  formaters.date = (prop, options)->
+  formaters.date = (prop, options) ->
     options = options or {}
     dateFormat = options.dateFormat or format.date
     return moment(prop).format(dateFormat)
   
   #Format dateTime
-  formaters.dateTime = (prop, options)->
+  formaters.dateTime = (prop, options) ->
     options = options or {}
     dateTimeFormat = options.dateTimeFormat
     return  moment(prop).format(dateTimeFormat)
   
   #Currency formatter
-  formaters.currency = (prop, options)->
+  formaters.currency = (prop, options) ->
     options = options or {}
     return prop
   
