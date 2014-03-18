@@ -32,21 +32,21 @@
           ###_.extend(metadata, md.metadata) if md.metadata?
           (metadata.domain = md.domain) if md.domain?
           (metadata.required = md.required) if md.required?
-          ###        
+          ###
           #Container for the validators.
-          validators = [];
+          validators = []
           #If the required filed is set, add a validator
           validators.push({"type": "required","value": true}) if md.required is true
-          # Extend the validators 
+          # Extend the validators
           (validators = _.union(validators, @domains[md.domain].validation)) if md.domain? and @domains[md.domain]?
           # Set the validators inide the container associated with the field.
-          valDomAttrs[attr] = validators;
+          valDomAttrs[attr] = validators
       return valDomAttrs
     getMetadatas: (model)->
-      # Construct the metadatas obtained with the model name. 
+      # Construct the metadatas obtained with the model name.
       entityMetadatas = @constructEntityMetaDatas(model)
       metadatas = _.clone(entityMetadatas)
-      # If the models has metadatas the metadatas given by its definitions will extend them. 
+      # If the models has metadatas the metadatas given by its definitions will extend them.
       metadatasAttrs = _.keys(metadatas)
       if model.metadatas?
         metadatasAttrs = _.union(metadatasAttrs, _.keys(model.metadatas))
@@ -123,7 +123,7 @@
             console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
             return {}
       else
-        throw new ArgumentNullException('The model should have a model name in order to build its metadatas') 
+        throw new ArgumentNullException('The model should have a model name in order to build its metadatas')
 
     proxyDomainValidationAttrs: (model)->
       return getDomainsValidationAttrs(model)
@@ -135,7 +135,7 @@
   if isInBrowser
     NS.Helpers = NS.Helpers or {}
     NS.Helpers.MetadataBuilder = MetadataBuilder
-    NS.Helpers.metadataBuilder = new MetadataBuilder();
+    NS.Helpers.metadataBuilder = new MetadataBuilder()
   else
     module.exports = {MetadataBuilder: MetadataBuilder, metadataBuilder: new MetadataBuilder()}
 )(if typeof module is 'undefined' and typeof window isnt 'undefined' then window.Fmk else module.exports)
