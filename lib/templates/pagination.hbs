@@ -1,0 +1,41 @@
+﻿<ul class="pagination">
+  {{#if showFirst}}
+    <li>
+      <span class="btn" data-page="{{firstPage}}">
+        {{firstPage}}
+      </span>
+    </li>
+    <li>
+      <span>...</span>
+    </li>
+  {{/if}}
+	{{#if previous}}
+	  <li>
+      <span class="btn" data-page="{{previous}}">
+        {{previous}}
+      </span>
+    </li>
+	{{/if}}
+	  <li class="active">
+      <span data-page="{{currentPage}}">
+        {{currentPage}}
+      </span>
+    </li>
+	{{#if next}}
+	  <li>
+      <span class="btn" data-page="{{next}}">
+        {{next}}
+      </span>
+    </li>
+  {{/if}}
+  {{#if showLast}}
+  <li>
+    <span>...</span>
+  </li>
+  <li>
+    <span class="btn" data-page="{{lastPage}}">
+      {{lastPage}}
+    </span>
+  </li>
+  {{/if}}
+</ul> 
