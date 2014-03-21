@@ -76,7 +76,7 @@
           # If at least one property has been defined.
           _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
         #Update the global metadatas<
-        console.log "metadata", metadata
+        #console.log "metadata", metadata
         metadatas[mdlMetadataAttr] = metadata
       return metadatas
     #Get the attributes for one property of a metadata.

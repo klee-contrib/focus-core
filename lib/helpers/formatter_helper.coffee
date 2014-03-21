@@ -6,8 +6,8 @@
   
   # Default confifuration of the formaters.
   format =
+    currency: '0,0.00'
     date: 'DD/MM/YYYY'
-    currency: '0 0.00'
     dateTime: 'DD/MM/YYYY HH:mm:ss'
     
   # Container for all the formaters.
@@ -26,13 +26,14 @@
   #Format dateTime
   formaters.dateTime = (prop, options) ->
     options = options or {}
-    dateTimeFormat = options.dateTimeFormat
+    dateTimeFormat = options.dateTimeFormat or format.dateTime
     return  moment(prop).format(dateTimeFormat)
   
   #Currency formatter
   formaters.currency = (prop, options) ->
     options = options or {}
-    return prop
+    numeralFormat = options.numeralFormat or format.currency
+    return numeral(prop).format(numeralFormat);
   
   if isInBrowser
     NS.Helpers = NS.Helpers or {}

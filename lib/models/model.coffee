@@ -15,9 +15,12 @@
     modelName: undefined
     toJSON: ->
       jsonModel = super()
+      _.extend(jsonModel, this.addJSONProperties())
       jsonModel.metadatas =  @metadatas
       jsonModel.modelName = @modelName
       return jsonModel
+    # Method to override in order to extend the json properties of the model.
+    addJSONProperties: ->
   if isInBrowser
     NS.Models = NS.Models or {}
     NS.Models.Model = Model
