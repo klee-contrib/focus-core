@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",
-    "build": "gulp build"
+    "build": "gulp build",
+    "docco": "docco lib/helpers/* --layout parallel --output docs/helpers; docco README.md lib/main.js --layout parallel --output docs/helpers"
   },
   "repository": {
     "type": "tfs",
@@ -42,7 +43,8 @@
     "gulp-concat": "^2.1.7",
     "gulp-define-module": "^0.1.0",
     "gulp-declare": "^0.2.0",
-    "gulp-handlebars": "^2.0.0"
+    "gulp-handlebars": "^2.0.0",
+    "docco": "~0.6.3"
   },
   "devDependencies": {
     "gulp": "~3.5.5",
@@ -55,6 +57,7 @@
     "gulp-coffeelint": "~0.3.1",
     "tiny-lr": "0.0.5",
     "express": "~3.4.8",
-    "connect-livereload": "~0.3.2"
+    "connect-livereload": "~0.3.2",
+    "gulp-docco": "0.0.3"
   }
 }
