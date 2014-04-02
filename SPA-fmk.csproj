@@ -46,44 +46,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="dist\browser\fmk.js" />
-    <Content Include="dist\node\helpers\backbone_notification.js" />
-    <Content Include="dist\node\helpers\error_helper.js" />
-    <Content Include="dist\node\helpers\form_helper.js" />
-    <Content Include="dist\node\helpers\header_helper.js" />
-    <Content Include="dist\node\helpers\model_validation_promise.js" />
-    <Content Include="dist\node\helpers\odata_helper.js" />
-    <Content Include="dist\node\helpers\post_rendering_builder.js" />
-    <Content Include="dist\node\helpers\post_rendering_helper.js" />
-    <Content Include="dist\node\helpers\promisify_helper.js" />
-    <Content Include="dist\node\helpers\reference_helper.js" />
-    <Content Include="dist\node\helpers\url_helper.js" />
-    <Content Include="dist\node\helpers\validators.js" />
-    <Content Include="dist\node\models\notification.js" />
-    <Content Include="dist\node\models\notifications.js" />
-    <Content Include="dist\node\models\paginatedCollection.js" />
-    <Content Include="dist\node\views\collection-pagination-view.js" />
-    <Content Include="dist\node\views\core-view.js" />
-    <Content Include="dist\node\views\detail-consult-view.js" />
-    <Content Include="dist\node\views\detail-edit-view.js" />
-    <Content Include="dist\node\views\notifications-view.js" />
-    <Content Include="dist\node\views\search-results-view.js" />
-    <Content Include="dist\node\views\search-view.js" />
-    <Content Include="example\app\css\main.css" />
-    <Content Include="example\app\css\normalize.css" />
-    <Content Include="example\app\css\normalize.min.css" />
-    <Content Include="example\app\index.html" />
-    <Content Include="example\app\js\app.js" />
-    <Content Include="example\app\js\fmk.js" />
-    <Content Include="example\app\js\main.js" />
-    <Content Include="example\app\js\vendor\backbone.js" />
-    <Content Include="example\app\js\vendor\jquery-1.10.1.min.js" />
-    <Content Include="example\app\js\vendor\modernizr-2.6.2.min.js" />
-    <Content Include="example\app\js\vendor\underscore.js" />
-    <Content Include="example\domains.js" />
-    <Content Include="example\entity_definitions.js" />
-    <Content Include="example\site_description.js" />
-    <Content Include="example\URL.js" />
     <Content Include="gulpfile.js" />
     <Content Include="lib\helpers\backbone_notification.js" />
     <Content Include="lib\helpers\error_helper.js" />
@@ -102,10 +64,12 @@
     <Content Include="lib\models\notification.js" />
     <Content Include="lib\models\notifications.js" />
     <Content Include="lib\models\paginatedCollection.js" />
+    <Content Include="lib\templates\templates.js" />
     <Content Include="lib\views\collection-pagination-view.js" />
     <Content Include="lib\views\core-view.js" />
     <Content Include="lib\views\detail-consult-view.js" />
     <Content Include="lib\views\detail-edit-view.js" />
+    <Content Include="lib\views\list-view.js" />
     <Content Include="lib\views\notifications-view.js" />
     <Content Include="lib\views\search-results-view.js" />
     <Content Include="lib\views\search-view.js" />
@@ -122,16 +86,14 @@
     <Content Include="test\vendor\styles\mocha-1.8.2.css" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="dist\node\helpers\custom_exception.coffee" />
-    <None Include="dist\node\helpers\formatter_helper.coffee" />
-    <None Include="dist\node\helpers\metadata_builder.coffee" />
-    <None Include="dist\node\models\model.coffee" />
-    <None Include="example\view_helper.coffee" />
+    <None Include=".jshintrc" />
+    <None Include="coffeelint.json" />
     <None Include="lib\config.coffee" />
     <None Include="lib\helpers\custom_exception.coffee" />
     <None Include="lib\helpers\formatter_helper.coffee" />
     <None Include="lib\helpers\metadata_builder.coffee" />
     <None Include="lib\models\model.coffee" />
+    <None Include="lib\templates\notifications.hbs" />
     <None Include="package.json" />
     <None Include="test\initialize-globals.coffee" />
     <None Include="test\initialize.coffee" />
@@ -141,8 +103,6 @@
     <None Include="test\views\site-view-test.coffee" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="example\api\" />
-    <Folder Include="example\app\img\" />
     <Folder Include="lib\services\" />
     <Folder Include="test\models\accueil\" />
     <Folder Include="test\models\administration\" />

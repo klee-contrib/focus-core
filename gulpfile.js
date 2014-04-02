@@ -39,7 +39,7 @@ gulp.task('browser-build', function() {
     .pipe(gulp.dest('./dist/browser/'))
     .pipe(gulp.dest('./example/app/js/'))
   //Current project destination.
-  .pipe(gulp.dest('../../../../UESL_Gimini/Main/Sources/Nantissement.SPA/vendor/'));
+  .pipe(gulp.dest('../../../../SPA-fmk/Main/Sources/SPA-skeleton/vendor'));
 });
 //Build all the javascripts for node and unit tests.
 gulp.task('node-build', function() {

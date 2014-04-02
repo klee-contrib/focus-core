@@ -1,7 +1,7 @@
 /*global describe, it, beforeEach, afterEach, sinon, _*/
 require('../initialize-globals').load();
 //Require the module to test.
-var domains = require('../../example/domains');
+var domains = {};//require('../../example/domains');
 var modelMetadatas = {
 	coreModel: {
 		id: {
