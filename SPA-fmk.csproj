@@ -66,6 +66,7 @@
     <Content Include="lib\models\paginatedCollection.js" />
     <Content Include="lib\templates\templates.js" />
     <Content Include="lib\views\collection-pagination-view.js" />
+    <Content Include="lib\views\consult-edit-view.js" />
     <Content Include="lib\views\core-view.js" />
     <Content Include="lib\views\detail-consult-view.js" />
     <Content Include="lib\views\detail-edit-view.js" />
@@ -88,6 +89,7 @@
   <ItemGroup>
     <None Include=".jshintrc" />
     <None Include="coffeelint.json" />
+    <None Include="docs.sh" />
     <None Include="lib\config.coffee" />
     <None Include="lib\helpers\custom_exception.coffee" />
     <None Include="lib\helpers\formatter_helper.coffee" />

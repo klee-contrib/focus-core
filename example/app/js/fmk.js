@@ -53,10 +53,19 @@ function program1(depth0,data) {
         this.name = name;
         this.message = message;
         this.options = options;
+        this.log();
       }
 
       CustomException.prototype.log = function() {
-        return console.log("name", this.name, "message", this.message, "options", this.options);
+        return console.error("name", this.name, "message", this.message, "options", this.options);
+      };
+
+      CustomException.prototype.toJSON = function() {
+        return {
+          "name": this.name,
+          "message": this.message,
+          "options": this.options
+        };
       };
 
       return CustomException;
@@ -95,8 +104,8 @@ function program1(depth0,data) {
     DependencyException = (function(_super) {
       __extends(DependencyException, _super);
 
-      function DependencyException(message) {
-        DependencyException.__super__.constructor.call(this, "DependencyException", message);
+      function DependencyException(message, options) {
+        DependencyException.__super__.constructor.call(this, "DependencyException", message, options);
       }
 
       return DependencyException;
@@ -106,7 +115,8 @@ function program1(depth0,data) {
       CustomException: CustomException,
       NotImplementedException: NotImplementedException,
       ArgumentNullException: ArgumentNullException,
-      ArgumentInvalidException: ArgumentInvalidException
+      ArgumentInvalidException: ArgumentInvalidException,
+      DependencyException: DependencyException
     };
     if (isInBrowser) {
       NS.Helpers = NS.Helpers || {};
@@ -125,7 +135,7 @@ function program1(depth0,data) {
 	NS = NS || {};
 	//Dependency gestion depending on the fact that we are in the browser or in node.
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	var DependencyException = isInBrowser ? NS.Helpers.Exceptions.DependencyException : require("./custom_exception").ArgumentNullException;
+	var DependencyException = isInBrowser ? NS.Helpers.Exceptions.DependencyException : require("./custom_exception").DependencyException;
 	//All regex use in the application.
 	var regex = {
 		email: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -136,6 +146,10 @@ function program1(depth0,data) {
 	function emailValidation(emailToValidate, options) {
 		options = options || options;
 		return regex.email.test(emailToValidate);
+	}
+    //Function to validate a date.
+	function dateValidation(dateToValidate, options) {
+	    return moment(dateToValidate).isValid();
 	}
 
 	//Function to test the length of a string.
@@ -157,7 +171,7 @@ function program1(depth0,data) {
 	}
 
 	//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
-	var validate = function(property, validators) {
+	var validate = function validate(property, validators) {
 		//console.log("validate", property, validators);
 		var errors, res, validator, _i, _len;
 		errors = [];
@@ -178,7 +192,7 @@ function program1(depth0,data) {
 		};
 	};
 
-	var validateProperty = function(property, validator) {
+	var validateProperty = function validateProperty(property, validator) {
 		var isValid;
 		if (!validator) {
 			return void 0;
@@ -191,7 +205,7 @@ function program1(depth0,data) {
 				case "required":
 					var prevalidString = property.value === "" ? false : true;
 					var prevalidDate = true;
-					return validator.value === true ? (property.value !== null && prevalidString && prevalidDate) : true;
+					return validator.value === true ? (property.value !== null && property.value !== undefined && prevalidString && prevalidDate) : true;
 				case "regex":
 					return validator.value.test(property.value);
 				case "email":
@@ -201,6 +215,8 @@ function program1(depth0,data) {
 				case "string":
 					var stringToValidate = property.value || "";
 					return stringLength(stringToValidate, validator.options);
+			    case "date":
+			        return dateValidation(property.value, validator.options);
 				case "function":
 					return validator.value(property.value, validator.options);
 				default:
@@ -553,23 +569,55 @@ function program1(depth0,data) {
   // Filename: post_rendering_helper.js
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+  var DependencyException = isInBrowser ? NS.Helpers.Exceptions.DependencyException : require("./custom_exception").DependencyException;
   //Container for all the post renderings functions.
   var postRenderingHelpers = {};
   //Register a helper inside the application.
+  //Example call: `Fmk.postRenderingHelper.registerHelper({name: "hlpName", fn: fct})`
   var registerHelper = function registerHelper(helper) {
-    postRenderingHelpers[helper.name] = {fn: helper.fn, options: helper.options};
+      if (helper === undefined || helper === null || _.isEmpty(helper)) {
+          throw new ArgumentNullException("registerHelper, helper argument cannot be null or undefined ");
+      }
+      if (helper.name === null || helper.name === undefined) {
+          throw new ArgumentNullException("registerHelper, helper.name cannot be null or undefined");
+      }
+      if (typeof helper.name !== "string") {
+          throw new ArgumentInvalidException("registerHelper, helper.name must be a string.", helper);
+      }
+      if (helper.fn === null || helper.fn === undefined) {
+          throw new ArgumentNullException("registerHelper, helper.fn cannot be null or undefined");
+      }
+      if (typeof helper.fn !== "string") {
+          throw new ArgumentInvalidException("registerHelper, helper.fn must be a function name: a string.", helper);
+      }
+      if (!$.fn[helper.fn]) {
+          throw new DependencyException("registerHelper, helper.fn: "+ helper.fn +" must be a registered JQuery plugin in $.fn");
+      }
+      postRenderingHelpers[helper.name] = {fn: helper.fn, options: helper.options};
   };
   //Options must have a selector property and a helperName one.
-  var callHelper = function( config) {
+  var callHelper = function callHelper(config) {
+      
     //If there is nothing selected.
     if(config.selector === undefined || config.selector.size() === 0){
       return;
+    }
+    if (typeof config.helperName !== "string") {
+        throw new ArgumentInvalidException("callHelper, config.helperName must be a string, check your in your domain file any the decorator property", config);
     }
     //If the function  desn not exist on the selection.
     if(config.selector[postRenderingHelpers[config.helperName].fn] === undefined){
       return;
     }
-    config.selector[postRenderingHelpers[config.helperName].fn](postRenderingHelpers[config.helperName].options);
+    var postRenderingOptions = postRenderingHelpers[config.helperName].options;
+    if (config.decoratorOptions) {
+        //Extend the post rendering options defined in the helper definition with options define in the model (optionnaly)
+        // For each property: `Model.extend({metadatas:{propertyName: {decoratorOptions: {opt1: 1, opt2: 2}}}})`
+        _.extend(postRenderingOptions, config.decoratorOptions);
+    }
+    config.selector[postRenderingHelpers[config.helperName].fn](postRenderingOptions);
     //config.selector[config.helperName](options);
   };
   var mdl = {
@@ -600,6 +648,12 @@ function program1(depth0,data) {
     notificationsView: new NotificationsView({
       model: new Notifications()
     }),
+    //Add a notification in the stack. Is isRender is define and is true, the notifications are displayed.
+    // Example call 
+    //```javascript
+    // Fmk.helpers.backboneNotifications.addNotification({type: "error", message: "Message"}, true);
+    // //Render the notifications in the page.
+    // ```
     addNotification: function addNotification(jsonNotification, isRender) {
       isRender = isRender || false;
       this.notificationsView.model.add(jsonNotification);
@@ -607,7 +661,10 @@ function program1(depth0,data) {
         this.renderNotifications();
       }
     },
-    //Render all the notifications which are in the notifications collection and then clear this list.
+    // Render all the notifications which are in the notifications collection and then clear this list.
+    // The selector can be overriden.
+    // If a timeout is define, the notification is hidden after _timeout_ seconds.
+    // Once the notifications have been rendered, the messages stack is cleared.
     renderNotifications: function renderInApplication(selectorToRender, timeout) {
       var selector = selectorToRender || "div#summary";
       //We render all the messages.
@@ -774,7 +831,8 @@ function program1(depth0,data) {
                     currentvalue = input.checked;
                     break;
                 case "number":
-                    currentvalue = +input.value;
+                    inputValue = input.value === "" ? undefined : input.value;
+                    currentvalue = (inputValue !== undefined && inputValue !== null) ? +inputValue : undefined;
                     break;
                 case "radio":
                     if (input.checked) {
@@ -1068,6 +1126,11 @@ function program1(depth0,data) {
                 symbol: mdlMetadata.symbol
               });
             }
+            if (mdlMetadata.decoratorOptions != null) {
+              _.extend(overridenProperties, {
+                decoratorOptions: mdlMetadata.decoratorOptions
+              });
+            }
             if (!_.isEmpty(overridenProperties)) {
               _.extend(metadata, overridenProperties);
             }
@@ -1124,6 +1187,11 @@ function program1(depth0,data) {
           if (mdlMetadata.symbol != null) {
             _.extend(overridenProperties, {
               symbol: mdlMetadata.symbol
+            });
+          }
+          if (mdlMetadata.decoratorOptions != null) {
+            _.extend(overridenProperties, {
+              decoratorOptions: mdlMetadata.decoratorOptions
             });
           }
           if (!_.isEmpty(overridenProperties)) {
@@ -1465,9 +1533,13 @@ function program1(depth0,data) {
       var mdt = metadatas[attr];
       /*Check for any of the metadata.*/
       if (mdt !== undefined && mdt !== null) {
-        if (mdt.decorator) {
-          postRenderingHelper.callHelper({helperName: mdt.decorator, selector: $('[data-name=' + attr + ']', options.viewSelector)});
-          //$('[data-name:'+attr+']', viewSelector)
+          if (mdt.decorator) {
+            //Call a registered helper. See post_rendering_helper_file to see how to register a helper.
+            postRenderingHelper.callHelper({
+                helperName: mdt.decorator, //Get the post rendering helper to call from the metdata, this helper must have been register before.
+                selector: $('[data-name=' + attr + ']', options.viewSelector), //Create a selector on each attribute in the view with its .
+                decoratorOptions: mdt.decoratorOptions //Inject decorator options define on the model.
+            });
         }
       }
     }
@@ -1483,7 +1555,7 @@ function program1(depth0,data) {
 /* global Backbone, Promise, _, window */
 "use strict";
 (function(NS) {
-  //Filename: promisify_helper.js
+	//Filename: promisify_helper.js
 	NS = NS || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 	// Backbone model with **promise** CRUD method instead of its own methods.
@@ -1547,7 +1619,7 @@ function program1(depth0,data) {
 	//Convert an existing Backbone model to a _promise_ version of it.
 	var ConvertModel = function ConvertBackBoneModelToPromiseModel(model) {
 		if (model.url === undefined || model.urlRoot === undefined) {
-			throw new Error("ConvertBackBoneModelToPromiseModel: The url of the model: "+ model.modelName+ " cannot be undefined.");
+			throw new Error("ConvertBackBoneModelToPromiseModel: The url of the model: " + model.modelName + " cannot be undefined.");
 		}
 		var fields = {};
 		if (model.has('id')) {
@@ -1562,13 +1634,14 @@ function program1(depth0,data) {
 	//Convert an existing Backbone collection to a _promise_ version of it.
 	var ConvertCollection = function ConvertBackboneCollectionToPromiseCollection(collection) {
 		if (collection.url === undefined || collection.urlRoot === null) {
-		    throw new Error("ConvertCollection: The  url of the collection " + collection.modelName + " cannot be undefined.");
+			throw new Error("ConvertCollection: The  url of the collection " + collection.modelName + " cannot be undefined.");
 		}
 		var promiseCollection = new PromiseCollection();
 		promiseCollection.url = collection.url;
 		return promiseCollection;
 	};
 
+	//Todo: see if it is necessary to expose Model and collection promisified.
 	var promisifyHelper = {
 		Model: PromiseModel,
 		Collection: PromiseCollection,
@@ -1606,6 +1679,8 @@ function program1(depth0,data) {
     _.extend(configuration, options);
   }
 
+  // This method perform an ajax request within a promise.
+  // Example call : refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
   var loadList = function loadList(listDesc){
     return new Promise(function promiseLoadList(resolve, reject) {
       //console.log("Errors", errors);
@@ -1626,17 +1701,21 @@ function program1(depth0,data) {
   };
 
   // Load a reference with its list name.
+  // It calls the service which must have been registered.
   function loadListByName(listName) {
       if (typeof configuration[listName] !== "function") {
-          throw new Error("You are trying to load the reference list: "+ listName + " which does not have a list configure." )
+          throw new Error("You are trying to load the reference list: "+ listName + " which does not have a list configure." );
       }
     //Call the service, the service must return a promise.
     return configuration[listName]();
   }
 
+  //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
   // Return an array of many promises for all the given lists.
+  // Be carefull, if there is a problem for one list, the error callback is called.
   function loadMany(names) {
       var promises = [];
+      //todo: add a _.isArray tests and throw an rxception.
       if (names !== undefined) {
           names.forEach(function (name) {
               promises.push(loadListByName(name));
@@ -1669,9 +1748,34 @@ function program1(depth0,data) {
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 
+  var router = {};
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.router = router;
+  } else {
+    module.exports = router;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global $, _ , window*/
+"use strict";
+(function(NS) {
+  //Filename: helpers/url_helper.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+
   //*This helper has a dependency on underscore and jQuery.*/
   var urlHelper = {};
-  // Generate an url with all the parameters
+  // ### generateUrl
+  //  Generate an url with all the parameters
+  //  This function is use in order to build url from a tootname and a object you want to pass into the url as params.
+  //  ```javascript
+  //  var urlHelper = require('../lib/url_helper');
+  //  var url = urlHelper.generateUrl('rootName', {param1: "nom", param2: "nom2"}); 
+  //  //url = '#rootName/?param1=nom&param2=nom2'
+  //  ```
   urlHelper.generateUrl = function generateUrl(route, params) {
     var url = '',
       SEP = '/',
@@ -1731,6 +1835,8 @@ function program1(depth0,data) {
     var JSON = {};
 
     // Unflatten a json object.
+    // from an object `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
+    // Gives a `{contact: {nom: "nom", prenom: "prenom"}}`
     JSON.unflatten = function (data) {
         if (Object(data) !== data || Array.isArray(data))
             return data;
@@ -1754,6 +1860,8 @@ function program1(depth0,data) {
     };
 
     //Flatten a json object.
+    // from an object`{contact: {nom: "nom", prenom: "prenom"}}` 
+    // Gives a one level object:  `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
     JSON.flatten = function (data) {
         var result = {};
         function recurse(cur, prop) {
@@ -1777,7 +1885,7 @@ function program1(depth0,data) {
         recurse(data, "");
         return result;
     };
-    //Combine two json.
+    //Deeply combine two json.
     function combine(json1, json2) {
         var res = {};
         _.extend(
@@ -1787,11 +1895,54 @@ function program1(depth0,data) {
         );
         return JSON.unflatten(res);
     }
+    //Generate four random hex digits.
+
+    function S4() {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    }
+    //Generate a pseudo-GUID by concatenating random hexadecimal.
+    function guid() {
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    }
+
+    //This method allows the user to load a data (objet or list) in a promise
+    // Exampl call: refHelper.loadLocalData([{id: 1, label: "nom 1"}, {id: 1, label: "nom 2"}])
+    var loadLocalData = function loadLocalData(data) {
+        return new Promise(function promiseLoadLocalList(resolve, reject) {
+            resolve(data);
+        });
+    };
+
+    //Generate fake datas.
+    var generateFake = {
+        //Generate an aleafied object
+        object: function generateFalseData(obj) {
+            var objAla = {};
+            for (var prop in obj) {
+                //todo: differenciate the treatement swithcing on type.
+                objAla[prop] = '' + obj[prop] + S4();
+            }
+            return objAla;
+        },
+        //Generate a fake collection from a single object, adding, nb is th array size.
+        collection: function geenerateFalseCollection(obj, nb) {
+            var res = [];
+            for (var i = 0; i < nb; i++) {
+                res.push(this.object(obj));
+            }
+            return res;
+        }
+
+    }
+
     //Util helper.
     var utilHelper = {
         flatten: JSON.flatten,
         unflatten: JSON.unflatten,
-        combine: combine
+        combine: combine,
+        loadLocalData: loadLocalData,
+        guid: guid,
+        generateFake: generateFake
     };
     if (isInBrowser) {
         NS.Helpers = NS.Helpers || {};
@@ -1800,45 +1951,6 @@ function program1(depth0,data) {
         module.exports = utilHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global Backbone, window*/
-"use strict";
-//var template = require("../template/collection-pagination");
-(function(NS) {
-  //Filename: views/collection-pagination-view.js
-  NS = NS || {};
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var CollectionPaginationView = Backbone.View.extend({
-    Service: undefined,
-    initialize: function initializePagination() {
-
-    },
-    events: {},
-    goToPage: function goToPage(page) {
-      this.model.setPage(page);
-    },
-    nextPage: function nextPage() {
-      this.model.setNextPage();
-    },
-    previousPage: function PreviousPage() {
-      this.model.setPreviousPage();
-    },
-    render: function renderPagination() {
-      if (this.model.length === 0) {
-        this.$el.html("");
-      } else {
-        this.$el.html(this.template(this.model.pageInfo()));
-      }
-    }
-  });
-
-  // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Views = NS.Views || {};
-    NS.Views.CollectionPaginationView = CollectionPaginationView;
-  } else {
-    module.exports = CollectionPaginationView;
-  }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, _, window */
 "use strict";
 (function(NS) {
@@ -1846,6 +1958,9 @@ function program1(depth0,data) {
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var postRenderingBuilder = isInBrowser ? NS.Helpers.postRenderingBuilder : require('../helpers/post_rendering_builder');
+  var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+  var RefHelper = isInBrowser ? NS.Helpers.referenceHelper : require('../helpers/reference_helper');
+
   //View which is the default view for each view.
   //This view is able to deal with errors and to render the default json moodel.
   var CoreView = Backbone.View.extend({
@@ -1853,15 +1968,41 @@ function program1(depth0,data) {
       this.isHidden = !this.isHidden;
       this.render(options);
     },
-    initialize: function initializeCoreView() {
+    referenceNames: undefined,
+    //Options define by default for the view.
+    defaultOptions: {},
+    //Options overriden By the instanciate view.
+    customOptions: {},
+    initialize: function initializeCoreView(options) {
+      options = options || {};
+      //Define default options foreach _core_ view, and override these options for each _project view_.
+      //Then each view will have access to options in any methods.
+      this.opts = _.extend(this.defaultOptions, this.customOptions, options);
+
       this.on('toogleIsHidden', this.toogleIsHidden);
-      /*Register after renger.*/
+      
+        /*Register after renger.*/
       _.bindAll(this, 'render', 'afterRender');
       var _this = this;
       this.render = _.wrap(this.render, function(render, options) {
         render(options);
         _this.afterRender();
         return _this;
+      });
+
+      //Load all the references lists which are defined in referenceNames.
+      var currentView = this;
+      Promise.all(RefHelper.loadMany(this.referenceNames)).then(function (results) {
+          console.log('resultsreferenceNames', results);
+          var res = {}; //Container for all the results.
+          for (var i = 0, l = results.length; i < l; i++) {
+              res[currentView.referenceNames[i]] = results[i];
+              //The results are save into an object with a name for each reference list.
+          }
+          currentView.model.set(res); //This trigger a render due to model change.
+          currentView.isReady = true; //Inform the view that we are ready to render well.
+      }).then(null, function (error) {
+          ErrorHelper.manageResponseErrors(error, { isDisplay: true });
       });
     },
     //The handlebars template has to be defined here.
@@ -1935,7 +2076,199 @@ function program1(depth0,data) {
 // var CoreView = require('./views/core-view');
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
 //```
-/*global window, Backbone*/
+/*global Backbone, window*/
+"use strict";
+//var template = require("../template/collection-pagination");
+(function(NS) {
+  //Filename: views/collection-pagination-view.js
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var CollectionPaginationView = Backbone.View.extend({
+    Service: undefined,
+    initialize: function initializePagination() {
+
+    },
+    events: {},
+    goToPage: function goToPage(page) {
+      this.model.setPage(page);
+    },
+    nextPage: function nextPage() {
+      this.model.setNextPage();
+    },
+    previousPage: function PreviousPage() {
+      this.model.setPreviousPage();
+    },
+    render: function renderPagination() {
+      if (this.model.length === 0) {
+        this.$el.html("");
+      } else {
+        this.$el.html(this.template(this.model.pageInfo()));
+      }
+    }
+  });
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Views = NS.Views || {};
+    NS.Views.CollectionPaginationView = CollectionPaginationView;
+  } else {
+    module.exports = CollectionPaginationView;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+﻿/*global window, Backbone, $*/
+"use strict";
+(function (NS) {
+    //Filename: views/detail-consult-view.js
+    NS = NS || {};
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+    var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
+
+    //Backbone view which can be use in order to create consultation view and edition view.
+    var ConsultEditView = CoreView.extend({
+
+        //The default tag for this view is a div.
+        tagName: 'div',
+
+        //The default class for this view.
+        className: 'consultEditView',
+
+        //Service to get the model.
+        getModel: undefined,
+
+        //Service to delete the model.
+        deleteModel: undefined,
+
+        //Template for the edit mode.
+        templateEdit: undefined,
+
+        //Template for the consultation mode.
+        templateConsult: undefined,
+        //Default options for the view.
+        defaultOptions: {
+            isModelLoaded: true, //By default the model is loaded.
+            isEditMode: true
+        },
+
+        //Initialize function
+        initialize: function initializeConsultEdit(options) {
+          options = options || {};
+          CoreView.prototype.initialize.call(this);
+          //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options. 
+          this.isEdit = (this.opts.isEditMode && this.opts.isEdit)|| false;
+          //render view when the model is loaded
+          this.model.on('change', this.render, this);
+          // In order to be loaded a model has to have an id and the options must be activated.
+          if (this.opts.isModelLoaded && this.model.has('id')) {
+            //Try to load the model from a service which have to return a promise.
+            var view = this;
+            this.getModel(this.model.get('id'))
+				.then(function success(jsonModel) {
+					view.model.set(jsonModel);
+				}).then(null, function error(errorResponse) {
+				    ErrorHelper.manageResponseErrors(errors, {
+				        model: this.model
+				    });
+				});
+          }
+        },
+
+        //Events handle by the view with user interaction
+        events: {
+            "click button.btnEdit": "edit",
+            "click button.btnDelete": "deleteItem",
+            "click .panel-heading": "toogleCollapse"
+        },
+
+        //JSON data to attach to the template.
+        getRenderData: function getRenderDataConsultEdit() {
+           return this.model.toJSON();
+        },
+
+        //genarate navigation url usefull if the edit mode is not on the same page.
+        generateEditUrl: function generateEditUrl() {
+            return this.model.modelName + "/edit/" + this.model.get('id');
+        },
+
+        //Change the edit mode.
+        toggleEditMode: function toogleEditMode(event) {
+            if (event) { event.preventDefault(); }
+            this.isEdit = !this.isEdit;
+            this.render();
+        },
+
+        //Deal with the edit button click wether there is an edit mode or not.
+        edit: function editConsultEditView(event) {
+            event.preventDefault();
+            if (this.opts.isEditMode) {
+                this.toggleEditMode();
+            } else {
+                Backbone.history.navigate(this.generateEditUrl(), true);
+            }
+        },
+
+        //Code to delete an item.
+        deleteItem: function deleteConsult(event) {
+            event.preventDefault();
+            var view = this;
+            //call delete service
+            this.deleteModel()
+				.then(function success(successResponse) {
+				    view.deleteSuccess(successResponse);
+				}, function error(errorResponse) {
+				    view.deleteError(errorResponse);
+				});
+        },
+
+        //Generate delete navigation url.
+        generateDeleteUrl: function generateDeleteUrl() {
+            return "/";
+        },
+
+        // Actions after a delete success.
+        deleteSuccess: function deleteConsultEditSuccess(response) {
+            //remove the view from the DOM
+            this.remove();
+            //navigate to next page
+            Backbone.history.navigate(this.generateDeleteUrl(), true);
+        },
+
+        // Actions after a delete error. 
+        deleteError: function deleteConsultEditError(errorResponse) {
+            ErrorHelper.manageResponseErrors(errorResponse, {
+                isDisplay: true
+            });
+        },
+        //Render function.
+        render: function renderConsultEditView() {
+            //todo: see if a getRenderData different from each mode is necessary or it coul be deal inside the getRenderDatatFunction if needed.
+            if (this.isEdit) {
+                this.$el.html(this.templateEdit(this.getRenderData()));
+            } else {
+                this.$el.html(this.templateConsult(this.getRenderData()));
+            }
+            
+            return this;
+        },
+
+        //Function which is called after the render, usally necessary for jQuery plugins.
+        afterRender: function postRenderDetailView() {
+            CoreView.prototype.afterRender.call(this);
+            $('.collapse', this.$el).collapse('show');
+        }
+    });
+
+
+    // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Views = NS.Views || {};
+        NS.Views.ConsultEditView = ConsultEditView;
+    } else {
+        module.exports = ConsultEditView;
+    }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global window, Backbone, $*/
 "use strict";
 (function(NS) {
 	//Filename: views/detail-consult-view.js
@@ -1951,7 +2284,7 @@ function program1(depth0,data) {
 		deleteModel: undefined,
 
 		initialize: function initializeConsult() {
-		    CoreView.prototype.initialize.call(this);
+			CoreView.prototype.initialize.call(this);
 			//render view when the model is loaded
 			this.model.on('change', this.render, this);
 			if (this.model.has('id')) {
@@ -2025,8 +2358,8 @@ function program1(depth0,data) {
 			return this;
 		},
 		afterRender: function postRenderDetailView() {
-		    CoreView.prototype.afterRender.call(this);
-		    $('.collapse', this.$el).collapse('show');
+			CoreView.prototype.afterRender.call(this);
+			$('.collapse', this.$el).collapse('show');
 		}
 	});
 
@@ -2048,15 +2381,17 @@ function program1(depth0,data) {
 	var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
 	var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
 	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-  var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
+	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
+	var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
 
-	var DetailEditView = Backbone.View.extend({
+	var DetailEditView = CoreView.extend({
 		tagName: 'div',
 		className: 'editView',
 		saveModel: undefined, //VmSvc.save
 		getModel: undefined, //VmSvc.get
 
 		initialize: function initializeEdit() {
+			CoreView.prototype.initialize.call(this);
 			this.model.on('change', this.render, this);
 			this.listenTo(this.model, 'validated:valid', this.modelValid);
 			this.listenTo(this.model, 'validated:invalid', this.modelInValid);
@@ -2167,7 +2502,15 @@ function program1(depth0,data) {
         ResultSelectionView: undefined,
         ResultSelectionModel: undefined,
         resultsContainer: 'div#lineSelectionContainer',
-        additionalData: function () { return undefined;},
+        additionalData: function () { return undefined; },
+        //View foreach line in the collection view.
+        viewForEachLineConfiguration: {
+            isActive: false, //True or false will make the rendering different.
+            LineView: undefined, //View to create for each line.
+            //ModelLineView: undefined, //Model for the view initialize with collection data. It is not use but could be if we would want to initialize another model.
+            parentContainer: "table tbody"  //selector into which the view .
+        },
+
         initialize: function initializeSearchResult(options) {
             options = options || {};
             CoreView.prototype.initialize.call(this);
@@ -2251,6 +2594,7 @@ function program1(depth0,data) {
             $(this.resultsContainer, this.$el).html(new this.ResultSelectionView({ model: new this.ResultSelectionModel({ id: this.detailId }) }).render().el);
         },
         lineSelection: function lineSelectionSearchResults(event) {
+            //todo: should the be unactivated if there is aview per line and delegate to the line. , this.viewForEachLineConfiguration.isActive
             event.preventDefault();
             var id = +$(event.target).parents("td[data-selection]:first").attr('data-selection');
             if (this.isShowDetailInside) {
@@ -2270,7 +2614,14 @@ function program1(depth0,data) {
         navigateBack: function navigateBack() {
             Backbone.history.history.back();
         },
-
+        //Add one line view from the model.
+        addOne: function addOneLineView(model) {
+            $(this.viewForEachLineConfiguration.parentContainer, this.$el).append(
+                new this.viewForEachLineConfiguration.LineView({
+                    model: model
+                }).render().el
+             );
+        },
         render: function renderSearchResults(options) {
             options = options || {};
             //If the research was not launch triggered.
@@ -2289,15 +2640,22 @@ function program1(depth0,data) {
                 //the template must have named property to iterate over it
                 var infos = this.model.pageInfo();
                 this.$el.html(this.template(_.extend({
-                    collection: this.getRenderData(),
+                    //Get the model datas only if view foreach line is active.
+                    collection: this.viewForEachLineConfiguration.isActive ? undefined : this.getRenderData(),
                     sortField: infos.sortField.field,
                     order: infos.sortField.order,
                     currentPage: infos.currentPage,
                     perPage: infos.perPage,
                     firstPage: infos.firstPage,
                     totalPages: infos.totalPages,
-                    totalRecords: this.model.totalRecords
+                    totalRecords: this.model.totalRecords,
+                    isViewForLine: this.viewForEachLineConfiguration.isActive
                 }, this.additionalData())));
+
+                //Conditionnal code for rendering a line foreachView
+                if (this.viewForEachLineConfiguration.isActive) {
+                  this.model.forEach(this.addOne, this);
+                }
 
                 //render pagination
                 $(this.resultsPagination, this.$el).html(this.templatePagination(this.model.pageInfo())); //TODO : this.model.pageInfo() {currentPage: 0, firstPage: 0, totalPages: 10}
@@ -2355,9 +2713,7 @@ function program1(depth0,data) {
 	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
 	var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
 	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-	var RefHelper = isInBrowser ? NS.Helpers.referenceHelper : require('../helpers/reference_helper');
-	var CoreView = isInBrowser ? NS.Views.CoreView : require('../core-views');
-
+	var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
 
 	var SearchView = CoreView.extend({
 		tagName: 'div',
@@ -2367,7 +2723,6 @@ function program1(depth0,data) {
 		search: undefined,
 		resultsSelector: 'div#results',
 		isMoreCriteria: false,
-		referenceNames: undefined,
 		initialize: function initializeSearch(options) {
 		    options = options || {};
             // Call the initialize function of the core view.
@@ -2402,21 +2757,6 @@ function program1(depth0,data) {
 					isFormBinded: false
 				});
 			}
-			//Load all the references lists which are defined in referenceNames.
-
-			var currentView = this;
-		    Promise.all(RefHelper.loadMany(this.referenceNames)).then(function (results) {
-		        console.log('resultsreferenceNames', results);
-				var res = {}; //Container for all the results.
-				for (var i = 0, l = results.length; i < l; i++) {
-					res[currentView.referenceNames[i]] = results[i];
-					//The results are save into an object with a name for each reference list.
-				}
-				currentView.model.set(res); //This trigger a render due to model change.
-				currentView.isReady = true; //Inform the view that we are ready to render well.
-			}).then(null, function(error) {
-			    ErrorHelper.manageResponseErrors(error, { isDisplay: true });
-			});
 		},
 
 		events: {

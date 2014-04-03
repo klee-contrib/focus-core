@@ -7,8 +7,11 @@
   # Exception class
   class CustomException
     constructor:(@name, @message,@options) ->
+      @log()
     log: ->
-      console.log("name", @name, "message", @message, "options", @options)
+      console.error("name", @name, "message", @message, "options", @options)
+    toJSON:->
+      return {"name": @name, "message": @message,  "options": @options}
   # Exception for a not implemented method.
   class NotImplementedException extends CustomException
     constructor:(message, options) ->
@@ -22,13 +25,14 @@
     constructor:(message, options) ->
       super("ArgumentInvalidException", message, options)
   class DependencyException extends CustomException
-    constructor:(message) ->
-      super("DependencyException", message)
+    constructor:(message, options) ->
+      super("DependencyException", message, options)
   mod = {
     CustomException: CustomException
     NotImplementedException: NotImplementedException
     ArgumentNullException: ArgumentNullException
     ArgumentInvalidException: ArgumentInvalidException
+    DependencyException: DependencyException
   }
   if isInBrowser
     NS.Helpers = NS.Helpers or {}
