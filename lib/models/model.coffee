@@ -6,8 +6,10 @@
   # Base class for all models. Define all transverses methods on the model.
   class Model extends Backbone.Model
     #Define a method in order to be able to quickly remove errors form the model.
-    unsetErrors: ->
-      @unset('errors', {silent: true})
+    unsetErrors:(options) ->
+      options = options or {}
+      silent = options.silent or false
+      @unset('errors', {silent: silent})
     #Define a setErrors method in order to quickly be able to set Errors.
     setErrors:(errors) ->
       @set({'errors': errors}) if errors?
