@@ -6,14 +6,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  buffer += "<h1>Test</h1>\r\n";
+  buffer += "<h1>Test</h1>\n";
   options = {hash:{},data:data};
   buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "firstName", options) : helperMissing.call(depth0, "input_for", "firstName", options)))
-    + "\r\n";
+    + "\n";
   options = {hash:{},data:data};
   buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "lastName", options) : helperMissing.call(depth0, "input_for", "lastName", options)))
-    + "\r\n";
+    + "\n";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "email", options) : helperMissing.call(depth0, "input_for", "email", options)));
+  buffer += escapeExpression(((stack1 = helpers.input_for || (depth0 && depth0.input_for)),stack1 ? stack1.call(depth0, "email", options) : helperMissing.call(depth0, "input_for", "email", options)))
+    + "\n";
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers.progress || (depth0 && depth0.progress)),stack1 ? stack1.call(depth0, "testProgress", options) : helperMissing.call(depth0, "progress", "testProgress", options)))
+    + "\n";
   return buffer;
   });;

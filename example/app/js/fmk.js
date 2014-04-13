@@ -21,11 +21,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n    <strong>";
+  buffer += "\n    <strong>";
   if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</strong><br />\r\n  ";
+    + "</strong><br />\n  ";
   return buffer;
   }
 
@@ -33,10 +33,100 @@ function program1(depth0,data) {
   if (stack1 = helpers.cssMessageType) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.cssMessageType); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'>\r\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\r\n  ";
+    + "'>\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\n  ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n</div>";
+  buffer += "\n</div>";
+  return buffer;
+  });;
+this["Fmk"] = this["Fmk"] || {};
+this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
+this["Fmk"]["templates"]["pagination"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    <li>\n      <span class=\"btn\" data-page=\"";
+  if (stack1 = helpers.firstPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.firstPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n        ";
+  if (stack1 = helpers.firstPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.firstPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n      </span>\n    </li>\n    <li>\n      <span>...</span>\n    </li>\n  ";
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n	  <li>\n      <span class=\"btn\" data-page=\"";
+  if (stack1 = helpers.previous) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.previous); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n        ";
+  if (stack1 = helpers.previous) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.previous); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n      </span>\n    </li>\n	";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n	  <li>\n      <span class=\"btn\" data-page=\"";
+  if (stack1 = helpers.next) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.next); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n        ";
+  if (stack1 = helpers.next) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.next); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n      </span>\n    </li>\n  ";
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n  <li>\n    <span>...</span>\n  </li>\n  <li>\n    <span class=\"btn\" data-page=\"";
+  if (stack1 = helpers.lastPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.lastPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n      ";
+  if (stack1 = helpers.lastPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.lastPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n    </span>\n  </li>\n  ";
+  return buffer;
+  }
+
+  buffer += "﻿<ul class=\"pagination\">\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.showFirst), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.previous), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	  <li class=\"active\">\n      <span data-page=\"";
+  if (stack1 = helpers.currentPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.currentPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n        ";
+  if (stack1 = helpers.currentPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.currentPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n      </span>\n    </li>\n	";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.next), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.showLast), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</ul> ";
   return buffer;
   });;
 (function() {
@@ -295,9 +385,12 @@ function program1(depth0,data) {
         return Model.__super__.constructor.apply(this, arguments);
       }
 
-      Model.prototype.unsetErrors = function() {
+      Model.prototype.unsetErrors = function(options) {
+        var silent;
+        options = options || {};
+        silent = options.silent || false;
         return this.unset('errors', {
-          silent: true
+          silent: silent
         });
       };
 
@@ -789,12 +882,34 @@ function program1(depth0,data) {
 		module.exports = errorHelper;
 	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window*/
+/*global window, $, Backbone*/
 "use strict";
 (function (NS) {
     //Filename: helpers/form_helper.js
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     NS = NS || {};
+    
+    // ## Helper pour l'ensemble des formulaires.
+    //
+    var _formCollectionBinder = function forCollectionBinder(selector, collection, options){
+        options = options || {};
+        options.isSilent = options.isSilent || true;
+        if(selector !== undefined && selector !== null  && collection instanceof Backbone.Collection){
+            collection.reset(null, {silent: true}); // The collection is cleared.
+            Array.prototype.forEach.call(selector , function(modelLineSelector){
+                var model = new collection.model();
+                this.formModelBinder(
+                        {inputs: $('input', modelLineSelector), options:$('select', modelLineSelector)} ,
+                        model, //Model to populate.
+                        options
+                );
+                collection.add(model,options);
+            }, this);
+        } else {
+            console.warn("The selector is not an object", selector);
+        }
+    };
+
     // #Module de Helper pour l'ensemble des formulaires.
     // formModelBinder permet de convertir l'ensemble des éléments d'un formulaire en model en fonction de leur attribut data-name.
     // inputs must be a selector with inputs inside and model a BackBone model.
@@ -831,7 +946,7 @@ function program1(depth0,data) {
                     currentvalue = input.checked;
                     break;
                 case "number":
-                    inputValue = input.value === "" ? undefined : input.value;
+                    var inputValue = input.value === "" ? undefined : input.value;
                     currentvalue = (inputValue !== undefined && inputValue !== null) ? +inputValue : undefined;
                     break;
                 case "radio":
@@ -862,7 +977,7 @@ function program1(depth0,data) {
             default:
                 return radioValue;
         }
-    }
+    };
 
     // formOptionModelBinder permet de convertir l'ensemble des options set d'un formulaire en model en fonction de leur attribut data-name.
     // options must be a option:select and model a BackBone model.
@@ -881,13 +996,12 @@ function program1(depth0,data) {
         //For each option we take the value selected. We had this value to the model, only if the user doesn't choose the empty string.
         optionsSets.each(function () {
             var attributeName = this.getAttribute('data-name');
-            var selectValue;
             //A multiple option will be define with select2
             if (this.hasAttribute('multiple')) {
                 selectedValue = $(this).select2('val');
             } else {
                 selectedValue = this.value;
-            };
+            }
             modelContainer[attributeName] = selectedValue === "undefined" ? undefined : selectedValue;
         });
 
@@ -905,7 +1019,8 @@ function program1(depth0,data) {
         formModelBinder: _formModelBinder,
         formInputModelBinder: _formInputModelBinder,
         formOptionModelBinder: _formOptionModelBinder,
-        modelFormGenerator: _modelFormGenerator
+        modelFormGenerator: _modelFormGenerator,
+        formCollectionBinder: _formCollectionBinder
     };
 
     // Differentiate the export.
@@ -1254,31 +1369,45 @@ function program1(depth0,data) {
 
 }).call(this);
 
-/*global Promise, _, window*/
-"use strict";
+/*global Promise, _, window, Backbone*/
 (function(NS) {
+  "use strict";
   NS = NS || {};
   //Filename: helpers/model_validation_promise.js
 
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
   var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
   var validators = isInBrowser ? NS.Helpers.validators : require('./validators');
-  var validate = function validateModel(model) {
+  
+  //Validation function without promises.
+  //This can  is use in promise validation function and in the collection validation.
+  //In order to return only one promise well structured.
+  var validateNoPromise = function validateModelWithoutPromise(model) {
     var errors = {};
     //Looping through each attributes.
     validateDomainAttributes(model, errors);
     validateCustomAttributes(model, errors);
     //Promisify the validations , if there is errors call the reject else call resolve with the model.
+    if (_.isEmpty(errors)) {
+      return {isValid: true, data: model};
+    } else {
+      return {isValid: false, data: errors};
+    }
+  };
+
+  var validate = function validateModel(model) {
+    var validationResult = validateNoPromise(model);
     return new Promise(function promiseValidation(resolve, reject) {
-      //console.log("Errors", errors);
-      if (_.isEmpty(errors)) {
+      //console.dir("Errors", errors);
+      if (validationResult.isValid) {
         //console.log('resolve');
-        resolve(model);
+        resolve(validationResult.data);
       } else {
         //console.log('reject');
-        reject(errors);
+        reject(validationResult.data);
       }
       return undefined;
     });
@@ -1318,11 +1447,41 @@ function program1(depth0,data) {
         name: attr,
         value: model.get(attr)
       }, validatorsOfDomain[attr]);
+
       //If there is no error dont set any errors. 
       if (valRes.errors !== undefined && valRes.errors.length > 0) {
         errors[attr] = valRes.errors.join(',');
       }
     }
+  };
+  //Validate a Backbone.Collection, return a promises.
+  var validateAll = function validateCollection(collection) {
+    if (!collection instanceof Backbone.Collection) {
+      throw new ArgumentInvalidException("Only a backbone collection can be validateAll", collection);
+    }
+    return new Promise(function(successCb, errorCb) {
+      //Container for all errors.
+      var errors = [];
+      var modelIndex = 0;
+      //Iterate over each collections.
+      collection.forEach(function(model) {
+        var validationResult = validateNoPromise(model);
+        if (!validationResult.isValid) {
+          errors.push({
+            index: modelIndex,
+            errors: validationResult.data
+          });
+        }
+        modelIndex++;
+      }, this);
+      if (errors.length > 0) {
+        //If the errors array is not empty, cb the promise errors.
+        errorCb(errors);
+      } else {
+        // Else call success callback with the collection.
+        successCb(collection);
+      }
+    });
   };
 
   // Initialize the domains and the metadatas.
@@ -1334,11 +1493,13 @@ function program1(depth0,data) {
     NS.Helpers = NS.Helpers || {};
     NS.Helpers.modelValidationPromise = {
       validate: validate,
-      initialize: initialize
+      initialize: initialize,
+      validateAll: validateAll
     };
   } else {
     module.exports = {
       validate: validate,
+      validateAll: validateAll,
       initialize: initialize
     };
   }
@@ -1386,12 +1547,14 @@ function program1(depth0,data) {
                         result += property + " eq " + criteria[property] + " and ";
                         break;
                     case "array":
-                        result += property + " eq " +"["+ criteria[property].join(',')+"]" + " and "
+                        //result += property + " eq " +"["+ criteria[property].join(',')+"]" + " and ";
+                        result += property + " eq " + "['" + criteria[property].join("','") + "']" + " and ";
                         break;
                         //Deal with the object.
                     case "object":
                         if (_.isArray(criteria[property])) {
-                            result += property + " eq " + "[" + criteria[property].join(',') + "]" + " and "
+                            result += property + " eq " + "['" + criteria[property].join("','") + "']" + " and ";
+                            //result += property + " eq " + "[" + criteria[property].join(',') + "]" + " and "
                         }
                         //If there is an array.
                         break;
@@ -1703,13 +1866,18 @@ function program1(depth0,data) {
   // Load a reference with its list name.
   // It calls the service which must have been registered.
   function loadListByName(listName) {
+      return getService(listName);
+  }
+  
+  //Load a service by name.
+  function getService(listName) {
       if (typeof configuration[listName] !== "function") {
           throw new Error("You are trying to load the reference list: "+ listName + " which does not have a list configure." );
       }
-    //Call the service, the service must return a promise.
-    return configuration[listName]();
+      //Call the service, the service must return a promise.
+      return configuration[listName]();
   }
-
+    
   //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
   // Return an array of many promises for all the given lists.
   // Be carefull, if there is a problem for one list, the error callback is called.
@@ -1724,11 +1892,19 @@ function program1(depth0,data) {
     return promises;
   }
 
+  function getAutoCompleteServiceQuery(listName) {
+      return function (query) {
+          getService(listName)(query.term).then(function (results) {
+              query.callback(results);
+          });
+      }
+  }
 
   var referenceHelper = {
     loadListByName: loadListByName,
     loadList: loadList,
     loadMany: loadMany,
+    getAutoCompleteServiceQuery: getAutoCompleteServiceQuery,
     configure: configureRefServices
   };
 
@@ -1837,7 +2013,7 @@ function program1(depth0,data) {
     // Unflatten a json object.
     // from an object `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
     // Gives a `{contact: {nom: "nom", prenom: "prenom"}}`
-    JSON.unflatten = function (data) {
+    JSON.unflatten = function(data) {
         if (Object(data) !== data || Array.isArray(data))
             return data;
         if ("" in data)
@@ -1862,8 +2038,9 @@ function program1(depth0,data) {
     //Flatten a json object.
     // from an object`{contact: {nom: "nom", prenom: "prenom"}}` 
     // Gives a one level object:  `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
-    JSON.flatten = function (data) {
+    JSON.flatten = function(data) {
         var result = {};
+
         function recurse(cur, prop) {
             if (Object(cur) !== cur) {
                 result[prop] = cur;
@@ -1889,9 +2066,9 @@ function program1(depth0,data) {
     function combine(json1, json2) {
         var res = {};
         _.extend(
-             res,
-             JSON.flatten(json1),
-             JSON.flatten(json2)
+            res,
+            JSON.flatten(json1),
+            JSON.flatten(json2)
         );
         return JSON.unflatten(res);
     }
@@ -1933,7 +2110,16 @@ function program1(depth0,data) {
             return res;
         }
 
-    }
+    };
+    //Method to call in order to know if a model is a collection
+    var isBackboneModel = function isBackboneModel(model) {
+        return model !== undefined && model !== null && typeof model.has === "function";
+    };
+
+    // Method to call 
+    var isBackboneCollection = function isBackboneCollection(collection) {
+        return collection !== undefined && collection !== null && typeof collection.add === "function";
+    };
 
     //Util helper.
     var utilHelper = {
@@ -1942,7 +2128,9 @@ function program1(depth0,data) {
         combine: combine,
         loadLocalData: loadLocalData,
         guid: guid,
-        generateFake: generateFake
+        generateFake: generateFake,
+        isBackboneModel: isBackboneModel,
+        isBackboneCollection: isBackboneCollection
     };
     if (isInBrowser) {
         NS.Helpers = NS.Helpers || {};
@@ -1951,7 +2139,535 @@ function program1(depth0,data) {
         module.exports = utilHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global Backbone, _, window */
+(function() {
+  var S4, domains_definition, guid, metadaBuilder;
+
+  domains_definition = window.domains;
+
+  metadaBuilder = Fmk.Helpers.metadataBuilder;
+
+  Handlebars.registerHelper('pick', function(val, options) {
+    return options.hash[val];
+  });
+
+  Handlebars.registerHelper("t", function(i18n_key, options) {
+    var maxLength, opt, result;
+    opt = options.hash || {};
+    maxLength = opt.max;
+    result = i18n.t(i18n_key);
+    if ((maxLength != null) && maxLength < result.length) {
+      result = "" + (result.slice(0, +maxLength)) + "...";
+    }
+    return new Handlebars.SafeString(result);
+  });
+
+  Handlebars.registerHelper("debug", function(optionalValue) {
+    console.log("Current Context");
+    console.log("====================");
+    console.log(this);
+    if (optionalValue) {
+      console.log("Value");
+      console.log("====================");
+      return console.log(optionalValue);
+    }
+  });
+
+
+  /*------------------------------------------- FORM FOR THE INPUTS ------------------------------------------- */
+
+  Handlebars.registerHelper("display_for", function(property, options) {
+    var containerAttribs, containerCss, dataType, domain, html, inputSize, label, labelSize, labelSizeValue, metadata, opt, propertyValue, translationKey, translationRoot;
+    opt = options.hash || {};
+    metadata = metadaBuilder.getMetadataForAttribute(this, property);
+    domain = domains_definition[metadata.domain] || {};
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
+    }
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    propertyValue = (function(_this) {
+      return function() {
+        var formatedDate, iconChecked, metadataClass, propValue;
+        metadataClass = metadata.style != null ? metadata.style : "";
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if (metadata.format != null) {
+            propValue = metadata.format(propValue);
+          }
+          if (metadata.symbol != null) {
+            propValue = propValue + i18n.t(metadata.symbol);
+          }
+          if (dataType === "checkbox") {
+            iconChecked = _this[property] ? "-check" : "";
+            return "<i class='fa fa" + iconChecked + "-square-o'></i>";
+          }
+          if (dataType === "date" && _this[property] !== "") {
+            formatedDate = moment(_this[property]).format("YYYY-MM-DD");
+            return "<div class='" + metadataClass + "'>" + formatedDate + "</div>";
+          } else {
+            return "<div class='" + metadataClass + "'>" + (_.escape(propValue)) + "</div>";
+          }
+        }
+        return "";
+      };
+    })(this);
+    html = "<div class='form-group'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <p class='form-control-static'>" + (propertyValue()) + "<p> </div> </div> ";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("input_for", function(property, options) {
+    var containerAttribs, containerCss, dataType, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
+    html = void 0;
+    translationRoot = void 0;
+    dataType = void 0;
+    opt = options.hash || {};
+    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
+    domain = domains_definition[metadata.domain] || {};
+    isDisplayRequired = false;
+    isRequired = (function(_this) {
+      return function() {
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    symbol = (function(_this) {
+      return function() {
+        var isSymbol;
+        isSymbol = false;
+        console.log(metadata, isSymbol);
+        if (opt.symbol != null) {
+          isSymbol = opt.symbol;
+        } else if (metadata.symbol != null) {
+          isSymbol = metadata.symbol;
+        }
+        if (isSymbol) {
+          return "<span class='input-group-addon'>" + isSymbol + "</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
+    }
+    readonly = opt.readonly || false;
+    readonly = readonly ? "readonly" : "";
+    disabled = opt.disabled || false;
+    disabled = disabled ? "disabled" : "";
+    inputAttributes = opt.inputAttributes || "";
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true || ((opt.symbol || metadata.symbol) != null);
+    propertyValue = (function(_this) {
+      return function() {
+        var propValue;
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if (metadata.format != null) {
+            propValue = metadata.format(propValue);
+          }
+          if (dataType === "checkbox") {
+            if (propValue) {
+              return 'checked';
+            }
+          }
+          if (dataType === "date" && propValue !== "") {
+            return "value='" + propValue + "'";
+          } else {
+            return "value='" + (_.escape(propValue)) + "'";
+          }
+        }
+        return "";
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + "  fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errorSize = (function(_this) {
+      return function() {
+        var errorLength, offsetError;
+        errorLength = 12 - labelSizeValue;
+        offsetError = labelSizeValue;
+        return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
+      };
+    })(this);
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    html = "<div class='form-group " + error + "'> " + (label()) + " <div class='" + (isAddOnInput ? 'input-group' : "") + " " + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> " + (icon()) + " <input id='" + property + "' class='form-control input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/> " + (symbol()) + " " + (isRequired()) + " </div> " + (errors()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("options_selected", function(property, options) {
+    var addOption, dataMapping, domain, elt, error, errorValue, errors, html, icon, inputSize, inputSizeValue, isAddOnInput, isAtLine, isRequired, jsonGiven, label, labelSize, labelSizeValue, list, metadata, opt, optMapping, optName, optToTriggerListKey, optToTriggerName, readonly, selected, translationKey, translationRoot, _i, _len;
+    opt = options.hash || {};
+    optName = opt.optName != null ? "data-name='" + opt.optName + "'" : "";
+    optToTriggerName = opt.optToTriggerName != null ? "data-opttotrigger-name='" + opt.optToTriggerName + "'" : "";
+    optToTriggerListKey = opt.optToTriggerListKey != null ? "data-opttotrigger-listkey='" + opt.optToTriggerListKey + "'" : "";
+    optMapping = opt.optMapping != null ? this[opt.optMapping] : null;
+    dataMapping = optMapping != null ? "data-mapping=" + optMapping : "";
+    list = this[opt.listKey] || [];
+    selected = this[property] || opt.selected || void 0;
+    if (opt.addDefault) {
+      list = [
+        {
+          id: void 0,
+          label: ''
+        }
+      ].concat(list);
+    }
+    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
+    domain = domains_definition[metadata.domain] || {};
+    isRequired = (function(_this) {
+      return function() {
+        var isDisplayRequired;
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    isAtLine = opt.isAtLine || false;
+    readonly = opt.readonly || false;
+    readonly = readonly ? "disabled" : "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    inputSizeValue = 12 - labelSizeValue;
+    inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + " fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    isAddOnInput = (opt.icon != null) || (opt.isRequired || metadata.required) === true;
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel == null) {
+          if (isAtLine) {
+            return "<div class='row'><label class='control-label for='" + property + "'> " + (translationKey()) + " </label></div>";
+          } else {
+            return "<label class='control-label " + labelSize + "' for='" + property + "'> " + (translationKey()) + " </label>";
+          }
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    jsonGiven = this;
+    addOption = function(elt) {
+      var id, isSelected, prop;
+      id = elt.id;
+      prop = elt.label;
+      isSelected = (selected != null) && (id != null) && id.toString() === selected.toString() ? "selected" : "";
+      html += "<option value= '" + id + "' data-name='" + property + "' " + isSelected + ">" + prop + "</option>";
+      return void 0;
+    };
+    html = "<div class='form-group " + error + "'> " + (label()) + " <div class='controls " + inputSize + "'> <div class='input-group'> " + (icon()) + " <select id='" + property + "' " + readonly + " " + optName + " " + optToTriggerName + " " + optToTriggerListKey + " " + dataMapping + " class='form-control input-sm'>";
+    for (_i = 0, _len = list.length; _i < _len; _i++) {
+      elt = list[_i];
+      addOption(elt);
+    }
+    html += "</select>" + (isRequired()) + " </div> " + (errors()) + " </div> </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("dateFormat", function(_date, options) {
+    var format, formatedDate, opt;
+    formatedDate = '';
+    if (_date) {
+      opt = options.hash || {};
+      format = opt.format || require('../config').dateFormat;
+      formatedDate = moment(_date).format(format);
+    }
+    return new Handlebars.SafeString(formatedDate);
+  });
+
+  S4 = function() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  };
+
+  guid = function() {
+    return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
+  };
+
+  Handlebars.registerHelper("button", function(text_key, options) {
+    var button, cssClass, cssId, icon, isScript, opt, script, type;
+    opt = options.hash || {};
+    isScript = typeof opt.isScript === "undefined" ? true : opt.isScript;
+    cssClass = opt["class"] || "";
+    cssId = opt.id || guid();
+    type = opt.type || "button";
+    script = function() {
+      if (isScript && type === 'submit') {
+        return "<script type='text/javascript'>$('#" + cssId + "').on('click', function(){$(this).button('loading');});</script>";
+      } else {
+        return "";
+      }
+    };
+    icon = function() {
+      if (opt.icon != null) {
+        return "<i class='fa fa-fw fa-" + opt.icon + "'></i>";
+      } else {
+        return "";
+      }
+    };
+    button = "<button type='" + type + "' class='btn " + cssClass + "' id='" + cssId + "' data-loading-text='" + (i18n.t('button.loading')) + "'>" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>" + (script());
+    return new Handlebars.SafeString(button);
+  });
+
+  Handlebars.registerHelper("paginate", function(property, options) {
+    var currentPage, endPage, firstPage, generateLeftArrow, generatePageFilter, generatePageNumber, generateRigthArrow, generateTotal, html, perPage, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    currentPage = this.currentPage;
+    firstPage = this.firstPage || 0;
+    endPage = (this.totalPages || 0) + firstPage;
+    perPage = this.perPage || 10;
+    totalRecords = this.totalRecords;
+    generateLeftArrow = function() {
+      var className;
+      className = currentPage === firstPage ? "disabled" : "";
+      return "<li class='" + className + "' data-page='" + firstPage + "'><a href='#' data-bypass>&laquo;</a></li>";
+    };
+    generatePageNumber = function() {
+      var html, i, _i;
+      html = "";
+      for (i = _i = firstPage; firstPage <= endPage ? _i <= endPage : _i >= endPage; i = firstPage <= endPage ? ++_i : --_i) {
+        html += "<li class='" + (i === currentPage ? 'active' : '') + "'><a href='#' data-bypass data-page='" + i + "'>" + i + "</a></li>";
+      }
+      return html;
+    };
+    generateRigthArrow = function() {
+      var className;
+      className = currentPage === endPage ? "disabled" : "";
+      return "<li class='" + className + "' data-page='" + endPage + "'><a href='#' data-bypass>&raquo;</a></li>";
+    };
+    generatePageFilter = function() {
+      var generateOptions, pageString;
+      pageString = i18n.t("application.pages");
+      generateOptions = function() {
+        var html, i, _i;
+        html = "";
+        for (i = _i = 1; _i <= 4; i = ++_i) {
+          html += "<option value='" + (5 * i) + "' " + (5 * i === perPage ? 'selected' : void 0) + ">" + (5 * i) + " " + pageString + "</option>";
+        }
+        return html;
+      };
+      return "<select class='form-control'> " + (generateOptions()) + " </select>";
+    };
+    generateTotal = function() {
+      var resultString;
+      resultString = i18n.t('search.result');
+      return "<div class='badgeResult'>" + resultString + " <span class='badge'>" + totalRecords + "</span></div>";
+    };
+    html = "<div class='col-md-8'> <ul class='pagination'>" + (generateLeftArrow()) + (generatePageNumber()) + (generateRigthArrow()) + "</ul> </div> <div class='col-md-2 pagination'> " + (generateTotal()) + " </div> <div class='col-md-2 pagination'> " + (generatePageFilter()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("tableHeaderAction", function(property, options) {
+    var generateTotal, html, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    totalRecords = this.totalRecords;
+    generateTotal = function() {
+      var resultString;
+      resultString = i18n.t('search.result');
+      return "" + resultString + " <span class='badge'>" + totalRecords + "</span>";
+    };
+    html = "<div class='tableAction'> <div class='pull-left'> " + (generateTotal()) + " </div> <div class='pull-right export'> <button type='button' class='btn btn-primary'>" + (i18n.t('search.export')) + " <i class='fa fa-table'></i></button> </div> </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("sortColumn", function(property, options) {
+    var generateSortPosition, order, sortField, translationKey;
+    options = options.hash || {};
+    sortField = this.sortField;
+    order = this.order || "asc";
+    translationKey = options.translationKey || void 0;
+    generateSortPosition = function() {
+      var icon;
+      icon = "fa fa-sort";
+      if (property === sortField) {
+        icon += "-" + order;
+      }
+      return "<i class='" + icon + "' data-name='" + property + "'></i>";
+    };
+    return new Handlebars.SafeString("<a class='sortColumn' href='#' data-name='" + property + "' data-bypass>" + (i18n.t(translationKey)) + " " + (generateSortPosition()) + "</a>");
+  });
+
+
+  /*Handlebars.registerHelper "currency",(property, options) ->
+    currencySymbol = ''
+    value = ''
+    if (+this[property])? or +this[property] is 0
+      value = +this[property]
+    if typeof value is 'number'
+      value = numeral(value).format(require('./configuration').getConfiguration().format.currency) if value isnt ''#value.toFixed('2')
+      new Lawnchair({name: 'products'}, $.noop).get('currency', (curr)-> currencySymbol = curr.currencySymbol)
+    html = "<div class='currency'><div class='right'>#{value} #{currencySymbol}</div></div>"
+    new Handlebars.SafeString(html)
+   */
+
+  Handlebars.registerHelper("progress", function(property, options) {
+    var addElements;
+    addElements = function(elements) {
+      var html;
+      html = "";
+      elements.forEach(function(elt) {
+        return html += "<div class='progress-bar progress-bar-" + elt.type + "' style='width: " + elt.value + "%'> " + elt.label + " </div>";
+      });
+      console.log("progress", html);
+      return html;
+    };
+    return new Handlebars.SafeString("<div class='progress'>" + (addElements(this[property])) + "</div>");
+  });
+
+}).call(this);
+
+/*global Backbone, _, window, Promise, $ */
 "use strict";
 (function(NS) {
   //Filename: views/core-view.js
@@ -2115,15 +2831,19 @@ function program1(depth0,data) {
     module.exports = CollectionPaginationView;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/*global window, Backbone, $*/
-"use strict";
-(function (NS) {
+﻿/*global window, Backbone, $, i18n*/
+(function(NS) {
+    "use strict";
     //Filename: views/detail-consult-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+    //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
     var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
+    var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
+    var urlHelper = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
+    var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
+    var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
 
     //Backbone view which can be use in order to create consultation view and edition view.
     var ConsultEditView = CoreView.extend({
@@ -2135,55 +2855,66 @@ function program1(depth0,data) {
         className: 'consultEditView',
 
         //Service to get the model.
-        getModel: undefined,
+        getModelSvc: undefined,
 
         //Service to delete the model.
-        deleteModel: undefined,
+        deleteModelSvc: undefined,
+
+        //Service to save a model wether it is a model or a collection.
+        saveModelSvc: undefined,
 
         //Template for the edit mode.
         templateEdit: undefined,
 
         //Template for the consultation mode.
         templateConsult: undefined,
+
+        
         //Default options for the view.
         defaultOptions: {
-            isModelLoaded: true, //By default the model is loaded.
-            isEditMode: true
+            isModelToLoad: true, //By default the model is loaded.
+            isEditMode: true,
+            isNavigationOnSave: true,
+            isNavigationOnDelete: true,
+            isSaveOnServer: true,
+            collectionSelector: "tbody tr"
         },
 
         //Initialize function
         initialize: function initializeConsultEdit(options) {
-          options = options || {};
-          CoreView.prototype.initialize.call(this);
-          //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options. 
-          this.isEdit = (this.opts.isEditMode && this.opts.isEdit)|| false;
-          //render view when the model is loaded
-          this.model.on('change', this.render, this);
-          // In order to be loaded a model has to have an id and the options must be activated.
-          if (this.opts.isModelLoaded && this.model.has('id')) {
-            //Try to load the model from a service which have to return a promise.
-            var view = this;
-            this.getModel(this.model.get('id'))
-				.then(function success(jsonModel) {
-					view.model.set(jsonModel);
-				}).then(null, function error(errorResponse) {
-				    ErrorHelper.manageResponseErrors(errors, {
-				        model: this.model
-				    });
-				});
-          }
+            options = options || {};
+            CoreView.prototype.initialize.call(this, options);
+            //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options. 
+            this.isEdit = (this.opts.isEditMode && this.opts.isEdit) || false;
+            //render view when the model is loaded
+            this.model.on('change', this.render, this);
+            // In order to be loaded a model has to have an id and the options must be activated.
+            if (this.opts.isModelToLoad && typeof this.model.has === "function" && this.model.has('id')) {
+                //Try to load the model from a service which have to return a promise.
+                var view = this;
+                this.getModelSvc(this.model.get('id'))
+                    .then(function success(jsonModel) {
+                        view.model.set(jsonModel);
+                    }).then(null, function error(errorResponse) {
+                        ErrorHelper.manageResponseErrors(errorResponse, {
+                            model: this.model
+                        });
+                    });
+            }
         },
 
         //Events handle by the view with user interaction
         events: {
             "click button.btnEdit": "edit",
             "click button.btnDelete": "deleteItem",
-            "click .panel-heading": "toogleCollapse"
+            "click .panel-heading": "toogleCollapse",
+            "click button[type='submit']": "save",
+            "click button.btnCancel": "cancelEdition"
         },
 
         //JSON data to attach to the template.
         getRenderData: function getRenderDataConsultEdit() {
-           return this.model.toJSON();
+            return this.model.toJSON();
         },
 
         //genarate navigation url usefull if the edit mode is not on the same page.
@@ -2193,9 +2924,11 @@ function program1(depth0,data) {
 
         //Change the edit mode.
         toggleEditMode: function toogleEditMode(event) {
-            if (event) { event.preventDefault(); }
+            if (event) {
+                event.preventDefault();
+            }
             this.isEdit = !this.isEdit;
-            this.render();
+            this.render({isSearchTriggered: true});//todo: fix this to have no options.
         },
 
         //Deal with the edit button click wether there is an edit mode or not.
@@ -2207,18 +2940,126 @@ function program1(depth0,data) {
                 Backbone.history.navigate(this.generateEditUrl(), true);
             }
         },
+        //Get the json data to be save by the view.
+        getDataToSave: function getDataToSaveDetailEdit() {
+            return this.model.toJSON();
+        },
+        //Deal with the save event on the page.
+        save: function saveConsultEdit(event) {
+            event.preventDefault();
+            //Call a different method depending on the fact that the model is a collection or a model.
+            if(utilHelper.isBackboneModel(this.model)){
+                this.saveModel();
+            }else if(utilHelper.isBackboneCollection(this.model)) {
+                this.saveCollection();
+            }
+           
+        },
+        //Save a backbone collection.
+        saveCollection: function saveBackboneCollection(){
+           //Call the form helper in order to rebuild the collection from the form.
+            form_helper.formCollectionBinder(
+                $(this.opts.collectionSelector, this.$el),
+                this.model
+            );
+            //Bind the this to the current view for the
+            var currentView = this;
+            ModelValidator.validateAll(currentView.model)
+                .then(function successValidation() {
+                    //When the model is valid, unset errors.
+                    currentView.model.forEach(function(mdl){mdl.unsetErrors();}, currentView);
+                    if (currentView.opts.isSaveOnServer) {
+                        //Call the service in order to save the model.                   
+                        currentView.saveModelSvc(currentView.getDataToSave())
+                            .then(function success(jsonModel) {
+                                currentView.saveSuccess(jsonModel); //.bind(currentView);
+                            }, function error(responseError) {
+                                currentView.saveError(responseError); //.bind(currentView);
+                            });
+                    }else {
+                        currentView.saveSuccess(currentView.model.toJSON());
+                    }
+
+                }, function errorValidation(errors) {
+                    //todo: see how to set errors.
+                    currentView.model.setErrors(errors);
+                });
+        },
+        //Save method in case of a model.
+        saveModel: function saveBackboneModel(){
+            //Call the form helper in order to rebuild the model from the form.
+            form_helper.formModelBinder({
+                inputs: $('input', this.$el),
+                options: $('select', this.$el)
+            }, this.model);
+
+            //Bind the this to the current view for the
+            var currentView = this;
+            //Todo: Add a method in util in order to know if an object is a collectio or a model.
+            //Add it into the initialize too.
+            ModelValidator.validate(currentView.model)
+                .then(function successValidation() {
+                    //When the model is valid, unset errors.
+                    currentView.model.unsetErrors();
+                    if (currentView.opts.isSaveOnServer) {
+                        //Call the service in order to save the model.                   
+                        currentView.saveModelSvc(currentView.getDataToSave())
+                            .then(function success(jsonModel) {
+                                currentView.saveSuccess(jsonModel); //.bind(currentView);
+                            }, function error(responseError) {
+                                currentView.saveError(responseError); //.bind(currentView);
+                            });
+                    }else {
+                        currentView.saveSuccess(currentView.model.toJSON());
+                    }
+
+                }, function errorValidation(errors) {
+                    currentView.model.setErrors(errors);
+                });
+        },
+
+        //Actions on save error
+        saveError: function saveErrorConsultEdit(errors) {
+            ErrorHelper.manageResponseErrors(errors, {
+                model: this.model
+            });
+        },
+        //Actions on save success.
+        saveSuccess: function saveSuccessConsultEdit(jsonModel) {
+            Backbone.Notification.addNotification({
+                type: 'success',
+                message: i18n.t('save.' + (jsonModel.id ? 'create' : 'update') + 'success')
+            });
+            // If the navigation on save is activated, navigate to the page.
+            if (this.opts.isNavigationOnSave) {
+                Backbone.history.navigate(this.generateNavigationUrl(), true);
+            } else {
+                // If there is no navigation on save, trigger a change event.
+                this.model[utilHelper.isBackboneModel(this.model) ? 'set' : 'reset'](jsonModel, {
+                    silent: true
+                });
+                this.toggleEditMode();
+            }
+        },
+
+        generateNavigationUrl: function generateNavigationUrl() {
+            if (this.model.get('id') === null || this.model.get('id') === undefined) {
+                return "/";
+            }
+            return urlHelper.generateUrl([this.model.modelName, this.model.get("id")], {});
+        },
 
         //Code to delete an item.
         deleteItem: function deleteConsult(event) {
             event.preventDefault();
             var view = this;
             //call delete service
-            this.deleteModel()
-				.then(function success(successResponse) {
-				    view.deleteSuccess(successResponse);
-				}, function error(errorResponse) {
-				    view.deleteError(errorResponse);
-				});
+            this.deleteModelSvc()
+                .then(function success(successResponse) {
+                    view.deleteSuccess(successResponse);
+                }, function error(errorResponse) {
+                    view.deleteError(errorResponse);
+                });
         },
 
         //Generate delete navigation url.
@@ -2230,8 +3071,11 @@ function program1(depth0,data) {
         deleteSuccess: function deleteConsultEditSuccess(response) {
             //remove the view from the DOM
             this.remove();
-            //navigate to next page
-            Backbone.history.navigate(this.generateDeleteUrl(), true);
+            if (this.opts.isNavigationOnDelete) {
+                //navigate to next page
+                Backbone.history.navigate(this.generateDeleteUrl(), true);
+            }
+
         },
 
         // Actions after a delete error. 
@@ -2248,7 +3092,7 @@ function program1(depth0,data) {
             } else {
                 this.$el.html(this.templateConsult(this.getRenderData()));
             }
-            
+
             return this;
         },
 
@@ -2390,8 +3234,9 @@ function program1(depth0,data) {
 		saveModel: undefined, //VmSvc.save
 		getModel: undefined, //VmSvc.get
 
-		initialize: function initializeEdit() {
-			CoreView.prototype.initialize.call(this);
+		initialize: function initializeEdit(options) {
+			options = options || {};
+			CoreView.prototype.initialize.call(this, options);
 			this.model.on('change', this.render, this);
 			this.listenTo(this.model, 'validated:valid', this.modelValid);
 			this.listenTo(this.model, 'validated:invalid', this.modelInValid);
@@ -2414,6 +3259,10 @@ function program1(depth0,data) {
 			throw new NotImplementedException('getRenderData');
 		},
 
+		//Get the json data to be save by the view.
+		getDataToSave: function getDataToSaveDetailEdit() {
+			return this.model.toJSON();
+		},
 		save: function saveEdit(event) {
 			event.preventDefault();
 			form_helper.formModelBinder({
@@ -2424,7 +3273,7 @@ function program1(depth0,data) {
 			ModelValidator.validate(currentView.model)
 				.then(function() {
 					currentView.model.unsetErrors();
-					currentView.saveModel(currentView.model.toJSON())
+					currentView.saveModel(currentView.getDataToSave())
 						.then(function success(jsonModel) {
 							currentView.saveSuccess(jsonModel);
 						}).then(null, function error(responseError) {
@@ -2479,18 +3328,19 @@ function program1(depth0,data) {
 		module.exports = DetailEditView;
 	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/*global Backbone, i18n, $, window*/
+﻿/*global Backbone, i18n, $, window, _*/
 "use strict";
-(function (NS) {
+(function(NS) {
     // Filename: views/list-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
     var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
-    var templatePagination = function () { }; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
-    var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
-    
-    var ListView = CoreView.extend({
+    var templatePagination = function() {}; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
+    var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require('./consult-edit-view');
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+
+    var ListView = ConsultEditView.extend({
         tagName: 'div',
         className: 'resultView',
         resultsPagination: 'div#pagination',
@@ -2502,37 +3352,41 @@ function program1(depth0,data) {
         ResultSelectionView: undefined,
         ResultSelectionModel: undefined,
         resultsContainer: 'div#lineSelectionContainer',
-        additionalData: function () { return undefined; },
+        additionalData: function() {
+            return undefined;
+        },
         //View foreach line in the collection view.
         viewForEachLineConfiguration: {
             isActive: false, //True or false will make the rendering different.
             LineView: undefined, //View to create for each line.
             //ModelLineView: undefined, //Model for the view initialize with collection data. It is not use but could be if we would want to initialize another model.
-            parentContainer: "table tbody"  //selector into which the view .
+            parentContainer: "table tbody" //selector into which the view .
         },
 
         initialize: function initializeSearchResult(options) {
             options = options || {};
-            CoreView.prototype.initialize.call(this);
-           
-            this.listenTo(this.model, "reset", function () {
+            ConsultEditView.prototype.initialize.call(this, options);
+
+            this.listenTo(this.model, "reset", function() {
                 this.render({
                     isSearchTriggered: true
                 });
             }, this);
+            //Listen to the model add event.
+            this.listenTo(this.model, "add", this.addOne, this);
 
             if (this.search !== undefined) {
                 // Fusion des critères venant du rooter (options.searchCriteria) et de la vue (this.searchCriteria).
                 var criteria = {};
-                _.extend(criteria, this.searchCriteria, options.searchCriteria)
+                _.extend(criteria, this.searchCriteria, options.searchCriteria);
 
                 var currentView = this;
-                //Call the service and inject the result into the model.    
+                //Call the service and inject the result into the model.
                 this.search(criteria, this.model.pageInfo()).then(function success(jsonResponse) {
                     currentView.model.setTotalRecords(jsonResponse.totalRecords);
                     currentView.model.reset(jsonResponse.values);
                 }).then(null, function error(errorResponse) {
-                    Fmk.Helpers.errorHelper.manageResponseErrors(errorResponse, {
+                    errorHelper.manageResponseErrors(errorResponse, {
                         isDisplay: true
                     });
                 });
@@ -2544,7 +3398,11 @@ function program1(depth0,data) {
             'click a.sortColumn': 'sortCollection',
             "click .panel-heading": "toogleCollapse",
             'click #btnBack': 'navigateBack',
-            "change .pageFilter" :"changePageFilter"
+            "change .pageFilter": "changePageFilter",
+            //Edition events
+            "click button.btnEdit": "edit",
+            "click button[type='submit']": "save",
+            "click button.btnCancel": "cancelEdition"
         },
         changePageFilter: function changePageFilterListView(event) {
             this.model.perPage = +event.target.value;
@@ -2591,7 +3449,11 @@ function program1(depth0,data) {
             return _url.generateUrl([this.model.model.prototype.modelName.replace('.', '/'), 'show', id]);
         },
         renderDetail: function renderDetail() {
-            $(this.resultsContainer, this.$el).html(new this.ResultSelectionView({ model: new this.ResultSelectionModel({ id: this.detailId }) }).render().el);
+            $(this.resultsContainer, this.$el).html(new this.ResultSelectionView({
+                model: new this.ResultSelectionModel({
+                    id: this.detailId
+                })
+            }).render().el);
         },
         lineSelection: function lineSelectionSearchResults(event) {
             //todo: should the be unactivated if there is aview per line and delegate to the line. , this.viewForEachLineConfiguration.isActive
@@ -2603,7 +3465,7 @@ function program1(depth0,data) {
                 this.trigger('listview:lineSelected', id);
                 this.renderDetail();
                 // Trigger
-               
+
             } else {
                 // Navigate
                 var url = this.generateNavigationUrl(id);
@@ -2616,11 +3478,15 @@ function program1(depth0,data) {
         },
         //Add one line view from the model.
         addOne: function addOneLineView(model) {
+            var opt = {isEdit: false};
+            if (this.isEdit) {
+                opt.isEdit = this.isEdit;
+            }
             $(this.viewForEachLineConfiguration.parentContainer, this.$el).append(
-                new this.viewForEachLineConfiguration.LineView({
+                new this.viewForEachLineConfiguration.LineView(_.extend({
                     model: model
-                }).render().el
-             );
+                }, opt)).render().el
+            );
         },
         render: function renderSearchResults(options) {
             options = options || {};
@@ -2631,7 +3497,7 @@ function program1(depth0,data) {
             //If there is no result.
             if (this.model.length === 0) {
                 //Is recherche launched.
-                this.$el.html("<p>No results...</p>");//todo: call a template
+                this.$el.html(i18n.t('search.noResult')); //todo: call a template
                 Backbone.Notification.addNotification({
                     type: 'info',
                     message: i18n.t('search.noResult')
@@ -2654,7 +3520,7 @@ function program1(depth0,data) {
 
                 //Conditionnal code for rendering a line foreachView
                 if (this.viewForEachLineConfiguration.isActive) {
-                  this.model.forEach(this.addOne, this);
+                    this.model.forEach(this.addOne, this);
                 }
 
                 //render pagination
@@ -2670,11 +3536,17 @@ function program1(depth0,data) {
             return this;
         },
         afterRender: function postRenderListView() {
-            CoreView.prototype.afterRender.call(this);
+            ConsultEditView.prototype.afterRender.call(this);
             $('.collapse', this.$el).collapse('show');
         }
-    });
+        //,
+        //triggerSaveModels: function triggerSaveModels() {
+        //    this.model.forEach(function(model){
+        //        model.trigger("model:end-edit");
+        //    }, this);
+        //}
 
+    });
     // Differenciating export for node or browser.
     if (isInBrowser) {
         NS.Views = NS.Views || {};
@@ -2683,6 +3555,7 @@ function program1(depth0,data) {
         module.exports = ListView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+
 /*global Backbone, i18n, $, window*/
 "use strict";
 (function(NS) {
@@ -2814,7 +3687,7 @@ function program1(depth0,data) {
 			ModelValidator
 				.validate(this.model)
 				.then(function(model) {
-					currentView.model.unsetErrors();
+					currentView.model.unsetErrors({silent: false});
 					currentView.search(_.clone(_.omit(currentView.model.attributes, currentView.referenceNames)), currentView.searchResults.pageInfo())
 						.then(function success(jsonResponse) {
 							return currentView.searchSuccess(jsonResponse);
