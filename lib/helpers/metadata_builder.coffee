@@ -15,6 +15,7 @@
       throw new ArgumentNullException('The metadata builder needs metadatas in options.') if not options.metadatas?
       @domains = options.domains
       @metadatas = options.metadatas
+      @isLog = options.isLog #Define if there is warn or not for metadata properties.
       cb(@domains, @metadatas) if cb?
     # Get the validation attributes from the domain.
     getDomainsValidationAttrs: (model) ->
@@ -116,13 +117,15 @@
           if @metadatas[model.modelName]?
             return @metadatas[model.modelName]
           else
-            console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
+            if @isLog
+              console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
             return {}
         else
           if @metadatas[mdName[0]][mdName[1]]?
             return @metadatas[mdName[0]][mdName[1]]
           else
-            console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
+            if @isLog
+              console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
             return {}
       else
         throw new ArgumentNullException('The model should have a model name in order to build its metadatas')

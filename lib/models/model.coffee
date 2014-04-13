@@ -18,7 +18,7 @@
     toJSON: ->
       jsonModel = super()
       jsonModel.metadatas =  @metadatas
-      jsonModel.modelName = @modelName
+      jsonModel.modelName =  @modelName or this.get('modelName')
       return jsonModel
   if isInBrowser
     NS.Models = NS.Models or {}
