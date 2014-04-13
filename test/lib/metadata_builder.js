@@ -1,7 +1,7 @@
 /*global describe, it, beforeEach, afterEach, sinon, _*/
 require('../initialize-globals').load();
 //Require the module to test.
-var domains = {};//require('../../example/domains');
+var domains = require('../../example/domains');
 var modelMetadatas = {
 	coreModel: {
 		id: {
@@ -117,10 +117,11 @@ describe('# MetadataBuilder', function() {
 		//Initialisation
 		var model = new Model();
 		var validators = metadataBuilder.getDomainsValidationAttrs(model);
+		//console.log("validators", validators);
 		it('Should have validators for each property', function() {
-			validators.should.have.property('id');
-			validators.should.have.property('name');
-			validators.should.have.property('age');
+			validators.should.have.property('id').not.undefined;
+			validators.should.have.property('name').not.undefined;
+			validators.should.have.property('age').not.undefined;
 		});
 		it('Should have a required override on the validators.', function() {
 			validators.should.have.property('age').be.an("Array").of.length(2);

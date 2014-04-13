@@ -39,7 +39,7 @@ describe('Validator', function() {
         property.value = '';
         validator.value = true;
         var validationResult = validate(property, [validator]);
-        console.log(validationResult);
+        //console.log(validationResult);
         validationResult.should.be.an('object');
         validationResult.should.have.property('name', property.name);
         validationResult.should.have.property('value');

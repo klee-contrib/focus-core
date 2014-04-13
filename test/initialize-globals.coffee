@@ -15,8 +15,7 @@ exports.load = (options)->
     global.config = require '../lib/config'
     global.i18n = require('i18next')
     #Initialization of the translations.
-    #i18n.init({resStore: require('../app/internationalization/all'), lng: config.lang}, (content)-> console.log('Translation correctly initialized.'))###
-
+    i18n.init({resStore: {}, lng: "en-US"}, (content)-> console.log('Translation correctly initialized.'))
     # Autorize the model validation. 
     _.extend(Backbone.Model.prototype, Backbone.Validation.mixin)
     if options.log?
@@ -26,3 +25,4 @@ exports.load = (options)->
   else
     console.log('Globals already loaded') if options.log?
     return false
+  global.console.warn = ()->
