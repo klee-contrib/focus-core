@@ -20,6 +20,10 @@
       jsonModel.metadatas =  @metadatas
       jsonModel.modelName =  @modelName or this.get('modelName')
       return jsonModel
+      
+    # Return a json to Save.
+    toSaveJSON(): ->
+      Backbone.Model.prototype.toJSON.call(@)
   if isInBrowser
     NS.Models = NS.Models or {}
     NS.Models.Model = Model
