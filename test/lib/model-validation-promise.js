@@ -145,6 +145,8 @@ describe('#model-validation-promise', function() {
         errors.should.be.an('Array');
         errors.length.should.be.equal(1);
         errors[0].should.have.property("index").be.equal(6);
+        //require('../../lib/helpers/error_helper').setCollectionErrors(contacts, errors);
+        //console.log(contacts.toJSON());
         done();
       });
     });

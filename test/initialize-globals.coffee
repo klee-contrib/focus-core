@@ -14,6 +14,8 @@ exports.load = (options)->
     global.Backbone.Validation = require 'backbone-validation'
     global.config = require '../lib/config'
     global.i18n = require('i18next')
+    global.$ = () ->
+      console.log('$ does not exists in node... Try jsdom ') if options.log?
     #Initialization of the translations.
     i18n.init({resStore: {}, lng: "en-US"}, (content)-> console.log('Translation correctly initialized.'))
     # Autorize the model validation. 
@@ -25,4 +27,3 @@ exports.load = (options)->
   else
     console.log('Globals already loaded') if options.log?
     return false
-  global.console.warn = ()->
