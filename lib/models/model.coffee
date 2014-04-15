@@ -1,10 +1,16 @@
-"use strict"
 ((NS) ->
+  "use strict"
   # Filename: models/model.coffee
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Base class for all models. Define all transverses methods on the model.
   class Model extends Backbone.Model
+
+    # Initialize method of the model.
+    initialize: (options)->
+      options = options or {}
+      super options
+      @modelName = options.modelName if options.modelName?
     #Define a method in order to be able to quickly remove errors form the model.
     unsetErrors:(options) ->
       options = options or {}
@@ -22,7 +28,7 @@
       return jsonModel
       
     # Return a json to Save.
-    toSaveJSON(): ->
+    toSaveJSON: ->
       Backbone.Model.prototype.toJSON.call(@)
   if isInBrowser
     NS.Models = NS.Models or {}

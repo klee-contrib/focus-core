@@ -1,4 +1,4 @@
-layout="parallel"
+layout="linear"
 #'choose a layout (parallel, linear or classic)
 docco lib/helpers/* --layout $layout --output docs/helpers
 docco lib/views/* --layout $layout --output docs/views

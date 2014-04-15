@@ -66,6 +66,7 @@
     <Content Include="lib\models\paginatedCollection.js" />
     <Content Include="lib\templates\templates.js" />
     <Content Include="lib\views\collection-pagination-view.js" />
+    <Content Include="lib\views\composite-view.js" />
     <Content Include="lib\views\consult-edit-view.js" />
     <Content Include="lib\views\core-view.js" />
     <Content Include="lib\views\detail-consult-view.js" />
@@ -94,6 +95,7 @@
     <None Include="lib\helpers\custom_exception.coffee" />
     <None Include="lib\helpers\formatter_helper.coffee" />
     <None Include="lib\helpers\metadata_builder.coffee" />
+    <None Include="lib\models\collection.coffee" />
     <None Include="lib\models\model.coffee" />
     <None Include="lib\templates\notifications.hbs" />
     <None Include="package.json" />
@@ -103,6 +105,7 @@
     <None Include="test\views\header-view-test.coffee" />
     <None Include="test\views\home-page-view-test.coffee" />
     <None Include="test\views\site-view-test.coffee" />
+    <None Include="view_helper.coffee" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\services\" />

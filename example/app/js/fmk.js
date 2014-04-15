@@ -21,11 +21,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    <strong>";
+  buffer += "\r\n    <strong>";
   if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</strong><br />\n  ";
+    + "</strong><br />\r\n  ";
   return buffer;
   }
 
@@ -33,100 +33,10 @@ function program1(depth0,data) {
   if (stack1 = helpers.cssMessageType) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.cssMessageType); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'>\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\n  ";
+    + "'>\r\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\r\n  ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
-  return buffer;
-  });;
-this["Fmk"] = this["Fmk"] || {};
-this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
-this["Fmk"]["templates"]["pagination"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    <li>\n      <span class=\"btn\" data-page=\"";
-  if (stack1 = helpers.firstPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.firstPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n        ";
-  if (stack1 = helpers.firstPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.firstPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\n      </span>\n    </li>\n    <li>\n      <span>...</span>\n    </li>\n  ";
-  return buffer;
-  }
-
-function program3(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n	  <li>\n      <span class=\"btn\" data-page=\"";
-  if (stack1 = helpers.previous) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.previous); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n        ";
-  if (stack1 = helpers.previous) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.previous); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\n      </span>\n    </li>\n	";
-  return buffer;
-  }
-
-function program5(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n	  <li>\n      <span class=\"btn\" data-page=\"";
-  if (stack1 = helpers.next) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.next); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n        ";
-  if (stack1 = helpers.next) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.next); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\n      </span>\n    </li>\n  ";
-  return buffer;
-  }
-
-function program7(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n  <li>\n    <span>...</span>\n  </li>\n  <li>\n    <span class=\"btn\" data-page=\"";
-  if (stack1 = helpers.lastPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.lastPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n      ";
-  if (stack1 = helpers.lastPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.lastPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\n    </span>\n  </li>\n  ";
-  return buffer;
-  }
-
-  buffer += "﻿<ul class=\"pagination\">\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.showFirst), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.previous), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	  <li class=\"active\">\n      <span data-page=\"";
-  if (stack1 = helpers.currentPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.currentPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n        ";
-  if (stack1 = helpers.currentPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.currentPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\n      </span>\n    </li>\n	";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.next), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n  ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.showLast), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</ul> ";
+  buffer += "\r\n</div>";
   return buffer;
   });;
 (function() {
@@ -370,11 +280,128 @@ function program7(depth0,data) {
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function() {
-  "use strict";
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(NS) {
+    "use strict";
+    var Collection, isInBrowser;
+    NS = NS || {};
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    Collection = (function(_super) {
+      __extends(Collection, _super);
+
+      function Collection() {
+        return Collection.__super__.constructor.apply(this, arguments);
+      }
+
+      Collection.prototype.modelName = void 0;
+
+      Collection.prototype.changes = {
+        creates: {},
+        updates: {},
+        deletes: {}
+      };
+
+      Collection.prototype.addModel = function(model) {
+        if (model.isNew()) {
+          return this.changes.creates[model.cid] = model.toSaveJSON();
+        } else {
+          return this.updateModel(model);
+        }
+      };
+
+      Collection.prototype.updateModel = function(model) {
+        return this.changes.updates[model.cid] = model.toSaveJSON();
+      };
+
+      Collection.prototype.deleteModel = function(model) {
+        if (this.changes.add[model.cid] != null) {
+          delete this.changes.add[model.cid];
+        }
+        if (this.changes.updates[model.cid] != null) {
+          this.changes.deletes[model.cid] = model.toSaveJSON();
+          return delete this.changes.updates[model.cid];
+        }
+      };
+
+      Collection.prototype.resetModels = function(models) {
+        this.changes = {
+          creates: {},
+          updates: {},
+          deletes: {}
+        };
+        return models.forEach(this.addModel, this);
+      };
+
+      Collection.prototype.initialize = function() {
+        this.on('add', (function(_this) {
+          return function(model) {
+            return _this.addModel(model);
+          };
+        })(this));
+        this.on('remove', (function(_this) {
+          return function(model) {
+            return _this.deleteModel(model);
+          };
+        })(this));
+        this.on('change', (function(_this) {
+          return function(model) {
+            return _this.updateModel(model);
+          };
+        })(this));
+        return this.on('reset', (function(_this) {
+          return function(models) {
+            return _this.resetModels(models);
+          };
+        })(this));
+      };
+
+      Collection.prototype.toJSON = function() {
+        var jsonModel;
+        jsonModel = Collection.__super__.toJSON.call(this);
+        jsonModel.modelName = this.modelName || this.get('modelName');
+        return jsonModel;
+      };
+
+      Collection.prototype.toSaveJSON = function(propertyPrefix) {
+        var creates, deletes, updates;
+        propertyPrefix = propertyPrefix || "";
+        creates = "" + propertyPrefix + "create";
+        updates = "" + propertyPrefix + "update";
+        deletes = "" + propertyPrefix + "delete";
+        return {
+          creates: _.map(this.changes.creates, function(value, key) {
+            return value;
+          }),
+          updates: _.map(this.changes.updates, function(value, key) {
+            return value;
+          }),
+          deletes: _.map(this.changes.deletes, function(value, key) {
+            return value;
+          })
+        };
+      };
+
+      return Collection;
+
+    })(Backbone.Collection);
+    if (isInBrowser) {
+      NS.Models = NS.Models || {};
+      return NS.Models.Collection = Collection;
+    } else {
+      return module.exports = Collection;
+    }
+  })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(NS) {
+    "use strict";
     var Model, isInBrowser;
     NS = NS || {};
     isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -384,6 +411,14 @@ function program7(depth0,data) {
       function Model() {
         return Model.__super__.constructor.apply(this, arguments);
       }
+
+      Model.prototype.initialize = function(options) {
+        options = options || {};
+        Model.__super__.initialize.call(this, options);
+        if (options.modelName != null) {
+          return this.modelName = options.modelName;
+        }
+      };
 
       Model.prototype.unsetErrors = function(options) {
         var silent;
@@ -408,8 +443,12 @@ function program7(depth0,data) {
         var jsonModel;
         jsonModel = Model.__super__.toJSON.call(this);
         jsonModel.metadatas = this.metadatas;
-        jsonModel.modelName = this.modelName;
+        jsonModel.modelName = this.modelName || this.get('modelName');
         return jsonModel;
+      };
+
+      Model.prototype.toSaveJSON = function() {
+        return Backbone.Model.prototype.toJSON.call(this);
       };
 
       return Model;
@@ -463,7 +502,7 @@ function program7(depth0,data) {
 		NS = NS || {};
 		//Dependency gestion depending on the fact that we are in the browser or in node.
 		var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-		var Notification = isInBrowser ? NS.Models.Notification : require('/.notification');
+		var Notification = isInBrowser ? NS.Models.Notification : require('./notification');
 
 		//This collection will contains all the message which will be display in the application.
 		var Notifications = Backbone.Collection.extend({
@@ -500,14 +539,17 @@ function program7(depth0,data) {
 			module.exports = Notifications;
 		}
 	})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, Backbone */
-"use strict";
+/* global window */
 (function(NS) {
+ "use strict";
   // Filename: models/paginatedCollection.js
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("../helpers/custom_exception").ArgumentInvalidException;
-  var PaginatedCollection = Backbone.Collection.extend({
+  var Collection = isInBrowser ? NS.Models.Collection : require('./collection');
+
+ // Paginated collection.
+  var PaginatedCollection = Collection.extend({
       //first number of page
       firstPage: 1,
       //the page loaded
@@ -601,7 +643,7 @@ function program7(depth0,data) {
 	//Filename: views/notifications-view.js
 	NS = NS || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	var template = NS.templates.notifications; //require('./templates/notifications'); //Todo: call a handlebars function.
+	var template = isInBrowser ? NS.templates.notifications : ""; //require('./templates/notifications'); //Todo: call a handlebars function.
 	var NotificationsView = Backbone.View.extend({
 		tagName: 'div',
 		className: 'notifications',
@@ -726,6 +768,149 @@ function program7(depth0,data) {
   }
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+﻿/* global  _ , window */
+(function(NS) {
+    "use strict";
+    //Filename: helpers/util_helper.js
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    NS = NS || {};
+    var JSON = {};
+
+    // Unflatten a json object.
+    // from an object `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
+    // Gives a `{contact: {nom: "nom", prenom: "prenom"}}`
+    JSON.unflatten = function(data) {
+        if (Object(data) !== data || Array.isArray(data))
+            return data;
+        if ("" in data)
+            return data[""];
+        var result = {}, cur, prop, idx, last, temp;
+        for (var p in data) {
+            cur = result;
+            prop = "";
+            last = 0;
+            do {
+                idx = p.indexOf(".", last);
+                temp = p.substring(last, idx !== -1 ? idx : undefined);
+                cur = cur[prop] || (cur[prop] = (!isNaN(parseInt(temp)) ? [] : {}));
+                prop = temp;
+                last = idx + 1;
+            } while (idx >= 0);
+            cur[prop] = data[p];
+        }
+        return result[""];
+    };
+
+    //Flatten a json object.
+    // from an object`{contact: {nom: "nom", prenom: "prenom"}}` 
+    // Gives a one level object:  `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
+    JSON.flatten = function(data) {
+        var result = {};
+
+        function recurse(cur, prop) {
+            if (Object(cur) !== cur) {
+                result[prop] = cur;
+            } else if (Array.isArray(cur)) {
+                for (var i = 0, l = cur.length; i < l; i++)
+                    recurse(cur[i], prop ? prop + "." + i : "" + i);
+                if (l === 0)
+                    result[prop] = [];
+            } else {
+                var isEmpty = true;
+                for (var p in cur) {
+                    isEmpty = false;
+                    recurse(cur[p], prop ? prop + "." + p : p);
+                }
+                if (isEmpty)
+                    result[prop] = {};
+            }
+        }
+        recurse(data, "");
+        return result;
+    };
+    //Deeply combine two json.
+    function combine(json1, json2) {
+        var res = {};
+        _.extend(
+            res,
+            JSON.flatten(json1),
+            JSON.flatten(json2)
+        );
+        return JSON.unflatten(res);
+    }
+    //Generate four random hex digits.
+
+    function S4() {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    }
+    //Generate a pseudo-GUID by concatenating random hexadecimal.
+    function guid() {
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    }
+
+    //This method allows the user to load a data (objet or list) in a promise
+    // Exampl call: refHelper.loadLocalData([{id: 1, label: "nom 1"}, {id: 1, label: "nom 2"}])
+    var loadLocalData = function loadLocalData(data) {
+        return new Promise(function promiseLoadLocalList(resolve, reject) {
+            resolve(data);
+        });
+    };
+
+    //Generate fake datas.
+    var generateFake = {
+        //Generate an aleafied object
+        object: function generateFalseData(obj) {
+            var objAla = {};
+            for (var prop in obj) {
+                //todo: differenciate the treatement swithcing on type.
+                objAla[prop] = '' + obj[prop] + S4();
+            }
+            return objAla;
+        },
+        //Generate a fake collection from a single object, adding, nb is th array size.
+        collection: function geenerateFalseCollection(obj, nb) {
+            var res = [];
+            for (var i = 0; i < nb; i++) {
+                res.push(this.object(obj));
+            }
+            return res;
+        }
+
+    };
+    //Method to call in order to know if a model is a collection
+    var isBackboneModel = function isBackboneModel(model) {
+        return model !== undefined && model !== null && typeof model.has === "function";
+    };
+
+    // Method to call 
+    var isBackboneCollection = function isBackboneCollection(collection) {
+        return collection !== undefined && collection !== null && typeof collection.add === "function";
+    };
+
+    //Method to call in order to know of an object is a view.
+    var isBackboneView = function isBackboneView(view) {
+        return view !== undefined && view !== null && typeof view.render === "function";
+    };
+
+    //Util helper.
+    var utilHelper = {
+        flatten: JSON.flatten,
+        unflatten: JSON.unflatten,
+        combine: combine,
+        loadLocalData: loadLocalData,
+        guid: guid,
+        generateFake: generateFake,
+        isBackboneModel: isBackboneModel,
+        isBackboneCollection: isBackboneCollection,
+        isBackboneView: isBackboneView
+    };
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.utilHelper = utilHelper;
+    } else {
+        module.exports = utilHelper;
+    }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global $,window*/
 "use strict";
 (function(NS) {
@@ -796,8 +981,8 @@ function program7(depth0,data) {
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global _, window, i18n*/
-"use strict";
 (function(NS) {
+	"use strict";
 	/* Filename: helpers/error_helper.js */
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 	NS = NS || {};
@@ -811,20 +996,20 @@ function program7(depth0,data) {
 		var fieldErrors = {};
 		if (responseErrors !== undefined && responseErrors !== null) {
 			/*Case of an HTTP Error (as an example 404).*/
-			if (responseErrors.error !== undefined && responseErrors !== null) {
+		    if (responseErrors.error !== undefined && responseErrors.error !== null && responseErrors !== null) {
 				//The response json should have the following structure : {statusCode: 404, error: "Not Found"}
 				globalErrors.push('' + responseErrors.statusCode + ' ' + responseErrors.error);
 			} else if (responseErrors.errors !== undefined) {
-			    // there errors in the response
-			    _.each(responseErrors.errors, function (error) {
-			        if (error.fieldName !== undefined && error.fieldName.length > 0) {
-			            fieldErrors[error.fieldName] = error.message;
-			        } else {
-			            globalErrors.push(error.message);
-			        }
-			    });
+				// there errors in the response
+				_.each(responseErrors.errors, function(error) {
+					if (error.fieldName !== undefined && error.fieldName.length > 0) {
+						fieldErrors[error.fieldName] = error.message;
+					} else {
+						globalErrors.push(error.message);
+					}
+				});
 			} else {
-			    globalErrors.push(i18n.t('error.unanticipated'));
+				globalErrors.push(i18n.t('error.unanticipated'));
 			}
 		}
 		//If there is no errors, do nothing.
@@ -862,18 +1047,38 @@ function program7(depth0,data) {
 	}
 
 	//Set the *model* errors in the fieldErrors.
-	function setModelErrors(model, errors) {
+	function setModelErrors(model, errors, options) {
 		if (errors !== undefined && errors.fieldErrors !== undefined) {
 			model.set({
 				'errors': errors.fieldErrors
-			});
+			}, options);
+		}
+	}
+	//Set errors on a collection.
+	function setCollectionErrors(collection, errors, options) {
+		for (var i = 0, l = errors.length; i < l; i++) {
+			var error = errors[i];
+			if (error.index === undefined || error.index === null || typeof error.index !== "number") {
+				console.warn('invalid error', error);
+				break;
+			}
+			if (error.errors === undefined || error.errors === null || typeof error.errors !== "object") {
+				console.warn('invalid error', error);
+				break;
+			}
+			//For the model at the given position in the collection:
+			// Set the error depending on its index.
+			collection.at(errors[i].index).set({
+				errors: errors[i].errors
+			}, options);
 		}
 	}
 
 	var errorHelper = {
 		manageResponseErrors: manageResponseErrors,
 		display: displayErrors,
-		setModelErrors: setModelErrors
+		setModelErrors: setModelErrors,
+		setCollectionErrors: setCollectionErrors
 	};
 	if (isInBrowser) {
 		NS.Helpers = NS.Helpers || {};
@@ -895,15 +1100,17 @@ function program7(depth0,data) {
         options = options || {};
         options.isSilent = options.isSilent || true;
         if(selector !== undefined && selector !== null  && collection instanceof Backbone.Collection){
-            collection.reset(null, {silent: true}); // The collection is cleared.
+            //collection.reset(null, {silent: true}); // The collection is cleared.
+            var index = 0;
             Array.prototype.forEach.call(selector , function(modelLineSelector){
-                var model = new collection.model();
+                //var model = new collection.model();
                 this.formModelBinder(
                         {inputs: $('input', modelLineSelector), options:$('select', modelLineSelector)} ,
-                        model, //Model to populate.
+                        collection.at(index), //Model to populate.
                         options
                 );
-                collection.add(model,options);
+                //collection.add(model,options);
+                index++;
             }, this);
         } else {
             console.warn("The selector is not an object", selector);
@@ -1148,6 +1355,7 @@ function program7(depth0,data) {
         }
         this.domains = options.domains;
         this.metadatas = options.metadatas;
+        this.isLog = options.isLog;
         if (cb != null) {
           return cb(this.domains, this.metadatas);
         }
@@ -1186,6 +1394,9 @@ function program7(depth0,data) {
 
       MetadataBuilder.prototype.getMetadatas = function(model) {
         var entityAttrMetadata, entityMetadatas, mdlMetadata, mdlMetadataAttr, metadata, metadatas, metadatasAttrs, overridenProperties, _i, _len;
+        if (model == null) {
+          throw new ArgumentNullException("In order to get metadatas , you must provide a model.");
+        }
         entityMetadatas = this.constructEntityMetaDatas(model);
         metadatas = _.clone(entityMetadatas);
         metadatasAttrs = _.keys(metadatas);
@@ -1257,6 +1468,12 @@ function program7(depth0,data) {
 
       MetadataBuilder.prototype.getMetadataForAttribute = function(model, attribute) {
         var entityAttrMetadata, mdlMetadata, metadata, overridenProperties;
+        if (model == null) {
+          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide a model.");
+        }
+        if (attribute == null) {
+          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide an attribute.");
+        }
         entityAttrMetadata = this.constructEntityMetaDatas(model)[attribute];
         mdlMetadata = (model.metadatas != null) && (model.metadatas[attribute] != null) ? model.metadatas[attribute] : void 0;
         metadata = {};
@@ -1324,14 +1541,18 @@ function program7(depth0,data) {
             if (this.metadatas[model.modelName] != null) {
               return this.metadatas[model.modelName];
             } else {
-              console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              if (this.isLog) {
+                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              }
               return {};
             }
           } else {
             if (this.metadatas[mdName[0]][mdName[1]] != null) {
               return this.metadatas[mdName[0]][mdName[1]];
             } else {
-              console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              if (this.isLog) {
+                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              }
               return {};
             }
           }
@@ -1510,10 +1731,24 @@ function program7(depth0,data) {
     NS = NS || {};
     //Filename: helpers/odata_helper.js
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('./utilHelper');
+    
+    var odataOptions = {
+        filter: '$filter',
+        top: '$top',
+        skip: '$skip',
+        orderby: '$orderby',
+        format:  '$format',
+        inlinecount: '$inlinecount'
+    };
+    var configure = function configure(options) { 
+        _.extend(odataOptions, options);
+    };
+
     // type of the request for odata
     var paginator_core = {
         // the type of the request (GET by default)
-        type: 'GET',
+        type: 'POST',
 
         // the type of reply (json by default)
         dataType: 'json'
@@ -1585,22 +1820,15 @@ function program7(depth0,data) {
         if (pagesInfo.sortField) {
             sortFields.push(pagesInfo.sortField);
         }
-        return {
-            // the query field in the request
-            '$filter': criteriaToOdata(criteria),
-            // number of items to return per request/page
-            '$top': pagesInfo.perPage,
-            //records to bypass
-            '$skip': (pagesInfo.currentPage-1) * pagesInfo.perPage,
-            // field to sort by
-            '$orderby': orderToOdata(sortFields),
-            // what format would you like to request results in?
-            '$format': 'json',
-            // custom parameters
-            '$inlinecount': 'allpages'
-            //callback odata
-            //'$callback': 'callback'
-        };
+
+        var val = {};
+        val[odataOptions.filter] = criteriaToOdata(criteria);
+        val[odataOptions.top] = pagesInfo.perPage;
+        val[odataOptions.skip] = (pagesInfo.currentPage - 1) * pagesInfo.perPage;
+        val[odataOptions.orderby] = orderToOdata(sortFields);
+        val[odataOptions.format] = 'json';
+        val[odataOptions.inlinecount] = 'allpages';
+        return val;
     }
 
     //generate options fo an odata request 
@@ -1635,7 +1863,7 @@ function program7(depth0,data) {
         queryOptions = _.defaults(queryOptions, {
             timeout: 25000,
             cache: false,
-            type: 'GET',
+            type: 'POST',
             dataType: 'json'
         });
 
@@ -1657,7 +1885,13 @@ function program7(depth0,data) {
 
     // parse odata response and return values in format : {totalRecords:totalRecords, values: values}
     function parseOdataResponse(response) {
-        if (response === undefined || response === null || response["odata.count"] === undefined || response["odata.count"] === null) {
+        if (response === undefined || response === null) {
+            throw new Error('Odata error : parsing result');
+        }
+        // To be comaptible with C# ODataController
+        _.extend(response, utilHelper.flatten({odata: response.odata}));
+        delete response.odata;
+        if(response["odata.count"] === undefined || response["odata.count"] === null) {
             throw new Error('Odata error : parsing result');
         }
         return {
@@ -1668,7 +1902,8 @@ function program7(depth0,data) {
 
     var odataHelper = {
         createOdataOptions: createOdataOptions,
-        parseOdataResponse: parseOdataResponse
+        parseOdataResponse: parseOdataResponse,
+        configure: configure
     };
 
     // Differenciating export for node or browser.
@@ -1689,6 +1924,10 @@ function program7(depth0,data) {
   var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require('./post_rendering_helper').metadataBuilder;
   //Options must contain a model and a viewSelecrot property.
   var postRenderingBuilder = function(options) {
+    //When there is no model inide the view, do nothing.
+      if(options === undefined || options === null || !options.model){
+      return;
+    }
     //Get all the metadatas of the model.
     var metadatas = metadataBuilder.getMetadatas(options.model);
     //Iterate through each attributes of the modoptions.modelel.
@@ -1716,8 +1955,8 @@ function program7(depth0,data) {
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global Backbone, Promise, _, window */
-"use strict";
-(function(NS) {
+(function (NS) {
+    "use strict";
 	//Filename: promisify_helper.js
 	NS = NS || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -1776,6 +2015,18 @@ function program7(depth0,data) {
 				options.error = reject;
 				Backbone.sync('read', collection, options);
 			});
+		},
+		save: function saveCollection() {
+		    var model = this;
+		    var method =  'create';
+		    return new Promise(
+				function (resolve, reject) {
+				    Backbone.sync(method, model, {
+				        success: resolve,
+				        error: reject
+				    });
+				}
+			);
 		}
 	});
 
@@ -2002,671 +2253,6 @@ function program7(depth0,data) {
     module.exports = urlHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/* global  _ , window */
-"use strict";
-(function(NS) {
-    //Filename: helpers/util_helper.js
-    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    NS = NS || {};
-    var JSON = {};
-
-    // Unflatten a json object.
-    // from an object `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
-    // Gives a `{contact: {nom: "nom", prenom: "prenom"}}`
-    JSON.unflatten = function(data) {
-        if (Object(data) !== data || Array.isArray(data))
-            return data;
-        if ("" in data)
-            return data[""];
-        var result = {}, cur, prop, idx, last, temp;
-        for (var p in data) {
-            cur = result;
-            prop = "";
-            last = 0;
-            do {
-                idx = p.indexOf(".", last);
-                temp = p.substring(last, idx !== -1 ? idx : undefined);
-                cur = cur[prop] || (cur[prop] = (!isNaN(parseInt(temp)) ? [] : {}));
-                prop = temp;
-                last = idx + 1;
-            } while (idx >= 0);
-            cur[prop] = data[p];
-        }
-        return result[""];
-    };
-
-    //Flatten a json object.
-    // from an object`{contact: {nom: "nom", prenom: "prenom"}}` 
-    // Gives a one level object:  `{"contact.nom": "Nom", "contact.prenom": "Prenom"}`
-    JSON.flatten = function(data) {
-        var result = {};
-
-        function recurse(cur, prop) {
-            if (Object(cur) !== cur) {
-                result[prop] = cur;
-            } else if (Array.isArray(cur)) {
-                for (var i = 0, l = cur.length; i < l; i++)
-                    recurse(cur[i], prop ? prop + "." + i : "" + i);
-                if (l === 0)
-                    result[prop] = [];
-            } else {
-                var isEmpty = true;
-                for (var p in cur) {
-                    isEmpty = false;
-                    recurse(cur[p], prop ? prop + "." + p : p);
-                }
-                if (isEmpty)
-                    result[prop] = {};
-            }
-        }
-        recurse(data, "");
-        return result;
-    };
-    //Deeply combine two json.
-    function combine(json1, json2) {
-        var res = {};
-        _.extend(
-            res,
-            JSON.flatten(json1),
-            JSON.flatten(json2)
-        );
-        return JSON.unflatten(res);
-    }
-    //Generate four random hex digits.
-
-    function S4() {
-        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-    }
-    //Generate a pseudo-GUID by concatenating random hexadecimal.
-    function guid() {
-        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
-    }
-
-    //This method allows the user to load a data (objet or list) in a promise
-    // Exampl call: refHelper.loadLocalData([{id: 1, label: "nom 1"}, {id: 1, label: "nom 2"}])
-    var loadLocalData = function loadLocalData(data) {
-        return new Promise(function promiseLoadLocalList(resolve, reject) {
-            resolve(data);
-        });
-    };
-
-    //Generate fake datas.
-    var generateFake = {
-        //Generate an aleafied object
-        object: function generateFalseData(obj) {
-            var objAla = {};
-            for (var prop in obj) {
-                //todo: differenciate the treatement swithcing on type.
-                objAla[prop] = '' + obj[prop] + S4();
-            }
-            return objAla;
-        },
-        //Generate a fake collection from a single object, adding, nb is th array size.
-        collection: function geenerateFalseCollection(obj, nb) {
-            var res = [];
-            for (var i = 0; i < nb; i++) {
-                res.push(this.object(obj));
-            }
-            return res;
-        }
-
-    };
-    //Method to call in order to know if a model is a collection
-    var isBackboneModel = function isBackboneModel(model) {
-        return model !== undefined && model !== null && typeof model.has === "function";
-    };
-
-    // Method to call 
-    var isBackboneCollection = function isBackboneCollection(collection) {
-        return collection !== undefined && collection !== null && typeof collection.add === "function";
-    };
-
-    //Util helper.
-    var utilHelper = {
-        flatten: JSON.flatten,
-        unflatten: JSON.unflatten,
-        combine: combine,
-        loadLocalData: loadLocalData,
-        guid: guid,
-        generateFake: generateFake,
-        isBackboneModel: isBackboneModel,
-        isBackboneCollection: isBackboneCollection
-    };
-    if (isInBrowser) {
-        NS.Helpers = NS.Helpers || {};
-        NS.Helpers.utilHelper = utilHelper;
-    } else {
-        module.exports = utilHelper;
-    }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-(function() {
-  var S4, domains_definition, guid, metadaBuilder;
-
-  domains_definition = window.domains;
-
-  metadaBuilder = Fmk.Helpers.metadataBuilder;
-
-  Handlebars.registerHelper('pick', function(val, options) {
-    return options.hash[val];
-  });
-
-  Handlebars.registerHelper("t", function(i18n_key, options) {
-    var maxLength, opt, result;
-    opt = options.hash || {};
-    maxLength = opt.max;
-    result = i18n.t(i18n_key);
-    if ((maxLength != null) && maxLength < result.length) {
-      result = "" + (result.slice(0, +maxLength)) + "...";
-    }
-    return new Handlebars.SafeString(result);
-  });
-
-  Handlebars.registerHelper("debug", function(optionalValue) {
-    console.log("Current Context");
-    console.log("====================");
-    console.log(this);
-    if (optionalValue) {
-      console.log("Value");
-      console.log("====================");
-      return console.log(optionalValue);
-    }
-  });
-
-
-  /*------------------------------------------- FORM FOR THE INPUTS ------------------------------------------- */
-
-  Handlebars.registerHelper("display_for", function(property, options) {
-    var containerAttribs, containerCss, dataType, domain, html, inputSize, label, labelSize, labelSizeValue, metadata, opt, propertyValue, translationKey, translationRoot;
-    opt = options.hash || {};
-    metadata = metadaBuilder.getMetadataForAttribute(this, property);
-    domain = domains_definition[metadata.domain] || {};
-    translationRoot = opt.translationRoot || void 0;
-    dataType = opt.dataType || domain.type || "text";
-    if (dataType === "boolean") {
-      dataType = "checkbox";
-    }
-    containerAttribs = opt.containerAttribs || "";
-    containerCss = opt.containerCss || "";
-    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
-    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
-    inputSize = (function(_this) {
-      return function() {
-        var inputSizeValue;
-        if (opt.containerCss) {
-          return inputSize = "";
-        } else {
-          inputSizeValue = 12 - labelSizeValue;
-          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
-        }
-      };
-    })(this);
-    translationKey = (function(_this) {
-      return function() {
-        var translation;
-        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
-        if (translationRoot != null) {
-          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
-        }
-        if (translation === "") {
-          return "";
-        } else {
-          return i18n.t(translation);
-        }
-      };
-    })(this);
-    label = (function(_this) {
-      return function() {
-        if (opt.isNoLabel != null) {
-          return "";
-        } else {
-          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
-        }
-      };
-    })(this);
-    propertyValue = (function(_this) {
-      return function() {
-        var formatedDate, iconChecked, metadataClass, propValue;
-        metadataClass = metadata.style != null ? metadata.style : "";
-        if (_this[property] != null) {
-          propValue = _this[property];
-          if (metadata.format != null) {
-            propValue = metadata.format(propValue);
-          }
-          if (metadata.symbol != null) {
-            propValue = propValue + i18n.t(metadata.symbol);
-          }
-          if (dataType === "checkbox") {
-            iconChecked = _this[property] ? "-check" : "";
-            return "<i class='fa fa" + iconChecked + "-square-o'></i>";
-          }
-          if (dataType === "date" && _this[property] !== "") {
-            formatedDate = moment(_this[property]).format("YYYY-MM-DD");
-            return "<div class='" + metadataClass + "'>" + formatedDate + "</div>";
-          } else {
-            return "<div class='" + metadataClass + "'>" + (_.escape(propValue)) + "</div>";
-          }
-        }
-        return "";
-      };
-    })(this);
-    html = "<div class='form-group'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <p class='form-control-static'>" + (propertyValue()) + "<p> </div> </div> ";
-    return new Handlebars.SafeString(html);
-  });
-
-  Handlebars.registerHelper("input_for", function(property, options) {
-    var containerAttribs, containerCss, dataType, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
-    html = void 0;
-    translationRoot = void 0;
-    dataType = void 0;
-    opt = options.hash || {};
-    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
-    domain = domains_definition[metadata.domain] || {};
-    isDisplayRequired = false;
-    isRequired = (function(_this) {
-      return function() {
-        isDisplayRequired = false;
-        if (opt.isRequired != null) {
-          isDisplayRequired = opt.isRequired;
-        } else if (metadata.required != null) {
-          isDisplayRequired = metadata.required;
-        }
-        if (isDisplayRequired) {
-          return "<span class='input-group-addon'>*</span>";
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    symbol = (function(_this) {
-      return function() {
-        var isSymbol;
-        isSymbol = false;
-        console.log(metadata, isSymbol);
-        if (opt.symbol != null) {
-          isSymbol = opt.symbol;
-        } else if (metadata.symbol != null) {
-          isSymbol = metadata.symbol;
-        }
-        if (isSymbol) {
-          return "<span class='input-group-addon'>" + isSymbol + "</span>";
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    translationRoot = opt.translationRoot || void 0;
-    dataType = opt.dataType || domain.type || "text";
-    if (dataType === "boolean") {
-      dataType = "checkbox";
-    }
-    readonly = opt.readonly || false;
-    readonly = readonly ? "readonly" : "";
-    disabled = opt.disabled || false;
-    disabled = disabled ? "disabled" : "";
-    inputAttributes = opt.inputAttributes || "";
-    containerAttribs = opt.containerAttribs || "";
-    containerCss = opt.containerCss || "";
-    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
-    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
-    inputSize = (function(_this) {
-      return function() {
-        var inputSizeValue;
-        if (opt.containerCss) {
-          return inputSize = "";
-        } else {
-          inputSizeValue = 12 - labelSizeValue;
-          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
-        }
-      };
-    })(this);
-    isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true || ((opt.symbol || metadata.symbol) != null);
-    propertyValue = (function(_this) {
-      return function() {
-        var propValue;
-        if (_this[property] != null) {
-          propValue = _this[property];
-          if (metadata.format != null) {
-            propValue = metadata.format(propValue);
-          }
-          if (dataType === "checkbox") {
-            if (propValue) {
-              return 'checked';
-            }
-          }
-          if (dataType === "date" && propValue !== "") {
-            return "value='" + propValue + "'";
-          } else {
-            return "value='" + (_.escape(propValue)) + "'";
-          }
-        }
-        return "";
-      };
-    })(this);
-    translationKey = (function(_this) {
-      return function() {
-        var translation;
-        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
-        if (translationRoot != null) {
-          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
-        }
-        if (translation === "") {
-          return "";
-        } else {
-          return i18n.t(translation);
-        }
-      };
-    })(this);
-    icon = (function(_this) {
-      return function() {
-        if (opt.icon != null) {
-          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + "  fa-fw'></i> </span>";
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    label = (function(_this) {
-      return function() {
-        if (opt.isNoLabel != null) {
-          return "";
-        } else {
-          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
-        }
-      };
-    })(this);
-    placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
-    error = "";
-    if ((this.errors != null) && (this.errors[property] != null)) {
-      error = "has-error";
-    }
-    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
-    errorSize = (function(_this) {
-      return function() {
-        var errorLength, offsetError;
-        errorLength = 12 - labelSizeValue;
-        offsetError = labelSizeValue;
-        return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
-      };
-    })(this);
-    errors = (function(_this) {
-      return function() {
-        if (error === "has-error") {
-          return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    html = "<div class='form-group " + error + "'> " + (label()) + " <div class='" + (isAddOnInput ? 'input-group' : "") + " " + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> " + (icon()) + " <input id='" + property + "' class='form-control input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/> " + (symbol()) + " " + (isRequired()) + " </div> " + (errors()) + " </div>";
-    return new Handlebars.SafeString(html);
-  });
-
-  Handlebars.registerHelper("options_selected", function(property, options) {
-    var addOption, dataMapping, domain, elt, error, errorValue, errors, html, icon, inputSize, inputSizeValue, isAddOnInput, isAtLine, isRequired, jsonGiven, label, labelSize, labelSizeValue, list, metadata, opt, optMapping, optName, optToTriggerListKey, optToTriggerName, readonly, selected, translationKey, translationRoot, _i, _len;
-    opt = options.hash || {};
-    optName = opt.optName != null ? "data-name='" + opt.optName + "'" : "";
-    optToTriggerName = opt.optToTriggerName != null ? "data-opttotrigger-name='" + opt.optToTriggerName + "'" : "";
-    optToTriggerListKey = opt.optToTriggerListKey != null ? "data-opttotrigger-listkey='" + opt.optToTriggerListKey + "'" : "";
-    optMapping = opt.optMapping != null ? this[opt.optMapping] : null;
-    dataMapping = optMapping != null ? "data-mapping=" + optMapping : "";
-    list = this[opt.listKey] || [];
-    selected = this[property] || opt.selected || void 0;
-    if (opt.addDefault) {
-      list = [
-        {
-          id: void 0,
-          label: ''
-        }
-      ].concat(list);
-    }
-    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
-    domain = domains_definition[metadata.domain] || {};
-    isRequired = (function(_this) {
-      return function() {
-        var isDisplayRequired;
-        isDisplayRequired = false;
-        if (opt.isRequired != null) {
-          isDisplayRequired = opt.isRequired;
-        } else if (metadata.required != null) {
-          isDisplayRequired = metadata.required;
-        }
-        if (isDisplayRequired) {
-          return "<span class='input-group-addon'>*</span>";
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    translationRoot = opt.translationRoot || void 0;
-    isAtLine = opt.isAtLine || false;
-    readonly = opt.readonly || false;
-    readonly = readonly ? "disabled" : "";
-    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
-    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
-    inputSizeValue = 12 - labelSizeValue;
-    inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
-    translationKey = (function(_this) {
-      return function() {
-        var translation;
-        translation = metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
-        if (translationRoot != null) {
-          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
-        }
-        if (translation === "") {
-          return "";
-        } else {
-          return i18n.t(translation);
-        }
-      };
-    })(this);
-    icon = (function(_this) {
-      return function() {
-        if (opt.icon != null) {
-          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + " fa-fw'></i> </span>";
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    isAddOnInput = (opt.icon != null) || (opt.isRequired || metadata.required) === true;
-    label = (function(_this) {
-      return function() {
-        if (opt.isNoLabel == null) {
-          if (isAtLine) {
-            return "<div class='row'><label class='control-label for='" + property + "'> " + (translationKey()) + " </label></div>";
-          } else {
-            return "<label class='control-label " + labelSize + "' for='" + property + "'> " + (translationKey()) + " </label>";
-          }
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    error = "";
-    if ((this.errors != null) && (this.errors[property] != null)) {
-      error = "has-error";
-    }
-    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
-    errors = (function(_this) {
-      return function() {
-        if (error === "has-error") {
-          return "<span class='" + error + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
-        } else {
-          return "";
-        }
-      };
-    })(this);
-    jsonGiven = this;
-    addOption = function(elt) {
-      var id, isSelected, prop;
-      id = elt.id;
-      prop = elt.label;
-      isSelected = (selected != null) && (id != null) && id.toString() === selected.toString() ? "selected" : "";
-      html += "<option value= '" + id + "' data-name='" + property + "' " + isSelected + ">" + prop + "</option>";
-      return void 0;
-    };
-    html = "<div class='form-group " + error + "'> " + (label()) + " <div class='controls " + inputSize + "'> <div class='input-group'> " + (icon()) + " <select id='" + property + "' " + readonly + " " + optName + " " + optToTriggerName + " " + optToTriggerListKey + " " + dataMapping + " class='form-control input-sm'>";
-    for (_i = 0, _len = list.length; _i < _len; _i++) {
-      elt = list[_i];
-      addOption(elt);
-    }
-    html += "</select>" + (isRequired()) + " </div> " + (errors()) + " </div> </div>";
-    return new Handlebars.SafeString(html);
-  });
-
-  Handlebars.registerHelper("dateFormat", function(_date, options) {
-    var format, formatedDate, opt;
-    formatedDate = '';
-    if (_date) {
-      opt = options.hash || {};
-      format = opt.format || require('../config').dateFormat;
-      formatedDate = moment(_date).format(format);
-    }
-    return new Handlebars.SafeString(formatedDate);
-  });
-
-  S4 = function() {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-  };
-
-  guid = function() {
-    return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
-  };
-
-  Handlebars.registerHelper("button", function(text_key, options) {
-    var button, cssClass, cssId, icon, isScript, opt, script, type;
-    opt = options.hash || {};
-    isScript = typeof opt.isScript === "undefined" ? true : opt.isScript;
-    cssClass = opt["class"] || "";
-    cssId = opt.id || guid();
-    type = opt.type || "button";
-    script = function() {
-      if (isScript && type === 'submit') {
-        return "<script type='text/javascript'>$('#" + cssId + "').on('click', function(){$(this).button('loading');});</script>";
-      } else {
-        return "";
-      }
-    };
-    icon = function() {
-      if (opt.icon != null) {
-        return "<i class='fa fa-fw fa-" + opt.icon + "'></i>";
-      } else {
-        return "";
-      }
-    };
-    button = "<button type='" + type + "' class='btn " + cssClass + "' id='" + cssId + "' data-loading-text='" + (i18n.t('button.loading')) + "'>" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>" + (script());
-    return new Handlebars.SafeString(button);
-  });
-
-  Handlebars.registerHelper("paginate", function(property, options) {
-    var currentPage, endPage, firstPage, generateLeftArrow, generatePageFilter, generatePageNumber, generateRigthArrow, generateTotal, html, perPage, totalRecords;
-    options = options || {};
-    options = options.hash || {};
-    currentPage = this.currentPage;
-    firstPage = this.firstPage || 0;
-    endPage = (this.totalPages || 0) + firstPage;
-    perPage = this.perPage || 10;
-    totalRecords = this.totalRecords;
-    generateLeftArrow = function() {
-      var className;
-      className = currentPage === firstPage ? "disabled" : "";
-      return "<li class='" + className + "' data-page='" + firstPage + "'><a href='#' data-bypass>&laquo;</a></li>";
-    };
-    generatePageNumber = function() {
-      var html, i, _i;
-      html = "";
-      for (i = _i = firstPage; firstPage <= endPage ? _i <= endPage : _i >= endPage; i = firstPage <= endPage ? ++_i : --_i) {
-        html += "<li class='" + (i === currentPage ? 'active' : '') + "'><a href='#' data-bypass data-page='" + i + "'>" + i + "</a></li>";
-      }
-      return html;
-    };
-    generateRigthArrow = function() {
-      var className;
-      className = currentPage === endPage ? "disabled" : "";
-      return "<li class='" + className + "' data-page='" + endPage + "'><a href='#' data-bypass>&raquo;</a></li>";
-    };
-    generatePageFilter = function() {
-      var generateOptions, pageString;
-      pageString = i18n.t("application.pages");
-      generateOptions = function() {
-        var html, i, _i;
-        html = "";
-        for (i = _i = 1; _i <= 4; i = ++_i) {
-          html += "<option value='" + (5 * i) + "' " + (5 * i === perPage ? 'selected' : void 0) + ">" + (5 * i) + " " + pageString + "</option>";
-        }
-        return html;
-      };
-      return "<select class='form-control'> " + (generateOptions()) + " </select>";
-    };
-    generateTotal = function() {
-      var resultString;
-      resultString = i18n.t('search.result');
-      return "<div class='badgeResult'>" + resultString + " <span class='badge'>" + totalRecords + "</span></div>";
-    };
-    html = "<div class='col-md-8'> <ul class='pagination'>" + (generateLeftArrow()) + (generatePageNumber()) + (generateRigthArrow()) + "</ul> </div> <div class='col-md-2 pagination'> " + (generateTotal()) + " </div> <div class='col-md-2 pagination'> " + (generatePageFilter()) + " </div>";
-    return new Handlebars.SafeString(html);
-  });
-
-  Handlebars.registerHelper("tableHeaderAction", function(property, options) {
-    var generateTotal, html, totalRecords;
-    options = options || {};
-    options = options.hash || {};
-    totalRecords = this.totalRecords;
-    generateTotal = function() {
-      var resultString;
-      resultString = i18n.t('search.result');
-      return "" + resultString + " <span class='badge'>" + totalRecords + "</span>";
-    };
-    html = "<div class='tableAction'> <div class='pull-left'> " + (generateTotal()) + " </div> <div class='pull-right export'> <button type='button' class='btn btn-primary'>" + (i18n.t('search.export')) + " <i class='fa fa-table'></i></button> </div> </div>";
-    return new Handlebars.SafeString(html);
-  });
-
-  Handlebars.registerHelper("sortColumn", function(property, options) {
-    var generateSortPosition, order, sortField, translationKey;
-    options = options.hash || {};
-    sortField = this.sortField;
-    order = this.order || "asc";
-    translationKey = options.translationKey || void 0;
-    generateSortPosition = function() {
-      var icon;
-      icon = "fa fa-sort";
-      if (property === sortField) {
-        icon += "-" + order;
-      }
-      return "<i class='" + icon + "' data-name='" + property + "'></i>";
-    };
-    return new Handlebars.SafeString("<a class='sortColumn' href='#' data-name='" + property + "' data-bypass>" + (i18n.t(translationKey)) + " " + (generateSortPosition()) + "</a>");
-  });
-
-
-  /*Handlebars.registerHelper "currency",(property, options) ->
-    currencySymbol = ''
-    value = ''
-    if (+this[property])? or +this[property] is 0
-      value = +this[property]
-    if typeof value is 'number'
-      value = numeral(value).format(require('./configuration').getConfiguration().format.currency) if value isnt ''#value.toFixed('2')
-      new Lawnchair({name: 'products'}, $.noop).get('currency', (curr)-> currencySymbol = curr.currencySymbol)
-    html = "<div class='currency'><div class='right'>#{value} #{currencySymbol}</div></div>"
-    new Handlebars.SafeString(html)
-   */
-
-  Handlebars.registerHelper("progress", function(property, options) {
-    var addElements;
-    addElements = function(elements) {
-      var html;
-      html = "";
-      elements.forEach(function(elt) {
-        return html += "<div class='progress-bar progress-bar-" + elt.type + "' style='width: " + elt.value + "%'> " + elt.label + " </div>";
-      });
-      console.log("progress", html);
-      return html;
-    };
-    return new Handlebars.SafeString("<div class='progress'>" + (addElements(this[property])) + "</div>");
-  });
-
-}).call(this);
-
 /*global Backbone, _, window, Promise, $ */
 "use strict";
 (function(NS) {
@@ -2676,7 +2262,8 @@ function program7(depth0,data) {
   var postRenderingBuilder = isInBrowser ? NS.Helpers.postRenderingBuilder : require('../helpers/post_rendering_builder');
   var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
   var RefHelper = isInBrowser ? NS.Helpers.referenceHelper : require('../helpers/reference_helper');
-
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
+  var Model =  isInBrowser ? NS.Models.Model : require("../models/model");
   //View which is the default view for each view.
   //This view is able to deal with errors and to render the default json moodel.
   var CoreView = Backbone.View.extend({
@@ -2684,11 +2271,21 @@ function program7(depth0,data) {
       this.isHidden = !this.isHidden;
       this.render(options);
     },
+    //Reference lists names. 
+    //These _names_, must have been registered inside the the application to be used.
     referenceNames: undefined,
+
     //Options define by default for the view.
-    defaultOptions: {},
+    defaultOptions: {
+      isElementRedefinition: false //This options is use in order to not have a tag container generated by Backbone arround the view.
+    },
     //Options overriden By the instanciate view.
     customOptions: {},
+
+    //This property is use in order to create a new Model if no model are define in the view.
+    modelName: undefined,
+
+    //Initialization of the coreview.
     initialize: function initializeCoreView(options) {
       options = options || {};
       //Define default options foreach _core_ view, and override these options for each _project view_.
@@ -2696,8 +2293,10 @@ function program7(depth0,data) {
       this.opts = _.extend(this.defaultOptions, this.customOptions, options);
 
       this.on('toogleIsHidden', this.toogleIsHidden);
-      
-        /*Register after renger.*/
+
+      this.initializeModel();
+
+      /*Register after renger.*/
       _.bindAll(this, 'render', 'afterRender');
       var _this = this;
       this.render = _.wrap(this.render, function(render, options) {
@@ -2708,18 +2307,32 @@ function program7(depth0,data) {
 
       //Load all the references lists which are defined in referenceNames.
       var currentView = this;
-      Promise.all(RefHelper.loadMany(this.referenceNames)).then(function (results) {
-          console.log('resultsreferenceNames', results);
-          var res = {}; //Container for all the results.
-          for (var i = 0, l = results.length; i < l; i++) {
-              res[currentView.referenceNames[i]] = results[i];
-              //The results are save into an object with a name for each reference list.
-          }
-          currentView.model.set(res); //This trigger a render due to model change.
-          currentView.isReady = true; //Inform the view that we are ready to render well.
-      }).then(null, function (error) {
-          ErrorHelper.manageResponseErrors(error, { isDisplay: true });
+      Promise.all(RefHelper.loadMany(this.referenceNames)).then(function(results) {
+        //console.log('resultsreferenceNames', results);
+        var res = {}; //Container for all the results.
+        for (var i = 0, l = results.length; i < l; i++) {
+          res[currentView.referenceNames[i]] = results[i];
+          //The results are save into an object with a name for each reference list.
+        }
+        currentView.model.set(res); //This trigger a render due to model change.
+        currentView.isReady = true; //Inform the view that we are ready to render well.
+      }).then(null, function(error) {
+        ErrorHelper.manageResponseErrors(error, {
+          isDisplay: true
+        });
       });
+    },
+
+    //Initialize the model of the view.
+    //In order to be able to be initialize, a view must have a _model_ or a _modelName_.
+    initializeModel: function initializeModelCoreView() {
+      if (this.model) {
+        return;
+      } else if (this.modelName) {
+        this.model = new Model({modelName: this.modelName});
+      } else {
+        throw new ArgumentNullException("The view must have a model or a model name.", this);
+      }
     },
     //The handlebars template has to be defined here.
     template: function emptyTemplate(json) {
@@ -2754,14 +2367,14 @@ function program7(depth0,data) {
       return this.model.toJSON();
     },
     showCollapse: function showCollapseCoreView() {
-        $('.collapse', this.$el).collapse('show');
+      $('.collapse', this.$el).collapse('show');
     },
-    hideCollapse: function hideCollapseCoreView () {
-        $('.collapse', this.$el).collapse('hide');
+    hideCollapse: function hideCollapseCoreView() {
+      $('.collapse', this.$el).collapse('hide');
     },
     toogleCollapse: function toogleCollapseCoreView(event) {
-        $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide');//todo: change the selector
-        $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
+      $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
+      $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
     },
     //Render function  by default call the getRenderData and inject it into the view dom element.
     render: function renderCoreView() {
@@ -2775,7 +2388,9 @@ function program7(depth0,data) {
         model: this.model,
         viewSelector: this.$el
       });
-      $('.collapse', this.$el).collapse({toogle: true});
+      $('.collapse', this.$el).collapse({
+        toogle: true
+      });
     }
   });
 
@@ -2792,45 +2407,6 @@ function program7(depth0,data) {
 // var CoreView = require('./views/core-view');
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
 //```
-/*global Backbone, window*/
-"use strict";
-//var template = require("../template/collection-pagination");
-(function(NS) {
-  //Filename: views/collection-pagination-view.js
-  NS = NS || {};
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var CollectionPaginationView = Backbone.View.extend({
-    Service: undefined,
-    initialize: function initializePagination() {
-
-    },
-    events: {},
-    goToPage: function goToPage(page) {
-      this.model.setPage(page);
-    },
-    nextPage: function nextPage() {
-      this.model.setNextPage();
-    },
-    previousPage: function PreviousPage() {
-      this.model.setPreviousPage();
-    },
-    render: function renderPagination() {
-      if (this.model.length === 0) {
-        this.$el.html("");
-      } else {
-        this.$el.html(this.template(this.model.pageInfo()));
-      }
-    }
-  });
-
-  // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Views = NS.Views || {};
-    NS.Views.CollectionPaginationView = CollectionPaginationView;
-  } else {
-    module.exports = CollectionPaginationView;
-  }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 ﻿/*global window, Backbone, $, i18n*/
 (function(NS) {
     "use strict";
@@ -2844,7 +2420,7 @@ function program7(depth0,data) {
     var urlHelper = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     //Backbone view which can be use in order to create consultation view and edition view.
     var ConsultEditView = CoreView.extend({
 
@@ -2869,7 +2445,7 @@ function program7(depth0,data) {
         //Template for the consultation mode.
         templateConsult: undefined,
 
-        
+
         //Default options for the view.
         defaultOptions: {
             isModelToLoad: true, //By default the model is loaded.
@@ -2886,8 +2462,10 @@ function program7(depth0,data) {
             CoreView.prototype.initialize.call(this, options);
             //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options. 
             this.isEdit = (this.opts.isEditMode && this.opts.isEdit) || false;
-            //render view when the model is loaded
-            this.model.on('change', this.render, this);
+            if (this.model) {
+                //render view when the model is loaded
+                this.model.on('change', this.render, this);
+            }
             // In order to be loaded a model has to have an id and the options must be activated.
             if (this.opts.isModelToLoad && typeof this.model.has === "function" && this.model.has('id')) {
                 //Try to load the model from a service which have to return a promise.
@@ -2928,7 +2506,9 @@ function program7(depth0,data) {
                 event.preventDefault();
             }
             this.isEdit = !this.isEdit;
-            this.render({isSearchTriggered: true});//todo: fix this to have no options.
+            this.render({
+                isSearchTriggered: true
+            }); //todo: fix this to have no options.
         },
 
         //Deal with the edit button click wether there is an edit mode or not.
@@ -2948,16 +2528,16 @@ function program7(depth0,data) {
         save: function saveConsultEdit(event) {
             event.preventDefault();
             //Call a different method depending on the fact that the model is a collection or a model.
-            if(utilHelper.isBackboneModel(this.model)){
+            if (utilHelper.isBackboneModel(this.model)) {
                 this.saveModel();
-            }else if(utilHelper.isBackboneCollection(this.model)) {
+            } else if (utilHelper.isBackboneCollection(this.model)) {
                 this.saveCollection();
             }
-           
+
         },
         //Save a backbone collection.
-        saveCollection: function saveBackboneCollection(){
-           //Call the form helper in order to rebuild the collection from the form.
+        saveCollection: function saveBackboneCollection() {
+            //Call the form helper in order to rebuild the collection from the form.
             form_helper.formCollectionBinder(
                 $(this.opts.collectionSelector, this.$el),
                 this.model
@@ -2967,7 +2547,9 @@ function program7(depth0,data) {
             ModelValidator.validateAll(currentView.model)
                 .then(function successValidation() {
                     //When the model is valid, unset errors.
-                    currentView.model.forEach(function(mdl){mdl.unsetErrors();}, currentView);
+                    currentView.model.forEach(function(mdl) {
+                        mdl.unsetErrors();
+                    }, currentView);
                     if (currentView.opts.isSaveOnServer) {
                         //Call the service in order to save the model.                   
                         currentView.saveModelSvc(currentView.getDataToSave())
@@ -2976,17 +2558,21 @@ function program7(depth0,data) {
                             }, function error(responseError) {
                                 currentView.saveError(responseError); //.bind(currentView);
                             });
-                    }else {
+                    } else {
                         currentView.saveSuccess(currentView.model.toJSON());
                     }
 
                 }, function errorValidation(errors) {
                     //todo: see how to set errors.
-                    currentView.model.setErrors(errors);
+                    errorHelper.setCollectionErrors(currentView.model, errors);
+                    currentView.resetSaveButton();
                 });
         },
+        resetSaveButton: function resetSaveButton() {
+            $('button[type="submit"]', this.$el).button('reset');
+        },
         //Save method in case of a model.
-        saveModel: function saveBackboneModel(){
+        saveModel: function saveBackboneModel() {
             //Call the form helper in order to rebuild the model from the form.
             form_helper.formModelBinder({
                 inputs: $('input', this.$el),
@@ -3009,7 +2595,7 @@ function program7(depth0,data) {
                             }, function error(responseError) {
                                 currentView.saveError(responseError); //.bind(currentView);
                             });
-                    }else {
+                    } else {
                         currentView.saveSuccess(currentView.model.toJSON());
                     }
 
@@ -3087,11 +2673,18 @@ function program7(depth0,data) {
         //Render function.
         render: function renderConsultEditView() {
             //todo: see if a getRenderData different from each mode is necessary or it coul be deal inside the getRenderDatatFunction if needed.
-            if (this.isEdit) {
-                this.$el.html(this.templateEdit(this.getRenderData()));
+            var templateName = this.isEdit ? 'templateEdit' : 'templateConsult';
+            if (this.opts.isElementRedefinition) {
+                this.setElement(this[templateName](this.getRenderData()));
             } else {
-                this.$el.html(this.templateConsult(this.getRenderData()));
+                this.$el.html(this[templateName](this.getRenderData()));
             }
+
+            //if (this.isEdit) {
+            //    this.$el.html(this.templateEdit(this.getRenderData()));
+            //} else {
+            //    this.$el.html(this.templateConsult(this.getRenderData()));
+            //}
 
             return this;
         },
@@ -3112,6 +2705,297 @@ function program7(depth0,data) {
         module.exports = ConsultEditView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global Backbone, window*/
+"use strict";
+//var template = require("../template/collection-pagination");
+(function(NS) {
+  //Filename: views/collection-pagination-view.js
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var CollectionPaginationView = Backbone.View.extend({
+    Service: undefined,
+    initialize: function initializePagination() {
+
+    },
+    events: {},
+    goToPage: function goToPage(page) {
+      this.model.setPage(page);
+    },
+    nextPage: function nextPage() {
+      this.model.setNextPage();
+    },
+    previousPage: function PreviousPage() {
+      this.model.setPreviousPage();
+    },
+    render: function renderPagination() {
+      if (this.model.length === 0) {
+        this.$el.html("");
+      } else {
+        this.$el.html(this.template(this.model.pageInfo()));
+      }
+    }
+  });
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Views = NS.Views || {};
+    NS.Views.CollectionPaginationView = CollectionPaginationView;
+  } else {
+    module.exports = CollectionPaginationView;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+﻿/*global  $, window, _, Promise*/
+(function(NS) {
+    "use strict";
+    // Filename: views/list-view.js
+    NS = NS || {};
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+    var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require('./consult-edit-view');
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var formHelper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
+    var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
+    var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
+    var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("../helpers/custom_exception").ArgumentInvalidException;
+    var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
+
+
+    // Core view to design _composite view_. These wiews are composition of model and collection with associated views.
+    var CompositeView = ConsultEditView.extend({
+
+        //The default the surronding tag of the view .
+        tagName: 'div',
+
+        //The default the css class of the view.
+        className: 'compositeView',
+
+        //Default options of the composite view.
+        defaultOptions: {},
+
+        //Service to save a model wether it is a model or a collection.
+        saveModelSvc: undefined,
+
+        //Container for all the views which are registered.
+        viewsConfiguration: [],
+
+        //Initialize function of the composite view.
+        initialize: function initializeCompositeView(options) {
+            options = options || {};
+            ConsultEditView.prototype.initialize.call(this, options);
+            //Call efor each view you want to register the register view method.
+
+        },
+
+        //Method to call in order to register a new view inside the composite view.
+        //Be carefull, a view must be inside the composite view before being registered.
+        // Example: this.registerView({ selector: "div#zone1", name: "contactView", type: "model", modelProperty: "property"});
+        //The `modelProperty` is the name of the property of the object which will be constructed.
+        registerView: function registerView(viewConfiguration) {
+
+            //Check the configuration before adding the view.
+            if (viewConfiguration === undefined || viewConfiguration === null) {
+                throw new ArgumentNullException("viewConfiguration");
+            }
+            if (typeof viewConfiguration.selector !== "string") {
+                throw new ArgumentInvalidException("viewconfiguration.selector must be a string.", viewConfiguration);
+            }
+            //Should a test on the selector be addedin order to know if it's in the dom? 
+
+            if (typeof viewConfiguration.name !== "string") {
+                throw new ArgumentInvalidException("viewconfiguration.name must be a string.", viewConfiguration);
+            }
+            var registeredView = this[viewConfiguration.name];
+            if (registeredView === undefined || registeredView === null) {
+                throw new ArgumentNullException("The view you are trying to register: " + viewConfiguration.name + " does not exists inside the composite view.");
+            }
+            if (!utilHelper.isBackboneView(registeredView)) {
+                throw new ArgumentInvalidException("The view you are trying to register: " + viewConfiguration.name + " is not a Backbone view.", viewConfiguration);
+            }
+            var type = viewConfiguration.type;
+            if (typeof type !== "string") {
+                throw new ArgumentInvalidException("viewconfiguration.type must be a string.", viewConfiguration);
+            }
+            if (type !== "model" && type !== "collection") {
+                throw new ArgumentInvalidException("viewconfiguration.type must be a model or a collection.", viewConfiguration);
+            }
+            if (typeof viewConfiguration.modelProperty !== "string") {
+                throw new ArgumentInvalidException("viewconfiguration.modelProperty must be a string.", viewConfiguration);
+            }
+            this.viewsConfiguration.push(viewConfiguration);
+            //this["render"+viewConfiguration.name] = function(){ this[viewConfiguration.name].render();} //Maybe register a render method per view
+        },
+
+        //Register many views by calling each time the registerViews.
+        registerViews: function(viewsConfigurations) {
+            //If the view is not an array.
+            if (!_.isArray(viewsConfigurations)) {
+                throw new ArgumentInvalidException("viewconfigurations must be an array.", viewsConfigurations);
+            }
+            for (var i = 0, l = viewsConfigurations.length; i < l; i++) {
+                this.registerView(viewsConfigurations[i]);
+            }
+        },
+
+        //Remove the view inside the viewsconfiguration by its name.
+        removeView: function removeView(viewName) {
+
+            if (viewName !== undefined && viewName !== null && utilHelper.isBackboneView(this[viewName])) {
+                //Remove the view from both the dom.
+                this[viewName].remove();
+
+                //Delete it from the view context.
+                delete this[viewName];
+
+                //Delete oit from the configuration.
+                this.viewsConfiguration = _.reject(this.viewsConfiguration, function(viewConf) {
+                    return viewConf.name === viewName;
+                });
+            }
+        },
+
+        //Events handle by the view.
+        events: {
+            "click .panel-heading": "toogleCollapse",
+            //Edition events
+            "click button.btnEdit": "toggleEditMode",
+            "click button[type='submit']": "save",
+            "click button.btnCancel": "cancelEdition"
+        },
+        // Get the data to give to the template.
+        getRenderData: function getRenderDataCompositeView() {
+            return {};
+        },
+
+        //Render function of the coposite view.
+        render: function renderCompositeView(options) {
+            options = options || {};
+            //Render the template which should contains all the subview selectors.
+            this.$el.html(this.template(this.getRenderData()));
+
+            //Render each view inside the configuration.
+            for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
+                var vConf = this.viewsConfiguration[i];
+                //Render each view inside its selector.
+                $(vConf.selector, this.$el).html(this[vConf.name].render().el);
+            }
+
+            //this.delegateEvents();
+            return this;
+        },
+        toggleEditMode: function toggleEditModeCompositeView() {
+            //Render each view inside the configuration.
+            for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
+                var vConf = this.viewsConfiguration[i];
+                //Render each view inside its selector.
+                this[vConf.name].toggleEditMode();
+            }
+        },
+        //Submit the compoosite view.
+        save: function saveCompositeView(event) {
+            event.preventDefault();
+            var compoView = this;
+
+            var promisesContainer = [];
+
+            for (var i = 0, l = compoView.viewsConfiguration.length; i < l; i++) {
+                var vConf = compoView.viewsConfiguration[i];
+                if (vConf.type === "model") {
+                    //Bind the model.
+                    formHelper.formModelBinder({
+                        inputs: $('input', compoView[vConf.name].$el),
+                        options: $('select', compoView[vConf.name].model.$el)
+                    }, compoView[vConf.name].model);
+                    promisesContainer.push(
+                        //A promise is created in order to be resolve by the promise.all.
+                        //Otherwise, the promise returned by the validation is already resolve when the promise.all is treated.
+                        new Promise(function(resolve, failure) {
+                            ModelValidator.validate(compoView[vConf.name].model).then(
+                                function(success){
+                                    resolve(success);
+                                },
+                                function(errors) {
+                                    errorHelper.setModelErrors(compoView[vConf.name].model, errors);
+                                    failure(errors);
+                                }
+                            );
+                        })
+                    );
+
+                } else {
+                    //The view of the collection must have a collectionSelectot to be able to work.
+                    //Bind the collection.
+                    formHelper.formCollectionBinder(
+                        $(compoView[vConf.name].opts.collectionSelector, compoView[vConf.name].$el),
+                        compoView[vConf.name].model
+                    );
+
+                    //Push promises inside the container.
+                    promisesContainer.push(
+                        //Same reason as for the model.
+                        new Promise(function(resolve, failure) {
+                            ModelValidator.validateAll(compoView[vConf.name].model).then(
+                                function(success) {
+                                    resolve(success);
+                                },
+                                function(errors) {
+                                    errorHelper.setCollectionErrors(compoView[vConf.name].model, errors);
+                                    failure(errors);
+                                }
+                            );
+                        })
+                    );
+                }
+            }
+            //Resolve all validation promise inside the page.
+            Promise.all(promisesContainer).then(function(success) {
+                compoView.saveModelSvc(compoView.buildJSONToSave()).then(
+                    function successSaveCompostiteView(success) {
+                        compoView.saveSuccess(success);
+                    },
+                    function errorSaveCompositeView(responseError) {
+                        compoView.saveError(responseError);
+                    });
+            }, function(error) {
+                console.error(error);
+            });
+
+
+        },
+        //After the loadin of the global model datas, dispatch it into the model and collections of each view.
+        //todo: Test.
+        setViewsModels: function setViewsModels(successResponse) {
+            for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
+                var vConf = this.viewsConfiguration[i];
+                if (successResponse[vConf.modelProperty]) {
+                    var method = vConf.type === "model" ? 'set' : 'reset';
+                    this[vConf.name].model[method](successResponse[vConf.modelProperty]);
+                }
+
+            }
+        },
+        //Build the json from differents models.
+        buildJSONToSave: function() {
+            var json = {};
+            for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
+                var vConf = this.viewsConfiguration[i];
+                json[vConf.modelProperty] = this[vConf.name].model.toSaveJSON();
+            }
+            return json;
+        },
+        //Call after render specifically to the composite view.
+        afterRender: function postRenderListView() {
+            ConsultEditView.prototype.afterRender.call(this);
+            $('.collapse', this.$el).collapse('show');
+        }
+    });
+    // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Views = NS.Views || {};
+        NS.Views.CompositeView = CompositeView;
+    } else {
+        module.exports = CompositeView;
+    }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global window, Backbone, $*/
 "use strict";
 (function(NS) {
@@ -3128,6 +3012,8 @@ function program7(depth0,data) {
 		deleteModel: undefined,
 
 		initialize: function initializeConsult() {
+			console.warn('######## THIS VIEW  is deprecated.#####');
+			console.warn('######## Use consult-edit view.#####');
 			CoreView.prototype.initialize.call(this);
 			//render view when the model is loaded
 			this.model.on('change', this.render, this);
@@ -3235,6 +3121,7 @@ function program7(depth0,data) {
 		getModel: undefined, //VmSvc.get
 
 		initialize: function initializeEdit(options) {
+			console.warn('######## THIS VIEW  is deprecated.#####');
 			options = options || {};
 			CoreView.prototype.initialize.call(this, options);
 			this.model.on('change', this.render, this);
@@ -3478,6 +3365,7 @@ function program7(depth0,data) {
         },
         //Add one line view from the model.
         addOne: function addOneLineView(model) {
+            //console.log("modelNameAddone", model, model.modelName, this);
             var opt = {isEdit: false};
             if (this.isEdit) {
                 opt.isEdit = this.isEdit;
@@ -3488,7 +3376,7 @@ function program7(depth0,data) {
                 }, opt)).render().el
             );
         },
-        render: function renderSearchResults(options) {
+        render: function renderListView(options) {
             options = options || {};
             //If the research was not launch triggered.
             if (!options.isSearchTriggered) {

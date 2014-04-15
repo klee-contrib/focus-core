@@ -44,6 +44,7 @@
           valDomAttrs[attr] = validators
       return valDomAttrs
     getMetadatas: (model) ->
+      throw new ArgumentNullException("In order to get metadatas , you must provide a model.") if not model?
       # Construct the metadatas obtained with the model name.
       entityMetadatas = @constructEntityMetaDatas(model)
       metadatas = _.clone(entityMetadatas)
@@ -83,6 +84,8 @@
       return metadatas
     #Get the attributes for one property of a metadata.
     getMetadataForAttribute: (model, attribute) ->
+      throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide a model.") if not model?
+      throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide an attribute.") if not attribute?
       entityAttrMetadata = @constructEntityMetaDatas(model)[attribute]
       mdlMetadata = if model.metadatas? and model.metadatas[attribute]? then model.metadatas[attribute] else undefined
       metadata = {} # Create a container for the metadatas.

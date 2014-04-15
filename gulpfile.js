@@ -33,13 +33,14 @@ gulp.task('lint', function() {
 //Build all the javascripts file.
 gulp.task('browser-build', function() {
   //Build the js file for the browser.
-    gulp.src(['./lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', './lib/helpers/*', 'lib/views/core-view.js','./lib/views/*'])
+    gulp.src(['./lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
   .pipe(concat('fmk.js'))
     .pipe(gulp.dest('./dist/browser/'))
     .pipe(gulp.dest('./example/app/js/'))
-  //Current project destination.
-  .pipe(gulp.dest('../../../../SPA-fmk/Main/Sources/SPA-skeleton/vendor'));
+    //Current project destination.
+    //.pipe(gulp.dest('../SPA-skeleton/vendor'));
+    .pipe(gulp.dest('../../../../Klepierre_Tomcat/Main/Sources/Tomcat.SPA/vendor'));
 });
 //Build all the javascripts for node and unit tests.
 gulp.task('node-build', function() {
@@ -100,7 +101,8 @@ gulp.task('templatesExample', function() {
 
 /**********************
   Documentation
-**********************//*
+**********************/
+/*
 gulp.task('doc', function() {
   var docco = require("gulp-docco");
   gulp.src(['./lib/main.js', './lib/helpers/*','./lib/models/*', './lib/views/*'])
