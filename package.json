@@ -44,7 +44,10 @@
     "gulp-define-module": "^0.1.0",
     "gulp-declare": "^0.2.0",
     "gulp-handlebars": "^2.0.0",
-    "docco": "~0.6.3"
+    "docco": "~0.6.3",
+	"rcfinder": "0.1.4",
+	"lodash._reinterpolate": "~2.4.1",
+	"lodash.template": "~2.4.1"
   },
   "devDependencies": {
     "gulp": "~3.5.5",
