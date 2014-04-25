@@ -1,4 +1,17 @@
-/*global Fmk, jQuery, $*/
+/*global Fmk, jQuery, $, Backbone*/
+
+/*Test du retour pour les backbone model promisify*/
+//Création d'une extension à un model.
+var Model = Backbone.Model.extend({urlRoot: "http://localhost:8080/vm"});
+var model = new Model();
+//Création d'un model promisifié.
+var promisifyModel  = Fmk.Helpers.promisifyHelper.Convert.Model(model);
+promisifyModel.set({test: "test"});
+promisifyModel.save().then(function(s){console.log("succçès de la sauvegarde",s);}, function(e){console.log("erreur de la sauvegarde.",e);});
+
+
+
+
 var domains = {
   "DO_ENTIER": {
     "type": "number",
@@ -162,3 +175,6 @@ Fmk.Helpers.modelValidationPromise.validateAll(contacts).then(function(s) {
 }, function(err) {
   console.error(err);
 });
+
+
+
