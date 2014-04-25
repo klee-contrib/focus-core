@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - helpers/odata_helper.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>helpers/odata_helper.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">60.86</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">188</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">52.59</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.68</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/*global _, $, window*/
+&quot;use strict&quot;;
+(function(NS) {
+    NS = NS || {};
+    //Filename: helpers/odata_helper.js
+    var isInBrowser = typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039;;
+    var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require(&#039;./utilHelper&#039;);
+    
+    var odataOptions = {
+        filter: &#039;$filter&#039;,
+        top: &#039;$top&#039;,
+        skip: &#039;$skip&#039;,
+        orderby: &#039;$orderby&#039;,
+        format:  &#039;$format&#039;,
+        inlinecount: &#039;$inlinecount&#039;
+    };
+    var configure = function configure(options) { 
+        _.extend(odataOptions, options);
+    };
+
+    // type of the request for odata
+    var paginator_core = {
+        // the type of the request (GET by default)
+        type: &#039;POST&#039;,
+
+        // the type of reply (json by default)
+        dataType: &#039;json&#039;
+    };
+
+    function createOdataOptions(criteria, pagesInfo, options) {
+        return compileOptions(criteria, pagesInfo, options);
+    }
+
+    // convert JSON criteria to odata
+    //http://docs.oasis-open.org/odata/odata/v4.0/os/part2-url-conventions/odata-v4.0-os-part2-url-conventions.html#_Toc372793793
+    function criteriaToOdata(criteria) {
+        //console.log(&quot;Criteria OData&quot;);
+        //Url to build
+        var result = &quot;&quot;;
+        for (var property in criteria) {
+            //The treatement of the filter is done only.
+            if (property !== undefined &amp;&amp; property !== null &amp;&amp; criteria[property] !== undefined &amp;&amp; criteria[property] !== null &amp;&amp; criteria[property] !== &quot;&quot;) {
+                var type = typeof criteria[property];
+                console.log(&quot;Type of the property&quot;, type);
+                switch (type) {
+                    //Deal with the string parameter.
+                    case &quot;string&quot;:
+                        result += property + &quot; eq &quot; + criteria[property] + &quot; and &quot;;
+                        break;
+                        //Deal with array parameters
+                    case &quot;number&quot;:
+                        result += property + &quot; eq &quot; + criteria[property] + &quot; and &quot;;
+                        break;
+                    case &quot;boolean&quot;:
+                        result += property + &quot; eq &quot; + criteria[property] + &quot; and &quot;;
+                        break;
+                    case &quot;array&quot;:
+                        //result += property + &quot; eq &quot; +&quot;[&quot;+ criteria[property].join(&#039;,&#039;)+&quot;]&quot; + &quot; and &quot;;
+                        result += property + &quot; eq &quot; + &quot;[&#039;&quot; + criteria[property].join(&quot;&#039;,&#039;&quot;) + &quot;&#039;]&quot; + &quot; and &quot;;
+                        break;
+                        //Deal with the object.
+                    case &quot;object&quot;:
+                        if (_.isArray(criteria[property])) {
+                            result += property + &quot; eq &quot; + &quot;[&#039;&quot; + criteria[property].join(&quot;&#039;,&#039;&quot;) + &quot;&#039;]&quot; + &quot; and &quot;;
+                            //result += property + &quot; eq &quot; + &quot;[&quot; + criteria[property].join(&#039;,&#039;) + &quot;]&quot; + &quot; and &quot;
+                        }
+                        //If there is an array.
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+        }
+        return result.length &gt; 0 ? result.slice(0, -5) : &quot;&quot;;//Todo: corriger la cr�ation de crit�re. //result.substring(0, result.length - 1);
+    }
+
+    //generate orderBy parameters fo odata
+    function orderToOdata(sortFields) {
+        var orderBy = &quot;&quot;;
+        sortFields.forEach(function (sortField) {
+            //TODO : cette condition n&#039;est pas satisfaisante. Si ces champs ne sont pas d�finis ils ne devraient pas �tre dans la liste.
+            if (sortField.field !== undefined &amp;&amp; sortField.order !== undefined) {
+                orderBy += sortField.field + &quot; &quot; + sortField.order + &quot;,&quot;;
+            }
+        });
+        return orderBy.substring(0, orderBy.length - 1);
+    }
+
+    //generate parameter for odata server API
+    function generateServerApi(criteria, pagesInfo) {
+        var sortFields = [];
+        if (pagesInfo.sortField) {
+            sortFields.push(pagesInfo.sortField);
+        }
+
+        var val = {};
+        val[odataOptions.filter] = criteriaToOdata(criteria);
+        val[odataOptions.top] = pagesInfo.perPage;
+        val[odataOptions.skip] = (pagesInfo.currentPage - 1) * pagesInfo.perPage;
+        val[odataOptions.orderby] = orderToOdata(sortFields);
+        val[odataOptions.format] = &#039;json&#039;;
+        val[odataOptions.inlinecount] = &#039;allpages&#039;;
+        return val;
+    }
+
+    //generate options fo an odata request 
+    function compileOptions(criteria, pagesInfo, options) {
+        var self = pagesInfo;
+        options = options || {};
+
+        var server_api = generateServerApi(criteria, pagesInfo);
+        // Some values could be functions, let&#039;s make sure
+        // to change their scope too and run them
+        var queryAttributes = {};
+        _.each(server_api, function(value, key) {
+            if (_.isFunction(value)) {
+                value = _.bind(value, self);
+                value = value();
+            }
+            if (value !== undefined &amp;&amp; value !== null &amp;&amp; value.toString().length &gt; 0) {
+                queryAttributes[key] = value;
+            }
+        });
+
+        var queryOptions = _.clone(paginator_core);
+        _.each(queryOptions, function(value, key) {
+            if (_.isFunction(value)) {
+                value = _.bind(value, self);
+                value = value();
+            }
+            queryOptions[key] = value;
+        });
+
+        // Create default values if no others are specified
+        queryOptions = _.defaults(queryOptions, {
+            timeout: 25000,
+            cache: false,
+            type: &#039;POST&#039;,
+            dataType: &#039;json&#039;
+        });
+
+        // Allows the passing in of {data: {foo: &#039;bar&#039;}} at request time to overwrite server_api defaults
+        if (options.data) {
+            options.data = decodeURIComponent($.param(_.extend(queryAttributes, options.data)));
+        } else {
+            options.data = decodeURIComponent($.param(queryAttributes));
+        }
+
+        queryOptions = _.extend(queryOptions, {
+            data: decodeURIComponent($.param(queryAttributes)),
+            processData: false
+            //url: _.result(queryOptions, &#039;url&#039;)
+        }, options);
+
+        return queryOptions;
+    }
+
+    // parse odata response and return values in format : {totalRecords:totalRecords, values: values}
+    function parseOdataResponse(response) {
+        if (response === undefined || response === null) {
+            throw new Error(&#039;Odata error : parsing result&#039;);
+        }
+        // To be comaptible with C# ODataController
+        _.extend(response, utilHelper.flatten({odata: response.odata}));
+        delete response.odata;
+        if(response[&quot;odata.count&quot;] === undefined || response[&quot;odata.count&quot;] === null) {
+            throw new Error(&#039;Odata error : parsing result&#039;);
+        }
+        return {
+            totalRecords: response[&quot;odata.count&quot;],
+            values: response.value
+        };
+    }
+
+    var odataHelper = {
+        createOdataOptions: createOdataOptions,
+        parseOdataResponse: parseOdataResponse,
+        configure: configure
+    };
+
+    // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.odataHelper = odataHelper;
+    } else {
+        module.exports = odataHelper;
+    }
+})(typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039; ? window.Fmk : module.exports);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

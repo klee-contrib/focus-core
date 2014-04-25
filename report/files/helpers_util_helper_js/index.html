@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - helpers/util_helper.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>helpers/util_helper.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">65.45</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">142</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">55.50</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.28</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/* global  _ , window */
+(function(NS) {
+    &quot;use strict&quot;;
+    //Filename: helpers/util_helper.js
+    var isInBrowser = typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039;;
+    NS = NS || {};
+    var JSON = {};
+
+    // Unflatten a json object.
+    // from an object `{&quot;contact.nom&quot;: &quot;Nom&quot;, &quot;contact.prenom&quot;: &quot;Prenom&quot;}`
+    // Gives a `{contact: {nom: &quot;nom&quot;, prenom: &quot;prenom&quot;}}`
+    JSON.unflatten = function(data) {
+        if (Object(data) !== data || Array.isArray(data))
+            return data;
+        if (&quot;&quot; in data)
+            return data[&quot;&quot;];
+        var result = {}, cur, prop, idx, last, temp;
+        for (var p in data) {
+            cur = result;
+            prop = &quot;&quot;;
+            last = 0;
+            do {
+                idx = p.indexOf(&quot;.&quot;, last);
+                temp = p.substring(last, idx !== -1 ? idx : undefined);
+                cur = cur[prop] || (cur[prop] = (!isNaN(parseInt(temp)) ? [] : {}));
+                prop = temp;
+                last = idx + 1;
+            } while (idx &gt;= 0);
+            cur[prop] = data[p];
+        }
+        return result[&quot;&quot;];
+    };
+
+    //Flatten a json object.
+    // from an object`{contact: {nom: &quot;nom&quot;, prenom: &quot;prenom&quot;}}` 
+    // Gives a one level object:  `{&quot;contact.nom&quot;: &quot;Nom&quot;, &quot;contact.prenom&quot;: &quot;Prenom&quot;}`
+    JSON.flatten = function(data) {
+        var result = {};
+
+        function recurse(cur, prop) {
+            if (Object(cur) !== cur) {
+                result[prop] = cur;
+            } else if (Array.isArray(cur)) {
+                for (var i = 0, l = cur.length; i &lt; l; i++)
+                    recurse(cur[i], prop ? prop + &quot;.&quot; + i : &quot;&quot; + i);
+                if (l === 0)
+                    result[prop] = [];
+            } else {
+                var isEmpty = true;
+                for (var p in cur) {
+                    isEmpty = false;
+                    recurse(cur[p], prop ? prop + &quot;.&quot; + p : p);
+                }
+                if (isEmpty)
+                    result[prop] = {};
+            }
+        }
+        recurse(data, &quot;&quot;);
+        return result;
+    };
+    //Deeply combine two json.
+    function combine(json1, json2) {
+        var res = {};
+        _.extend(
+            res,
+            JSON.flatten(json1),
+            JSON.flatten(json2)
+        );
+        return JSON.unflatten(res);
+    }
+    //Generate four random hex digits.
+
+    function S4() {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    }
+    //Generate a pseudo-GUID by concatenating random hexadecimal.
+    function guid() {
+        return (S4() + S4() + &quot;-&quot; + S4() + &quot;-&quot; + S4() + &quot;-&quot; + S4() + &quot;-&quot; + S4() + S4() + S4());
+    }
+
+    //This method allows the user to load a data (objet or list) in a promise
+    // Exampl call: refHelper.loadLocalData([{id: 1, label: &quot;nom 1&quot;}, {id: 1, label: &quot;nom 2&quot;}])
+    var loadLocalData = function loadLocalData(data) {
+        return new Promise(function promiseLoadLocalList(resolve, reject) {
+            resolve(data);
+        });
+    };
+
+    //Generate fake datas.
+    var generateFake = {
+        //Generate an aleafied object
+        object: function generateFalseData(obj) {
+            var objAla = {};
+            for (var prop in obj) {
+                //todo: differenciate the treatement swithcing on type.
+                objAla[prop] = &#039;&#039; + obj[prop] + S4();
+            }
+            return objAla;
+        },
+        //Generate a fake collection from a single object, adding, nb is th array size.
+        collection: function geenerateFalseCollection(obj, nb) {
+            var res = [];
+            for (var i = 0; i &lt; nb; i++) {
+                res.push(this.object(obj));
+            }
+            return res;
+        }
+
+    };
+    //Method to call in order to know if a model is a collection
+    var isBackboneModel = function isBackboneModel(model) {
+        return model !== undefined &amp;&amp; model !== null &amp;&amp; typeof model.has === &quot;function&quot;;
+    };
+
+    // Method to call 
+    var isBackboneCollection = function isBackboneCollection(collection) {
+        return collection !== undefined &amp;&amp; collection !== null &amp;&amp; typeof collection.add === &quot;function&quot;;
+    };
+
+    //Method to call in order to know of an object is a view.
+    var isBackboneView = function isBackboneView(view) {
+        return view !== undefined &amp;&amp; view !== null &amp;&amp; typeof view.render === &quot;function&quot;;
+    };
+
+    //Util helper.
+    var utilHelper = {
+        flatten: JSON.flatten,
+        unflatten: JSON.unflatten,
+        combine: combine,
+        loadLocalData: loadLocalData,
+        guid: guid,
+        generateFake: generateFake,
+        isBackboneModel: isBackboneModel,
+        isBackboneCollection: isBackboneCollection,
+        isBackboneView: isBackboneView
+    };
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.utilHelper = utilHelper;
+    } else {
+        module.exports = utilHelper;
+    }
+})(typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039; ? window.Fmk : module.exports);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - views/list-view.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>views/list-view.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">65.98</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">227</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">28.49</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.39</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/*global Backbone, i18n, $, window, _*/
+&quot;use strict&quot;;
+(function(NS) {
+    // Filename: views/list-view.js
+    NS = NS || {};
+    var isInBrowser = typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039;;
+    //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require(&#039;../helpers/custom_exception&#039;).NotImplementedException;
+    var _url = isInBrowser ? NS.Helpers.urlHelper : require(&#039;../helpers/url_helper&#039;);
+    var templatePagination = function() {}; //Todo: call a handlebar herlper.//require(&#039;../templates/collection-pagination&#039;);
+    var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require(&#039;./consult-edit-view&#039;);
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require(&#039;../helpers/error_helper&#039;);
+
+    var ListView = ConsultEditView.extend({
+        tagName: &#039;div&#039;,
+        className: &#039;resultView&#039;,
+        resultsPagination: &#039;div#pagination&#039;,
+        templatePagination: templatePagination,
+        search: undefined,
+        searchCriteria: {},
+        //Parameters for rendering the detail inside.
+        isShowDetailInside: false,
+        ResultSelectionView: undefined,
+        ResultSelectionModel: undefined,
+        resultsContainer: &#039;div#lineSelectionContainer&#039;,
+        additionalData: function() {
+            return undefined;
+        },
+        //View foreach line in the collection view.
+        viewForEachLineConfiguration: {
+            isActive: false, //True or false will make the rendering different.
+            LineView: undefined, //View to create for each line.
+            //ModelLineView: undefined, //Model for the view initialize with collection data. It is not use but could be if we would want to initialize another model.
+            parentContainer: &quot;table tbody&quot; //selector into which the view .
+        },
+
+        initialize: function initializeSearchResult(options) {
+            options = options || {};
+            ConsultEditView.prototype.initialize.call(this, options);
+
+            this.listenTo(this.model, &quot;reset&quot;, function() {
+                this.render({
+                    isSearchTriggered: true
+                });
+            }, this);
+            //Listen to the model add event.
+            this.listenTo(this.model, &quot;add&quot;, this.addOne, this);
+
+            if (this.search !== undefined) {
+                // Fusion des critères venant du rooter (options.searchCriteria) et de la vue (this.searchCriteria).
+                var criteria = {};
+                _.extend(criteria, this.searchCriteria, options.searchCriteria);
+
+                var currentView = this;
+                //Call the service and inject the result into the model.
+                this.search(criteria, this.model.pageInfo()).then(function success(jsonResponse) {
+                    currentView.model.setTotalRecords(jsonResponse.totalRecords);
+                    currentView.model.reset(jsonResponse.values);
+                }).then(null, function error(errorResponse) {
+                    errorHelper.manageResponseErrors(errorResponse, {
+                        isDisplay: true
+                    });
+                });
+            }
+        },
+        events: {
+            &#039;click tbody td[data-selection]&#039;: &#039;lineSelection&#039;,
+            &#039;click .pagination li&#039;: &#039;goToPage&#039;,
+            &#039;click a.sortColumn&#039;: &#039;sortCollection&#039;,
+            &quot;click .panel-heading&quot;: &quot;toogleCollapse&quot;,
+            &#039;click #btnBack&#039;: &#039;navigateBack&#039;,
+            &quot;change .pageFilter&quot;: &quot;changePageFilter&quot;,
+            //Edition events
+            &quot;click button.btnEdit&quot;: &quot;edit&quot;,
+            &quot;click button[type=&#039;submit&#039;]&quot;: &quot;save&quot;,
+            &quot;click button.btnCancel&quot;: &quot;cancelEdition&quot;
+        },
+        changePageFilter: function changePageFilterListView(event) {
+            this.model.perPage = +event.target.value;
+            this.model.currentPage = this.model.firstPage;
+            this.fetchDemand();
+        },
+        sortCollection: function sortCollection(event) {
+            event.preventDefault();
+            var collectionInfos = this.model.pageInfo();
+            var sortField = event.target.getAttribute(&quot;data-name&quot;);
+            var currentSort = collectionInfos.sortField;
+            var order = &quot;asc&quot;;
+            if (currentSort !== undefined &amp;&amp; sortField === currentSort.field &amp;&amp; currentSort.order === &quot;asc&quot;) {
+                order = &quot;desc&quot;;
+            }
+            this.model.setSortField(sortField, order);
+            this.fetchDemand();
+        },
+
+        goToPage: function goToPage(event) {
+            event.preventDefault();
+            var page = +event.target.getAttribute(&quot;data-page&quot;);
+            this.model.setPage(page);
+            this.fetchDemand();
+        },
+
+        nextPage: function nextPage(event) {
+            event.preventDefault();
+            this.model.setNextPage();
+            this.fetchDemand();
+        },
+
+        previousPage: function PreviousPage(event) {
+            event.preventDefault();
+            this.model.setPreviousPage();
+            this.fetchDemand();
+        },
+
+        fetchDemand: function fetchDemand() {
+            this.trigger(&#039;results:fetchDemand&#039;);
+        },
+
+        generateNavigationUrl: function generateNavigationUrl(id) {
+            return _url.generateUrl([this.model.model.prototype.modelName.replace(&#039;.&#039;, &#039;/&#039;), &#039;show&#039;, id]);
+        },
+        renderDetail: function renderDetail() {
+            $(this.resultsContainer, this.$el).html(new this.ResultSelectionView({
+                model: new this.ResultSelectionModel({
+                    id: this.detailId
+                })
+            }).render().el);
+        },
+        lineSelection: function lineSelectionSearchResults(event) {
+            //todo: should the be unactivated if there is aview per line and delegate to the line. , this.viewForEachLineConfiguration.isActive
+            event.preventDefault();
+            var id = +$(event.target).parents(&quot;td[data-selection]:first&quot;).attr(&#039;data-selection&#039;);
+            if (this.isShowDetailInside) {
+                this.detailId = id;
+                $(&#039;.collapse&#039;, this.$el).collapse(&#039;hide&#039;);
+                this.trigger(&#039;listview:lineSelected&#039;, id);
+                this.renderDetail();
+                // Trigger
+
+            } else {
+                // Navigate
+                var url = this.generateNavigationUrl(id);
+                Backbone.history.navigate(url, true);
+            }
+        },
+
+        navigateBack: function navigateBack() {
+            Backbone.history.history.back();
+        },
+        //Add one line view from the model.
+        addOne: function addOneLineView(model) {
+            //console.log(&quot;modelNameAddone&quot;, model, model.modelName, this);
+            var opt = {isEdit: false};
+            if (this.isEdit) {
+                opt.isEdit = this.isEdit;
+            }
+            $(this.viewForEachLineConfiguration.parentContainer, this.$el).append(
+                new this.viewForEachLineConfiguration.LineView(_.extend({
+                    model: model
+                }, opt)).render().el
+            );
+        },
+        render: function renderListView(options) {
+            options = options || {};
+            //If the research was not launch triggered.
+            if (!options.isSearchTriggered) {
+                return this;
+            }
+            //If there is no result.
+            if (this.model.length === 0) {
+                //Is recherche launched.
+                this.$el.html(i18n.t(&#039;search.noResult&#039;)); //todo: call a template
+                Backbone.Notification.addNotification({
+                    type: &#039;info&#039;,
+                    message: i18n.t(&#039;search.noResult&#039;)
+                }, true);
+            } else {
+                //the template must have named property to iterate over it
+                var infos = this.model.pageInfo();
+                this.$el.html(this.template(_.extend({
+                    //Get the model datas only if view foreach line is active.
+                    collection: this.viewForEachLineConfiguration.isActive ? undefined : this.getRenderData(),
+                    sortField: infos.sortField.field,
+                    order: infos.sortField.order,
+                    currentPage: infos.currentPage,
+                    perPage: infos.perPage,
+                    firstPage: infos.firstPage,
+                    totalPages: infos.totalPages,
+                    totalRecords: this.model.totalRecords,
+                    isViewForLine: this.viewForEachLineConfiguration.isActive
+                }, this.additionalData())));
+
+                //Conditionnal code for rendering a line foreachView
+                if (this.viewForEachLineConfiguration.isActive) {
+                    this.model.forEach(this.addOne, this);
+                }
+
+                //render pagination
+                $(this.resultsPagination, this.$el).html(this.templatePagination(this.model.pageInfo())); //TODO : this.model.pageInfo() {currentPage: 0, firstPage: 0, totalPages: 10}
+
+                //If there is a detail id set in the view, render it inside.
+                if (this.detailId) {
+                    this.renderDetail();
+                }
+            }
+
+            this.delegateEvents();
+            return this;
+        },
+        afterRender: function postRenderListView() {
+            ConsultEditView.prototype.afterRender.call(this);
+            $(&#039;.collapse&#039;, this.$el).collapse(&#039;show&#039;);
+        }
+        //,
+        //triggerSaveModels: function triggerSaveModels() {
+        //    this.model.forEach(function(model){
+        //        model.trigger(&quot;model:end-edit&quot;);
+        //    }, this);
+        //}
+
+    });
+    // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Views = NS.Views || {};
+        NS.Views.ListView = ListView;
+    } else {
+        module.exports = ListView;
+    }
+})(typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039; ? window.Fmk : module.exports);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

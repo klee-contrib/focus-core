@@ -64,7 +64,6 @@
     <Content Include="lib\models\notification.js" />
     <Content Include="lib\models\notifications.js" />
     <Content Include="lib\models\paginatedCollection.js" />
-    <Content Include="lib\templates\templates.js" />
     <Content Include="lib\views\collection-pagination-view.js" />
     <Content Include="lib\views\composite-view.js" />
     <Content Include="lib\views\consult-edit-view.js" />

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - templates/templates.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>templates/templates.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">47.08</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">118</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">88.17</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.58</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">this[&quot;Fmk&quot;] = this[&quot;Fmk&quot;] || {};
+this[&quot;Fmk&quot;][&quot;templates&quot;] = this[&quot;Fmk&quot;][&quot;templates&quot;] || {};
+this[&quot;Fmk&quot;][&quot;templates&quot;][&quot;notifications&quot;] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,&#039;&gt;= 1.0.0&#039;];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = &quot;&quot;, stack1, functionType=&quot;function&quot;, escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = &quot;&quot;, stack1;
+  buffer += &quot;\n    &lt;strong&gt;&quot;;
+  if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;&lt;/strong&gt;&lt;br /&gt;\n  &quot;;
+  return buffer;
+  }
+
+  buffer += &quot;&lt;div class=&#039;alert alert-&quot;;
+  if (stack1 = helpers.cssMessageType) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.cssMessageType); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;&#039;&gt;\n  &lt;button type=&#039;button&#039; class=&#039;close&#039; data-dismiss=&#039;alert&#039;&gt;&amp;times;&lt;/button&gt;\n  &quot;;
+  stack1 = helpers.each.call(depth0, (depth0 &amp;&amp; depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += &quot;\n&lt;/div&gt;&quot;;
+  return buffer;
+  });;
+this[&quot;Fmk&quot;] = this[&quot;Fmk&quot;] || {};
+this[&quot;Fmk&quot;][&quot;templates&quot;] = this[&quot;Fmk&quot;][&quot;templates&quot;] || {};
+this[&quot;Fmk&quot;][&quot;templates&quot;][&quot;pagination&quot;] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,&#039;&gt;= 1.0.0&#039;];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = &quot;&quot;, stack1, functionType=&quot;function&quot;, escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = &quot;&quot;, stack1;
+  buffer += &quot;\n    &lt;li&gt;\n      &lt;span class=\&quot;btn\&quot; data-page=\&quot;&quot;;
+  if (stack1 = helpers.firstPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.firstPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\&quot;&gt;\n        &quot;;
+  if (stack1 = helpers.firstPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.firstPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\n      &lt;/span&gt;\n    &lt;/li&gt;\n    &lt;li&gt;\n      &lt;span&gt;...&lt;/span&gt;\n    &lt;/li&gt;\n  &quot;;
+  return buffer;
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = &quot;&quot;, stack1;
+  buffer += &quot;\n	  &lt;li&gt;\n      &lt;span class=\&quot;btn\&quot; data-page=\&quot;&quot;;
+  if (stack1 = helpers.previous) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.previous); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\&quot;&gt;\n        &quot;;
+  if (stack1 = helpers.previous) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.previous); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\n      &lt;/span&gt;\n    &lt;/li&gt;\n	&quot;;
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = &quot;&quot;, stack1;
+  buffer += &quot;\n	  &lt;li&gt;\n      &lt;span class=\&quot;btn\&quot; data-page=\&quot;&quot;;
+  if (stack1 = helpers.next) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.next); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\&quot;&gt;\n        &quot;;
+  if (stack1 = helpers.next) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.next); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\n      &lt;/span&gt;\n    &lt;/li&gt;\n  &quot;;
+  return buffer;
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = &quot;&quot;, stack1;
+  buffer += &quot;\n  &lt;li&gt;\n    &lt;span&gt;...&lt;/span&gt;\n  &lt;/li&gt;\n  &lt;li&gt;\n    &lt;span class=\&quot;btn\&quot; data-page=\&quot;&quot;;
+  if (stack1 = helpers.lastPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.lastPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\&quot;&gt;\n      &quot;;
+  if (stack1 = helpers.lastPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.lastPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\n    &lt;/span&gt;\n  &lt;/li&gt;\n  &quot;;
+  return buffer;
+  }
+
+  buffer += &quot;﻿&lt;ul class=\&quot;pagination\&quot;&gt;\n  &quot;;
+  stack1 = helpers[&#039;if&#039;].call(depth0, (depth0 &amp;&amp; depth0.showFirst), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += &quot;\n	&quot;;
+  stack1 = helpers[&#039;if&#039;].call(depth0, (depth0 &amp;&amp; depth0.previous), {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += &quot;\n	  &lt;li class=\&quot;active\&quot;&gt;\n      &lt;span data-page=\&quot;&quot;;
+  if (stack1 = helpers.currentPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.currentPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\&quot;&gt;\n        &quot;;
+  if (stack1 = helpers.currentPage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 &amp;&amp; depth0.currentPage); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + &quot;\n      &lt;/span&gt;\n    &lt;/li&gt;\n	&quot;;
+  stack1 = helpers[&#039;if&#039;].call(depth0, (depth0 &amp;&amp; depth0.next), {hash:{},inverse:self.noop,fn:self.program(5, program5, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += &quot;\n  &quot;;
+  stack1 = helpers[&#039;if&#039;].call(depth0, (depth0 &amp;&amp; depth0.showLast), {hash:{},inverse:self.noop,fn:self.program(7, program7, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += &quot;\n&lt;/ul&gt; &quot;;
+  return buffer;
+  });;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

@@ -48,7 +48,10 @@
     "gulp-handlebars": "^2.0.0",
     "docco": "~0.6.3",
     "hapi": "^4.0.0",
-    "plato": "^1.0.1"
+    "plato": "^1.0.1",
+	  "rcfinder": "0.1.4",
+	"lodash._reinterpolate": "~2.4.1",
+	"lodash.template": "~2.4.1"
   },
   "devDependencies": {
     "gulp": "~3.5.5",

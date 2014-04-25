@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - helpers/model_validation_promise.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>helpers/model_validation_promise.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">66.51</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">134</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">41.44</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.09</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/*global Promise, _, window, Backbone*/
+(function(NS) {
+  &quot;use strict&quot;;
+  NS = NS || {};
+  //Filename: helpers/model_validation_promise.js
+
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039;;
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require(&quot;./custom_exception&quot;).ArgumentNullException;
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require(&quot;./custom_exception&quot;).ArgumentInvalidException;
+  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require(&#039;./metadata_builder&#039;).metadataBuilder;
+  var validators = isInBrowser ? NS.Helpers.validators : require(&#039;./validators&#039;);
+  
+  //Validation function without promises.
+  //This can  is use in promise validation function and in the collection validation.
+  //In order to return only one promise well structured.
+  var validateNoPromise = function validateModelWithoutPromise(model) {
+    var errors = {};
+    //Looping through each attributes.
+    validateDomainAttributes(model, errors);
+    validateCustomAttributes(model, errors);
+    //Promisify the validations , if there is errors call the reject else call resolve with the model.
+    if (_.isEmpty(errors)) {
+      return {isValid: true, data: model};
+    } else {
+      return {isValid: false, data: errors};
+    }
+  };
+
+  var validate = function validateModel(model) {
+    var validationResult = validateNoPromise(model);
+    return new Promise(function promiseValidation(resolve, reject) {
+      //console.dir(&quot;Errors&quot;, errors);
+      if (validationResult.isValid) {
+        //console.log(&#039;resolve&#039;);
+        resolve(validationResult.data);
+      } else {
+        //console.log(&#039;reject&#039;);
+        reject(validationResult.data);
+      }
+      return undefined;
+    });
+  };
+
+  //Validate the model customs attributes.
+  var validateCustomAttributes = function validateCustomAttributes(model, errors) {
+    if (!model) {
+      throw new ArgumentNullException(&#039;The model should exist&#039;);
+    }
+    //Validating only the model at
+    for (var attr in model.attributes) {
+      //console.log(&quot;Attr&quot;, attr);
+      if (!model.isValid(attr)) {
+        var domainMessage = errors[attr] !== null &amp;&amp; errors[attr] !== undefined ? errors[attr] : &#039;&#039;;
+        errors[attr] = &#039;&#039; + domainMessage + &#039;&#039; + attr + &quot; not valid.&quot;; // Todo: translate the message.
+      }
+    }
+  };
+
+  //Get the validation &quot;standard&quot; attributes of a Backbone.model.
+  var getValidatedAttrs = function(model) {
+    return _.reduce(_.keys(_.result(model, &#039;validation&#039;) || {}), function(memo, key) {
+      memo[key] = void 0;
+      return memo;
+    }, {});
+  };
+
+  //Validate the validation domains attributes.
+  var validateDomainAttributes = function validateDomainAttributes(model, errors) {
+    var validatorsOfDomain = metadataBuilder.getDomainsValidationAttrs(model);
+    //console.log(&quot;validators %j&quot;, validatorsOfDomain);
+    //Validate only the attributes of the model not all the validators int he metdadaga of the model.
+    for (var attr in model.attributes) {
+      //Validate the model only of there is the attribute on the model.
+      var valRes = validators.validate({
+        name: attr,
+        value: model.get(attr)
+      }, validatorsOfDomain[attr]);
+
+      //If there is no error dont set any errors. 
+      if (valRes.errors !== undefined &amp;&amp; valRes.errors.length &gt; 0) {
+        errors[attr] = valRes.errors.join(&#039;,&#039;);
+      }
+    }
+  };
+  //Validate a Backbone.Collection, return a promises.
+  var validateAll = function validateCollection(collection) {
+    if (!collection instanceof Backbone.Collection) {
+      throw new ArgumentInvalidException(&quot;Only a backbone collection can be validateAll&quot;, collection);
+    }
+    return new Promise(function(successCb, errorCb) {
+      //Container for all errors.
+      var errors = [];
+      var modelIndex = 0;
+      //Iterate over each collections.
+      collection.forEach(function(model) {
+        var validationResult = validateNoPromise(model);
+        if (!validationResult.isValid) {
+          errors.push({
+            index: modelIndex,
+            errors: validationResult.data
+          });
+        }
+        modelIndex++;
+      }, this);
+      if (errors.length &gt; 0) {
+        //If the errors array is not empty, cb the promise errors.
+        errorCb(errors);
+      } else {
+        // Else call success callback with the collection.
+        successCb(collection);
+      }
+    });
+  };
+
+  // Initialize the domains and the metadatas.
+  var initialize = function initializeModelValiationPromise(options) {
+    metadataBuilder.initialize(options);
+  };
+
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.modelValidationPromise = {
+      validate: validate,
+      initialize: initialize,
+      validateAll: validateAll
+    };
+  } else {
+    module.exports = {
+      validate: validate,
+      validateAll: validateAll,
+      initialize: initialize
+    };
+  }
+})(typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039; ? window.Fmk : module.exports);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

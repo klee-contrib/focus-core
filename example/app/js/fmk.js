@@ -990,25 +990,36 @@ function program1(depth0,data) {
 	// transform errors send by API to application errors.
 	function manageResponseErrors(response, options) {
 		options = options || {};
+
 		var responseErrors = response.responseJSON;
-		/**/
+		//Container for global errors.
 		var globalErrors = [];
 		var fieldErrors = {};
 		if (responseErrors !== undefined && responseErrors !== null) {
-			/*Case of an HTTP Error (as an example 404).*/
-		    if (responseErrors.error !== undefined && responseErrors.error !== null && responseErrors !== null) {
+			// Case of an HTTP Error with a status code: (as an example 404).*/
+			if (responseErrors.error !== undefined && responseErrors.error !== null) {
 				//The response json should have the following structure : {statusCode: 404, error: "Not Found"}
 				globalErrors.push('' + responseErrors.statusCode + ' ' + responseErrors.error);
 			} else if (responseErrors.errors !== undefined) {
 				// there errors in the response
 				_.each(responseErrors.errors, function(error) {
+					//If there is field errors inside the response, add it to the current object errors.
 					if (error.fieldName !== undefined && error.fieldName.length > 0) {
 						fieldErrors[error.fieldName] = error.message;
 					} else {
+						//If there is no fieldname, the error is global.
 						globalErrors.push(error.message);
 					}
 				});
+			} else if (responseErrors.exceptionType !== undefined) {
+				//If the error is not catch by the errorHelper, in dev, display the type and the message if exists.
+				globalErrors.push(i18n.t('error.' + responseErrors.exceptionType));
+				if (responseErrors.exceptionMessage !== undefined) {
+					globalErrors.push(responseErrors.exceptionMessage);
+				}
 			} else {
+				//In the case the error is completly unanticipated.
+				console.log(i18n.t('error.unanticipated'), responseErrors);
 				globalErrors.push(i18n.t('error.unanticipated'));
 			}
 		}
@@ -1074,12 +1085,14 @@ function program1(depth0,data) {
 		}
 	}
 
+	//Content of the errorHelper published by the module.
 	var errorHelper = {
 		manageResponseErrors: manageResponseErrors,
 		display: displayErrors,
 		setModelErrors: setModelErrors,
 		setCollectionErrors: setCollectionErrors
 	};
+
 	if (isInBrowser) {
 		NS.Helpers = NS.Helpers || {};
 		NS.Helpers.errorHelper = errorHelper;
@@ -1298,13 +1311,30 @@ function program1(depth0,data) {
                 var subHeaders = headersElements[i].subHeader;
                 var subHeaderData = [];
                 for (var j = 0 ; j < subHeaders.length ; j++) {
+                    var sub2HeaderData = [];
+                    if (subHeaders[j].sub2Header !== undefined) {
+                        var sub2Headers = subHeaders[j].sub2Header;
+                        for (var k = 0 ; k < sub2Headers.length ; k++) {
+                            var sub2HeaderName = sub2Headers[k].name;
+                            var sub2Header = {
+                                cssId: "nav-" + sub2HeaderName,
+                                active: "",
+                                name: sub2HeaderName,
+                                translationKey: "header.subHeaders.sub2Headers." + sub2HeaderName,
+                                url: sub2Headers[k].url
+                            };
+                            sub2HeaderData.push(sub2Header);
+                        }
+                    }
+
                     var subHeaderName = subHeaders[j].name;
                     subHeaderData.push({
                         cssId: "nav-" + subHeaderName,
                         active: "",
                         name: subHeaderName,
                         translationKey: "header.subHeaders." + subHeaderName,
-                        url : subHeaders[j].url
+                        url: subHeaders[j].url,
+                        sub2Headers: sub2HeaderData
                     });
                 }
                 var name = headersElements[i].name;
@@ -1322,6 +1352,7 @@ function program1(depth0,data) {
             }
             return headerData;
         }
+
     };
     // Differenciating export for node or browser.
     if (isInBrowser) {
@@ -2120,14 +2151,15 @@ function program1(depth0,data) {
       return getService(listName);
   }
   
-  //Load a service by name.
-  function getService(listName) {
+    //Load a service by name.
+  function getService(listName, args) {
       if (typeof configuration[listName] !== "function") {
           throw new Error("You are trying to load the reference list: "+ listName + " which does not have a list configure." );
       }
       //Call the service, the service must return a promise.
-      return configuration[listName]();
+      return configuration[listName](args);
   }
+
     
   //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
   // Return an array of many promises for all the given lists.

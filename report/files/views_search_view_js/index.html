@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - views/search-view.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>views/search-view.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">68.57</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">173</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">26.73</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.72</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">/*global Backbone, _, $, Promise, window*/
+&quot;use strict&quot;;
+(function(NS) {
+	// Filename: views/search-view.js
+	NS = NS || {};
+	var isInBrowser = typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039;;
+	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require(&#039;../helpers/custom_exception&#039;).NotImplementedException;
+	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require(&#039;../helpers/error_helper&#039;);
+	var form_helper = isInBrowser ? NS.Helpers.formHelper : require(&#039;../helpers/form_helper&#039;);
+	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require(&#039;../helpers/modelValidationPromise&#039;);
+	var CoreView = isInBrowser ? NS.Views.CoreView : require(&#039;./core-view&#039;);
+
+	var SearchView = CoreView.extend({
+		tagName: &#039;div&#039;,
+		className: &#039;searchView&#039;,
+		ResultsView: undefined,
+		Results: undefined,
+		search: undefined,
+		resultsSelector: &#039;div#results&#039;,
+		isMoreCriteria: false,
+		initialize: function initializeSearch(options) {
+		    options = options || {};
+            // Call the initialize function of the core view.
+		    CoreView.prototype.initialize.call(this);
+			this.isSearchTriggered = options.isSearchTriggered || false;
+			this.isReadOnly = options.isReadOnly || false;
+			this.model.set({
+				isCriteriaReadonly: false
+			}, {
+				silent: true
+			});
+
+			//init results collection
+			this.searchResults = new this.Results();
+			//handle the clear criteria action
+			this.listenTo(this.model, &#039;change&#039;, this.render);
+			//initialization of the result view 
+			this.searchResultsView = new this.ResultsView({
+				model: this.searchResults,
+				criteria: this.model
+			});
+			this.listenTo(this.searchResultsView, &#039;results:fetchDemand&#039;, function() {
+				this.runSearch(null, {
+					isFormBinded: false
+				});
+			});
+			this.listenTo(this.searchResultsView, &#039;listview:lineSelected&#039;, function () {
+			    $(&#039;.collapse&#039;, this.$el).collapse(&#039;hide&#039;);
+			});
+			if (this.isSearchTriggered) {
+				this.runSearch(null, {
+					isFormBinded: false
+				});
+			}
+		},
+
+		events: {
+			&quot;submit form&quot;: &#039;runSearch&#039;, // Launch the search.
+			&quot;click button#btnReset&quot;: &#039;clearSearchCriteria&#039;, // Reset all the criteria.
+			&quot;click button#btnEditCriteria&quot;: &#039;editCriteria&#039;, //Deal with the edit mode.
+			&quot;click button.toogleCriteria&quot;: &#039;toogleMoreCriteria&#039;, // Deal with the more / less criteria.
+			&quot;click .panel-heading&quot;: &quot;toogleCollapse&quot;
+		},
+		//Change the fact that the view is in the mode mode or less criteria.
+		toogleMoreCriteria: function toogleMoreCriteria() {
+			this.isMoreCriteria = !this.isMoreCriteria;
+			form_helper.formModelBinder({
+				inputs: $(&#039;input&#039;, this.$el)
+			}, this.model);
+			this.render();
+		},
+		//get the JSON to attach to the template
+		getRenderData: function getRenderDataSearch() {
+		    return this.model.toJSON();
+		},
+
+		editCriteria: function editCriteria() {
+			this.model.set({
+				isCriteriaReadonly: false
+			});
+		},
+
+		searchSuccess: function searchSuccess(jsonResponse) {
+			this.searchResults.setTotalRecords(jsonResponse.totalRecords);
+			this.searchResults.reset(jsonResponse.values);
+		},
+		searchError: function searchError(response) {
+			ErrorHelper.manageResponseErrors(response, {
+				isDisplay: true
+			});
+		},
+
+		runSearch: function runSearchSearchView(event, options) {
+		    var searchButton;
+			if (event !== undefined &amp;&amp; event !== null) {
+			    event.preventDefault();
+			    searchButton = $(&quot;button[type=submit]&quot;, event.target); // retrieving the button that triggered the search
+			}
+			options = options || {};
+			var isFormBinded = options.isFormBinded || true;
+			//bind form fields on model
+			if (isFormBinded) {
+				form_helper.formModelBinder({
+				    inputs: $(&#039;input&#039;, this.$el),
+                    options: $(&#039;select&#039;, this.$el)
+				}, this.model);
+			}
+			var currentView = this;
+			ModelValidator
+				.validate(this.model)
+				.then(function(model) {
+					currentView.model.unsetErrors({silent: false});
+					currentView.search(_.clone(_.omit(currentView.model.attributes, currentView.referenceNames)), currentView.searchResults.pageInfo())
+						.then(function success(jsonResponse) {
+							return currentView.searchSuccess(jsonResponse);
+						}).then(null, function error(errorResponse) {
+							currentView.searchError(errorResponse);
+						}).then(function resetButton() {
+						    if (searchButton) {
+						        searchButton.button(&#039;reset&#039;);
+						    }
+						});
+				}).then(null, function error(errors) {
+				    currentView.model.setErrors(errors);
+				    if (searchButton) {
+				        searchButton.button(&#039;reset&#039;);
+				    }
+				});
+
+			if (this.isReadOnly) {
+				this.model.set({
+					isCriteriaReadonly: true
+				});
+			}
+		},
+
+		clearSearchCriteria: function clearSearchCriteria(event) {
+			event.preventDefault();
+			//Backbone.Notification.clearNotifications();
+			this.model.clear();
+			this.initialize(); //Call initialize again in order to refresh the view with criteria lists.
+		},
+
+		render: function renderSearch() {
+			this.$el.html(this.template(_.extend({
+				isMoreCriteria: this.isMoreCriteria
+			}, this.getRenderData())));
+			$(this.resultsSelector, this.$el).html(this.searchResultsView.render().el);
+			return this;
+		},
+		afterRender: function postRenderSearchView() {
+		    CoreView.prototype.afterRender.call(this);
+		    $(&#039;.collapse&#039;, this.$el).collapse(&#039;show&#039;);
+		}
+	});
+
+	/*ModelValidator.validate(this.model)
+			.catch (currentView.model.setErrors)
+			.then(function(model) {
+				currentView.model.unsetErrors();
+				currentView.search(currentView.model.toJSON())
+					//.then(currentView.searchSuccess.bind(currentView))
+					.then(currentView.searchResults.reset.bind(currentView.searchResults))
+					.catch (currentView.searchError.bind(currentView))
+			});*/
+
+	// Differenciating export for node or browser.
+	if (isInBrowser) {
+		NS.Views = NS.Views || {};
+		NS.Views.SearchView = SearchView;
+	} else {
+		module.exports = SearchView;
+	}
+})(typeof module === &#039;undefined&#039; &amp;&amp; typeof window !== &#039;undefined&#039; ? window.Fmk : module.exports);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
