@@ -43,8 +43,6 @@ describe('# User helper ', function() {
         userDefaultInfos.should.have.property('cultureCode', "en-UK");
         done();
       });
-
-
     });
   });
   describe('## roles', function() {

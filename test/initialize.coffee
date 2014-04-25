@@ -5,6 +5,7 @@ tests = [
   './lib/validators'
   './lib/metadata_builder'
   './lib/user_helper'
+  './lib/site_description_helper'
 ]
 
 for test in tests
