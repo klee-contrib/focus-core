@@ -9,7 +9,9 @@
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha",
     "build": "gulp build",
-    "docco": "docco lib/helpers/* --layout parallel --output docs/helpers; docco README.md lib/main.js --layout parallel --output docs/helpers"
+    "api": "node ./example/api/server.js",
+    "docco": "docco lib/helpers/* --layout parallel --output docs/helpers; docco README.md lib/main.js --layout parallel --output docs/helpers",
+    "code-report": "./node_modules/plato/bin/plato -r -d report -l .jshintrc -t 'Framework javascript Kleegroup.' lib/*"
   },
   "repository": {
     "type": "tfs",
@@ -44,7 +46,9 @@
     "gulp-define-module": "^0.1.0",
     "gulp-declare": "^0.2.0",
     "gulp-handlebars": "^2.0.0",
-    "docco": "~0.6.3"
+    "docco": "~0.6.3",
+    "hapi": "^4.0.0",
+    "plato": "^1.0.1"
   },
   "devDependencies": {
     "gulp": "~3.5.5",
