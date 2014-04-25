@@ -3,7 +3,8 @@ tests = [
   './models/model'
   './lib/model-validation-promise'
   './lib/validators'
-  './lib/metadata_builder' 
+  './lib/metadata_builder'
+  './lib/user_helper'
 ]
 
 for test in tests
