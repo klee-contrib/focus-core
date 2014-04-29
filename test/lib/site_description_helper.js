@@ -4,7 +4,7 @@ require('../../lib/helpers/user_helper').configureUserInformations({
   roles: ['TEST']
 });
 var stDescHelper = require('../../lib/helpers/site_description_helper');
-describe.only('# Site description helper ', function() {
+describe('# Site description helper ', function() {
   var siteDescription = require('../datas/siteDescription');
   it('## defineSiteDescription', function() {
     stDescHelper.defineSiteDescription(siteDescription);
@@ -17,7 +17,7 @@ describe.only('# Site description helper ', function() {
     var routes = stDescHelper.getRoutes();
     routes.should.be.an('object');
   });
-  it('## getRoutes', function() {
+  it.only('## getRoutes', function() {
     stDescHelper.defineSiteDescription(siteDescription);
     var routes = stDescHelper.getRoutes();
     routes.should.be.an('object');

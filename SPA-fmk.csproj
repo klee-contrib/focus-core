@@ -58,7 +58,9 @@
     <Content Include="lib\helpers\promisify_helper.js" />
     <Content Include="lib\helpers\reference_helper.js" />
     <Content Include="lib\helpers\router.js" />
+    <Content Include="lib\helpers\site_description_helper.js" />
     <Content Include="lib\helpers\url_helper.js" />
+    <Content Include="lib\helpers\user_helper.js" />
     <Content Include="lib\helpers\util_helper.js" />
     <Content Include="lib\helpers\validators.js" />
     <Content Include="lib\main.js" />

@@ -21,11 +21,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\r\n    <strong>";
+  buffer += "\n    <strong>";
   if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</strong><br />\r\n  ";
+    + "</strong><br />\n  ";
   return buffer;
   }
 
@@ -33,10 +33,10 @@ function program1(depth0,data) {
   if (stack1 = helpers.cssMessageType) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.cssMessageType); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'>\r\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\r\n  ";
+    + "'>\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\n  ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n</div>";
+  buffer += "\n</div>";
   return buffer;
   });;
 (function() {
@@ -128,6 +128,83 @@ function program1(depth0,data) {
 
 }).call(this);
 
+/*global i18n, _, window*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/user_helper.js
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var t = i18n.t || function(s){return s;};
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+  //var siteDescriptionHelper = isInBrowser ? NS.Helpers.siteDescriptionHelper : require("./site_description_helper");
+  //Setting the default user configuration.
+  var userConfiguration = {
+    cultureCode: "en-US", //Culture code.
+    name: t('default.name'), //User default name.
+    timeZone: "us",  //TimeZoneName
+    roles: [], //User role lists.,
+    routes: []
+  };
+
+  //State variable in order to know if it has been loaded once.
+  var isLoadedOnce = false;
+
+  //Call this method in order to get a clone of the user informations.
+  var getUserInformations = function getConfiguration() {
+    return _.clone(userConfiguration);
+  };
+
+  //Call this method in order to extend the default user configuration.
+  // Only the defined elements will be overriden.
+  //Example `configureUserInformations({cultureCode: "fr-FR", timeZone: "uk"})`
+  // Result `{{  cultureCode: "fr-FR",  name: default.name,  timeZone: "uk"}`
+  var configureUserInformations = function configureUserInformations(configurationElements) {
+    _.extend(userConfiguration, configurationElements);
+    //If the roles are redefine
+    if(configurationElements !== undefined && _.isArray(configurationElements.roles)){
+      console.warn('The roles have change, the site description should be reload.');
+      //Attention si les roles sont redéfinis il faut rafraîchir le plan du site.
+      //siteDescriptionHelper.regenerateRoutes();
+    }
+    isLoadedOnce = true;
+    return getUserInformations();
+  };
+
+  // Load the users informations from a promise which is given in arguments.
+  var loadUserInformations = function loadUserInformations(promiseOfLoading) {
+    return promiseOfLoading.then(function successLoading(loadedConfiguration) {
+      configureUserInformations(loadedConfiguration);
+    });
+  };
+
+  //Test it the user has the given role in parameter.
+  var hasRole = function hasRole(role){
+    return _.contains(userConfiguration.roles, role);
+  };
+
+  //Test if the user has one of the role given in argument.
+  //_roles_ should be an array.
+  var hasOneRole = function hasOneRole(roles){
+    if(!_.isArray(roles)){
+      throw new ArgumentInvalidException("The roles should be an array", roles);
+    }
+    return _.intersection(userConfiguration.roles, roles).length > 0;
+  };
+
+  var userHelper = {
+    loadUserInformations: loadUserInformations,
+    getUserInformations: getUserInformations,
+    configureUserInformations: configureUserInformations,
+    hasRole: hasRole,
+    hasOneRole: hasOneRole
+  };
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.userHelper = userHelper;
+  } else {
+    module.exports = userHelper;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global i18n, window*/
 "use strict";
 (function(NS) {
@@ -698,7 +775,7 @@ function program1(depth0,data) {
 		module.exports = NotificationsView;
 	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window*/
+/*global window, _,  $*/
 "use strict";
 (function(NS) {
   // Filename: post_rendering_helper.js
@@ -992,6 +1069,10 @@ function program1(depth0,data) {
 		options = options || {};
 
 		var responseErrors = response.responseJSON;
+		if (responseErrors === undefined) {
+		    responseErrors = response.responseText;
+		}
+
 		//Container for global errors.
 		var globalErrors = [];
 		var fieldErrors = {};
@@ -1065,6 +1146,7 @@ function program1(depth0,data) {
 			}, options);
 		}
 	}
+	
 	//Set errors on a collection.
 	function setCollectionErrors(collection, errors, options) {
 		for (var i = 0, l = errors.length; i < l; i++) {
@@ -1770,7 +1852,8 @@ function program1(depth0,data) {
         skip: '$skip',
         orderby: '$orderby',
         format:  '$format',
-        inlinecount: '$inlinecount'
+        inlinecount: '$inlinecount',
+        requestType: 'GET'
     };
     var configure = function configure(options) { 
         _.extend(odataOptions, options);
@@ -1779,7 +1862,7 @@ function program1(depth0,data) {
     // type of the request for odata
     var paginator_core = {
         // the type of the request (GET by default)
-        type: 'POST',
+        type: odataOptions.requestType,
 
         // the type of reply (json by default)
         dataType: 'json'
@@ -1894,7 +1977,7 @@ function program1(depth0,data) {
         queryOptions = _.defaults(queryOptions, {
             timeout: 25000,
             cache: false,
-            type: 'POST',
+            type: odataOptions.requestType,
             dataType: 'json'
         });
 
@@ -1946,8 +2029,8 @@ function program1(depth0,data) {
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global window, $ */
-"use strict";
 (function(NS) {
+  "use strict";
   //Filename: post_rendering_builder.js
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -1956,7 +2039,7 @@ function program1(depth0,data) {
   //Options must contain a model and a viewSelecrot property.
   var postRenderingBuilder = function(options) {
     //When there is no model inide the view, do nothing.
-      if(options === undefined || options === null || !options.model){
+    if (options === undefined || options === null || !options.model) {
       return;
     }
     //Get all the metadatas of the model.
@@ -1966,18 +2049,18 @@ function program1(depth0,data) {
       var mdt = metadatas[attr];
       /*Check for any of the metadata.*/
       if (mdt !== undefined && mdt !== null) {
-          if (mdt.decorator) {
-            //Call a registered helper. See post_rendering_helper_file to see how to register a helper.
-            postRenderingHelper.callHelper({
-                helperName: mdt.decorator, //Get the post rendering helper to call from the metdata, this helper must have been register before.
-                selector: $('[data-name=' + attr + ']', options.viewSelector), //Create a selector on each attribute in the view with its .
-                decoratorOptions: mdt.decoratorOptions //Inject decorator options define on the model.
-            });
+        if (mdt.decorator) {
+          //Call a registered helper. See post_rendering_helper_file to see how to register a helper.
+          postRenderingHelper.callHelper({
+            helperName: mdt.decorator, //Get the post rendering helper to call from the metdata, this helper must have been register before.
+            selector: $('[data-name=' + attr + ']', options.viewSelector), //Create a selector on each attribute in the view with its .
+            decoratorOptions: mdt.decoratorOptions //Inject decorator options define on the model.
+          });
         }
       }
     }
   };
-   if (isInBrowser) {
+  if (isInBrowser) {
     NS.Helpers = NS.Helpers || {};
     NS.Helpers.postRenderingBuilder = postRenderingBuilder;
   } else {
@@ -2112,8 +2195,6 @@ function program1(depth0,data) {
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 
-  // Container for all the references lists.
-  var references = {};
 
   //Container for the list and 
   var configuration = {};
@@ -2180,7 +2261,7 @@ function program1(depth0,data) {
           getService(listName)(query.term).then(function (results) {
               query.callback(results);
           });
-      }
+      };
   }
 
   var referenceHelper = {
@@ -2199,14 +2280,27 @@ function program1(depth0,data) {
     module.exports = referenceHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global $, _ , window*/
-"use strict";
+/* global window, Promise*/
 (function(NS) {
-  //Filename: helpers/url_helper.js
+  "use strict";
+  //Filename: helpers/router.js
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var middleWares = [];
+  var middlewarePromise = function middlewarePromise(middleWareFunction){
+    return new Promise(function(resolve, reject){
+      if(middleWareFunction(arguments)){
+        resolve(arguments);
+      }else{
+        reject(arguments);
+      }
+    });
+  };
 
+  var registerMiddleWare = function registerMiddleWare(middleWareFunction){
+    middleWares.push(middleWareFunction);
+  }
   var router = {};
 
   // Differenciating export for node or browser.
@@ -2215,6 +2309,121 @@ function program1(depth0,data) {
     NS.Helpers.router = router;
   } else {
     module.exports = router;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global window, _*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/routes_helper.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+  //Container for the site description and routes.
+  var siteDescription, routes = {}, siteStructure = {};
+
+  //Define the application site description.
+  //The siteDescription must be an object with the following structure: 
+  // `{headers: [{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: [[{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: []}]]}]}`
+  var defineSiteDescription = function defineSiteDescription(steDescription) {
+    siteDescription = steDescription;
+    //Generate the routes associated.
+    regenerateRoutes();
+    return siteDescription;
+  };
+
+  var regenerateRoutes = function regenerateRoutes(){
+    generateRoutes(siteDescription);
+  };
+
+  //Generate the routes fromSiteDescription.
+  var generateRoutes = function generateRoutes(elementDesc, prefix) {
+    if(!elementDesc){
+      console.warn('The siteDescription does not exists', elementDesc);
+      return;
+    }
+    prefix = ((prefix === undefined || prefix === null || prefix === "") ? "" : prefix + '.') + (elementDesc.name === undefined || elementDesc.name === null || elementDesc.name === "") ? "" : elementDesc.name;
+    //process headers routes.
+    var headers = elementDesc.header;
+    for (var siteDescIdx in headers) {
+      var siteDesc = headers[siteDescIdx];
+      var prefixsiteDesc = prefix + siteDesc.name;
+      if (siteDesc.header) {
+        generateRoutes(siteDesc, prefixsiteDesc);
+      } else {
+        addRouteForUser(siteDesc, prefixsiteDesc);
+      }
+    }
+    addRouteForUser(elementDesc, prefix);
+
+  };
+
+  //Add a route for a user.
+
+  var addRouteForUser = function addRouteForUser(element, prefix) {
+    if (!element) {
+      return;
+      //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
+    }
+    if (prefix === undefined || prefix === null || prefix === "") {
+      return;
+      //throw new ArgumentNullException("The prefix to add a route should not be undefined.", prefix);
+    }
+    //Add the route only if the user has one of the required role.
+    if (element.roles !== undefined && element.url !== undefined)
+      if (userHelper.hasOneRole(element.roles)) {
+        var route = {
+          roles: element.roles,
+          name: prefix,
+          route: element.url
+        };
+        routes[element.url] = route;
+        siteStructure[prefix] = route;
+      }
+      //process the site not in the menus  
+    if (element.pages !== undefined && element.pages !== null) {
+      for (var rtIdx in element.pages) {
+        addRouteForUser(element.pages[rtIdx], prefix);
+      }
+    }
+
+  };
+
+
+  //Get the siteDescription.
+  var getSiteDescription = function getSiteDescription() {
+    return _.clone(siteDescription);
+  };
+
+  //Get all the application routes from the siteDescription.
+  var getRoute = function getRoutes(routeName) {
+    return _.clone(routes[routeName]);
+  };
+
+  var getRoutes = function getRoutes() {
+    return _.clone(routes);
+  };
+
+  var getSiteStructure = function getSiteStructure(){
+    return _.clone(siteStructure);
+  };
+
+  var siteDescriptionHelper = {
+    defineSiteDescription: defineSiteDescription,
+    getRoute: getRoute,
+    getRoutes: getRoutes,
+    getSiteDescription: getSiteDescription,
+    regenerateRoutes: regenerateRoutes,
+    getSiteStructure: getSiteStructure
+  };
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.siteDescriptionHelper = siteDescriptionHelper;
+  } else {
+    module.exports = siteDescriptionHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global $, _ , window*/

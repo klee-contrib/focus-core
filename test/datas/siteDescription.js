@@ -1,6 +1,8 @@
 //Export the site description.
 module.exports = {
-    header: [{
+    name: "home",
+    roles: ['TEST'],
+    headers: [{
         name: "accueil",
         url: "#route1",
         roles: ['TEST', 'PAPA'],
@@ -9,18 +11,27 @@ module.exports = {
             url: "#pageSansMenu",
             roles: ['PAPA', 'TEST']
         }, {
-            name: 'pageSansMenu',
-            url: "#pageSansMenu",
+            name: 'pageSansMenu11',
+            url: "#pageSansMenu11",
             roles: ['PAPA', 'TEST']
         }]
     }, {
         name: "administration",
         url: "#administration/audit/diagnostic",
         roles: ['TEST'],
-        header: [{
+        headers: [{
             name: "audit",
             url: "#administration/audit/diagnostic",
-            roles: ['ADMINISTRATION', 'TEST']
+            roles: ['ADMINISTRATION', 'TEST'],
+            pages: [{
+                name: 'pageSansMenu777',
+                url: "#ppppageSansMenu777",
+                roles: ['PAPA', 'TEST']
+            }, {
+                name: 'pageSansMenu121212',
+                url: "#pppppppageSansMenu102121",
+                roles: ['PAPA', 'TEST']
+            }]
         }, {
             name: "other",
             url: "#administration/other/other",
