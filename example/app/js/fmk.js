@@ -205,6 +205,102 @@ function program1(depth0,data) {
     module.exports = userHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global window, _*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/routes_helper.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+ var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+  //Module page.
+  var siteDescriptionStructure,
+    siteDescriptionParams,
+    isProcess = false;
+  //Define the application site description.
+  //The siteDescription must be a function which return an object with the following structure: 
+  // `{headers: [{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: [[{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: []}]]}]}`
+  var defineSite = function defineSite(siteDescription) {
+    if (typeof siteDescription !== "object") {
+      throw new ArgumentNullException('SiteDescription must be an object', siteDescription);
+    }
+    if (typeof siteDescription.params !== "object") {
+      throw new ArgumentNullException('SiteDescription.params must be an object', siteDescription);
+    }
+    if (typeof siteDescription.value !== "function") {
+      throw new ArgumentNullException('SiteDescription.value must be a function', siteDescription);
+    }
+    siteDescriptionParams = siteDescription.params || {};
+    siteDescriptionStructure = siteDescription.value;
+    return getSite();
+  };
+
+  //param must be a {name: 'paramName', value: 'paramValue'} object.
+  var defineParam = function(param) {
+    if(param === undefined){
+      throw new ArgumentNullException('You cannot set an undefined param.', param);
+    }
+    //console.log("Debug", param.name, siteDescriptionParams,siteDescriptionParams['codePays']);
+    if(siteDescriptionParams[param.name] === undefined){
+      throw new ArgumentNullException('The parameter you try to define has not been anticipated by the siteDescription', {param: param, siteParams: siteDescriptionParams});
+    }
+    if (siteDescriptionParams[param.name].value === param.value) {
+      console.warn('No changes on param', param);
+      return false;
+    }
+    siteDescriptionParams[param.name] = {
+      value: param.value,
+      isDefine: true
+    };
+    isProcess = false;
+    return true;
+  };
+
+  //Get the site process 
+  var getSite = function getSite() {
+    isProcess = true;
+    return siteDescriptionStructure(siteDescriptionParams);
+  };
+
+  //Check if the params is define in the params list.
+  var checkParams = function checkParams(paramsArray) {
+    if(typeof paramsArray === "undefined"){
+      return true;
+    }
+    if (!_.isArray(paramsArray)) {
+      throw new ArgumentInvalidException("The paramsArray must be an array");
+    }
+    if(_.intersection(_.keys(siteDescriptionParams), paramsArray).length !== paramsArray.length){
+      return false;
+    }
+    for (var prop in siteDescriptionParams) {
+      if ( _.contains(paramsArray, prop) && !siteDescriptionParams[prop].isDefine) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  var siteDescriptionHelper = {
+    defineSite: defineSite,
+    defineParam: defineParam,
+    getSite: getSite,
+    getParams: function(){return _.clone(siteDescriptionParams);},
+    checkParams: checkParams,
+    isProcessed: function isProcessed() {
+      return isProcess;
+    }
+  };
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.siteDescriptionHelper = siteDescriptionHelper;
+  } else {
+    module.exports = siteDescriptionHelper;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global i18n, window*/
 "use strict";
 (function(NS) {
@@ -1936,7 +2032,7 @@ function program1(depth0,data) {
         }
 
         var val = {};
-        val[odataOptions.filter] = criteriaToOdata(criteria);
+        val[odataOptions.filter] = criteria;// criteriaToOdata(criteria);
         val[odataOptions.top] = pagesInfo.perPage;
         val[odataOptions.skip] = (pagesInfo.currentPage - 1) * pagesInfo.perPage;
         val[odataOptions.orderby] = orderToOdata(sortFields);
@@ -2319,55 +2415,168 @@ function program1(depth0,data) {
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
+  var siteDescriptionHelper = isInBrowser ? NS.Helpers.siteDescriptionHelper : require("./site_description_helper");
   var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
   //Container for the site description and routes.
   var siteDescription, routes = {}, siteStructure = {};
 
-  //Define the application site description.
-  //The siteDescription must be an object with the following structure: 
-  // `{headers: [{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: [[{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: []}]]}]}`
-  var defineSiteDescription = function defineSiteDescription(steDescription) {
-    siteDescription = steDescription;
-    //Generate the routes associated.
-    regenerateRoutes();
-    return siteDescription;
+  //Process the siteDescription if necessary.
+  var processSiteDescription = function(options){
+    options = options || {};
+    if(!siteDescriptionHelper.isProcessed() || options.isForceProcess){
+      siteDescription = siteDescriptionHelper.getSite();
+      regenerateRoutes();
+      return siteDescription;
+    }return false;
   };
 
-  var regenerateRoutes = function regenerateRoutes(){
+  //Regenerate the application routes.
+  var regenerateRoutes = function regenerateRoutes() {
     generateRoutes(siteDescription);
   };
 
+  //Process the name of 
+  var processName = function(pfx, eltDescName) {
+    if (pfx === undefined || pfx === null) {
+      pfx = "";
+    }
+    if (eltDescName === undefined || eltDescName === null) {
+      return pfx;
+    }
+    if (pfx === "") {
+      return eltDescName;
+    }
+    return pfx + '.' + eltDescName;
+  };
+
+  
+  var processElement = function(siteDescElt, prefix, options) {
+    options = options || {};
+    if (!siteDescElt) {
+      console.warn('The siteDescription does not exists', siteDescElt);
+      return;
+    }
+    var pfx = processName(prefix, siteDescElt.name);
+    if(siteDescriptionHelper.checkParams(siteDescElt.requiredParams)){
+     processHeaders(siteDescElt, pfx);
+    }
+    processPages(siteDescElt, pfx);
+    processRoute(siteDescElt, pfx, options);
+  };
+
+  //Process the deaders element of the site description element.
+  var processHeaders = function(siteDesc, prefix) {
+
+    if (!siteDesc.headers) {
+      return;
+    }
+    //console.log('headers', siteDesc.headers, 'prefix', prefix);
+    var headers = siteDesc.headers;
+    for (var i in headers) {
+      processElement(headers[i], prefix, {isInSiteStructure: true});
+    }
+  };
+
+  //Process the pages element of the site description.
+  var processPages = function(siteDesc, prefix) {
+    if (siteDesc.pages !== undefined && siteDesc.pages !== null) {
+      //console.log('pages', siteDesc.pages, 'prefix', prefix);
+
+      for (var i in siteDesc.pages) {
+        processElement(siteDesc.pages[i], prefix);
+      }
+    }
+  };
+
+ 
+  //Process the route part of the site description element.
+  var processRoute = function(siteDesc, prefix, options) {
+    options = options || {};
+    if (siteDesc.roles !== undefined && siteDesc.url !== undefined)
+    //console.log('route', siteDesc.url, 'prefix', prefix);
+
+      if (userHelper.hasOneRole(siteDesc.roles)) {
+        var route = {
+          roles: siteDesc.roles,
+          name: prefix,
+          route: siteDesc.url,
+          regex: routeToRegExp(siteDesc.url)
+        };
+        //Call the Backbone.history.handlers....
+
+        routes[route.regex.toString()] = route;
+        if(options.isInSiteStructure){
+          siteStructure[prefix] = route;
+        }
+      }
+  };
+
+//Find a route with its name.
+ var findRouteName = function(routeToTest) {
+    var handlers = Backbone.history.handlers;
+    return _.any(handlers, function(handler) {
+      if (handler.route.test(routeToTest)) {
+        return  handler.route.toString();
+      }
+    });
+  };
+  
+
+    //Convert a route to regexp
+  var optionalParam = /\((.*?)\)/g;
+  var namedParam    = /(\(\?)?:\w+/g;
+  var splatParam    = /\*\w+/g;
+  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+  var routeToRegExp=  function routeToRegExp(route) {
+      route = route.replace(escapeRegExp, '\\$&')
+                   .replace(optionalParam, '(?:$1)?')
+                   .replace(namedParam, function(match, optional) {
+                     return optional ? match : '([^/?]+)';
+                   })
+                   .replace(splatParam, '([^?]*?)');
+      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
+    };
+
+
+
+
   //Generate the routes fromSiteDescription.
   var generateRoutes = function generateRoutes(elementDesc, prefix) {
-    if(!elementDesc){
+    if (!elementDesc) {
       console.warn('The siteDescription does not exists', elementDesc);
       return;
     }
-    prefix = ((prefix === undefined || prefix === null || prefix === "") ? "" : prefix + '.') + (elementDesc.name === undefined || elementDesc.name === null || elementDesc.name === "") ? "" : elementDesc.name;
+
+    return processElement(elementDesc, prefix);
+
+    var pfx = processName(prefix, elementDesc.name);
+
     //process headers routes.
     var headers = elementDesc.header;
     for (var siteDescIdx in headers) {
       var siteDesc = headers[siteDescIdx];
-      var prefixsiteDesc = prefix + siteDesc.name;
+      var prefixsiteDesc = processName(pfx, siteDesc.name);
+      console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
       if (siteDesc.header) {
         generateRoutes(siteDesc, prefixsiteDesc);
       } else {
         addRouteForUser(siteDesc, prefixsiteDesc);
       }
     }
-    addRouteForUser(elementDesc, prefix);
+    addRouteForUser(elementDesc, pfx);
 
   };
 
   //Add a route for a user.
 
   var addRouteForUser = function addRouteForUser(element, prefix) {
+    console.log('addRouteForUser', 'prefix', prefix);
     if (!element) {
       return;
       //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
     }
     if (prefix === undefined || prefix === null || prefix === "") {
-      return;
+      prefix = "";
       //throw new ArgumentNullException("The prefix to add a route should not be undefined.", prefix);
     }
     //Add the route only if the user has one of the required role.
@@ -2405,25 +2614,25 @@ function program1(depth0,data) {
     return _.clone(routes);
   };
 
-  var getSiteStructure = function getSiteStructure(){
+  var getSiteStructure = function getSiteStructure() {
     return _.clone(siteStructure);
   };
 
-  var siteDescriptionHelper = {
-    defineSiteDescription: defineSiteDescription,
+  var siteDescriptionBuilder = {
     getRoute: getRoute,
     getRoutes: getRoutes,
     getSiteDescription: getSiteDescription,
     regenerateRoutes: regenerateRoutes,
-    getSiteStructure: getSiteStructure
+    getSiteStructure: getSiteStructure,
+    processSiteDescription: processSiteDescription
   };
 
   // Differenciating export for node or browser.
   if (isInBrowser) {
     NS.Helpers = NS.Helpers || {};
-    NS.Helpers.siteDescriptionHelper = siteDescriptionHelper;
+    NS.Helpers.siteDescriptionBuilder = siteDescriptionBuilder;
   } else {
-    module.exports = siteDescriptionHelper;
+    module.exports = siteDescriptionBuilder;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global $, _ , window*/
@@ -2530,8 +2739,8 @@ function program1(depth0,data) {
     initialize: function initializeCoreView(options) {
       options = options || {};
       //Define default options foreach _core_ view, and override these options for each _project view_.
-      //Then each view will have access to options in any methods.
-      this.opts = _.extend(this.defaultOptions, this.customOptions, options);
+        //Then each view will have access to options in any methods.
+      this.opts = _.extend({},this.defaultOptions, this.customOptions, options);
 
       this.on('toogleIsHidden', this.toogleIsHidden);
 
@@ -2569,8 +2778,9 @@ function program1(depth0,data) {
     initializeModel: function initializeModelCoreView() {
       if (this.model) {
         return;
-      } else if (this.modelName) {
-        this.model = new Model({modelName: this.modelName});
+      } else if (this.opts.modelName) {
+          this.model = new Model();
+          this.model.modelName = this.opts.modelName;
       } else {
         throw new ArgumentNullException("The view must have a model or a model name.", this);
       }
@@ -3017,12 +3227,13 @@ function program1(depth0,data) {
         saveModelSvc: undefined,
 
         //Container for all the views which are registered.
-        viewsConfiguration: [],
+        //viewsConfiguration: [],
 
         //Initialize function of the composite view.
         initialize: function initializeCompositeView(options) {
             options = options || {};
             ConsultEditView.prototype.initialize.call(this, options);
+            this.viewsConfiguration = [];
             //Call efor each view you want to register the register view method.
 
         },
@@ -3728,7 +3939,7 @@ function program1(depth0,data) {
 		initialize: function initializeSearch(options) {
 		    options = options || {};
             // Call the initialize function of the core view.
-		    CoreView.prototype.initialize.call(this);
+		    CoreView.prototype.initialize.call(this, options);
 			this.isSearchTriggered = options.isSearchTriggered || false;
 			this.isReadOnly = options.isReadOnly || false;
 			this.model.set({

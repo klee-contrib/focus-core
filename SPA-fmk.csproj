@@ -58,6 +58,7 @@
     <Content Include="lib\helpers\promisify_helper.js" />
     <Content Include="lib\helpers\reference_helper.js" />
     <Content Include="lib\helpers\router.js" />
+    <Content Include="lib\helpers\site_description_builder.js" />
     <Content Include="lib\helpers\site_description_helper.js" />
     <Content Include="lib\helpers\url_helper.js" />
     <Content Include="lib\helpers\user_helper.js" />
@@ -78,9 +79,11 @@
     <Content Include="lib\views\search-results-view.js" />
     <Content Include="lib\views\search-view.js" />
     <Content Include="test\assets\test\index.html" />
+    <Content Include="test\datas\routeDescription.js" />
     <Content Include="test\datas\siteDescription.js" />
     <Content Include="test\lib\metadata_builder.js" />
     <Content Include="test\lib\model-validation-promise.js" />
+    <Content Include="test\lib\site_description_builder.js" />
     <Content Include="test\lib\site_description_helper.js" />
     <Content Include="test\lib\user_helper.js" />
     <Content Include="test\lib\validators.js" />
