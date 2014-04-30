@@ -1,38 +1,52 @@
-/*global describe, it, Promise*/
+/*global describe, it,  _*/
 require('../initialize-globals').load();
 require('../../lib/helpers/user_helper').configureUserInformations({
   roles: ['TEST']
 });
-var stDescHelper = require('../../lib/helpers/site_description_helper');
+var ArgumentNullException = require("../../lib/helpers/custom_exception").ArgumentNullException;
+var ArgumentInvalidException = require("../../lib/helpers/custom_exception").ArgumentInvalidException;
+var siteDescHelper = require('../../lib/helpers/site_description_helper');
+//Unit test site description
+var siteDescriptionFn = require('../datas/siteDescription');
 describe('# Site description helper ', function() {
-  var siteDescription = require('../datas/siteDescription');
-  it('## defineSiteDescription', function() {
-    stDescHelper.defineSiteDescription(siteDescription);
-    var stDesc = stDescHelper.getSiteDescription();
-    stDesc.should.be.an('object');
-    stDesc.should.be.deep.equal(siteDescription);
+  it('## defineSite', function() {
+    var siteDescriptionProcessDefault = siteDescriptionFn();
+    //Initialize the site description.
+    var siteDescription = siteDescHelper.defineSite({
+      value: siteDescriptionFn,
+      params: {}
+    });
+    siteDescription.should.be.deep.equal(siteDescriptionProcessDefault);
+    //console.log('siteDescription', siteDescription);
   });
-  it('## getRoutes', function() {
-    stDescHelper.defineSiteDescription(siteDescription);
-    var routes = stDescHelper.getRoutes();
-    routes.should.be.an('object');
+  it('## defineParam: no params define except defaults', function() {
+    //Initialize the site description.
+    siteDescHelper.defineSite({
+      value: siteDescriptionFn,
+      params: {}
+    });
+    (function() { siteDescHelper.defineParam();}).should.throw(ArgumentNullException);
+    (function() { siteDescHelper.defineParam({name:'toto', value:'toto'});}).should.throw(ArgumentNullException);
   });
-  it.only('## getRoutes', function() {
-    stDescHelper.defineSiteDescription(siteDescription);
-    var routes = stDescHelper.getRoutes();
-    routes.should.be.an('object');
-    console.log('siteDesc', siteDescription);
-    console.log('routes', routes);
+  it('## defineParam: params define',function(){
+     siteDescHelper.defineSite({
+      value: siteDescriptionFn,
+      params: {paysCode: {name: 'paysCode', value:":codePays"}}
+    });
+     siteDescHelper.defineParam({name: 'paysCode', value: 'pays'}).should.be.true;
+     siteDescHelper.defineParam({name: 'paysCode', value: 'pays'}).should.be.false;
   });
-  it('## getRoute', function() {
-    stDescHelper.defineSiteDescription(siteDescription);
-    var route = stDescHelper.getRoute('#route1');
-    route.should.be.an('object');
-  });
-  it('## getSiteStructure', function() {
-    stDescHelper.defineSiteDescription(siteDescription);
-    var siteStructure = stDescHelper.getSiteStructure();
-    siteStructure.should.be.an('object');
-    console.log(siteStructure);
+  it('## checkParams: params define',function(){
+    siteDescHelper.defineSite({
+      value: siteDescriptionFn,
+      params: {paysCode: {name: 'paysCode', value:":papa"}}
+    });
+
+    siteDescHelper.checkParams().should.be.true;
+    siteDescHelper.checkParams([]).should.be.true;
+    siteDescHelper.checkParams(['paysCode']).should.be.false;
+    siteDescHelper.defineParam({name: 'paysCode', value: 'pays'}).should.be.true;
+    siteDescHelper.checkParams(['paysCode']).should.be.true;
+    siteDescHelper.checkParams(['papa']).should.be.false;
   });
 });
