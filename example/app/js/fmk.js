@@ -13,6 +13,68 @@
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 this["Fmk"] = this["Fmk"] || {};
 this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
+this["Fmk"]["templates"]["header"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div class=\"navbar-static-top header\">\r\n  \r\n</div>";
+  });;
+this["Fmk"] = this["Fmk"] || {};
+this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
+this["Fmk"]["templates"]["headerItems"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n             <li id='";
+  if (stack1 = helpers.cssId) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.cssId); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' class=\"";
+  if (stack1 = helpers.cssClass) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.cssClass); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.isActive), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\" ";
+  if (stack1 = helpers.dataAttributes) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.dataAttributes); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " >\r\n                <a href=\"";
+  if (stack1 = helpers.url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.url); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.name); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a>\r\n             </li>\r\n          ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "active";
+  }
+
+  buffer += "<div class=\"navbar-default\">\r\n    <div class=\"container\">\r\n      <div class=\"navbar-header\">\r\n        <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\">\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n        </button>\r\n        <a class=\"navbar-brand\" href=\"#\"></a>\r\n      </div>\r\n      <div class=\"navbar-collapse collapse\" >\r\n        <ul class=\"nav navbar-nav\">\r\n          ";
+  if (stack1 = helpers.debug) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.debug); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\r\n          ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.headerItems), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n    </ul>\r\n  </div>\r\n</div>";
+  return buffer;
+  });;
+this["Fmk"] = this["Fmk"] || {};
+this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["notifications"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
@@ -569,6 +631,96 @@ function program1(depth0,data) {
 
 }).call(this);
 
+/*global Backbone, window, module*/
+(function(NS) {
+  "use strict";
+  //Filename: models/headerItems.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+
+  //Menu item model
+  var HeaderItem = Backbone.Model.extend({
+    defaults: {
+      cssId: "",
+      cssClass: "",
+      dataAttributes: "",
+      isActive: false,
+      name: undefined,
+      transalationKey: "",
+      url: "#nav"
+    },
+    initialize: function initializeMenuItem(options) {
+      options = options || {};
+    },
+    //Change the active mode.
+    toggleActive: function toggleActive() {
+      this.set('isActive', !this.get('isActive'));
+    }
+  });
+
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Models = NS.Models || {};
+    NS.Models.HeaderItem = HeaderItem;
+  } else {
+    module.exports = HeaderItem;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global Backbone, window, module, _*/
+(function(NS) {
+  "use strict";
+  //Filename: models/menuItems.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var HeaderItem = isInBrowser ? NS.Models.HeaderItem : require('header-item');
+  var util = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
+
+  //Notification model
+  var HeaderItems = Backbone.Collection.extend({
+    model: HeaderItem,
+    //Change the active mode.
+    changeActive: function changeActive(nodeName) {
+      if (nodeName === undefined || nodeName === this.currentActiveName) {
+        return;
+      }
+      //Get the current and the new active item.
+      var current = this.findWhere({
+        isActive: true
+      });
+      var newActive = this.findWhere({
+        name: nodeName
+      });
+
+      //Check if there is a change
+      if (current && newActive) {
+        current.set({
+          isActive: false
+        });
+      }
+      if (newActive) {
+        newActive.set({
+          isActive: true
+        });
+      }
+      this.trigger("change");
+    },
+    toActiveJSON: function toActiveJSON(){
+      return _.filter(this.toJSON(),function(element){return true;/*this.get('name').indexOf(util. this.currentActiveName) === 0;*/});
+    }
+  });
+
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Models = NS.Models || {};
+    NS.Models.HeaderItems = HeaderItems;
+  } else {
+    module.exports = HeaderItems;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -941,11 +1093,12 @@ function program1(depth0,data) {
   }
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/* global  _ , window */
+﻿/* global  _ , window, Promise */
 (function(NS) {
     "use strict";
     //Filename: helpers/util_helper.js
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
     NS = NS || {};
     var JSON = {};
 
@@ -1011,7 +1164,31 @@ function program1(depth0,data) {
         );
         return JSON.unflatten(res);
     }
+    //Group datas by split char.
+    function groupBySplitChar(data, options){
+        options = options || {};
+        if(!_.isObject(data)){
+            throw new ArgumentInvalidException('Data must be an object', data);
+        }
+        var splitKey = options.splitKey || '.';
+        var resutContainer = {};
+        for(var prop in data){
+            var l = prop.split(splitKey).length;
+            if(!_.isObject(resutContainer[l])){
+                resutContainer[l] = {};
+            }
+            resutContainer[l][prop] = data[prop];
+        }
+        return resutContainer;
+    }
     //Generate four random hex digits.
+    function splitLevel(source,  options){
+        options = options ||{};
+        var splitChar = options.splitChar ||'.';
+        var depth = options.depth || source.length;
+        //if(depth === 0){return source;}
+        return _.reduce(source.split(splitChar,depth), function(memo, val){return memo + val + splitChar ;}, '').slice(0,-1);
+    }
 
     function S4() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -1050,12 +1227,12 @@ function program1(depth0,data) {
         }
 
     };
-    //Method to call in order to know if a model is a collection
+    //Method to call in order to know if a model is a model.
     var isBackboneModel = function isBackboneModel(model) {
         return model !== undefined && model !== null && typeof model.has === "function";
     };
 
-    // Method to call 
+    // Method to call in order to know if a model is a collection.
     var isBackboneCollection = function isBackboneCollection(collection) {
         return collection !== undefined && collection !== null && typeof collection.add === "function";
     };
@@ -1065,11 +1242,15 @@ function program1(depth0,data) {
         return view !== undefined && view !== null && typeof view.render === "function";
     };
 
+
+
     //Util helper.
     var utilHelper = {
         flatten: JSON.flatten,
         unflatten: JSON.unflatten,
         combine: combine,
+        groupBySplitChar: groupBySplitChar,
+        splitLevel: splitLevel,
         loadLocalData: loadLocalData,
         guid: guid,
         generateFake: generateFake,
@@ -1956,12 +2137,14 @@ function program1(depth0,data) {
     };
 
     // type of the request for odata
-    var paginator_core = {
-        // the type of the request (GET by default)
-        type: odataOptions.requestType,
+    var paginator_core = function paginator_core() {
+        return {
+            // the type of the request (GET by default)
+            type: odataOptions.requestType,
 
-        // the type of reply (json by default)
-        dataType: 'json'
+            // the type of reply (json by default)
+            dataType: 'json'
+        }
     };
 
     function createOdataOptions(criteria, pagesInfo, options) {
@@ -2060,7 +2243,7 @@ function program1(depth0,data) {
             }
         });
 
-        var queryOptions = _.clone(paginator_core);
+        var queryOptions = _.clone(paginator_core());
         _.each(queryOptions, function(value, key) {
             if (_.isFunction(value)) {
                 value = _.bind(value, self);
@@ -2861,7 +3044,7 @@ function program1(depth0,data) {
 ﻿/*global window, Backbone, $, i18n*/
 (function(NS) {
     "use strict";
-    //Filename: views/detail-consult-view.js
+    //Filename: views/consult-edit-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
@@ -3157,10 +3340,10 @@ function program1(depth0,data) {
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, window*/
-"use strict";
 //var template = require("../template/collection-pagination");
 (function(NS) {
   //Filename: views/collection-pagination-view.js
+  "use strict";
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var CollectionPaginationView = Backbone.View.extend({
@@ -3667,6 +3850,140 @@ function program1(depth0,data) {
 		module.exports = DetailEditView;
 	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global Backbone, window*/
+(function(NS) {
+  "use strict";
+  //Filename: views/header-items-view.js
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  
+  //Template for the header items.
+  var template = isInBrowser ? NS.templates.headerItems : function(){};
+  
+  //View for the header items.
+  var headerItemsView = Backbone.View.extend({
+    
+    //Default template.
+    template: template,
+
+    //Initialize the header view.
+    initialize: function initializeHeaderItemsView(options) {
+      options = options || {};
+      this.listenTo(this.model, 'change', this.render);
+    },
+    
+    //Render all the headers items.
+    render: function renderHeaderItems(){
+        this.$el.html(this.template({headerItems: this.model.toActiveJSON()}));
+        return this;
+    },
+
+    //Hide the view.
+    hide: function hide(){
+      this.$el.html(null);
+    }
+  });
+
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Views = NS.Views || {};
+    NS.Views.HeaderItemsView = headerItemsView;
+  } else {
+    module.exports = headerItemsView;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global Backbone, window, _, $*/
+(function(NS) {
+  "use strict";
+  //Filename: views/header-view.js
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var util = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
+  var HeaderItems = isInBrowser ? NS.Models.HeaderItems : require('../models/header-items');
+  var HeaderItemsView = isInBrowser ? NS.Views.HeaderItemsView : require('./header-items-view');
+
+  var headerView = Backbone.View.extend({
+
+    //Name of the level layer.
+    levelName: "level_",
+
+    //Default name of the container for the header.
+    defaultContainerName: "#header",
+    
+    //Initialize the header view.
+    initialize: function initializeHeaderView(options) {
+      options = options || {};
+      this.opts = _.extend({containerName: this.defaultContainerName},options);
+      if (options.site) {
+        this.processSite(options.site);
+      }
+      if (options.active) {
+        this.processActive(options.active);
+      }
+
+    },
+
+    //Process the active menu item.
+    processActive: function processActive(activeNode) {
+      if (this.active === activeNode) {
+        return;
+      }
+      var split = activeNode.split('.');
+      this.level = split.length; //+1?
+
+      for (var i = 0; i < this.maxLevel; i++) {
+        //If the view is in the level.
+        if (i < this.level) {
+          //Test the depth.
+          this[this.levelName + i].model.changeActive(util.splitLevel(activeNode, {depth: i+1}));
+        } else {
+          this[this.levelName + i].hide();
+        }
+      }
+    },
+
+    //Process the site map.
+    processSite: function processSite(site) {
+      var grouped = util.groupBySplitChar(site);
+      //Erase previous view.
+      for (var i = 0; i < this.maxLevel; i++) {
+        this[this.levelName + i].remove();
+        delete this[this.levelName + i];//See if it is necessary.
+      }
+      //Create new views
+      var index = 0;
+      for (var prop in grouped) {
+        this[this.levelName + index] = new HeaderItemsView({
+          model: new HeaderItems(_.values(grouped[prop]))
+        });
+        index++;
+      }
+      //define the max profoundness level.
+      this.maxLevel = index;
+      this.render();
+    },
+
+    //Render all the headers items.
+    render: function renderHeaders() {
+      this.$el.html('');
+      for (var i = 0; i < this.maxLevel; i++) {
+        this.$el.append( this[this.levelName + i].render().el);
+      }
+      return this;
+    }
+
+  });
+
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Views = NS.Views || {};
+    NS.Views.HeaderView = headerView;
+  } else {
+    module.exports = headerView;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 ﻿/*global Backbone, i18n, $, window, _*/
 "use strict";
 (function(NS) {
@@ -3797,7 +4114,7 @@ function program1(depth0,data) {
         lineSelection: function lineSelectionSearchResults(event) {
             //todo: should the be unactivated if there is aview per line and delegate to the line. , this.viewForEachLineConfiguration.isActive
             event.preventDefault();
-            var id = +$(event.target).parents("td[data-selection]:first").attr('data-selection');
+            var id = +$(event.target).closest("td[data-selection]").attr('data-selection');
             if (this.isShowDetailInside) {
                 this.detailId = id;
                 $('.collapse', this.$el).collapse('hide');
