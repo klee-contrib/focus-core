@@ -65,6 +65,8 @@
     <Content Include="lib\helpers\util_helper.js" />
     <Content Include="lib\helpers\validators.js" />
     <Content Include="lib\main.js" />
+    <Content Include="lib\models\header-item.js" />
+    <Content Include="lib\models\header-items.js" />
     <Content Include="lib\models\notification.js" />
     <Content Include="lib\models\notifications.js" />
     <Content Include="lib\models\paginatedCollection.js" />
@@ -74,6 +76,8 @@
     <Content Include="lib\views\core-view.js" />
     <Content Include="lib\views\detail-consult-view.js" />
     <Content Include="lib\views\detail-edit-view.js" />
+    <Content Include="lib\views\header-items-view.js" />
+    <Content Include="lib\views\header-view.js" />
     <Content Include="lib\views\list-view.js" />
     <Content Include="lib\views\notifications-view.js" />
     <Content Include="lib\views\search-results-view.js" />
@@ -86,6 +90,7 @@
     <Content Include="test\lib\site_description_builder.js" />
     <Content Include="test\lib\site_description_helper.js" />
     <Content Include="test\lib\user_helper.js" />
+    <Content Include="test\lib\util_helper.js" />
     <Content Include="test\lib\validators.js" />
     <Content Include="test\models\model.js" />
     <Content Include="test\vendor\scripts\chai-1.5.0.js" />
@@ -105,6 +110,8 @@
     <None Include="lib\helpers\metadata_builder.coffee" />
     <None Include="lib\models\collection.coffee" />
     <None Include="lib\models\model.coffee" />
+    <None Include="lib\templates\header.hbs" />
+    <None Include="lib\templates\headerItems.hbs" />
     <None Include="lib\templates\notifications.hbs" />
     <None Include="package.json" />
     <None Include="test\initialize-globals.coffee" />

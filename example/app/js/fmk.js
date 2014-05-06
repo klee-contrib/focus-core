@@ -26,11 +26,11 @@ this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["headerItems"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
 
 function program1(depth0,data) {
   
-  var buffer = "", stack1;
+  var buffer = "", stack1, options;
   buffer += "\r\n             <li id='";
   if (stack1 = helpers.cssId) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = (depth0 && depth0.cssId); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
@@ -47,13 +47,15 @@ function program1(depth0,data) {
   else { stack1 = (depth0 && depth0.dataAttributes); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
     + " >\r\n                <a href=\"";
-  if (stack1 = helpers.url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.url); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if (stack1 = helpers.route) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.route); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
     + "\">";
-  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.name); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
+  options = {hash:{
+    'prefix': ("header."),
+    'suffix': (".title")
+  },data:data};
+  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, (depth0 && depth0.name), options) : helperMissing.call(depth0, "t", (depth0 && depth0.name), options)))
     + "</a>\r\n             </li>\r\n          ";
   return buffer;
   }
@@ -64,10 +66,6 @@ function program2(depth0,data) {
   }
 
   buffer += "<div class=\"navbar-default\">\r\n    <div class=\"container\">\r\n      <div class=\"navbar-header\">\r\n        <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\">\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n        </button>\r\n        <a class=\"navbar-brand\" href=\"#\"></a>\r\n      </div>\r\n      <div class=\"navbar-collapse collapse\" >\r\n        <ul class=\"nav navbar-nav\">\r\n          ";
-  if (stack1 = helpers.debug) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.debug); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\r\n          ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.headerItems), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n    </ul>\r\n  </div>\r\n</div>";
@@ -652,6 +650,9 @@ function program1(depth0,data) {
     },
     initialize: function initializeMenuItem(options) {
       options = options || {};
+      /*if(this.has('route')){
+        this.set({url: this.get('route')}, {silent: true});
+      }*/
     },
     //Change the active mode.
     toggleActive: function toggleActive() {
@@ -676,13 +677,12 @@ function program1(depth0,data) {
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var HeaderItem = isInBrowser ? NS.Models.HeaderItem : require('header-item');
-  var util = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
 
   //Notification model
   var HeaderItems = Backbone.Collection.extend({
     model: HeaderItem,
     //Change the active mode.
-    changeActive: function changeActive(nodeName) {
+    changeActive: function changeActive(nodeName, options) {
       if (nodeName === undefined || nodeName === this.currentActiveName) {
         return;
       }
@@ -698,17 +698,27 @@ function program1(depth0,data) {
       if (current && newActive) {
         current.set({
           isActive: false
-        });
+        }, {silent: true});
       }
       if (newActive) {
         newActive.set({
           isActive: true
-        });
+        }, {silent: true});
+        this.currentActiveName = newActive.get('name');
       }
-      this.trigger("change");
+      this.trigger("change");//Notify a change.
     },
+    //Define which part of the json is active.
     toActiveJSON: function toActiveJSON(){
-      return _.filter(this.toJSON(),function(element){return true;/*this.get('name').indexOf(util. this.currentActiveName) === 0;*/});
+      if(this.currentActiveName === undefined){return;}
+      var splitName = this.currentActiveName.split('.');
+      var res = '';
+      for(var i = 0, l = splitName.length -1 ; i < l ; i++ ){
+        res = res + splitName[i] + '.';
+      }if(res !== ''){
+        res = res.slice(0,-1);
+      }
+      return _.filter(this.toJSON(),function(element){return element.name.indexOf(res) === 0;});
     }
   });
 
@@ -2559,7 +2569,7 @@ function program1(depth0,data) {
     module.exports = referenceHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, Promise*/
+/* global window, Promise, Backbone*/
 (function(NS) {
   "use strict";
   //Filename: helpers/router.js
@@ -2567,27 +2577,49 @@ function program1(depth0,data) {
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var middleWares = [];
-  var middlewarePromise = function middlewarePromise(middleWareFunction){
-    return new Promise(function(resolve, reject){
-      if(middleWareFunction(arguments)){
+  var middlewarePromise = function middlewarePromise(middleWareFunction) {
+    return new Promise(function(resolve, reject) {
+      if (middleWareFunction(arguments)) {
         resolve(arguments);
-      }else{
+      } else {
         reject(arguments);
       }
     });
   };
 
-  var registerMiddleWare = function registerMiddleWare(middleWareFunction){
+  var registerMiddleWare = function registerMiddleWare(middleWareFunction) {
     middleWares.push(middleWareFunction);
-  }
-  var router = {};
+  };
+  //Extend the backbone router.
+  var Router = Backbone.Router.extend({
+    route: function(route, name, callback) {
+      var router = this;
+      if (!callback) callback = this[name];
+
+      var f = function() {
+        //console.log('route before', route);
+        if(route === ""){route = "home";}
+        var n = Fmk.Helpers.siteDescriptionBuilder.findRouteName(route);
+        var rt = Fmk.Helpers.siteDescriptionBuilder.getRoute(n);
+        /*if((rt === undefined && route!== '') || !Fmk.Helpers.userHelper.hasOneRole(rt.roles)){
+          Fmk.Helpers.backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')}, true);
+          return Backbone.history.navigate('', true);
+        }*/
+        console.log('routeName', n);
+        console.log('routeObject', Fmk.Helpers.siteDescriptionBuilder.getRoute(n));
+        callback.apply(router, arguments);
+        //console.log('route after', route);
+      };
+      return Backbone.Router.prototype.route.call(this, route, name, f);
+    }
+  });
 
   // Differenciating export for node or browser.
   if (isInBrowser) {
     NS.Helpers = NS.Helpers || {};
-    NS.Helpers.router = router;
+    NS.Helpers.Router = Router;
   } else {
-    module.exports = router;
+    module.exports = Router;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global window, _*/
@@ -2687,7 +2719,7 @@ function program1(depth0,data) {
         };
         //Call the Backbone.history.handlers....
 
-        routes[route.regex.toString()] = route;
+        routes[findRouteName(route.route.substring(1))] = route;
         if(options.isInSiteStructure){
           siteStructure[prefix] = route;
         }
@@ -2697,6 +2729,13 @@ function program1(depth0,data) {
 //Find a route with its name.
  var findRouteName = function(routeToTest) {
     var handlers = Backbone.history.handlers;
+    //console.log('handlers', )
+    var h = _.find(handlers, function(handler){
+      return handler.route.test(routeToTest);
+    });
+    if(h !== undefined){
+      return  h.route.toString();
+    }
     return _.any(handlers, function(handler) {
       if (handler.route.test(routeToTest)) {
         return  handler.route.toString();
@@ -2807,7 +2846,9 @@ function program1(depth0,data) {
     getSiteDescription: getSiteDescription,
     regenerateRoutes: regenerateRoutes,
     getSiteStructure: getSiteStructure,
-    processSiteDescription: processSiteDescription
+    processSiteDescription: processSiteDescription,
+    findRouteName: findRouteName,
+    routeToRegExp:routeToRegExp
   };
 
   // Differenciating export for node or browser.
@@ -3902,14 +3943,14 @@ function program1(depth0,data) {
   var util = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
   var HeaderItems = isInBrowser ? NS.Models.HeaderItems : require('../models/header-items');
   var HeaderItemsView = isInBrowser ? NS.Views.HeaderItemsView : require('./header-items-view');
-
+  var template = isInBrowser ? NS.templates.header : function(){};
   var headerView = Backbone.View.extend({
 
     //Name of the level layer.
     levelName: "level_",
-
+    template: template,
     //Default name of the container for the header.
-    defaultContainerName: "#header",
+    defaultContainerName: ".header",
     
     //Initialize the header view.
     initialize: function initializeHeaderView(options) {
@@ -3966,9 +4007,9 @@ function program1(depth0,data) {
 
     //Render all the headers items.
     render: function renderHeaders() {
-      this.$el.html('');
+      this.$el.html(this.template());
       for (var i = 0; i < this.maxLevel; i++) {
-        this.$el.append( this[this.levelName + i].render().el);
+        $(this.opts.containerName,this.$el).append( this[this.levelName + i].render().el);
       }
       return this;
     }

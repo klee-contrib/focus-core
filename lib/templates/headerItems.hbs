@@ -10,10 +10,9 @@
       </div>
       <div class="navbar-collapse collapse" >
         <ul class="nav navbar-nav">
-          {{debug}}
           {{#each headerItems}}
              <li id='{{cssId}}' class="{{cssClass}} {{#if isActive}}active{{/if}}" {{dataAttributes}} >
-                <a href="{{url}}">{{name}}</a>
+                <a href="{{route}}">{{t name prefix="header." suffix=".title"}}</a>
              </li>
           {{/each}}
     </ul>
