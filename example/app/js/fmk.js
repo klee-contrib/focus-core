@@ -361,6 +361,251 @@ function program1(depth0,data) {
     module.exports = siteDescriptionHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global window, _*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/routes_helper.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
+  var siteDescriptionHelper = isInBrowser ? NS.Helpers.siteDescriptionHelper : require("./site_description_helper");
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+  //Container for the site description and routes.
+  var siteDescription, routes = {}, siteStructure = {};
+
+  //Process the siteDescription if necessary.
+  var processSiteDescription = function(options){
+    options = options || {};
+    if(!siteDescriptionHelper.isProcessed() || options.isForceProcess){
+      siteDescription = siteDescriptionHelper.getSite();
+      regenerateRoutes();
+      return siteDescription;
+    }return false;
+  };
+
+  //Regenerate the application routes.
+  var regenerateRoutes = function regenerateRoutes() {
+    generateRoutes(siteDescription);
+  };
+
+  //Process the name of 
+  var processName = function(pfx, eltDescName) {
+    if (pfx === undefined || pfx === null) {
+      pfx = "";
+    }
+    if (eltDescName === undefined || eltDescName === null) {
+      return pfx;
+    }
+    if (pfx === "") {
+      return eltDescName;
+    }
+    return pfx + '.' + eltDescName;
+  };
+
+  
+  var processElement = function(siteDescElt, prefix, options) {
+    options = options || {};
+    if (!siteDescElt) {
+      console.warn('The siteDescription does not exists', siteDescElt);
+      return;
+    }
+    var pfx = processName(prefix, siteDescElt.name);
+    //if(siteDescriptionHelper.checkParams(siteDescElt.requiredParams)){
+     processHeaders(siteDescElt, pfx);
+    //}
+    processPages(siteDescElt, pfx);
+    processRoute(siteDescElt, pfx, options);
+  };
+
+  //Process the deaders element of the site description element.
+  var processHeaders = function(siteDesc, prefix) {
+
+    if (!siteDesc.headers) {
+      return;
+    }
+    //console.log('headers', siteDesc.headers, 'prefix', prefix);
+    var headers = siteDesc.headers;
+    var isInSiteStructure = false;
+    if(siteDescriptionHelper.checkParams(siteDesc.requiredParams)){
+      isInSiteStructure = true;
+    }
+    for (var i in headers) {
+      processElement(headers[i], prefix, {isInSiteStructure: isInSiteStructure});
+    }
+  };
+
+  //Process the pages element of the site description.
+  var processPages = function(siteDesc, prefix) {
+    if (siteDesc.pages !== undefined && siteDesc.pages !== null) {
+      //console.log('pages', siteDesc.pages, 'prefix', prefix);
+
+      for (var i in siteDesc.pages) {
+        processElement(siteDesc.pages[i], prefix);
+      }
+    }
+  };
+
+ 
+  //Process the route part of the site description element.
+  var processRoute = function(siteDesc, prefix, options) {
+    options = options || {};
+    if (siteDesc.roles !== undefined && siteDesc.url !== undefined)
+    //console.log('route', siteDesc.url, 'prefix', prefix);
+
+      if (userHelper.hasOneRole(siteDesc.roles)) {
+        var route = {
+          roles: siteDesc.roles,
+          name: prefix,
+          route: siteDesc.url,
+          regex: routeToRegExp(siteDesc.url)
+        };
+        //Call the Backbone.history.handlers....
+        console.log('*****************');
+        console.log('ROute name: ',route.route);
+        console.log('Route handler name : ',  findRouteName(route.route.substring(1)));
+        routes[findRouteName(route.route.substring(1))] = route;
+        if(options.isInSiteStructure){
+          siteStructure[prefix] = route;
+        }
+      }
+  };
+
+//Find a route with its name.
+// _routeToTest_ : Route to test.
+// *return* : The handler route name. 
+ var findRouteName = function(routeToTest) {
+    var handlers = Backbone.history.handlers;
+    //console.log('handlers', )
+    var h = _.find(handlers, function(handler){
+      return handler.route.test(routeToTest);
+    });
+    if(h !== undefined){
+      return  h.route.toString();
+    }
+    return _.any(handlers, function(handler) {
+      if (handler.route.test(routeToTest)) {
+        return  handler.route.toString();
+      }
+    });
+  };
+  
+
+    //Convert a route to regexp
+  var optionalParam = /\((.*?)\)/g;
+  var namedParam    = /(\(\?)?:\w+/g;
+  var splatParam    = /\*\w+/g;
+  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+  var routeToRegExp=  function routeToRegExp(route) {
+      route = route.replace(escapeRegExp, '\\$&')
+                   .replace(optionalParam, '(?:$1)?')
+                   .replace(namedParam, function(match, optional) {
+                     return optional ? match : '([^/?]+)';
+                   })
+                   .replace(splatParam, '([^?]*?)');
+      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
+    };
+
+
+
+
+  //Generate the routes fromSiteDescription.
+  var generateRoutes = function generateRoutes(elementDesc, prefix) {
+    if (!elementDesc) {
+      console.warn('The siteDescription does not exists', elementDesc);
+      return;
+    }
+
+    return processElement(elementDesc, prefix);
+
+    var pfx = processName(prefix, elementDesc.name);
+
+    //process headers routes.
+    var headers = elementDesc.header;
+    for (var siteDescIdx in headers) {
+      var siteDesc = headers[siteDescIdx];
+      var prefixsiteDesc = processName(pfx, siteDesc.name);
+      console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
+      if (siteDesc.header) {
+        generateRoutes(siteDesc, prefixsiteDesc);
+      } else {
+        addRouteForUser(siteDesc, prefixsiteDesc);
+      }
+    }
+    addRouteForUser(elementDesc, pfx);
+
+  };
+
+  //Add a route for a user.
+
+  var addRouteForUser = function addRouteForUser(element, prefix) {
+    console.log('addRouteForUser', 'prefix', prefix);
+    if (!element) {
+      return;
+      //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
+    }
+    if (prefix === undefined || prefix === null || prefix === "") {
+      prefix = "";
+      //throw new ArgumentNullException("The prefix to add a route should not be undefined.", prefix);
+    }
+    //Add the route only if the user has one of the required role.
+    if (element.roles !== undefined && element.url !== undefined)
+      if (userHelper.hasOneRole(element.roles)) {
+        var route = {
+          roles: element.roles,
+          name: prefix,
+          route: element.url
+        };
+        routes[element.url] = route;
+        siteStructure[prefix] = route;
+      }
+      //process the site not in the menus  
+    if (element.pages !== undefined && element.pages !== null) {
+      for (var rtIdx in element.pages) {
+        addRouteForUser(element.pages[rtIdx], prefix);
+      }
+    }
+
+  };
+
+
+  //Get the siteDescription.
+  var getSiteDescription = function getSiteDescription() {
+    return _.clone(siteDescription);
+  };
+
+  //Get all the application routes from the siteDescription.
+  var getRoute = function getRoutes(routeName) {
+    return _.clone(routes[routeName]);
+  };
+
+  var getRoutes = function getRoutes() {
+    return _.clone(routes);
+  };
+
+  var getSiteStructure = function getSiteStructure() {
+    return _.clone(siteStructure);
+  };
+
+  var siteDescriptionBuilder = {
+    getRoute: getRoute,
+    getRoutes: getRoutes,
+    getSiteDescription: getSiteDescription,
+    regenerateRoutes: regenerateRoutes,
+    getSiteStructure: getSiteStructure,
+    processSiteDescription: processSiteDescription,
+    findRouteName: findRouteName,
+    routeToRegExp:routeToRegExp
+  };
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.siteDescriptionBuilder = siteDescriptionBuilder;
+  } else {
+    module.exports = siteDescriptionBuilder;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global i18n, window*/
 "use strict";
 (function(NS) {
@@ -549,8 +794,8 @@ function program1(depth0,data) {
       };
 
       Collection.prototype.deleteModel = function(model) {
-        if (this.changes.add[model.cid] != null) {
-          delete this.changes.add[model.cid];
+        if (this.changes.creates[model.cid] != null) {
+          delete this.changes.creates[model.cid];
         }
         if (this.changes.updates[model.cid] != null) {
           this.changes.deletes[model.cid] = model.toSaveJSON();
@@ -580,7 +825,7 @@ function program1(depth0,data) {
         })(this));
         this.on('change', (function(_this) {
           return function(model) {
-            return _this.updateModel(model);
+            return _this.addModel(model);
           };
         })(this));
         return this.on('reset', (function(_this) {
@@ -1252,7 +1497,27 @@ function program1(depth0,data) {
         return view !== undefined && view !== null && typeof view.render === "function";
     };
 
-
+    // This method perform an ajax request within a promise.
+    // Example call : utilHelper.promiseAjax({url: "http://localhost:8080/api/list/1", type: "GET"}).then(console.log,console.error);
+    var promiseAjax = function promiseAjax(ajaxSettings) {
+        ajaxSettings = ajaxSettings || {};
+        return new Promise(function promiseLoadList(resolve, reject) {
+            //console.log("Errors", errors);
+            $.ajax({
+                url: ajaxSettings.url,
+                type: ajaxSettings.type,
+                dataType: "json",
+                crossDomain: true,
+                success: function (data) {
+                    //references[listDesc.name] = data; //In order to not reload the next time,  warning, as promises are asynchronous, when the promise is define, this could be false.
+                    resolve(data);
+                },
+                error: function (error) {
+                    reject(error);
+                }
+            });
+        });
+    };
 
     //Util helper.
     var utilHelper = {
@@ -1266,7 +1531,8 @@ function program1(depth0,data) {
         generateFake: generateFake,
         isBackboneModel: isBackboneModel,
         isBackboneCollection: isBackboneCollection,
-        isBackboneView: isBackboneView
+        isBackboneView: isBackboneView,
+        promiseAjax: promiseAjax
     };
     if (isInBrowser) {
         NS.Helpers = NS.Helpers || {};
@@ -1345,129 +1611,130 @@ function program1(depth0,data) {
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global _, window, i18n*/
-(function(NS) {
-	"use strict";
-	/* Filename: helpers/error_helper.js */
-	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	NS = NS || {};
-	var BackboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require('./backbone_notification');
-	// transform errors send by API to application errors.
-	function manageResponseErrors(response, options) {
-		options = options || {};
+(function (NS) {
+    "use strict";
+    /* Filename: helpers/error_helper.js */
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    NS = NS || {};
+    var BackboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require('./backbone_notification');
+    var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('./util_helper');
+    // transform errors send by API to application errors.
+    function manageResponseErrors(response, options) {
+        options = options || {};
 
-		var responseErrors = response.responseJSON;
-		if (responseErrors === undefined) {
-		    responseErrors = response.responseText;
-		}
+        var responseErrors = response.responseJSON;
+        if (responseErrors === undefined) {
+            responseErrors = response.responseText;
+        }
 
-		//Container for global errors.
-		var globalErrors = [];
-		var fieldErrors = {};
-		if (responseErrors !== undefined && responseErrors !== null) {
-			// Case of an HTTP Error with a status code: (as an example 404).*/
-			if (responseErrors.error !== undefined && responseErrors.error !== null) {
-				//The response json should have the following structure : {statusCode: 404, error: "Not Found"}
-				globalErrors.push('' + responseErrors.statusCode + ' ' + responseErrors.error);
-			} else if (responseErrors.errors !== undefined) {
-				// there errors in the response
-				_.each(responseErrors.errors, function(error) {
-					//If there is field errors inside the response, add it to the current object errors.
-					if (error.fieldName !== undefined && error.fieldName.length > 0) {
-						fieldErrors[error.fieldName] = error.message;
-					} else {
-						//If there is no fieldname, the error is global.
-						globalErrors.push(error.message);
-					}
-				});
-			} else if (responseErrors.exceptionType !== undefined) {
-				//If the error is not catch by the errorHelper, in dev, display the type and the message if exists.
-				globalErrors.push(i18n.t('error.' + responseErrors.exceptionType));
-				if (responseErrors.exceptionMessage !== undefined) {
-					globalErrors.push(responseErrors.exceptionMessage);
-				}
-			} else {
-				//In the case the error is completly unanticipated.
-				console.log(i18n.t('error.unanticipated'), responseErrors);
-				globalErrors.push(i18n.t('error.unanticipated'));
-			}
-		}
-		//If there is no errors, do nothing.
-		if ((_.isEmpty(fieldErrors) && _.isEmpty(globalErrors))) {
-			return null;
-		} else {
-			var errors = {
-				fieldErrors: fieldErrors,
-				globalErrors: globalErrors
-			};
-			//If the display options is passed in argument, we display the options.
-			if (options.isDisplay || options.model) {
-				displayErrors(errors);
-			}
-			if (options.model) {
-				setModelErrors(options.model, errors);
-			}
-			return errors;
-		}
-	}
+        //Container for global errors.
+        var globalErrors = [];
+        var fieldErrors = {};
+        if (responseErrors !== undefined && responseErrors !== null) {
+            // Case of an HTTP Error with a status code: (as an example 404).*/
+            if (responseErrors.error !== undefined && responseErrors.error !== null) {
+                //The response json should have the following structure : {statusCode: 404, error: "Not Found"}
+                globalErrors.push('' + responseErrors.statusCode + ' ' + i18n.t(responseErrors.error));
+            } else if (responseErrors.errors !== undefined) {
+                // there errors in the response
+                _.each(responseErrors.errors, function (error) {
+                    //If there is field errors inside the response, add it to the current object errors.
+                    if (error.fieldName !== undefined && error.fieldName.length > 0) {
+                        fieldErrors[error.fieldName] = error.message;
+                    } else {
+                        //If there is no fieldname, the error is global.
+                        globalErrors.push(error.message);
+                    }
+                });
+            } else if (responseErrors.exceptionType !== undefined) {
+                //If the error is not catch by the errorHelper, in dev, display the type and the message if exists.
+                globalErrors.push(i18n.t('error.' + responseErrors.exceptionType));
+                if (responseErrors.exceptionMessage !== undefined) {
+                    globalErrors.push(responseErrors.statusCode + " " + responseErrors.exceptionMessage);
+                }
+            } else {
+                //In the case the error is completly unanticipated.
+                console.log(i18n.t('error.unanticipated'), responseErrors);
+                globalErrors.push(i18n.t('error.unanticipated'));
+            }
+        }
+        //If there is no errors, do nothing.
+        if ((_.isEmpty(fieldErrors) && _.isEmpty(globalErrors))) {
+            return null;
+        } else {
+            var errors = {
+                fieldErrors: fieldErrors,
+                globalErrors: globalErrors
+            };
+            //If the display options is passed in argument, we display the options.
+            if (options.isDisplay || options.model) {
+                displayErrors(errors);
+            }
+            if (options.model) {
+                UtilHelper.isBackboneCollection(options.model) ? setCollectionErrors(options.model, errors) : setModelErrors(options.model, errors);
+            }
+            return errors;
+        }
+    }
 
-	//Display errors which are defined into the errors.global
-	function displayErrors(errors) {
-		if (errors !== undefined && errors.globalErrors !== undefined) {
-			var errorsGlobal = [];
-			errors.globalErrors.forEach(function convertErrorsIntoNotification(element) {
-				errorsGlobal.push({
-					type: "error",
-					message: element,
-					creationDate: Date.now()
-				});
-			});
-			BackboneNotification.addNotification(errorsGlobal, true);
-		}
-	}
+    //Display errors which are defined into the errors.global
+    function displayErrors(errors) {
+        if (errors !== undefined && errors.globalErrors !== undefined) {
+            var errorsGlobal = [];
+            errors.globalErrors.forEach(function convertErrorsIntoNotification(element) {
+                errorsGlobal.push({
+                    type: "error",
+                    message: element,
+                    creationDate: Date.now()
+                });
+            });
+            BackboneNotification.addNotification(errorsGlobal, true);
+        }
+    }
 
-	//Set the *model* errors in the fieldErrors.
-	function setModelErrors(model, errors, options) {
-		if (errors !== undefined && errors.fieldErrors !== undefined) {
-			model.set({
-				'errors': errors.fieldErrors
-			}, options);
-		}
-	}
-	
-	//Set errors on a collection.
-	function setCollectionErrors(collection, errors, options) {
-		for (var i = 0, l = errors.length; i < l; i++) {
-			var error = errors[i];
-			if (error.index === undefined || error.index === null || typeof error.index !== "number") {
-				console.warn('invalid error', error);
-				break;
-			}
-			if (error.errors === undefined || error.errors === null || typeof error.errors !== "object") {
-				console.warn('invalid error', error);
-				break;
-			}
-			//For the model at the given position in the collection:
-			// Set the error depending on its index.
-			collection.at(errors[i].index).set({
-				errors: errors[i].errors
-			}, options);
-		}
-	}
+    //Set the *model* errors in the fieldErrors.
+    function setModelErrors(model, errors, options) {
+        if (errors !== undefined && errors.fieldErrors !== undefined) {
+            model.set({
+                'errors': errors.fieldErrors
+            }, options);
+        }
+    }
 
-	//Content of the errorHelper published by the module.
-	var errorHelper = {
-		manageResponseErrors: manageResponseErrors,
-		display: displayErrors,
-		setModelErrors: setModelErrors,
-		setCollectionErrors: setCollectionErrors
-	};
+    //Set errors on a collection.
+    function setCollectionErrors(collection, errors, options) {
+        for (var i = 0, l = errors.length; i < l; i++) {
+            var error = errors[i];
+            if (error.index === undefined || error.index === null || typeof error.index !== "number") {
+                console.warn('invalid error', error);
+                break;
+            }
+            if (error.errors === undefined || error.errors === null || typeof error.errors !== "object") {
+                console.warn('invalid error', error);
+                break;
+            }
+            //For the model at the given position in the collection:
+            // Set the error depending on its index.
+            collection.at(errors[i].index).set({
+                errors: errors[i].errors
+            }, options);
+        }
+    }
 
-	if (isInBrowser) {
-		NS.Helpers = NS.Helpers || {};
-		NS.Helpers.errorHelper = errorHelper;
-	} else {
-		module.exports = errorHelper;
-	}
+    //Content of the errorHelper published by the module.
+    var errorHelper = {
+        manageResponseErrors: manageResponseErrors,
+        display: displayErrors,
+        setModelErrors: setModelErrors,
+        setCollectionErrors: setCollectionErrors
+    };
+
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.errorHelper = errorHelper;
+    } else {
+        module.exports = errorHelper;
+    }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global window, $, Backbone*/
 "use strict";
@@ -1475,19 +1742,19 @@ function program1(depth0,data) {
     //Filename: helpers/form_helper.js
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     NS = NS || {};
-    
+
     // ## Helper pour l'ensemble des formulaires.
     //
-    var _formCollectionBinder = function forCollectionBinder(selector, collection, options){
+    var _formCollectionBinder = function forCollectionBinder(selector, collection, options) {
         options = options || {};
-        options.isSilent = options.isSilent || true;
-        if(selector !== undefined && selector !== null  && collection instanceof Backbone.Collection){
+        options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
+        if (selector !== undefined && selector !== null && collection instanceof Backbone.Collection) {
             //collection.reset(null, {silent: true}); // The collection is cleared.
             var index = 0;
-            Array.prototype.forEach.call(selector , function(modelLineSelector){
+            Array.prototype.forEach.call(selector, function (modelLineSelector) {
                 //var model = new collection.model();
                 this.formModelBinder(
-                        {inputs: $('input', modelLineSelector), options:$('select', modelLineSelector)} ,
+                        { inputs: $('input', modelLineSelector), options: $('select', modelLineSelector) },
                         collection.at(index), //Model to populate.
                         options
                 );
@@ -1504,19 +1771,19 @@ function program1(depth0,data) {
     // inputs must be a selector with inputs inside and model a BackBone model.
     var _formModelBinder = function formModelBinder(data, model, options) {
         options = options || {};
-        options.isSilent = options.isSilent || true;
+        options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
         if (data.inputs !== null && data.inputs !== undefined) {
-            this.formInputModelBinder(data.inputs, model);
+            this.formInputModelBinder(data.inputs, model, options);
         }
         if (data.options !== null && data.options !== undefined) {
-            this.formOptionModelBinder(data.options, model);
+            this.formOptionModelBinder(data.options, model, options);
         }
     };
 
     // inputs must be a selector with option:selected inside and model a BackBone model.
     var _formInputModelBinder = function formInputModelBinder(inputs, model, options) {
         options = options || {};
-        options.isSilent = options.isSilent || true;
+        options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
         //parameters checkings
         if (typeof inputs === "undefined" || inputs === null) {
             throw ("inputs are not defined");
@@ -1532,7 +1799,7 @@ function program1(depth0,data) {
             //we switch on all html5 values
             switch (input.getAttribute('type')) {
                 case "checkbox":
-                    currentvalue = input.checked;
+                    currentvalue = input.multiple ? input.value : input.checked;
                     break;
                 case "number":
                     var inputValue = input.value === "" ? undefined : input.value;
@@ -1548,7 +1815,18 @@ function program1(depth0,data) {
                 default:
                     currentvalue = input.value === "" ? undefined : input.value;
             }
-            modelContainer[this.getAttribute('data-name')] = currentvalue ;
+
+            if (input.multiple) {
+                if (input.checked) {
+                    if (modelContainer[this.getAttribute('data-name')] === undefined) {
+                        modelContainer[this.getAttribute('data-name')] = [currentvalue];
+                    } else {
+                        modelContainer[this.getAttribute('data-name')].push(currentvalue);
+                    }
+                }
+            } else {
+                modelContainer[this.getAttribute('data-name')] = currentvalue;
+            }
         });
         model.set(modelContainer, {
             silent: options.isSilent
@@ -1572,7 +1850,7 @@ function program1(depth0,data) {
     // options must be a option:select and model a BackBone model.
     var _formOptionModelBinder = function formOptionModelBinder(optionsSets, model, options) {
         options = options || {};
-        options.isSilent = options.isSilent || true;
+        options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
         //parameters checkings
         if (typeof optionsSets === "undefined" || optionsSets === null) {
             throw ("options are not defined");
@@ -1587,7 +1865,7 @@ function program1(depth0,data) {
             var attributeName = this.getAttribute('data-name');
             //A multiple option will be define with select2
             if (this.hasAttribute('multiple')) {
-                selectedValue = $(this).select2('val');
+                selectedValue = $(this).val() || [];
             } else {
                 selectedValue = this.value;
             }
@@ -2132,17 +2410,17 @@ function program1(depth0,data) {
     //Filename: helpers/odata_helper.js
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('./utilHelper');
-    
+
     var odataOptions = {
         filter: '$filter',
         top: '$top',
         skip: '$skip',
         orderby: '$orderby',
-        format:  '$format',
+        format: '$format',
         inlinecount: '$inlinecount',
         requestType: 'GET'
     };
-    var configure = function configure(options) { 
+    var configure = function configure(options) {
         _.extend(odataOptions, options);
     };
 
@@ -2154,11 +2432,23 @@ function program1(depth0,data) {
 
             // the type of reply (json by default)
             dataType: 'json'
-        }
+        };
     };
 
     function createOdataOptions(criteria, pagesInfo, options) {
-        return compileOptions(criteria, pagesInfo, options);
+        //Compile the odata options.
+        var odataOpts = compileOdataOptions(criteria, pagesInfo, options);
+        return addOtherOptions(pagesInfo, odataOpts);
+    }
+
+    //Compile options which are not define by odata metadatas.
+    function addOtherOptions(pagesInfo, odataOptions) {
+        odataOptions = odataOptions || {};
+        //If necessary, add the export id to the criteria.
+        if (pagesInfo.exportId !== undefined) {
+            odataOptions.data = odataOptions.data + '&exportId=' + pagesInfo.exportId;
+        }
+        return odataOptions;
     }
 
     // convert JSON criteria to odata
@@ -2202,13 +2492,13 @@ function program1(depth0,data) {
                 }
             }
         }
-        return result.length > 0 ? result.slice(0, -5) : "";//Todo: corriger la cr�ation de crit�re. //result.substring(0, result.length - 1);
+        return result.length > 0 ? result.slice(0, -5) : ""; //Todo: corriger la cr�ation de crit�re. //result.substring(0, result.length - 1);
     }
 
     //generate orderBy parameters fo odata
     function orderToOdata(sortFields) {
         var orderBy = "";
-        sortFields.forEach(function (sortField) {
+        sortFields.forEach(function(sortField) {
             //TODO : cette condition n'est pas satisfaisante. Si ces champs ne sont pas d�finis ils ne devraient pas �tre dans la liste.
             if (sortField.field !== undefined && sortField.order !== undefined) {
                 orderBy += sortField.field + " " + sortField.order + ",";
@@ -2225,7 +2515,7 @@ function program1(depth0,data) {
         }
 
         var val = {};
-        val[odataOptions.filter] = criteria;// criteriaToOdata(criteria);
+        val[odataOptions.filter] = criteria; // criteriaToOdata(criteria);
         val[odataOptions.top] = pagesInfo.perPage;
         val[odataOptions.skip] = (pagesInfo.currentPage - 1) * pagesInfo.perPage;
         val[odataOptions.orderby] = orderToOdata(sortFields);
@@ -2235,7 +2525,7 @@ function program1(depth0,data) {
     }
 
     //generate options fo an odata request 
-    function compileOptions(criteria, pagesInfo, options) {
+    function compileOdataOptions(criteria, pagesInfo, options) {
         var self = pagesInfo;
         options = options || {};
 
@@ -2292,9 +2582,11 @@ function program1(depth0,data) {
             throw new Error('Odata error : parsing result');
         }
         // To be comaptible with C# ODataController
-        _.extend(response, utilHelper.flatten({odata: response.odata}));
+        _.extend(response, utilHelper.flatten({
+            odata: response.odata
+        }));
         delete response.odata;
-        if(response["odata.count"] === undefined || response["odata.count"] === null) {
+        if (response["odata.count"] === undefined || response["odata.count"] === null) {
             throw new Error('Odata error : parsing result');
         }
         return {
@@ -2458,13 +2750,25 @@ function program1(depth0,data) {
 		return promiseCollection;
 	};
 
+    // Convert an existing Backbone collection to a promise version of its changes 
+    // (when calling save, the { creates: [], deletes: [], updates: [] } object will be posted to collection.url)
+	var ConvertCollectionChanges = function ConvertBackboneCollectionToPromiseCollectionChanges(collection, changes) {
+	    if (collection.url === undefined || collection.urlRoot === null) {
+	        throw new Error("ConvertCollection: The  url of the collection " + collection.modelName + " cannot be undefined.");
+	    }
+	    var promiseCollectionChanges = new PromiseModel(new Backbone.Model(changes));
+	    promiseCollectionChanges.urlRoot = collection.url;
+	    return promiseCollectionChanges;
+	};
+
 	//Todo: see if it is necessary to expose Model and collection promisified.
 	var promisifyHelper = {
 		Model: PromiseModel,
 		Collection: PromiseCollection,
 		Convert: {
 			Model: ConvertModel,
-			Collection: ConvertCollection
+			Collection: ConvertCollection,
+            CollectionChanges: ConvertCollectionChanges
 		}
 	};
 
@@ -2569,13 +2873,17 @@ function program1(depth0,data) {
     module.exports = referenceHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, Promise, Backbone*/
+/* global window, Promise, Backbone, i18n*/
 (function(NS) {
   "use strict";
   //Filename: helpers/router.js
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
+  var siteDescriptionBuilder = isInBrowser ? NS.Helpers.siteDescriptionBuilder : require("./site_description_builder");
+  var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("./backbone_notification");
+  
   var middleWares = [];
   var middlewarePromise = function middlewarePromise(middleWareFunction) {
     return new Promise(function(resolve, reject) {
@@ -2597,18 +2905,18 @@ function program1(depth0,data) {
       if (!callback) callback = this[name];
 
       var f = function() {
-        //console.log('route before', route);
+          //console.log('route before', route);
+        //Treat the home case.
         if(route === ""){route = "home";}
-        var n = Fmk.Helpers.siteDescriptionBuilder.findRouteName(route);
-        var rt = Fmk.Helpers.siteDescriptionBuilder.getRoute(n);
-        /*if((rt === undefined && route!== '') || !Fmk.Helpers.userHelper.hasOneRole(rt.roles)){
-          Fmk.Helpers.backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')}, true);
+        var n = siteDescriptionBuilder.findRouteName(route);
+        var rt = siteDescriptionBuilder.getRoute(n);
+        //If the route does not exists, or the user does not have any right on the route display an error.
+        if((rt === undefined && route!== '') || !userHelper.hasOneRole(rt.roles)){
+          backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')}, true);
           return Backbone.history.navigate('', true);
-        }*/
-        console.log('routeName', n);
-        console.log('routeObject', Fmk.Helpers.siteDescriptionBuilder.getRoute(n));
+        }
+        //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
         callback.apply(router, arguments);
-        //console.log('route after', route);
       };
       return Backbone.Router.prototype.route.call(this, route, name, f);
     }
@@ -2620,243 +2928,6 @@ function program1(depth0,data) {
     NS.Helpers.Router = Router;
   } else {
     module.exports = Router;
-  }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, _*/
-(function(NS) {
-  "use strict";
-  //Filename: helpers/routes_helper.js
-  NS = NS || {};
-  //Dependency gestion depending on the fact that we are in the browser or in node.
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
-  var siteDescriptionHelper = isInBrowser ? NS.Helpers.siteDescriptionHelper : require("./site_description_helper");
-  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-  //Container for the site description and routes.
-  var siteDescription, routes = {}, siteStructure = {};
-
-  //Process the siteDescription if necessary.
-  var processSiteDescription = function(options){
-    options = options || {};
-    if(!siteDescriptionHelper.isProcessed() || options.isForceProcess){
-      siteDescription = siteDescriptionHelper.getSite();
-      regenerateRoutes();
-      return siteDescription;
-    }return false;
-  };
-
-  //Regenerate the application routes.
-  var regenerateRoutes = function regenerateRoutes() {
-    generateRoutes(siteDescription);
-  };
-
-  //Process the name of 
-  var processName = function(pfx, eltDescName) {
-    if (pfx === undefined || pfx === null) {
-      pfx = "";
-    }
-    if (eltDescName === undefined || eltDescName === null) {
-      return pfx;
-    }
-    if (pfx === "") {
-      return eltDescName;
-    }
-    return pfx + '.' + eltDescName;
-  };
-
-  
-  var processElement = function(siteDescElt, prefix, options) {
-    options = options || {};
-    if (!siteDescElt) {
-      console.warn('The siteDescription does not exists', siteDescElt);
-      return;
-    }
-    var pfx = processName(prefix, siteDescElt.name);
-    if(siteDescriptionHelper.checkParams(siteDescElt.requiredParams)){
-     processHeaders(siteDescElt, pfx);
-    }
-    processPages(siteDescElt, pfx);
-    processRoute(siteDescElt, pfx, options);
-  };
-
-  //Process the deaders element of the site description element.
-  var processHeaders = function(siteDesc, prefix) {
-
-    if (!siteDesc.headers) {
-      return;
-    }
-    //console.log('headers', siteDesc.headers, 'prefix', prefix);
-    var headers = siteDesc.headers;
-    for (var i in headers) {
-      processElement(headers[i], prefix, {isInSiteStructure: true});
-    }
-  };
-
-  //Process the pages element of the site description.
-  var processPages = function(siteDesc, prefix) {
-    if (siteDesc.pages !== undefined && siteDesc.pages !== null) {
-      //console.log('pages', siteDesc.pages, 'prefix', prefix);
-
-      for (var i in siteDesc.pages) {
-        processElement(siteDesc.pages[i], prefix);
-      }
-    }
-  };
-
- 
-  //Process the route part of the site description element.
-  var processRoute = function(siteDesc, prefix, options) {
-    options = options || {};
-    if (siteDesc.roles !== undefined && siteDesc.url !== undefined)
-    //console.log('route', siteDesc.url, 'prefix', prefix);
-
-      if (userHelper.hasOneRole(siteDesc.roles)) {
-        var route = {
-          roles: siteDesc.roles,
-          name: prefix,
-          route: siteDesc.url,
-          regex: routeToRegExp(siteDesc.url)
-        };
-        //Call the Backbone.history.handlers....
-
-        routes[findRouteName(route.route.substring(1))] = route;
-        if(options.isInSiteStructure){
-          siteStructure[prefix] = route;
-        }
-      }
-  };
-
-//Find a route with its name.
- var findRouteName = function(routeToTest) {
-    var handlers = Backbone.history.handlers;
-    //console.log('handlers', )
-    var h = _.find(handlers, function(handler){
-      return handler.route.test(routeToTest);
-    });
-    if(h !== undefined){
-      return  h.route.toString();
-    }
-    return _.any(handlers, function(handler) {
-      if (handler.route.test(routeToTest)) {
-        return  handler.route.toString();
-      }
-    });
-  };
-  
-
-    //Convert a route to regexp
-  var optionalParam = /\((.*?)\)/g;
-  var namedParam    = /(\(\?)?:\w+/g;
-  var splatParam    = /\*\w+/g;
-  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-  var routeToRegExp=  function routeToRegExp(route) {
-      route = route.replace(escapeRegExp, '\\$&')
-                   .replace(optionalParam, '(?:$1)?')
-                   .replace(namedParam, function(match, optional) {
-                     return optional ? match : '([^/?]+)';
-                   })
-                   .replace(splatParam, '([^?]*?)');
-      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
-    };
-
-
-
-
-  //Generate the routes fromSiteDescription.
-  var generateRoutes = function generateRoutes(elementDesc, prefix) {
-    if (!elementDesc) {
-      console.warn('The siteDescription does not exists', elementDesc);
-      return;
-    }
-
-    return processElement(elementDesc, prefix);
-
-    var pfx = processName(prefix, elementDesc.name);
-
-    //process headers routes.
-    var headers = elementDesc.header;
-    for (var siteDescIdx in headers) {
-      var siteDesc = headers[siteDescIdx];
-      var prefixsiteDesc = processName(pfx, siteDesc.name);
-      console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
-      if (siteDesc.header) {
-        generateRoutes(siteDesc, prefixsiteDesc);
-      } else {
-        addRouteForUser(siteDesc, prefixsiteDesc);
-      }
-    }
-    addRouteForUser(elementDesc, pfx);
-
-  };
-
-  //Add a route for a user.
-
-  var addRouteForUser = function addRouteForUser(element, prefix) {
-    console.log('addRouteForUser', 'prefix', prefix);
-    if (!element) {
-      return;
-      //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
-    }
-    if (prefix === undefined || prefix === null || prefix === "") {
-      prefix = "";
-      //throw new ArgumentNullException("The prefix to add a route should not be undefined.", prefix);
-    }
-    //Add the route only if the user has one of the required role.
-    if (element.roles !== undefined && element.url !== undefined)
-      if (userHelper.hasOneRole(element.roles)) {
-        var route = {
-          roles: element.roles,
-          name: prefix,
-          route: element.url
-        };
-        routes[element.url] = route;
-        siteStructure[prefix] = route;
-      }
-      //process the site not in the menus  
-    if (element.pages !== undefined && element.pages !== null) {
-      for (var rtIdx in element.pages) {
-        addRouteForUser(element.pages[rtIdx], prefix);
-      }
-    }
-
-  };
-
-
-  //Get the siteDescription.
-  var getSiteDescription = function getSiteDescription() {
-    return _.clone(siteDescription);
-  };
-
-  //Get all the application routes from the siteDescription.
-  var getRoute = function getRoutes(routeName) {
-    return _.clone(routes[routeName]);
-  };
-
-  var getRoutes = function getRoutes() {
-    return _.clone(routes);
-  };
-
-  var getSiteStructure = function getSiteStructure() {
-    return _.clone(siteStructure);
-  };
-
-  var siteDescriptionBuilder = {
-    getRoute: getRoute,
-    getRoutes: getRoutes,
-    getSiteDescription: getSiteDescription,
-    regenerateRoutes: regenerateRoutes,
-    getSiteStructure: getSiteStructure,
-    processSiteDescription: processSiteDescription,
-    findRouteName: findRouteName,
-    routeToRegExp:routeToRegExp
-  };
-
-  // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Helpers = NS.Helpers || {};
-    NS.Helpers.siteDescriptionBuilder = siteDescriptionBuilder;
-  } else {
-    module.exports = siteDescriptionBuilder;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global $, _ , window*/
@@ -2929,153 +3000,159 @@ function program1(depth0,data) {
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, _, window, Promise, $ */
 "use strict";
-(function(NS) {
-  //Filename: views/core-view.js
-  NS = NS || {};
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var postRenderingBuilder = isInBrowser ? NS.Helpers.postRenderingBuilder : require('../helpers/post_rendering_builder');
-  var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
-  var RefHelper = isInBrowser ? NS.Helpers.referenceHelper : require('../helpers/reference_helper');
-  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
-  var Model =  isInBrowser ? NS.Models.Model : require("../models/model");
-  //View which is the default view for each view.
-  //This view is able to deal with errors and to render the default json moodel.
-  var CoreView = Backbone.View.extend({
-    toogleIsHidden: function(options) {
-      this.isHidden = !this.isHidden;
-      this.render(options);
-    },
-    //Reference lists names. 
-    //These _names_, must have been registered inside the the application to be used.
-    referenceNames: undefined,
+(function (NS) {
+    //Filename: views/core-view.js
+    NS = NS || {};
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    var postRenderingBuilder = isInBrowser ? NS.Helpers.postRenderingBuilder : require('../helpers/post_rendering_builder');
+    var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var RefHelper = isInBrowser ? NS.Helpers.referenceHelper : require('../helpers/reference_helper');
+    var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
+    var Model = isInBrowser ? NS.Models.Model : require("../models/model");
+    var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
+    //View which is the default view for each view.
+    //This view is able to deal with errors and to render the default json moodel.
+    var CoreView = Backbone.View.extend({
+        toogleIsHidden: function (options) {
+            this.isHidden = !this.isHidden;
+            this.render(options);
+        },
+        //Reference lists names. 
+        //These _names_, must have been registered inside the the application to be used.
+        referenceNames: undefined,
 
-    //Options define by default for the view.
-    defaultOptions: {
-      isElementRedefinition: false //This options is use in order to not have a tag container generated by Backbone arround the view.
-    },
-    //Options overriden By the instanciate view.
-    customOptions: {},
+        //Options define by default for the view.
+        defaultOptions: {
+            isElementRedefinition: false //This options is use in order to not have a tag container generated by Backbone arround the view.
+        },
+        //Options overriden By the instanciate view.
+        customOptions: {},
 
-    //This property is use in order to create a new Model if no model are define in the view.
-    modelName: undefined,
+        //This property is use in order to create a new Model if no model are define in the view.
+        modelName: undefined,
 
-    //Initialization of the coreview.
-    initialize: function initializeCoreView(options) {
-      options = options || {};
-      //Define default options foreach _core_ view, and override these options for each _project view_.
-        //Then each view will have access to options in any methods.
-      this.opts = _.extend({},this.defaultOptions, this.customOptions, options);
+        //Initialization of the coreview.
+        initialize: function initializeCoreView(options) {
+            options = options || {};
+            //Define default options foreach _core_ view, and override these options for each _project view_.
+            //Then each view will have access to options in any methods.
+            this.opts = _.extend({}, this.defaultOptions, this.customOptions, options);
 
-      this.on('toogleIsHidden', this.toogleIsHidden);
+            this.on('toogleIsHidden', this.toogleIsHidden);
 
-      this.initializeModel();
+            this.initializeModel();
 
-      /*Register after renger.*/
-      _.bindAll(this, 'render', 'afterRender');
-      var _this = this;
-      this.render = _.wrap(this.render, function(render, options) {
-        render(options);
-        _this.afterRender();
-        return _this;
-      });
+            /*Register after renger.*/
+            _.bindAll(this, 'render', 'afterRender');
+            var _this = this;
+            this.render = _.wrap(this.render, function (render, options) {
+                render(options);
+                _this.afterRender();
+                return _this;
+            });
 
-      //Load all the references lists which are defined in referenceNames.
-      var currentView = this;
-      Promise.all(RefHelper.loadMany(this.referenceNames)).then(function(results) {
-        //console.log('resultsreferenceNames', results);
-        var res = {}; //Container for all the results.
-        for (var i = 0, l = results.length; i < l; i++) {
-          res[currentView.referenceNames[i]] = results[i];
-          //The results are save into an object with a name for each reference list.
+            //Load all the references lists which are defined in referenceNames.
+            var currentView = this;
+            Promise.all(RefHelper.loadMany(this.referenceNames)).then(function (results) {
+                //console.log('resultsreferenceNames', results);
+                var res = {}; //Container for all the results.
+                for (var i = 0, l = results.length; i < l; i++) {
+                    res[currentView.referenceNames[i]] = results[i];
+                    //The results are save into an object with a name for each reference list.
+                }
+                if (UtilHelper.isBackboneCollection(currentView.model)) {
+                    _.extend(currentView.model, res); // Add the references as properties of the object without using set which erases the collection.
+                    currentView.model.reset(); // Reset the collection to trigger a render.
+                } else {
+                    currentView.model.set(res); //This trigger a render due to model change.
+                }
+                currentView.isReady = true; //Inform the view that we are ready to render well.
+            }).then(null, function (error) {
+                ErrorHelper.manageResponseErrors(error, {
+                    isDisplay: true
+                });
+            });
+        },
+
+        //Initialize the model of the view.
+        //In order to be able to be initialize, a view must have a _model_ or a _modelName_.
+        initializeModel: function initializeModelCoreView() {
+            if (this.model) {
+                return;
+            } else if (this.opts.modelName) {
+                this.model = new Model();
+                this.model.modelName = this.opts.modelName;
+            } else {
+                throw new ArgumentNullException("The view must have a model or a model name.", this);
+            }
+        },
+        //The handlebars template has to be defined here.
+        template: function emptyTemplate(json) {
+            console.log("templateData", json);
+            return "<p>Your template has to be implemented.</p>";
+        }, // Example: require('./templates/coreView')
+        //Defaults events.
+        events: {
+            "focus input": "inputFocus", //Deal with the focus in the field.
+            "blur input": "inputBlur", //Deal with the focus out of the field.
+            "click .panel-collapse.in": "hideCollapse",
+            "click .panel-collapse:not('.in')": "showCollapse"
+        },
+        //Input focus event.
+        inputFocus: function coreViewInputFocus(event) {
+            if (!this.model.has('errors')) {
+                return;
+            }
+            //Remove the input hidden attribute.
+            return event.target.parentElement.parentElement.childNodes[5].removeAttribute('hidden');
+        },
+        //Input blur event gestion
+        inputBlur: function coreViewInputBlur(event) {
+            if (!this.model.has('errors')) {
+                return;
+            }
+            //If there is an error add the hidden attribute into it in odere to hide the errors.
+            return event.target.parentElement.parentElement.childNodes[5].setAttribute("hidden", "hidden");
+        },
+        //This method is use in order to inject json data to the template. By default, the this.model.toJSON() is called.
+        getRenderData: function getCoreViewRenderData() {
+            return this.model.toJSON();
+        },
+        showCollapse: function showCollapseCoreView() {
+            $('.collapse', this.$el).collapse('show');
+        },
+        hideCollapse: function hideCollapseCoreView() {
+            $('.collapse', this.$el).collapse('hide');
+        },
+        toogleCollapse: function toogleCollapseCoreView(event) {
+            $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
+            $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
+        },
+        //Render function  by default call the getRenderData and inject it into the view dom element.
+        render: function renderCoreView() {
+            this.$el.html(this.template(this.getRenderData()));
+            //_.defer(this.afterRender, this);
+            return this;
+        },
+        afterRender: function afterRenderCoreView() {
+            //Eventually pass the currentview as argument for this binding.
+            postRenderingBuilder({
+                model: this.model,
+                viewSelector: this.$el
+            });
+            $('.collapse', this.$el).collapse({
+                toogle: true
+            });
         }
-        currentView.model.set(res); //This trigger a render due to model change.
-        currentView.isReady = true; //Inform the view that we are ready to render well.
-      }).then(null, function(error) {
-        ErrorHelper.manageResponseErrors(error, {
-          isDisplay: true
-        });
-      });
-    },
+    });
 
-    //Initialize the model of the view.
-    //In order to be able to be initialize, a view must have a _model_ or a _modelName_.
-    initializeModel: function initializeModelCoreView() {
-      if (this.model) {
-        return;
-      } else if (this.opts.modelName) {
-          this.model = new Model();
-          this.model.modelName = this.opts.modelName;
-      } else {
-        throw new ArgumentNullException("The view must have a model or a model name.", this);
-      }
-    },
-    //The handlebars template has to be defined here.
-    template: function emptyTemplate(json) {
-      console.log("templateData", json);
-      return "<p>Your template has to be implemented.</p>";
-    }, // Example: require('./templates/coreView')
-    //Defaults events.
-    events: {
-      "focus input": "inputFocus", //Deal with the focus in the field.
-      "blur input": "inputBlur", //Deal with the focus out of the field.
-      "click .panel-collapse.in": "hideCollapse",
-      "click .panel-collapse:not('.in')": "showCollapse"
-    },
-    //Input focus event.
-    inputFocus: function coreViewInputFocus(event) {
-      if (!this.model.has('errors')) {
-        return;
-      }
-      //Remove the input hidden attribute.
-      return event.target.parentElement.parentElement.childNodes[5].removeAttribute('hidden');
-    },
-    //Input blur event gestion
-    inputBlur: function coreViewInputBlur(event) {
-      if (!this.model.has('errors')) {
-        return;
-      }
-      //If there is an error add the hidden attribute into it in odere to hide the errors.
-      return event.target.parentElement.parentElement.childNodes[5].setAttribute("hidden", "hidden");
-    },
-    //This method is use in order to inject json data to the template. By default, the this.model.toJSON() is called.
-    getRenderData: function getCoreViewRenderData() {
-      return this.model.toJSON();
-    },
-    showCollapse: function showCollapseCoreView() {
-      $('.collapse', this.$el).collapse('show');
-    },
-    hideCollapse: function hideCollapseCoreView() {
-      $('.collapse', this.$el).collapse('hide');
-    },
-    toogleCollapse: function toogleCollapseCoreView(event) {
-      $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
-      $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
-    },
-    //Render function  by default call the getRenderData and inject it into the view dom element.
-    render: function renderCoreView() {
-      this.$el.html(this.template(this.getRenderData()));
-      //_.defer(this.afterRender, this);
-      return this;
-    },
-    afterRender: function afterRenderCoreView() {
-      //Eventually pass the currentview as argument for this binding.
-      postRenderingBuilder({
-        model: this.model,
-        viewSelector: this.$el
-      });
-      $('.collapse', this.$el).collapse({
-        toogle: true
-      });
+    // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Views = NS.Views || {};
+        NS.Views.CoreView = CoreView;
+    } else {
+        module.exports = CoreView;
     }
-  });
-
-  // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Views = NS.Views || {};
-    NS.Views.CoreView = CoreView;
-  } else {
-    module.exports = CoreView;
-  }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 // ## Example calll:
 // ```javascript
@@ -3083,7 +3160,7 @@ function program1(depth0,data) {
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
 //```
 ﻿/*global window, Backbone, $, i18n*/
-(function(NS) {
+(function (NS) {
     "use strict";
     //Filename: views/consult-edit-view.js
     NS = NS || {};
@@ -3120,6 +3197,10 @@ function program1(depth0,data) {
         //Template for the consultation mode.
         templateConsult: undefined,
 
+        //Additional data to pass to the template.
+        additionalData: function () {
+            return undefined;
+        },
 
         //Default options for the view.
         defaultOptions: {
@@ -3197,7 +3278,11 @@ function program1(depth0,data) {
         },
         //Get the json data to be save by the view.
         getDataToSave: function getDataToSaveDetailEdit() {
-            return this.model.toJSON();
+            if (utilHelper.isBackboneModel(this.model)) {
+                return this.model.toJSON();
+            } else {
+                return this.model.toSaveJSON();
+            }
         },
         //Deal with the save event on the page.
         save: function saveConsultEdit(event) {
@@ -3215,24 +3300,25 @@ function program1(depth0,data) {
             //Call the form helper in order to rebuild the collection from the form.
             form_helper.formCollectionBinder(
                 $(this.opts.collectionSelector, this.$el),
-                this.model
+                this.model, { isSilent: false }
             );
             //Bind the this to the current view for the
             var currentView = this;
             ModelValidator.validateAll(currentView.model)
                 .then(function successValidation() {
                     //When the model is valid, unset errors.
-                    currentView.model.forEach(function(mdl) {
+                    currentView.model.forEach(function (mdl) {
                         mdl.unsetErrors();
                     }, currentView);
                     if (currentView.opts.isSaveOnServer) {
                         //Call the service in order to save the model.                   
                         currentView.saveModelSvc(currentView.getDataToSave())
                             .then(function success(jsonModel) {
-                                currentView.saveSuccess(jsonModel); //.bind(currentView);
+                                currentView.saveSuccess(jsonModel);
                             }, function error(responseError) {
-                                currentView.saveError(responseError); //.bind(currentView);
-                            });
+                                currentView.saveError(responseError);
+                            })
+                            .then(currentView.resetSaveButton);
                     } else {
                         currentView.saveSuccess(currentView.model.toJSON());
                     }
@@ -3287,20 +3373,27 @@ function program1(depth0,data) {
         },
         //Actions on save success.
         saveSuccess: function saveSuccessConsultEdit(jsonModel) {
+            this.opts.isNewModel = false;
             Backbone.Notification.addNotification({
                 type: 'success',
-                message: i18n.t('save.' + (jsonModel.id ? 'create' : 'update') + 'success')
-            });
+                message: i18n.t('save.' + (jsonModel && jsonModel.id ? 'create' : 'update') + 'success')
+            }, true);
             // If the navigation on save is activated, navigate to the page.
             if (this.opts.isNavigationOnSave) {
                 Backbone.history.navigate(this.generateNavigationUrl(), true);
             } else {
                 // If there is no navigation on save, trigger a change event.
-                this.model[utilHelper.isBackboneModel(this.model) ? 'set' : 'reset'](jsonModel, {
-                    silent: true
-                });
+                if (jsonModel) {
+                    this.model[utilHelper.isBackboneModel(this.model) ? 'set' : 'reset'](jsonModel, {
+                        silent: false
+                    });
+                }
                 this.toggleEditMode();
             }
+        },
+
+        cancelEdition: function cancelEditioConsultEditView() {
+            this.toggleEditMode();
         },
 
         generateNavigationUrl: function generateNavigationUrl() {
@@ -3331,6 +3424,7 @@ function program1(depth0,data) {
         // Actions after a delete success.
         deleteSuccess: function deleteConsultEditSuccess(response) {
             //remove the view from the DOM
+            this.model.destroy();
             this.remove();
             if (this.opts.isNavigationOnDelete) {
                 //navigate to next page
@@ -3539,7 +3633,7 @@ function program1(depth0,data) {
         },
         // Get the data to give to the template.
         getRenderData: function getRenderDataCompositeView() {
-            return {};
+            return _.extend({}, this.additionalData());
         },
 
         //Render function of the coposite view.
@@ -3552,13 +3646,15 @@ function program1(depth0,data) {
             for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
                 var vConf = this.viewsConfiguration[i];
                 //Render each view inside its selector.
-                $(vConf.selector, this.$el).html(this[vConf.name].render().el);
+                $(vConf.selector, this.$el).html(this[vConf.name].render(options).el);
+                this[vConf.name].delegateEvents(); 
             }
 
             //this.delegateEvents();
             return this;
         },
         toggleEditMode: function toggleEditModeCompositeView() {
+            ConsultEditView.prototype.toggleEditMode.apply(this);
             //Render each view inside the configuration.
             for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
                 var vConf = this.viewsConfiguration[i];
@@ -3602,7 +3698,8 @@ function program1(depth0,data) {
                     //Bind the collection.
                     formHelper.formCollectionBinder(
                         $(compoView[vConf.name].opts.collectionSelector, compoView[vConf.name].$el),
-                        compoView[vConf.name].model
+                        compoView[vConf.name].model,
+                        { isSilent: false }
                     );
 
                     //Push promises inside the container.
@@ -3630,12 +3727,23 @@ function program1(depth0,data) {
                     },
                     function errorSaveCompositeView(responseError) {
                         compoView.saveError(responseError);
-                    });
+                    }).then(compoView.resetSaveButton.bind(compoView));
             }, function(error) {
                 console.error(error);
+                compoView.resetSaveButton();
             });
 
 
+        },
+        cancelEdition: function cancelEditionCompositeView() {
+            // cancelEdit on composite = ToggleEdit on compositeView only + cancelEdit on each child view.
+            ConsultEditView.prototype.toggleEditMode.apply(this);
+            //Render each view inside the configuration.
+            for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
+                var vConf = this.viewsConfiguration[i];
+                //Render each view inside its selector.
+                this[vConf.name].cancelEdition();
+            }
         },
         //After the loadin of the global model datas, dispatch it into the model and collections of each view.
         //todo: Test.
@@ -3921,6 +4029,7 @@ function program1(depth0,data) {
 
     //Hide the view.
     hide: function hide(){
+      this.model.currentActiveName = undefined;
       this.$el.html(null);
     }
   });
@@ -4036,7 +4145,8 @@ function program1(depth0,data) {
     var templatePagination = function() {}; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
     var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require('./consult-edit-view');
     var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
-
+    var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
+    var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("../helpers/custom_exception").ArgumentInvalidException;
     var ListView = ConsultEditView.extend({
         tagName: 'div',
         className: 'resultView',
@@ -4044,14 +4154,42 @@ function program1(depth0,data) {
         templatePagination: templatePagination,
         search: undefined,
         searchCriteria: {},
+        getCriteria: function() {
+            return _.extend({}, this.searchCriteria, this.opts.searchCriteria);
+        },
+        defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
+            exportUrl: './Export/Index' //Change it if necessary.
+        }),
+
+        exportSvc: undefined,
+        //Url for the export.
+        export: function exportCollection(event) {
+            //event.preventDefault();
+            if (typeof this.opts.exportUrl === 'string' && typeof this.exportSvc === 'function') {
+                this.exportSvc(this.getCriteria(), _.extend(this.model.pageInfo(), {
+                    exportId: this.exportId
+                })).then(function(success) {
+                    console.log('successExportPOST', success);
+                    window.open($('a.btnExport', this.$el).attr('href'), '_blank');
+                    //$('a.btnExport', this.$el).trigger('click');
+                }).then(null, function error(errorResponse) {
+                    event.preventDefault();
+                    errorHelper.manageResponseErrors(errorResponse, {
+                        isDisplay: true
+                    });
+                });
+            } else {
+                throw new ArgumentInvalidException('The export conf must be set in order to have an export button, see Fmk.Views.listView, exportConf to override.', this.exportConf);
+            }
+
+        },
         //Parameters for rendering the detail inside.
         isShowDetailInside: false,
         ResultSelectionView: undefined,
         ResultSelectionModel: undefined,
         resultsContainer: 'div#lineSelectionContainer',
-        additionalData: function() {
-            return undefined;
-        },
+        //List of the model in memory in case of cancel.
+        storedModels: [],
         //View foreach line in the collection view.
         viewForEachLineConfiguration: {
             isActive: false, //True or false will make the rendering different.
@@ -4069,9 +4207,19 @@ function program1(depth0,data) {
                     isSearchTriggered: true
                 });
             }, this);
-            //Listen to the model add event.
+            // Listen to the model add event.
             this.listenTo(this.model, "add", this.addOne, this);
 
+            if (this.opts.isModelToLoad) {
+                this.retrieveAndDisplayData(options);
+            }
+            //Set an exportId
+            if (this.exportSvc !== undefined && this.opts.exportUrl !== undefined) {
+                this.exportId = utilHelper.guid();
+            }
+        },
+        retrieveAndDisplayData: function retrieveAndDisplayData(options) {
+            options = options || {};
             if (this.search !== undefined) {
                 // Fusion des critères venant du rooter (options.searchCriteria) et de la vue (this.searchCriteria).
                 var criteria = {};
@@ -4099,7 +4247,8 @@ function program1(depth0,data) {
             //Edition events
             "click button.btnEdit": "edit",
             "click button[type='submit']": "save",
-            "click button.btnCancel": "cancelEdition"
+            "click button.btnCancel": "cancelEdition",
+            "click button.btnExport": 'export'
         },
         changePageFilter: function changePageFilterListView(event) {
             this.model.perPage = +event.target.value;
@@ -4138,8 +4287,8 @@ function program1(depth0,data) {
             this.fetchDemand();
         },
 
-        fetchDemand: function fetchDemand() {
-            this.trigger('results:fetchDemand');
+        fetchDemand: function fetchDemandListView() {
+            this.retrieveAndDisplayData();
         },
 
         generateNavigationUrl: function generateNavigationUrl(id) {
@@ -4169,14 +4318,29 @@ function program1(depth0,data) {
                 Backbone.history.navigate(url, true);
             }
         },
-
         navigateBack: function navigateBack() {
             Backbone.history.history.back();
+        },
+        toggleEditMode: function toggleEditModeWithCollectionSave(event) {
+            ConsultEditView.prototype.toggleEditMode.apply(this, event);
+            if (this.isEdit) {
+                // store the models before edition (slice will copy the collection)
+                this.storedModels = _.map(this.model.models, function(item) {
+                    return item.clone();
+                });
+            }
+        },
+        cancelEdition: function cancelListEdition() {
+            // reset the collection with the previous models.
+            this.model.reset(this.storedModels);
+            this.toggleEditMode();
         },
         //Add one line view from the model.
         addOne: function addOneLineView(model) {
             //console.log("modelNameAddone", model, model.modelName, this);
-            var opt = {isEdit: false};
+            var opt = {
+                isEdit: false
+            };
             if (this.isEdit) {
                 opt.isEdit = this.isEdit;
             }
@@ -4189,17 +4353,12 @@ function program1(depth0,data) {
         render: function renderListView(options) {
             options = options || {};
             //If the research was not launch triggered.
-            if (!options.isSearchTriggered) {
+            if (!this.opts.isSearchTriggered && !options.isSearchTriggered) {
                 return this;
             }
             //If there is no result.
-            if (this.model.length === 0) {
-                //Is recherche launched.
-                this.$el.html(i18n.t('search.noResult')); //todo: call a template
-                Backbone.Notification.addNotification({
-                    type: 'info',
-                    message: i18n.t('search.noResult')
-                }, true);
+            if (this.model.length === 0 && !this.isEdit) {
+                this.renderEmptyList();
             } else {
                 //the template must have named property to iterate over it
                 var infos = this.model.pageInfo();
@@ -4214,6 +4373,8 @@ function program1(depth0,data) {
                     totalPages: infos.totalPages,
                     totalRecords: this.model.totalRecords,
                     isViewForLine: this.viewForEachLineConfiguration.isActive
+                }, {
+                    exportUrl: this.opts.exportUrl + '/' + this.exportId
                 }, this.additionalData())));
 
                 //Conditionnal code for rendering a line foreachView
@@ -4236,6 +4397,9 @@ function program1(depth0,data) {
         afterRender: function postRenderListView() {
             ConsultEditView.prototype.afterRender.call(this);
             $('.collapse', this.$el).collapse('show');
+        },
+        renderEmptyList: function renderEmptyList() {
+            // placeholder for empty list.
         }
         //,
         //triggerSaveModels: function triggerSaveModels() {
@@ -4253,26 +4417,35 @@ function program1(depth0,data) {
         module.exports = ListView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-
 /*global Backbone, i18n, $, window*/
 "use strict";
-(function(NS) {
-	// Filename: views/search-results-view.js
-	NS = NS || {};
-	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	var ListView = isInBrowser ? NS.Views.ListView : require('./list-view');
+(function (NS) {
+    // Filename: views/search-results-view.js
+    NS = NS || {};
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    var ListView = isInBrowser ? NS.Views.ListView : require('./list-view');
 
-	var SearchResultsView = ListView.extend({
-	    
-	});
+    var SearchResultsView = ListView.extend({
+        fetchDemand: function fetchDemandResultView() {
+            this.trigger('results:fetchDemand');
+        },
+        renderEmptyList: function renderEmptySearchResults() {
+            //Is recherche launched.
+            this.$el.html(i18n.t('search.noResult')); //todo: call a template
+            Backbone.Notification.addNotification({
+                type: 'info',
+                message: i18n.t('search.noResult')
+            }, true);
+        }
+    });
 
-	// Differenciating export for node or browser.
-	if (isInBrowser) {
-		NS.Views = NS.Views || {};
-		NS.Views.SearchResultsView = SearchResultsView;
-	} else {
-		module.exports = SearchResultsView;
-	}
+    // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Views = NS.Views || {};
+        NS.Views.SearchResultsView = SearchResultsView;
+    } else {
+        module.exports = SearchResultsView;
+    }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, _, $, Promise, window*/
 "use strict";

@@ -20,8 +20,8 @@
     updateModel: (model)->
       @changes.updates[model.cid] = model.toSaveJSON()
     deleteModel:(model) ->
-      if @changes.add[model.cid]?
-        delete @changes.add[model.cid]
+      if @changes.creates[model.cid]?
+        delete @changes.creates[model.cid]
       if @changes.updates[model.cid]?
         @changes.deletes[model.cid] = model.toSaveJSON()
         delete @changes.updates[model.cid]
@@ -42,7 +42,7 @@
       # Bind models events on order to track changes.
       @on('add',(model)=> @addModel(model))
       @on('remove', (model)=> @deleteModel(model))
-      @on('change', (model)=> @updateModel(model))
+      @on('change', (model)=> @addModel(model))
       @on('reset', (models)=> @resetModels(models))
     # To json function.
     toJSON: ->
