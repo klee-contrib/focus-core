@@ -7,6 +7,9 @@ var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
 var gutil = require('gulp-util');
 
+//buildConfig:
+var buildConf = require('./build.json');
+
 /**********************
   Linting files
 **********************/
@@ -27,20 +30,29 @@ gulp.task('lint', function() {
 });
 
 /**********************
+  Building css files
+**********************/
+gulp.task('css-build', function() {
+  gulp.src('./lib/styles/*.css')
+  .pipe(concat('fmk.css'))
+  .pipe(gulp.dest('./example/app/css/'))
+  .pipe(gulp.dest('./dist/browser/'))
+  .pipe(gulp.dest(buildConf.spaDirectory));
+});
+/**********************
   Building js files
 **********************/
-
 //Build all the javascripts file.
 gulp.task('browser-build', function() {
   //Build the js file for the browser.
-    gulp.src(['./lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js','lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
+    gulp.src(['./lib/infos.js','./lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js','lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
   .pipe(concat('fmk.js'))
     .pipe(gulp.dest('./dist/browser/'))
     .pipe(gulp.dest('./example/app/js/'))
     //Current project destination.
     //.pipe(gulp.dest('../SPA-skeleton/vendor'));
-    .pipe(gulp.dest('../../../../Klepierre_Tomcat/Main/Sources/Tomcat.SPA/vendor'));
+    .pipe(gulp.dest(buildConf.spaDirectory));
 });
 //Build all the javascripts for node and unit tests.
 gulp.task('node-build', function() {
@@ -74,7 +86,7 @@ gulp.task('templates', function() {
 
 
 //Grouping build tasks.
-gulp.task('build', ['templates', 'browser-build', 'node-build']);
+gulp.task('build', ['infos','css-build','templates', 'browser-build', 'node-build']);
 
 
 /**********************
@@ -99,6 +111,20 @@ gulp.task('templatesExample', function() {
 });
 
 
+gulp.task('infos', function () {
+    
+    var fs = require('fs');
+    var pajson = require('./package.json');
+    var string = '/* name: ' + pajson.name + ' , version: ' + pajson.version + 'description: ' + pajson.description +'*/';
+    fs.writeFile("lib/infos.js", string, function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("The file was saved!");
+        }
+    });
+});
+
 /**********************
   Documentation
 **********************/
@@ -116,6 +142,9 @@ gulp.task('doc', function() {
 /**********************
   Local example server
 **********************/
+
+
+
 
 //Start the local server.
 gulp.task('serve', startExpress);

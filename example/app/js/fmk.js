@@ -1,3 +1,4 @@
+/* name: spa-fmk , version: 0.0.2description: Simple framework for backbone applications.
 /*global window*/
 (function initialization(container) {
   container.Fmk = {
@@ -19,7 +20,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"navbar-static-top header\">\r\n  \r\n</div>";
+  return "<div class=\"navbar-static-top header\">\r\n  \r\n</div>\r\n<div>\r\n  <i class=\"fa fa-spinner fa-spin hidden\" id='ajaxIndicator'></i>\r\n</div>";
   });;
 this["Fmk"] = this["Fmk"] || {};
 this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
@@ -73,6 +74,21 @@ function program2(depth0,data) {
   });;
 this["Fmk"] = this["Fmk"] || {};
 this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
+this["Fmk"]["templates"]["noResults"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"noResults\">";
+  if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</div>";
+  return buffer;
+  });;
+this["Fmk"] = this["Fmk"] || {};
+this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["notifications"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
@@ -97,6 +113,20 @@ function program1(depth0,data) {
   stack1 = helpers.each.call(depth0, (depth0 && depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n</div>";
+  return buffer;
+  });;
+this["Fmk"] = this["Fmk"] || {};
+this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
+this["Fmk"]["templates"]["spinner"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class=\"three-quarters\">\r\n    ";
+  options = {hash:{},data:data};
+  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "application.loading", options) : helperMissing.call(depth0, "t", "application.loading", options)))
+    + "\r\n</div>";
   return buffer;
   });;
 (function() {
@@ -461,9 +491,9 @@ function program1(depth0,data) {
           regex: routeToRegExp(siteDesc.url)
         };
         //Call the Backbone.history.handlers....
-        console.log('*****************');
-        console.log('ROute name: ',route.route);
-        console.log('Route handler name : ',  findRouteName(route.route.substring(1)));
+        //console.log('*****************');
+        //console.log('ROute name: ',route.route);
+        //console.log('Route handler name : ',  findRouteName(route.route.substring(1)));
         routes[findRouteName(route.route.substring(1))] = route;
         if(options.isInSiteStructure){
           siteStructure[prefix] = route;
@@ -525,7 +555,7 @@ function program1(depth0,data) {
     for (var siteDescIdx in headers) {
       var siteDesc = headers[siteDescIdx];
       var prefixsiteDesc = processName(pfx, siteDesc.name);
-      console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
+      //console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
       if (siteDesc.header) {
         generateRoutes(siteDesc, prefixsiteDesc);
       } else {
@@ -539,7 +569,7 @@ function program1(depth0,data) {
   //Add a route for a user.
 
   var addRouteForUser = function addRouteForUser(element, prefix) {
-    console.log('addRouteForUser', 'prefix', prefix);
+    //console.log('addRouteForUser', 'prefix', prefix);
     if (!element) {
       return;
       //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
@@ -1140,7 +1170,14 @@ function program1(depth0,data) {
       totalPages: 10,
       //sort fields
       sortField: {},
-
+      setPageInfo: function setPageInfo(pageInfos){
+        this.totalRecords = pageInfos.totalRecords;
+        this.currentPage = pageInfos.currentPage;
+        this.firstPage = pageInfos.firstPage;
+        this.lastPage = pageInfos.lastPage;
+        this.perPage = pageInfos.perPage;
+        this.sortField = pageInfos.sortField;
+      },
       pageInfo: function pageInfo() {
           var info = {
               // If parse() method is implemented and totalRecords is set to the length
@@ -1223,7 +1260,7 @@ function program1(depth0,data) {
 	//Filename: views/notifications-view.js
 	NS = NS || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	var template = isInBrowser ? NS.templates.notifications : ""; //require('./templates/notifications'); //Todo: call a handlebars function.
+	var template = isInBrowser ? NS.templates.notifications : function(){}; //require('./templates/notifications'); //Todo: call a handlebars function.
 	var NotificationsView = Backbone.View.extend({
 		tagName: 'div',
 		className: 'notifications',
@@ -1865,7 +1902,7 @@ function program1(depth0,data) {
             var attributeName = this.getAttribute('data-name');
             //A multiple option will be define with select2
             if (this.hasAttribute('multiple')) {
-                selectedValue = $(this).val() || [];
+                selectedValue = $(this).val() || []; // TODO : RGE si select2, il faut utiliser $(this).select2('val')
             } else {
                 selectedValue = this.value;
             }
@@ -2787,7 +2824,7 @@ function program1(depth0,data) {
   /* Filename: helpers/reference_helper.js  */
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-
+  var userHelper = isInBrowser ? NS.Helpers.utilHelper : require("./util_helper");
 
   //Container for the list and 
   var configuration = {};
@@ -2801,22 +2838,7 @@ function program1(depth0,data) {
   // This method perform an ajax request within a promise.
   // Example call : refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
   var loadList = function loadList(listDesc){
-    return new Promise(function promiseLoadList(resolve, reject) {
-      //console.log("Errors", errors);
-      $.ajax({
-          url: listDesc.url,
-          type: "GET",
-          dataType: "json",
-          crossDomain: true,
-          success: function(data) {
-            //references[listDesc.name] = data; //In order to not reload the next time,  warning, as promises are asynchronous, when the promise is define, this could be false.
-            resolve(data);
-          },
-          error: function(error) {
-            reject(error);
-          }
-        });
-    });
+      return userHelper.promiseAjax({ url: listDesc.url, type: 'GET' });
   };
 
   // Load a reference with its list name.
@@ -2914,6 +2936,9 @@ function program1(depth0,data) {
         if((rt === undefined && route!== '') || !userHelper.hasOneRole(rt.roles)){
           backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')}, true);
           return Backbone.history.navigate('', true);
+        }else {
+          //Rendre all the notifications in the stack.
+          backboneNotification.renderNotifications();
         }
         //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
         callback.apply(router, arguments);
@@ -2928,6 +2953,129 @@ function program1(depth0,data) {
     NS.Helpers.Router = Router;
   } else {
     module.exports = Router;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+//Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
+/* global window, Promise, Backbone, i18n*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/router.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+  
+  //Config of the storage.
+  var config = {
+    description: 'Session storage of the user.',
+    name: 'Session helper.',
+    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
+    // we can use without a prompt.
+    size: 4980736,
+    storeName: 'userSession',
+    version: 1.0
+  };
+
+  //Container for the storage.
+  var storage;
+  try {
+    // Initialize storage with session storage and create a variable to use it.
+    storage = window.sessionStorage;
+  } catch (e) {
+    throw new Error("Your browser does not seem to have session storage.");
+  }
+
+  //Serialize the data to be save.
+  function _serialize(data) {
+    if (data !== null && data !== undefined) {
+      return JSON.stringify(data);
+    }
+    return undefined;
+  }
+
+  //Deserialize the data.
+  function _deserialize(data) {
+    if (typeof data !== "string") {
+      throw new ArgumentInvalidException('The data to deserialize must be a string.', data);
+    }
+    return JSON.parse(data);
+  }
+
+  //Dave the data into the storage and return a promise.
+  // The Promise is fullfilled only if there is data to save.
+  function saveItem(key, data) {
+    return new Promise(function(resolve, reject) {
+      if (data === null || data === undefined) {
+        reject(new ArgumentInvalidException('The data to save must be define.', data));
+      } else {
+        storage.setItem(key, _serialize(data));
+        resolve({
+          key: key,
+          data: data
+        });
+      }
+    });
+  }
+
+  //Get data with a promise.
+  // The Promise is fullfilled only if the item exists.
+  function getItem(key) {
+    return new Promise(function(resolve, reject) {
+      if (typeof key !== "string") {
+        reject(new ArgumentInvalidException("The key must be a string", key));
+      }
+      var stringData = storage.getItem(key);
+      if (stringData === null || stringData === undefined) {
+        resolve(null);
+      } else {
+        resolve(_deserialize(stringData));
+      }
+    });
+  }
+
+  //Remove an item from the session and return a promise.
+  // The Promise is fullfilled only if the item exists.
+  function removeItem(key) {
+    return new Promise(function(resolve, reject) {
+      if (typeof key !== "string") {
+        reject(new ArgumentInvalidException("The key must be a string", key));
+      }
+      var stringData = storage.getItem(key);
+      if (stringData === null || stringData === undefined) {
+        reject(null);
+      }else {
+        storage.removeItem(key);
+        resolve(key);
+      }
+    });
+  }
+
+  //Promise of clearing the storage.
+  //Promise is fullfilled only if it works.
+  function clear() {
+    return new Promise(function(resolve, reject) {
+      try {
+        storage.clear();
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  var sessionHelper = {
+    clear: clear,
+    saveItem: saveItem,
+    getItem: getItem,
+    removeItem: removeItem
+  };
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.sessionHelper = sessionHelper;
+  } else {
+    module.exports = sessionHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global $, _ , window*/
@@ -3010,6 +3158,8 @@ function program1(depth0,data) {
     var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
     var Model = isInBrowser ? NS.Models.Model : require("../models/model");
     var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
+    var sessionHelper = isInBrowser ? NS.Helpers.sessionHelper : require('../helpers/session_helper');
+    
     //View which is the default view for each view.
     //This view is able to deal with errors and to render the default json moodel.
     var CoreView = Backbone.View.extend({
@@ -3143,6 +3293,18 @@ function program1(depth0,data) {
             $('.collapse', this.$el).collapse({
                 toogle: true
             });
+        },
+        //Get the criteria from the session storage if exists.
+        getSessionCriteria: function getCriteria(){
+            return sessionHelper.getItem(window.location.hash);
+        },
+        //Save the criteria in the session storage.
+        saveSessionCriteria: function saveSessionCriteria(criteria){
+            return sessionHelper.saveItem(window.location.hash, criteria);
+        },
+        //Call the history back.
+        back: function back(){
+            Backbone.history.history.back();
         }
     });
 
@@ -3173,6 +3335,9 @@ function program1(depth0,data) {
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
     var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
+    var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
+
     //Backbone view which can be use in order to create consultation view and edition view.
     var ConsultEditView = CoreView.extend({
 
@@ -3209,7 +3374,8 @@ function program1(depth0,data) {
             isNavigationOnSave: true,
             isNavigationOnDelete: true,
             isSaveOnServer: true,
-            collectionSelector: "tbody tr"
+            collectionSelector: "tbody tr",
+            isForceReload: false
         },
 
         //Initialize function
@@ -3225,16 +3391,20 @@ function program1(depth0,data) {
             // In order to be loaded a model has to have an id and the options must be activated.
             if (this.opts.isModelToLoad && typeof this.model.has === "function" && this.model.has('id')) {
                 //Try to load the model from a service which have to return a promise.
-                var view = this;
-                this.getModelSvc(this.model.get('id'))
-                    .then(function success(jsonModel) {
-                        view.model.set(jsonModel);
-                    }).then(null, function error(errorResponse) {
-                        ErrorHelper.manageResponseErrors(errorResponse, {
-                            model: this.model
-                        });
-                    });
+                this.loadModelData()
             }
+        },
+
+        loadModelData: function loadModelData() {
+            var view = this;
+            this.getModelSvc(this.model.get('id'))
+                .then(function success(jsonModel) {
+                    view.model.set(jsonModel);
+                }).then(null, function error(errorResponse) {
+                    ErrorHelper.manageResponseErrors(errorResponse, {
+                        model: view.model
+                    });
+                });
         },
 
         //Events handle by the view with user interaction
@@ -3243,7 +3413,8 @@ function program1(depth0,data) {
             "click button.btnDelete": "deleteItem",
             "click .panel-heading": "toogleCollapse",
             "click button[type='submit']": "save",
-            "click button.btnCancel": "cancelEdition"
+            "click button.btnCancel": "cancelEdition",
+            "click button.btnBack": "back"
         },
 
         //JSON data to attach to the template.
@@ -3374,28 +3545,48 @@ function program1(depth0,data) {
         //Actions on save success.
         saveSuccess: function saveSuccessConsultEdit(jsonModel) {
             this.opts.isNewModel = false;
-            Backbone.Notification.addNotification({
+            //Add a notification which will be displayed wether by the router or by the same view.
+            backboneNotification.addNotification({
                 type: 'success',
                 message: i18n.t('save.' + (jsonModel && jsonModel.id ? 'create' : 'update') + 'success')
-            }, true);
+            });
             // If the navigation on save is activated, navigate to the page.
             if (this.opts.isNavigationOnSave) {
                 Backbone.history.navigate(this.generateNavigationUrl(), true);
             } else {
                 // If there is no navigation on save, trigger a change event.
-                if (jsonModel) {
+                if(this.opts.isForceReload === true){
+                    var thisUrl = this.generateReloadUrl(jsonModel);
+                    if (!Backbone.history.navigate(thisUrl, true)) {
+                        Backbone.history.loadUrl(thisUrl);
+                    }
+                }
+                else if (jsonModel instanceof Object) {
+                    //Render the success notification.
+                    backboneNotification.renderNotifications();
+                    //Reset the model or the collection.
                     this.model[utilHelper.isBackboneModel(this.model) ? 'set' : 'reset'](jsonModel, {
                         silent: false
                     });
+                    this.toggleEditMode();
+                } else {
+                    backboneNotification.renderNotifications();
+                    //Reload the model from the service.
+                    this.loadModelData();
+                    this.toggleEditMode();
                 }
-                this.toggleEditMode();
+                
             }
         },
-
+        //Cancel the edition.
         cancelEdition: function cancelEditioConsultEditView() {
             this.toggleEditMode();
         },
-
+        //Url to generate when you want to reload the page, if the option isForceReload is activated.
+        generateReloadUrl: function generateReloadUrl(param){
+            throw new NotImplementedException('generateReloadUrl', this);
+        },
+        //Url for the newt page after success if the option isNavigateOnSave is activated.
         generateNavigationUrl: function generateNavigationUrl() {
             if (this.model.get('id') === null || this.model.get('id') === undefined) {
                 return "/";
@@ -3539,7 +3730,10 @@ function program1(depth0,data) {
         className: 'compositeView',
 
         //Default options of the composite view.
-        defaultOptions: {},
+        defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
+            isForceReload: true,
+            isNavigationOnSave: false
+        }),
 
         //Service to save a model wether it is a model or a collection.
         saveModelSvc: undefined,
@@ -4135,14 +4329,14 @@ function program1(depth0,data) {
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 ﻿/*global Backbone, i18n, $, window, _*/
-"use strict";
-(function(NS) {
+(function (NS) {
+    "use strict";
     // Filename: views/list-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
     var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
-    var templatePagination = function() {}; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
+    var templatePagination = function () { }; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
     var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require('./consult-edit-view');
     var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
@@ -4154,23 +4348,21 @@ function program1(depth0,data) {
         templatePagination: templatePagination,
         search: undefined,
         searchCriteria: {},
-        getCriteria: function() {
+        getCriteria: function getCriteria() {
             return _.extend({}, this.searchCriteria, this.opts.searchCriteria);
         },
         defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
             exportUrl: './Export/Index' //Change it if necessary.
         }),
-
         exportSvc: undefined,
         //Url for the export.
         export: function exportCollection(event) {
-            //event.preventDefault();
             if (typeof this.opts.exportUrl === 'string' && typeof this.exportSvc === 'function') {
+                var currentView = this;
                 this.exportSvc(this.getCriteria(), _.extend(this.model.pageInfo(), {
                     exportId: this.exportId
-                })).then(function(success) {
-                    console.log('successExportPOST', success);
-                    window.open($('a.btnExport', this.$el).attr('href'), '_blank');
+                })).then(function (success) {
+                    window.open($('a.btnExport', currentView.$el).attr('href'), '_blank');
                     //$('a.btnExport', this.$el).trigger('click');
                 }).then(null, function error(errorResponse) {
                     event.preventDefault();
@@ -4179,7 +4371,7 @@ function program1(depth0,data) {
                     });
                 });
             } else {
-                throw new ArgumentInvalidException('The export conf must be set in order to have an export button, see Fmk.Views.listView, exportConf to override.', this.exportConf);
+                throw new ArgumentInvalidException('The export conf must be set in order to have an export button, see Fmk.Views.listView, exportSvc to override.', this.exportConf);
             }
 
         },
@@ -4198,38 +4390,51 @@ function program1(depth0,data) {
             parentContainer: "table tbody" //selector into which the view .
         },
 
-        initialize: function initializeSearchResult(options) {
+        initialize: function initializeListView(options) {
             options = options || {};
             ConsultEditView.prototype.initialize.call(this, options);
 
-            this.listenTo(this.model, "reset", function() {
+            this.listenTo(this.model, "reset", function () {
                 this.render({
                     isSearchTriggered: true
                 });
             }, this);
             // Listen to the model add event.
             this.listenTo(this.model, "add", this.addOne, this);
-
+            var currentView = this;
             if (this.opts.isModelToLoad) {
-                this.retrieveAndDisplayData(options);
+                this.getSessionCriteria().then(function (crit) {
+                    //Restore the criteria if save into the session.
+                    if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
+                        currentView.model.setPageInfo(crit.pageInfo);
+                    }
+                    currentView.loadModelData(options);
+                }, function (error) {
+                    errorHelper.manageResponseErrors(error);
+                });
+
             }
             //Set an exportId
             if (this.exportSvc !== undefined && this.opts.exportUrl !== undefined) {
                 this.exportId = utilHelper.guid();
             }
         },
-        retrieveAndDisplayData: function retrieveAndDisplayData(options) {
+        loadModelData: function loadModelData(options) {
             options = options || {};
             if (this.search !== undefined) {
-                // Fusion des critères venant du rooter (options.searchCriteria) et de la vue (this.searchCriteria).
+                // Fusion des critères venant du rooter (options.searchCriteria) et de la vue (this.getCriteria()).
                 var criteria = {};
-                _.extend(criteria, this.searchCriteria, options.searchCriteria);
+                _.extend(criteria, this.getCriteria(), options.searchCriteria);
 
                 var currentView = this;
                 //Call the service and inject the result into the model.
                 this.search(criteria, this.model.pageInfo()).then(function success(jsonResponse) {
                     currentView.model.setTotalRecords(jsonResponse.totalRecords);
                     currentView.model.reset(jsonResponse.values);
+                    //Save the criteria and the pagInfo info the session.
+                    currentView.saveSessionCriteria({ criteria: criteria, pageInfo: currentView.model.pageInfo() }).then(function (s) {
+                        console.log('criteria save in session', s);
+                    });
                 }).then(null, function error(errorResponse) {
                     errorHelper.manageResponseErrors(errorResponse, {
                         isDisplay: true
@@ -4248,7 +4453,8 @@ function program1(depth0,data) {
             "click button.btnEdit": "edit",
             "click button[type='submit']": "save",
             "click button.btnCancel": "cancelEdition",
-            "click button.btnExport": 'export'
+            "click button.btnExport": 'export',
+            "click button.btnBack": "back"
         },
         changePageFilter: function changePageFilterListView(event) {
             this.model.perPage = +event.target.value;
@@ -4288,7 +4494,7 @@ function program1(depth0,data) {
         },
 
         fetchDemand: function fetchDemandListView() {
-            this.retrieveAndDisplayData();
+            this.loadModelData();
         },
 
         generateNavigationUrl: function generateNavigationUrl(id) {
@@ -4325,7 +4531,7 @@ function program1(depth0,data) {
             ConsultEditView.prototype.toggleEditMode.apply(this, event);
             if (this.isEdit) {
                 // store the models before edition (slice will copy the collection)
-                this.storedModels = _.map(this.model.models, function(item) {
+                this.storedModels = _.map(this.model.models, function (item) {
                     return item.clone();
                 });
             }
@@ -4338,9 +4544,7 @@ function program1(depth0,data) {
         //Add one line view from the model.
         addOne: function addOneLineView(model) {
             //console.log("modelNameAddone", model, model.modelName, this);
-            var opt = {
-                isEdit: false
-            };
+            var opt = _.extend({ isEdit: false }, this.additionalData());
             if (this.isEdit) {
                 opt.isEdit = this.isEdit;
             }
@@ -4360,35 +4564,7 @@ function program1(depth0,data) {
             if (this.model.length === 0 && !this.isEdit) {
                 this.renderEmptyList();
             } else {
-                //the template must have named property to iterate over it
-                var infos = this.model.pageInfo();
-                this.$el.html(this.template(_.extend({
-                    //Get the model datas only if view foreach line is active.
-                    collection: this.viewForEachLineConfiguration.isActive ? undefined : this.getRenderData(),
-                    sortField: infos.sortField.field,
-                    order: infos.sortField.order,
-                    currentPage: infos.currentPage,
-                    perPage: infos.perPage,
-                    firstPage: infos.firstPage,
-                    totalPages: infos.totalPages,
-                    totalRecords: this.model.totalRecords,
-                    isViewForLine: this.viewForEachLineConfiguration.isActive
-                }, {
-                    exportUrl: this.opts.exportUrl + '/' + this.exportId
-                }, this.additionalData())));
-
-                //Conditionnal code for rendering a line foreachView
-                if (this.viewForEachLineConfiguration.isActive) {
-                    this.model.forEach(this.addOne, this);
-                }
-
-                //render pagination
-                $(this.resultsPagination, this.$el).html(this.templatePagination(this.model.pageInfo())); //TODO : this.model.pageInfo() {currentPage: 0, firstPage: 0, totalPages: 10}
-
-                //If there is a detail id set in the view, render it inside.
-                if (this.detailId) {
-                    this.renderDetail();
-                }
+                this.renderList();
             }
 
             this.delegateEvents();
@@ -4400,6 +4576,38 @@ function program1(depth0,data) {
         },
         renderEmptyList: function renderEmptyList() {
             // placeholder for empty list.
+            this.renderList();
+        },
+        renderList: function renderList() {
+            //the template must have named property to iterate over it
+            var infos = this.model.pageInfo();
+            this.$el.html(this.template(_.extend({
+                //Get the model datas only if view foreach line is active.
+                collection: this.viewForEachLineConfiguration.isActive ? undefined : this.getRenderData(),
+                sortField: infos.sortField.field,
+                order: infos.sortField.order,
+                currentPage: infos.currentPage,
+                perPage: infos.perPage,
+                firstPage: infos.firstPage,
+                totalPages: infos.totalPages,
+                totalRecords: this.model.totalRecords,
+                isViewForLine: this.viewForEachLineConfiguration.isActive
+            }, {
+                exportUrl: this.opts.exportUrl + '/' + this.exportId
+            }, _.pick(this.model, this.referenceNames), {isEdit: this.isEdit},this.additionalData())));
+
+            //Conditionnal code for rendering a line foreachView
+            if (this.viewForEachLineConfiguration.isActive) {
+                this.model.forEach(this.addOne, this);
+            }
+
+            //render pagination
+            $(this.resultsPagination, this.$el).html(this.templatePagination(this.model.pageInfo())); //TODO : this.model.pageInfo() {currentPage: 0, firstPage: 0, totalPages: 10}
+
+            //If there is a detail id set in the view, render it inside.
+            if (this.detailId) {
+                this.renderDetail();
+            }
         }
         //,
         //triggerSaveModels: function triggerSaveModels() {
@@ -4417,25 +4625,29 @@ function program1(depth0,data) {
         module.exports = ListView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global Backbone, i18n, $, window*/
-"use strict";
-(function (NS) {
+/*global Backbone, i18n, window*/
+(function(NS) {
+    "use strict";
     // Filename: views/search-results-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     var ListView = isInBrowser ? NS.Views.ListView : require('./list-view');
-
+    //var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
+    var templateNoResults = isInBrowser ? NS.templates.noResults : function() {};
     var SearchResultsView = ListView.extend({
+        templateNoResults: templateNoResults,
+        //Trigger a fetch for the consultation 
         fetchDemand: function fetchDemandResultView() {
             this.trigger('results:fetchDemand');
         },
+        //Function call when there is no result.
         renderEmptyList: function renderEmptySearchResults() {
             //Is recherche launched.
-            this.$el.html(i18n.t('search.noResult')); //todo: call a template
-            Backbone.Notification.addNotification({
+            this.$el.html(this.templateNoResults({message: i18n.t('search.noResult')}));
+            /*backboneNotification.addNotification({
                 type: 'info',
                 message: i18n.t('search.noResult')
-            }, true);
+            }, true);*/
         }
     });
 
@@ -4458,6 +4670,8 @@ function program1(depth0,data) {
 	var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
 	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
 	var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
+	var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+	var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
 
 	var SearchView = CoreView.extend({
 		tagName: 'div',
@@ -4468,9 +4682,9 @@ function program1(depth0,data) {
 		resultsSelector: 'div#results',
 		isMoreCriteria: false,
 		initialize: function initializeSearch(options) {
-		    options = options || {};
-            // Call the initialize function of the core view.
-		    CoreView.prototype.initialize.call(this, options);
+			options = options || {};
+			// Call the initialize function of the core view.
+			CoreView.prototype.initialize.call(this, options);
 			this.isSearchTriggered = options.isSearchTriggered || false;
 			this.isReadOnly = options.isReadOnly || false;
 			this.model.set({
@@ -4481,32 +4695,47 @@ function program1(depth0,data) {
 
 			//init results collection
 			this.searchResults = new this.Results();
-			//handle the clear criteria action
-			this.listenTo(this.model, 'change', this.render);
 			//initialization of the result view 
 			this.searchResultsView = new this.ResultsView({
 				model: this.searchResults,
 				criteria: this.model
 			});
+			//handle the clear criteria action
+			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.searchResultsView, 'results:fetchDemand', function() {
 				this.runSearch(null, {
 					isFormBinded: false
 				});
 			});
-			this.listenTo(this.searchResultsView, 'listview:lineSelected', function () {
-			    $('.collapse', this.$el).collapse('hide');
+			this.listenTo(this.searchResultsView, 'listview:lineSelected', function() {
+				$('.collapse', this.$el).collapse('hide');
 			});
-			if (this.isSearchTriggered) {
-				this.runSearch(null, {
-					isFormBinded: false
-				});
-			}
+			var currentView = this;
+			this.getSessionCriteria().then(function(crit) {
+				//Restore the criteria if save into the session.
+				if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
+					currentView.model.set(crit.criteria, {silent: false});
+					currentView.searchResults.setPageInfo(crit.pageInfo);
+					currentView.isSearchTriggered = true;
+				}
+				//If the serach has to be triggered, trigger it.
+				if (currentView.isSearchTriggered) {
+					currentView.runSearch(null, {
+						isFormBinded: false
+					});
+				}
+			}, function(error) {
+				errorHelper.manageResponseErrors(error);
+			});
+
+
+
 		},
 
 		events: {
 			"submit form": 'runSearch', // Launch the search.
-			"click button#btnReset": 'clearSearchCriteria', // Reset all the criteria.
-			"click button#btnEditCriteria": 'editCriteria', //Deal with the edit mode.
+			"click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
+			"click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
 			"click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
 			"click .panel-heading": "toogleCollapse"
 		},
@@ -4520,7 +4749,7 @@ function program1(depth0,data) {
 		},
 		//get the JSON to attach to the template
 		getRenderData: function getRenderDataSearch() {
-		    return this.model.toJSON();
+			return this.model.toJSON();
 		},
 
 		editCriteria: function editCriteria() {
@@ -4540,40 +4769,52 @@ function program1(depth0,data) {
 		},
 
 		runSearch: function runSearchSearchView(event, options) {
-		    var searchButton;
+			var searchButton;
 			if (event !== undefined && event !== null) {
-			    event.preventDefault();
-			    searchButton = $("button[type=submit]", event.target); // retrieving the button that triggered the search
+				event.preventDefault();
+				searchButton = $("button[type=submit]", event.target); // retrieving the button that triggered the search
 			}
 			options = options || {};
-			var isFormBinded = options.isFormBinded || true;
+			var isFormBinded = options.isFormBinded === undefined ?  true : options.isFormBinded;
 			//bind form fields on model
 			if (isFormBinded) {
 				form_helper.formModelBinder({
-				    inputs: $('input', this.$el),
-                    options: $('select', this.$el)
+					inputs: $('input', this.$el),
+					options: $('select', this.$el)
 				}, this.model);
 			}
 			var currentView = this;
 			ModelValidator
 				.validate(this.model)
 				.then(function(model) {
-					currentView.model.unsetErrors({silent: false});
-					currentView.search(_.clone(_.omit(currentView.model.attributes, currentView.referenceNames)), currentView.searchResults.pageInfo())
+					currentView.model.unsetErrors({
+						silent: false
+					});
+					var criteria = _.clone(_.omit(currentView.model.attributes, currentView.referenceNames));
+					var pageInfo = currentView.searchResults.pageInfo();
+					currentView.search(criteria, pageInfo)
 						.then(function success(jsonResponse) {
-							return currentView.searchSuccess(jsonResponse);
+							//Save the criteria in session.
+							currentView.saveSessionCriteria({
+								criteria: criteria,
+								pageInfo: pageInfo
+							}).then(function(s) {
+								//console.log('criteria save in session', s);
+								backboneNotification.clearNotifications();
+								return currentView.searchSuccess(jsonResponse);
+							});
 						}).then(null, function error(errorResponse) {
 							currentView.searchError(errorResponse);
 						}).then(function resetButton() {
-						    if (searchButton) {
-						        searchButton.button('reset');
-						    }
+							if (searchButton) {
+								searchButton.button('reset');
+							}
 						});
 				}).then(null, function error(errors) {
-				    currentView.model.setErrors(errors);
-				    if (searchButton) {
-				        searchButton.button('reset');
-				    }
+					currentView.model.setErrors(errors);
+					if (searchButton) {
+						searchButton.button('reset');
+					}
 				});
 
 			if (this.isReadOnly) {
@@ -4598,8 +4839,8 @@ function program1(depth0,data) {
 			return this;
 		},
 		afterRender: function postRenderSearchView() {
-		    CoreView.prototype.afterRender.call(this);
-		    $('.collapse', this.$el).collapse('show');
+			CoreView.prototype.afterRender.call(this);
+			$('.collapse', this.$el).collapse('show');
 		}
 	});
 

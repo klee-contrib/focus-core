@@ -23,8 +23,9 @@
     modelName: undefined
     toJSON: ->
       jsonModel = super()
+      jsonModel.cid = @cid
       jsonModel.metadatas =  @metadatas
-      jsonModel.modelName =  @modelName or this.get('modelName')
+      jsonModel.modelName =  @modelName or @get('modelName')
       return jsonModel
       
     # Return a json to Save.
