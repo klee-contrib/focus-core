@@ -1,4 +1,4 @@
-/* name: spa-fmk , version: 0.0.2description: Simple framework for backbone applications.
+/* name: spa-fmk , version: 0.0.4description: Simple framework for backbone applications.*/
 /*global window*/
 (function initialization(container) {
   container.Fmk = {
@@ -123,10 +123,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"three-quarters\">\r\n    ";
+  buffer += "<div class='spinner-container'>\r\n       <div class='spinner'>\r\n          <div class=\"three-quarters\">\r\n            ";
   options = {hash:{},data:data};
   buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "application.loading", options) : helperMissing.call(depth0, "t", "application.loading", options)))
-    + "\r\n</div>";
+    + "\r\n          </div>\r\n       </div>\r\n   </div>";
   return buffer;
   });;
 (function() {
@@ -1052,6 +1052,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       Model.prototype.toJSON = function() {
         var jsonModel;
         jsonModel = Model.__super__.toJSON.call(this);
+        jsonModel.cid = this.cid;
         jsonModel.metadatas = this.metadatas;
         jsonModel.modelName = this.modelName || this.get('modelName');
         return jsonModel;
@@ -1556,6 +1557,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         });
     };
 
+    // Returns a promise that is automatically rejected with an error message.
+    var promiseRejectWithMessage = function promiseRejectWithMessage(messageKey) {
+        return new Promise(function (resolve, reject) {
+            reject({
+                responseJSON: {
+                    "error": messageKey
+                }
+            });
+        });
+    };
+
     //Util helper.
     var utilHelper = {
         flatten: JSON.flatten,
@@ -1569,7 +1581,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         isBackboneModel: isBackboneModel,
         isBackboneCollection: isBackboneCollection,
         isBackboneView: isBackboneView,
-        promiseAjax: promiseAjax
+        promiseAjax: promiseAjax,
+        promiseRejectWithMessage: promiseRejectWithMessage
     };
     if (isInBrowser) {
         NS.Helpers = NS.Helpers || {};
@@ -2046,6 +2059,31 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = headerHelper;
     }
 
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+﻿/* global  _ , window, Promise */
+(function (NS) {
+    "use strict";
+    //Filename: helpers/message_helper.js
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+
+    var confirm = function messageHelperConfirm(messageKey) {
+        if (isInBrowser) {
+            // TODO : implement another confirm method (currently we are using native javascript confirm function)
+            return window.confirm(i18n.t(messageKey));
+        }
+        return false;
+    };
+
+    //Message helper.
+    var messageHelper = {
+        confirm: confirm
+    };
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.messageHelper = messageHelper;
+    } else {
+        module.exports = messageHelper;
+    }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function() {
   "use strict";
@@ -3148,7 +3186,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, _, window, Promise, $ */
 "use strict";
-(function (NS) {
+(function(NS) {
     //Filename: views/core-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -3159,11 +3197,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     var Model = isInBrowser ? NS.Models.Model : require("../models/model");
     var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
     var sessionHelper = isInBrowser ? NS.Helpers.sessionHelper : require('../helpers/session_helper');
-    
+    var templateSpinner = isInBrowser ? NS.templates.spinner : function() {
+            "Template spinner to define..."
+        };
     //View which is the default view for each view.
     //This view is able to deal with errors and to render the default json moodel.
     var CoreView = Backbone.View.extend({
-        toogleIsHidden: function (options) {
+        toogleIsHidden: function(options) {
             this.isHidden = !this.isHidden;
             this.render(options);
         },
@@ -3173,7 +3213,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         //Options define by default for the view.
         defaultOptions: {
-            isElementRedefinition: false //This options is use in order to not have a tag container generated by Backbone arround the view.
+            isElementRedefinition: false, //This options is use in order to not have a tag container generated by Backbone arround the view.
+            isReadyReferences: true
         },
         //Options overriden By the instanciate view.
         customOptions: {},
@@ -3195,33 +3236,46 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             /*Register after renger.*/
             _.bindAll(this, 'render', 'afterRender');
             var _this = this;
-            this.render = _.wrap(this.render, function (render, options) {
-                render(options);
-                _this.afterRender();
+            this.render = _.wrap(this.render, function(render, options) {
+                //If the view is ready perform the standard render.
+                if (_this.isReady()) {
+                    render(options);
+                    _this.afterRender();
+                } else {
+                    //Else render the spinner.
+                    this.renderSpinner();
+                }
                 return _this;
             });
 
             //Load all the references lists which are defined in referenceNames.
             var currentView = this;
-            Promise.all(RefHelper.loadMany(this.referenceNames)).then(function (results) {
-                //console.log('resultsreferenceNames', results);
-                var res = {}; //Container for all the results.
-                for (var i = 0, l = results.length; i < l; i++) {
-                    res[currentView.referenceNames[i]] = results[i];
-                    //The results are save into an object with a name for each reference list.
-                }
-                if (UtilHelper.isBackboneCollection(currentView.model)) {
-                    _.extend(currentView.model, res); // Add the references as properties of the object without using set which erases the collection.
-                    currentView.model.reset(); // Reset the collection to trigger a render.
-                } else {
-                    currentView.model.set(res); //This trigger a render due to model change.
-                }
-                currentView.isReady = true; //Inform the view that we are ready to render well.
-            }).then(null, function (error) {
-                ErrorHelper.manageResponseErrors(error, {
-                    isDisplay: true
+            if (_.isArray(this.referenceNames) && this.referenceNames.length > 0) {
+                this.opts.isReadyReferences = false;
+                Promise.all(RefHelper.loadMany(this.referenceNames)).then(function(results) {
+                    currentView.opts.isReadyReferences = true;
+                    //console.log('resultsreferenceNames', results);
+                    var res = {}; //Container for all the results.
+                    for (var i = 0, l = results.length; i < l; i++) {
+                        res[currentView.referenceNames[i]] = results[i];
+                        //The results are save into an object with a name for each reference list.
+                    }
+                    if (UtilHelper.isBackboneCollection(currentView.model)) {
+                        _.extend(currentView.model, res); // Add the references as properties of the object without using set which erases the collection.
+                        currentView.model.trigger('change'); // Reset the collection to trigger a render.
+                    } else {
+                        currentView.model.set(res); //This trigger a render due to model change.
+                    }
+                    //Inform the view that we are ready to render well.
+                }).then(null, function(error) {
+                    currentView.opts.isReadyReferences = true;
+                    currentview.render();
+                    ErrorHelper.manageResponseErrors(error, {
+                        isDisplay: true
+                    });
                 });
-            });
+            }
+
         },
 
         //Initialize the model of the view.
@@ -3240,7 +3294,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         template: function emptyTemplate(json) {
             console.log("templateData", json);
             return "<p>Your template has to be implemented.</p>";
-        }, // Example: require('./templates/coreView')
+        }, // Example: require('./templates/coreView'),
+        templateSpinner: templateSpinner,
         //Defaults events.
         events: {
             "focus input": "inputFocus", //Deal with the focus in the field.
@@ -3280,7 +3335,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Render function  by default call the getRenderData and inject it into the view dom element.
         render: function renderCoreView() {
+            //If the view is not ready.
             this.$el.html(this.template(this.getRenderData()));
+
             //_.defer(this.afterRender, this);
             return this;
         },
@@ -3295,16 +3352,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             });
         },
         //Get the criteria from the session storage if exists.
-        getSessionCriteria: function getCriteria(){
+        getSessionCriteria: function getCriteria() {
             return sessionHelper.getItem(window.location.hash);
         },
         //Save the criteria in the session storage.
-        saveSessionCriteria: function saveSessionCriteria(criteria){
+        saveSessionCriteria: function saveSessionCriteria(criteria) {
             return sessionHelper.saveItem(window.location.hash, criteria);
         },
         //Call the history back.
-        back: function back(){
+        back: function back() {
             Backbone.history.history.back();
+        },
+        //Function which tells if the view is ready to be display.
+        isReady: function isReady() {
+            return this.opts.isReadyReferences === true;
+        },
+        //renderSpinner
+        renderSpinner: function renderSpinner() {
+            this.$el.html(this.templateSpinner(this.getRenderData()));
+            return this;
         }
     });
 
@@ -3321,13 +3387,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 // var CoreView = require('./views/core-view');
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
 //```
-﻿/*global window, Backbone, $, i18n*/
-(function (NS) {
+﻿/*global window, Backbone, $, i18n, _*/
+(function(NS) {
     "use strict";
     //Filename: views/consult-edit-view.js
     NS = NS || {};
+    
+    //Dependencies.
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
     var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
     var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
@@ -3363,20 +3430,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         templateConsult: undefined,
 
         //Additional data to pass to the template.
-        additionalData: function () {
+        additionalData: function() {
             return undefined;
         },
 
         //Default options for the view.
-        defaultOptions: {
+        defaultOptions: _.extend({}, CoreView.prototype.defaultOptions,{
             isModelToLoad: true, //By default the model is loaded.
             isEditMode: true,
             isNavigationOnSave: true,
             isNavigationOnDelete: true,
             isSaveOnServer: true,
             collectionSelector: "tbody tr",
-            isForceReload: false
-        },
+            isForceReload: false,
+            isReadyModelData: true
+        }),
 
         //Initialize function
         initialize: function initializeConsultEdit(options) {
@@ -3390,15 +3458,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
             // In order to be loaded a model has to have an id and the options must be activated.
             if (this.opts.isModelToLoad && typeof this.model.has === "function" && this.model.has('id')) {
+                this.opts.isReadyModelData = false;
                 //Try to load the model from a service which have to return a promise.
-                this.loadModelData()
+                this.loadModelData();
             }
         },
-
+        //This function is use in order to retrieve the data from the api using a service.
         loadModelData: function loadModelData() {
             var view = this;
             this.getModelSvc(this.model.get('id'))
                 .then(function success(jsonModel) {
+                    view.opts.isReadyModelData = true;
                     view.model.set(jsonModel);
                 }).then(null, function error(errorResponse) {
                     ErrorHelper.manageResponseErrors(errorResponse, {
@@ -3471,14 +3541,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //Call the form helper in order to rebuild the collection from the form.
             form_helper.formCollectionBinder(
                 $(this.opts.collectionSelector, this.$el),
-                this.model, { isSilent: false }
+                this.model, {
+                    isSilent: false
+                }
             );
             //Bind the this to the current view for the
             var currentView = this;
             ModelValidator.validateAll(currentView.model)
                 .then(function successValidation() {
                     //When the model is valid, unset errors.
-                    currentView.model.forEach(function (mdl) {
+                    currentView.model.forEach(function(mdl) {
                         mdl.unsetErrors();
                     }, currentView);
                     if (currentView.opts.isSaveOnServer) {
@@ -3555,13 +3627,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 Backbone.history.navigate(this.generateNavigationUrl(), true);
             } else {
                 // If there is no navigation on save, trigger a change event.
-                if(this.opts.isForceReload === true){
+                if (this.opts.isForceReload === true) {
                     var thisUrl = this.generateReloadUrl(jsonModel);
                     if (!Backbone.history.navigate(thisUrl, true)) {
                         Backbone.history.loadUrl(thisUrl);
                     }
-                }
-                else if (jsonModel instanceof Object) {
+                } else if (jsonModel instanceof Object) {
                     //Render the success notification.
                     backboneNotification.renderNotifications();
                     //Reset the model or the collection.
@@ -3575,7 +3646,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     this.loadModelData();
                     this.toggleEditMode();
                 }
-                
+
             }
         },
         //Cancel the edition.
@@ -3583,7 +3654,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.toggleEditMode();
         },
         //Url to generate when you want to reload the page, if the option isForceReload is activated.
-        generateReloadUrl: function generateReloadUrl(param){
+        generateReloadUrl: function generateReloadUrl(param) {
             throw new NotImplementedException('generateReloadUrl', this);
         },
         //Url for the newt page after success if the option isNavigateOnSave is activated.
@@ -3633,13 +3704,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Render function.
         render: function renderConsultEditView() {
             //todo: see if a getRenderData different from each mode is necessary or it coul be deal inside the getRenderDatatFunction if needed.
-            var templateName = this.isEdit ? 'templateEdit' : 'templateConsult';
-            if (this.opts.isElementRedefinition) {
-                this.setElement(this[templateName](this.getRenderData()));
-            } else {
-                this.$el.html(this[templateName](this.getRenderData()));
-            }
-
+                var templateName = this.isEdit ? 'templateEdit' : 'templateConsult';
+                if (this.opts.isElementRedefinition) {
+                    this.setElement(this[templateName](this.getRenderData()));
+                } else {
+                    this.$el.html(this[templateName](this.getRenderData()));
+                }
+            
             //if (this.isEdit) {
             //    this.$el.html(this.templateEdit(this.getRenderData()));
             //} else {
@@ -3648,7 +3719,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
             return this;
         },
-
+        //Inform if the view is ready to be displayed.
+        isReady: function isReadyConsultEditView() {
+            return this.opts.isReadyModelData === true && CoreView.prototype.isReady.call(this) === true;
+        },
         //Function which is called after the render, usally necessary for jQuery plugins.
         afterRender: function postRenderDetailView() {
             CoreView.prototype.afterRender.call(this);
@@ -4254,7 +4328,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     template: template,
     //Default name of the container for the header.
     defaultContainerName: ".header",
-    
+    //Example of definition of a different view for a header level:
+    // Inside the ViewForLevel => Add a property with levelName_[index] and a reference to the view you want.
+    ViewForLevel:{
+      "level_0": undefined,
+      "level_1": undefined,
+      "level_2": undefined,
+      "level_3": undefined
+    },
+    HeaderItemsView: HeaderItemsView,
     //Initialize the header view.
     initialize: function initializeHeaderView(options) {
       options = options || {};
@@ -4298,7 +4380,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       //Create new views
       var index = 0;
       for (var prop in grouped) {
-        this[this.levelName + index] = new HeaderItemsView({
+        var levelName = this.levelName + index;
+        //Wich view for the view level.
+        var HeaderItemsViewOfLevel = this.ViewForLevel[levelName] || this.HeaderItemsView;
+        this[levelName] = new HeaderItemsViewOfLevel({
           model: new HeaderItems(_.values(grouped[prop]))
         });
         index++;
@@ -4347,13 +4432,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         resultsPagination: 'div#pagination',
         templatePagination: templatePagination,
         search: undefined,
+        //By default the search criteria is empty.
         searchCriteria: {},
+        //Get the 
         getCriteria: function getCriteria() {
             return _.extend({}, this.searchCriteria, this.opts.searchCriteria);
         },
+        //Default options of the list view.
         defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
-            exportUrl: './Export/Index' //Change it if necessary.
+            exportUrl: './Export/Index', //Change it if necessary.,
+            isReadyModelData : true
         }),
+        //Dervice to define in order to launch the export.
         exportSvc: undefined,
         //Url for the export.
         export: function exportCollection(event) {
@@ -4403,6 +4493,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.listenTo(this.model, "add", this.addOne, this);
             var currentView = this;
             if (this.opts.isModelToLoad) {
+                this.opts.isReadyModelData = false;
                 this.getSessionCriteria().then(function (crit) {
                     //Restore the criteria if save into the session.
                     if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
@@ -4425,10 +4516,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 // Fusion des critères venant du rooter (options.searchCriteria) et de la vue (this.getCriteria()).
                 var criteria = {};
                 _.extend(criteria, this.getCriteria(), options.searchCriteria);
-
+                this.opts.isReadyModelData = false;
                 var currentView = this;
                 //Call the service and inject the result into the model.
                 this.search(criteria, this.model.pageInfo()).then(function success(jsonResponse) {
+                    currentView.opts.isReadyModelData = true;
                     currentView.model.setTotalRecords(jsonResponse.totalRecords);
                     currentView.model.reset(jsonResponse.values);
                     //Save the criteria and the pagInfo info the session.
@@ -4436,6 +4528,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         console.log('criteria save in session', s);
                     });
                 }).then(null, function error(errorResponse) {
+                    currentView.opts.isReadyModelData = true;
+                    currentView.render();
                     errorHelper.manageResponseErrors(errorResponse, {
                         isDisplay: true
                     });
@@ -4548,6 +4642,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (this.isEdit) {
                 opt.isEdit = this.isEdit;
             }
+            //Copy the references to the child.
+            model.set(_.pick(this, this.referenceNames) , {silent: true});
+            //
             $(this.viewForEachLineConfiguration.parentContainer, this.$el).append(
                 new this.viewForEachLineConfiguration.LineView(_.extend({
                     model: model
@@ -4625,29 +4722,49 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = ListView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global Backbone, i18n, window*/
+/*global  i18n, _, window*/
 (function(NS) {
     "use strict";
     // Filename: views/search-results-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    
+    //Dependencies.
     var ListView = isInBrowser ? NS.Views.ListView : require('./list-view');
-    //var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
     var templateNoResults = isInBrowser ? NS.templates.noResults : function() {};
+    
+    //View to use in order to display search results.
     var SearchResultsView = ListView.extend({
+        
+        //Defaults options of the searchresults view.
+        defaultOptions: _.extend({}, ListView.prototype.defaultOptions, {
+            isModelToLoad: false,
+            isReadyResultsData: true
+        }),
+        
+        //Template use in order to display the fact that there is no results.
         templateNoResults: templateNoResults,
+        
         //Trigger a fetch for the consultation 
         fetchDemand: function fetchDemandResultView() {
             this.trigger('results:fetchDemand');
         },
+        
         //Function call when there is no result.
         renderEmptyList: function renderEmptySearchResults() {
             //Is recherche launched.
-            this.$el.html(this.templateNoResults({message: i18n.t('search.noResult')}));
+            this.$el.html(this.templateNoResults({
+                message: i18n.t('search.noResult')
+            }));
             /*backboneNotification.addNotification({
                 type: 'info',
                 message: i18n.t('search.noResult')
             }, true);*/
+        },
+        
+        //Indicate if the function is ready to be displayed. If not the spinner is display.
+        isReady : function readySearchResults(){
+            return this.opts.isReadyResultsData === true && ListView.prototype.isReady.call(this);
         }
     });
 
@@ -4763,6 +4880,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			this.searchResults.reset(jsonResponse.values);
 		},
 		searchError: function searchError(response) {
+			this.searchResults.reset([]);
 			ErrorHelper.manageResponseErrors(response, {
 				isDisplay: true
 			});
@@ -4783,6 +4901,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 					options: $('select', this.$el)
 				}, this.model);
 			}
+			//Render loading inside the search results:
+			this.searchResultsView.opts.isReadyResultsData = false;
+      this.searchResultsView.render();
 			var currentView = this;
 			ModelValidator
 				.validate(this.model)
@@ -4795,6 +4916,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 					currentView.search(criteria, pageInfo)
 						.then(function success(jsonResponse) {
 							//Save the criteria in session.
+							currentView.searchResultsView.opts.isReadyResultsData = true;
 							currentView.saveSessionCriteria({
 								criteria: criteria,
 								pageInfo: pageInfo
@@ -4804,6 +4926,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 								return currentView.searchSuccess(jsonResponse);
 							});
 						}).then(null, function error(errorResponse) {
+							currentView.searchResultsView.opts.isReadyResultsData = true;
 							currentView.searchError(errorResponse);
 						}).then(function resetButton() {
 							if (searchButton) {

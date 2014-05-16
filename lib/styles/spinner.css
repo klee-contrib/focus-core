@@ -1,4 +1,19 @@
-@-webkit-keyframes app-spinner {
+/*Spinner container*/
+.spinner{
+  /*display: table-cell;*/
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  vertical-align: middle;
+}
+.spinner-container{
+  position:relative;
+  height: 350px;
+}
+
+/*Spinner css [source](http://css-spinners.com/#/spinner/three-quarters/)*/
+@-webkit-keyframes three-quarters {
   0% {
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -16,7 +31,7 @@
   }
 }
 
-@-moz-keyframes app-spinner {
+@-moz-keyframes three-quarters {
   0% {
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -34,7 +49,7 @@
   }
 }
 
-@-o-keyframes app-spinner {
+@-o-keyframes three-quarters {
   0% {
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -52,7 +67,7 @@
   }
 }
 
-@keyframes app-spinner {
+@keyframes three-quarters {
   0% {
     -webkit-transform: rotate(0deg);
     -moz-transform: rotate(0deg);
@@ -71,18 +86,18 @@
 }
 
 /* Styles for old versions of IE */
-.app-spinner {
+.three-quarters {
   font-family: sans-serif;
   font-weight: 100;
 }
 
 /* :not(:required) hides this rule from IE9 and below */
-.app-spinner:not(:required) {
-  -webkit-animation: app-spinner 1250ms infinite linear;
-  -moz-animation: app-spinner 1250ms infinite linear;
-  -ms-animation: app-spinner 1250ms infinite linear;
-  -o-animation: app-spinner 1250ms infinite linear;
-  animation: app-spinner 1250ms infinite linear;
+.three-quarters:not(:required) {
+  -webkit-animation: three-quarters 1250ms infinite linear;
+  -moz-animation: three-quarters 1250ms infinite linear;
+  -ms-animation: three-quarters 1250ms infinite linear;
+  -o-animation: three-quarters 1250ms infinite linear;
+  animation: three-quarters 1250ms infinite linear;
   border: 8px solid #3388ee;
   border-right-color: transparent;
   border-radius: 16px;
