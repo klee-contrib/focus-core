@@ -218,6 +218,129 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 }).call(this);
 
+//Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
+/* global window, Promise, Backbone, i18n*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/router.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+  
+  //Config of the storage.
+  var config = {
+    description: 'Session storage of the user.',
+    name: 'Session helper.',
+    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
+    // we can use without a prompt.
+    size: 4980736,
+    storeName: 'userSession',
+    version: 1.0
+  };
+
+  //Container for the storage.
+  var storage;
+  try {
+    // Initialize storage with session storage and create a variable to use it.
+    storage = window.sessionStorage;
+  } catch (e) {
+    throw new Error("Your browser does not seem to have session storage.");
+  }
+
+  //Serialize the data to be save.
+  function _serialize(data) {
+    if (data !== null && data !== undefined) {
+      return JSON.stringify(data);
+    }
+    return undefined;
+  }
+
+  //Deserialize the data.
+  function _deserialize(data) {
+    if (typeof data !== "string") {
+      throw new ArgumentInvalidException('The data to deserialize must be a string.', data);
+    }
+    return JSON.parse(data);
+  }
+
+  //Dave the data into the storage and return a promise.
+  // The Promise is fullfilled only if there is data to save.
+  function saveItem(key, data) {
+    return new Promise(function(resolve, reject) {
+      if (data === null || data === undefined) {
+        reject(new ArgumentInvalidException('The data to save must be define.', data));
+      } else {
+        storage.setItem(key, _serialize(data));
+        resolve({
+          key: key,
+          data: data
+        });
+      }
+    });
+  }
+
+  //Get data with a promise.
+  // The Promise is fullfilled only if the item exists.
+  function getItem(key) {
+    return new Promise(function(resolve, reject) {
+      if (typeof key !== "string") {
+        reject(new ArgumentInvalidException("The key must be a string", key));
+      }
+      var stringData = storage.getItem(key);
+      if (stringData === null || stringData === undefined) {
+        resolve(null);
+      } else {
+        resolve(_deserialize(stringData));
+      }
+    });
+  }
+
+  //Remove an item from the session and return a promise.
+  // The Promise is fullfilled only if the item exists.
+  function removeItem(key) {
+    return new Promise(function(resolve, reject) {
+      if (typeof key !== "string") {
+        reject(new ArgumentInvalidException("The key must be a string", key));
+      }
+      var stringData = storage.getItem(key);
+      if (stringData === null || stringData === undefined) {
+        reject(null);
+      }else {
+        storage.removeItem(key);
+        resolve(key);
+      }
+    });
+  }
+
+  //Promise of clearing the storage.
+  //Promise is fullfilled only if it works.
+  function clear() {
+    return new Promise(function(resolve, reject) {
+      try {
+        storage.clear();
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  var sessionHelper = {
+    clear: clear,
+    saveItem: saveItem,
+    getItem: getItem,
+    removeItem: removeItem
+  };
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.sessionHelper = sessionHelper;
+  } else {
+    module.exports = sessionHelper;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global i18n, _, window*/
 (function(NS) {
   "use strict";
@@ -225,7 +348,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var t = i18n.t || function(s){return s;};
   var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
-  //var siteDescriptionHelper = isInBrowser ? NS.Helpers.siteDescriptionHelper : require("./site_description_helper");
+  var sessionHelper = isInBrowser ? NS.Helpers.sessionHelper : require("./session_helper");
+    //var siteDescriptionHelper = isInBrowser ? NS.Helpers.siteDescriptionHelper : require("./site_description_helper");
   //Setting the default user configuration.
   var userConfiguration = {
     cultureCode: "en-US", //Culture code.
@@ -261,8 +385,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   // Load the users informations from a promise which is given in arguments.
   var loadUserInformations = function loadUserInformations(promiseOfLoading) {
-    return promiseOfLoading.then(function successLoading(loadedConfiguration) {
-      configureUserInformations(loadedConfiguration);
+      return promiseOfLoading.then(function successLoading(loadedConfiguration) {
+        configureUserInformations(loadedConfiguration);
     });
   };
 
@@ -280,12 +404,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     return _.intersection(userConfiguration.roles, roles).length > 0;
   };
 
+  //Change the culture informations.
+  var changeCultureInfos = function changeCultureInfos(cultureInfos) {
+      sessionHelper.getItem('cultureInformations').then(function (cultureInformations) {
+          if (cultureInformations === null || cultureInformations === undefined || cultureInformations.cultureCode !== cultureInfos.cultureCode) {
+              sessionHelper.saveItem('cultureInformations', _.extend(cultureInformations !== null && cultureInformations !== undefined ? cultureInformations : {}, cultureInfos)).then(function (success) {
+                  window.location.reload();
+              });
+          }
+      }).then(null, function (err) { console.error(err) });
+  };
+
   var userHelper = {
     loadUserInformations: loadUserInformations,
     getUserInformations: getUserInformations,
     configureUserInformations: configureUserInformations,
     hasRole: hasRole,
-    hasOneRole: hasOneRole
+    hasOneRole: hasOneRole,
+    changeCultureInfos: changeCultureInfos
   };
   // Differenciating export for node or browser.
   if (isInBrowser) {
@@ -675,7 +811,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	function numberValidation(numberToValidate, options) {
 		options = options || options;
 		numberToValidate = '' + numberToValidate; //Cast it into a number.
-		return regex.number.test(numberToValidate);
+		var isNumber = regex.number.test(numberToValidate);
+		if (!isNumber) {
+		    return false;
+		}
+		var isMin = options.min ? numberToValidate > options.min : true;
+		var isMax = options.max ? numberToValidate < options.max : true;
+		return isMin && isMax;
 	}
 
 	//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
@@ -1348,7 +1490,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       if (!$.fn[helper.fn]) {
           throw new DependencyException("registerHelper, helper.fn: "+ helper.fn +" must be a registered JQuery plugin in $.fn");
       }
-      postRenderingHelpers[helper.name] = {fn: helper.fn, options: helper.options};
+      postRenderingHelpers[helper.name] = {fn: helper.fn, options: helper.options, parseArgument: helper.parseArgument};
   };
   //Options must have a selector property and a helperName one.
   var callHelper = function callHelper(config) {
@@ -1373,9 +1515,27 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     config.selector[postRenderingHelpers[config.helperName].fn](postRenderingOptions);
     //config.selector[config.helperName](options);
   };
+
+  //Call the parser plugin
+  var callParser = function callParser(config){
+    //If there is nothing selected.
+    if(config.selector === undefined || config.selector.size() === 0){
+      return;
+    }
+    if (typeof config.helperName !== "string") {
+        throw new ArgumentInvalidException("callHelper, config.helperName must be a string, check your in your domain file any the decorator property", config);
+    }
+    //If the function  desn not exist on the selection.
+    if(config.selector[postRenderingHelpers[config.helperName].fn] === undefined){
+      return;
+    }
+    var helper = postRenderingHelpers[config.helperName];
+    return config.selector[helper.fn](helper.parseArgument);
+  };
   var mdl = {
     registerHelper: registerHelper,
-    callHelper: callHelper
+    callHelper: callHelper,
+    callParser:callParser
   };
     // Differenciating export for node or browser.
   if (isInBrowser) {
@@ -1788,11 +1948,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global window, $, Backbone*/
 "use strict";
-(function (NS) {
+(function(NS) {
     //Filename: helpers/form_helper.js
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     NS = NS || {};
-
+    var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require("./post_rendering_helper");
     // ## Helper pour l'ensemble des formulaires.
     //
     var _formCollectionBinder = function forCollectionBinder(selector, collection, options) {
@@ -1801,12 +1961,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (selector !== undefined && selector !== null && collection instanceof Backbone.Collection) {
             //collection.reset(null, {silent: true}); // The collection is cleared.
             var index = 0;
-            Array.prototype.forEach.call(selector, function (modelLineSelector) {
+            Array.prototype.forEach.call(selector, function(modelLineSelector) {
                 //var model = new collection.model();
-                this.formModelBinder(
-                        { inputs: $('input', modelLineSelector), options: $('select', modelLineSelector) },
-                        collection.at(index), //Model to populate.
-                        options
+                this.formModelBinder({
+                        inputs: $('input', modelLineSelector),
+                        options: $('select', modelLineSelector)
+                    },
+                    collection.at(index), //Model to populate.
+                    options
                 );
                 //collection.add(model,options);
                 index++;
@@ -1842,29 +2004,37 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             throw ("the model is not defined");
         }
         var modelContainer = {};
-        inputs.each(function () {
+        inputs.each(function() {
             var input = this;
             //console.log('input', input);
             var currentvalue;
             //we switch on all html5 values
-            switch (input.getAttribute('type')) {
-                case "checkbox":
-                    currentvalue = input.multiple ? input.value : input.checked;
-                    break;
-                case "number":
-                    var inputValue = input.value === "" ? undefined : input.value;
-                    currentvalue = (inputValue !== undefined && inputValue !== null) ? +inputValue : undefined;
-                    break;
-                case "radio":
-                    if (input.checked) {
-                        currentvalue = _parseRadioValue(input.value);
-                    } else {
-                        currentvalue = modelContainer[this.getAttribute('data-name')];
-                    }
-                    break;
-                default:
-                    currentvalue = input.value === "" ? undefined : input.value;
+            var decorator = input.getAttribute('data-decorator');
+            if (decorator) {
+                currentvalue = postRenderingHelper.callParser({selector: $(input), helperName: decorator});
+                 
+            } else {
+                switch (input.getAttribute('type')) {
+                    case "checkbox":
+                        currentvalue = input.multiple ? input.value : input.checked;
+                        break;
+                    case "number":
+                        var inputValue = input.value === "" ? undefined : input.value;
+                        currentvalue = (inputValue !== undefined && inputValue !== null) ? +inputValue : undefined;
+                        break;
+                    case "radio":
+                        if (input.checked) {
+                            currentvalue = _parseRadioValue(input.value);
+                        } else {
+                            currentvalue = modelContainer[this.getAttribute('data-name')];
+                        }
+                        break;
+                    default:
+                        currentvalue = input.value === "" ? undefined : input.value;
+                }
+
             }
+
 
             if (input.multiple) {
                 if (input.checked) {
@@ -1911,7 +2081,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         var selectedValue, modelContainer = {};
         //For each option we take the value selected. We had this value to the model, only if the user doesn't choose the empty string.
-        optionsSets.each(function () {
+        optionsSets.each(function() {
             var attributeName = this.getAttribute('data-name');
             //A multiple option will be define with select2
             if (this.hasAttribute('multiple')) {
@@ -2300,7 +2470,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
               return {};
             }
           } else {
-            if (this.metadatas[mdName[0]][mdName[1]] != null) {
+            if ((this.metadatas[mdName[0]] != null) && (this.metadatas[mdName[0]][mdName[1]] != null)) {
               return this.metadatas[mdName[0]][mdName[1]];
             } else {
               if (this.isLog) {
@@ -2991,129 +3161,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     NS.Helpers.Router = Router;
   } else {
     module.exports = Router;
-  }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-//Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
-/* global window, Promise, Backbone, i18n*/
-(function(NS) {
-  "use strict";
-  //Filename: helpers/router.js
-  NS = NS || {};
-  //Dependency gestion depending on the fact that we are in the browser or in node.
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
-  
-  //Config of the storage.
-  var config = {
-    description: 'Session storage of the user.',
-    name: 'Session helper.',
-    // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
-    // we can use without a prompt.
-    size: 4980736,
-    storeName: 'userSession',
-    version: 1.0
-  };
-
-  //Container for the storage.
-  var storage;
-  try {
-    // Initialize storage with session storage and create a variable to use it.
-    storage = window.sessionStorage;
-  } catch (e) {
-    throw new Error("Your browser does not seem to have session storage.");
-  }
-
-  //Serialize the data to be save.
-  function _serialize(data) {
-    if (data !== null && data !== undefined) {
-      return JSON.stringify(data);
-    }
-    return undefined;
-  }
-
-  //Deserialize the data.
-  function _deserialize(data) {
-    if (typeof data !== "string") {
-      throw new ArgumentInvalidException('The data to deserialize must be a string.', data);
-    }
-    return JSON.parse(data);
-  }
-
-  //Dave the data into the storage and return a promise.
-  // The Promise is fullfilled only if there is data to save.
-  function saveItem(key, data) {
-    return new Promise(function(resolve, reject) {
-      if (data === null || data === undefined) {
-        reject(new ArgumentInvalidException('The data to save must be define.', data));
-      } else {
-        storage.setItem(key, _serialize(data));
-        resolve({
-          key: key,
-          data: data
-        });
-      }
-    });
-  }
-
-  //Get data with a promise.
-  // The Promise is fullfilled only if the item exists.
-  function getItem(key) {
-    return new Promise(function(resolve, reject) {
-      if (typeof key !== "string") {
-        reject(new ArgumentInvalidException("The key must be a string", key));
-      }
-      var stringData = storage.getItem(key);
-      if (stringData === null || stringData === undefined) {
-        resolve(null);
-      } else {
-        resolve(_deserialize(stringData));
-      }
-    });
-  }
-
-  //Remove an item from the session and return a promise.
-  // The Promise is fullfilled only if the item exists.
-  function removeItem(key) {
-    return new Promise(function(resolve, reject) {
-      if (typeof key !== "string") {
-        reject(new ArgumentInvalidException("The key must be a string", key));
-      }
-      var stringData = storage.getItem(key);
-      if (stringData === null || stringData === undefined) {
-        reject(null);
-      }else {
-        storage.removeItem(key);
-        resolve(key);
-      }
-    });
-  }
-
-  //Promise of clearing the storage.
-  //Promise is fullfilled only if it works.
-  function clear() {
-    return new Promise(function(resolve, reject) {
-      try {
-        storage.clear();
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  var sessionHelper = {
-    clear: clear,
-    saveItem: saveItem,
-    getItem: getItem,
-    removeItem: removeItem
-  };
-
-  // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Helpers = NS.Helpers || {};
-    NS.Helpers.sessionHelper = sessionHelper;
-  } else {
-    module.exports = sessionHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global $, _ , window*/
@@ -3936,9 +3983,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             var compoView = this;
 
             var promisesContainer = [];
-
-            for (var i = 0, l = compoView.viewsConfiguration.length; i < l; i++) {
-                var vConf = compoView.viewsConfiguration[i];
+            //Function  to build promises from view configuration.
+            function buildPromisesFromViewConfiguration(vConf) {
                 if (vConf.type === "model") {
                     //Bind the model.
                     formHelper.formModelBinder({
@@ -3948,13 +3994,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     promisesContainer.push(
                         //A promise is created in order to be resolve by the promise.all.
                         //Otherwise, the promise returned by the validation is already resolve when the promise.all is treated.
-                        new Promise(function(resolve, failure) {
+                        new Promise(function (resolve, failure) {
                             ModelValidator.validate(compoView[vConf.name].model).then(
-                                function(success){
+                                function (success) {
                                     resolve(success);
                                 },
-                                function(errors) {
-                                    errorHelper.setModelErrors(compoView[vConf.name].model, errors);
+                                function (errors) {
+                                    errorHelper.setModelErrors(compoView[vConf.name].model, {fieldErrors: errors});
                                     failure(errors);
                                 }
                             );
@@ -3973,12 +4019,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     //Push promises inside the container.
                     promisesContainer.push(
                         //Same reason as for the model.
-                        new Promise(function(resolve, failure) {
+                        new Promise(function (resolve, failure) {
                             ModelValidator.validateAll(compoView[vConf.name].model).then(
-                                function(success) {
+                                function (success) {
                                     resolve(success);
                                 },
-                                function(errors) {
+                                function (errors) {
                                     errorHelper.setCollectionErrors(compoView[vConf.name].model, errors);
                                     failure(errors);
                                 }
@@ -3986,6 +4032,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         })
                     );
                 }
+            }
+            //Go through the whole conf.
+            for (var i = 0, l = compoView.viewsConfiguration.length; i < l; i++) {
+                var viewConf = compoView.viewsConfiguration[i];
+                buildPromisesFromViewConfiguration(viewConf);
             }
             //Resolve all validation promise inside the page.
             Promise.all(promisesContainer).then(function(success) {
@@ -3997,12 +4048,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         compoView.saveError(responseError);
                     }).then(compoView.resetSaveButton.bind(compoView));
             }, function(error) {
-                console.error(error);
+                //console.error(error);
                 compoView.resetSaveButton();
             });
 
 
         },
+        
+        //Cancel the edition.
         cancelEdition: function cancelEditionCompositeView() {
             // cancelEdit on composite = ToggleEdit on compositeView only + cancelEdit on each child view.
             ConsultEditView.prototype.toggleEditMode.apply(this);
@@ -4643,7 +4696,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 opt.isEdit = this.isEdit;
             }
             //Copy the references to the child.
-            model.set(_.pick(this, this.referenceNames) , {silent: true});
+            model.set(_.pick(this.model, this.referenceNames) , {silent: true});
             //
             $(this.viewForEachLineConfiguration.parentContainer, this.$el).append(
                 new this.viewForEachLineConfiguration.LineView(_.extend({

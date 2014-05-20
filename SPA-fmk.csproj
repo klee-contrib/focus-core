@@ -46,7 +46,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="gulpfile.js" />
+    <Content Include="gulpfile.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\helpers\backbone_notification.js" />
     <Content Include="lib\helpers\error_helper.js" />
     <Content Include="lib\helpers\form_helper.js" />
@@ -104,6 +106,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".jshintrc" />
+    <None Include="build.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="coffeelint.json" />
     <None Include="docs.sh" />
     <None Include="lib\config.coffee" />
@@ -148,8 +153,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>cd $(ProjectDir)
-npm run build</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

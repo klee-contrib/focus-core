@@ -124,7 +124,7 @@
               console.warn("The metadatas does not have properties for model '#{model.modelName}'.")
             return {}
         else
-          if @metadatas[mdName[0]][mdName[1]]?
+          if @metadatas[mdName[0]]? and @metadatas[mdName[0]][mdName[1]]?
             return @metadatas[mdName[0]][mdName[1]]
           else
             if @isLog

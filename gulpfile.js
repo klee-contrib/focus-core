@@ -45,7 +45,7 @@ gulp.task('css-build', function() {
 //Build all the javascripts file.
 gulp.task('browser-build', function() {
   //Build the js file for the browser.
-    gulp.src(['./lib/infos.js','./lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js','lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
+    gulp.src(['./lib/infos.js', './lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/session_helper.js', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js', 'lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
   .pipe(concat('fmk.js'))
     .pipe(gulp.dest('./dist/browser/'))
