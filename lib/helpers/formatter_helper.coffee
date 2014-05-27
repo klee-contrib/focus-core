@@ -7,8 +7,8 @@
   # Default confifuration of the formaters.
   format =
     currency: '0,0.00'
-    date: 'DD/MM/YYYY'
-    dateTime: 'DD/MM/YYYY HH:mm:ss'
+    date: 'L'
+    dateTime: 'LL'
     
   # Container for all the formaters.
   formaters = {}

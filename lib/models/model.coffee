@@ -11,6 +11,11 @@
       options = options or {}
       super options
       @modelName = options.modelName if options.modelName?
+      if (this.has('id') and this.get('id') is 'new')
+        this.unset('id', {silent: true})
+        this.set('isNewModel', true, {silent: true})
+      else
+        this.set('isNewModel', false, {silent: true})
     #Define a method in order to be able to quickly remove errors form the model.
     unsetErrors:(options) ->
       options = options or {}

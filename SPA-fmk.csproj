@@ -74,6 +74,7 @@
     <Content Include="lib\models\notification.js" />
     <Content Include="lib\models\notifications.js" />
     <Content Include="lib\models\paginatedCollection.js" />
+    <Content Include="lib\templates\templates.js" />
     <Content Include="lib\views\collection-pagination-view.js" />
     <Content Include="lib\views\composite-view.js" />
     <Content Include="lib\views\consult-edit-view.js" />
@@ -83,6 +84,7 @@
     <Content Include="lib\views\header-items-view.js" />
     <Content Include="lib\views\header-view.js" />
     <Content Include="lib\views\list-view.js" />
+    <Content Include="lib\views\modal-view.js" />
     <Content Include="lib\views\notifications-view.js" />
     <Content Include="lib\views\search-results-view.js" />
     <Content Include="lib\views\search-view.js" />
@@ -114,13 +116,16 @@
     <None Include="lib\config.coffee" />
     <None Include="lib\helpers\custom_exception.coffee" />
     <None Include="lib\helpers\formatter_helper.coffee" />
+    <None Include="lib\helpers\language_helper.coffee" />
     <None Include="lib\helpers\metadata_builder.coffee" />
     <None Include="lib\models\collection.coffee" />
     <None Include="lib\models\model.coffee" />
     <None Include="lib\templates\header.hbs" />
     <None Include="lib\templates\headerItems.hbs" />
+    <None Include="lib\templates\modalSkeleton.hbs" />
     <None Include="lib\templates\noResults.hbs" />
     <None Include="lib\templates\notifications.hbs" />
+    <None Include="lib\templates\spinner.hbs" />
     <None Include="package.json" />
     <None Include="test\initialize-globals.coffee" />
     <None Include="test\initialize.coffee" />
@@ -155,6 +160,10 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>cd $(ProjectDir)
+npm run build</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
