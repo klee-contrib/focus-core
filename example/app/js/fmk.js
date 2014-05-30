@@ -81,15 +81,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 
   buffer += "<!-- Modal -->\r\n<div class=\"modal fade\" data-modal  datatabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\r\n  <div class=\"modal-dialog\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\r\n        <h4 class=\"modal-title\" id=\"myModalLabel\">";
-  if (stack1 = helpers.modalTitle) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.modalTitle); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = (depth0 && depth0.title); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
   buffer += escapeExpression(stack1)
     + "</h4>\r\n      </div>\r\n      <div class=\"modal-body\" data-modal-content>\r\n      \r\n      </div>\r\n      <div class=\"modal-footer\">\r\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "modal.close", options) : helperMissing.call(depth0, "t", "modal.close", options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "button.modalClose", options) : helperMissing.call(depth0, "t", "button.modalClose", options)))
     + "</button>\r\n        <button type=\"button\" class=\"btn btn-primary\" data-close=\"modal\">";
   options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "modal.save", options) : helperMissing.call(depth0, "t", "modal.save", options)))
+  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "button.modalSave", options) : helperMissing.call(depth0, "t", "button.modalSave", options)))
     + "</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>";
   return buffer;
   });;
@@ -484,7 +484,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   };
 
   //param must be a {name: 'paramName', value: 'paramValue'} object.
-  var defineParam = function(param) {
+  var defineParam = function defineParamSiteDescriptionHelper(param) {
     if(param === undefined){
       throw new ArgumentNullException('You cannot set an undefined param.', param);
     }
@@ -498,6 +498,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     }
     siteDescriptionParams[param.name] = {
       value: param.value,
+      title: param.title,
       isDefine: true
     };
     isProcess = false;
@@ -645,7 +646,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           roles: siteDesc.roles,
           name: prefix,
           route: siteDesc.url,
-          regex: routeToRegExp(siteDesc.url)
+          regex: routeToRegExp(siteDesc.url),
+          requiredParams: siteDesc.requiredParams
         };
         //Call the Backbone.history.handlers....
         //console.log('*****************');
@@ -1143,8 +1145,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           isActive: true
         }, {silent: true});
         this.currentActiveName = newActive.get('name');
+        this.parentName = this.processParentName();
       }
       this.trigger("change");//Notify a change.
+    },
+    processParentName: function(){
+        if (this.currentActiveName === undefined) { return; }
+        var splitName = this.currentActiveName.split('.');
+        var res = '';
+        for(var i = 0, l = splitName.length -1 ; i < l ; i++ ){
+            res = res + splitName[i] + '.';
+        }if(res !== ''){
+            res = res.slice(0,-1);
+        }
+        return res;
     },
     //Define which part of the json is active.
     toActiveJSON: function toActiveJSON(){
@@ -2060,6 +2074,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     selector: $(input),
                     helperName: decorator
                 });
+                //Fixme: Trouver une meilleure solution.
+                if (decorator === "datePicker" && currentvalue !== undefined && currentvalue !== null) {
+                    if (currentvalue.toString() === 'Invalid Date') {
+                        currentvalue = undefined;
+                    } else {
+                        currentvalue = currentvalue.toISOString() //.format('yyyy-MM-ddThh:mm:ss');
+                    }
+                }
 
             } else { //See if an if on currentValue is nececessary.
                 switch (input.getAttribute('type')) {
@@ -3940,7 +3962,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Inform if the view is ready to be displayed.
         isReady: function isReadyConsultEditView() {
-            console.log('isReady', 'modelData', this.opts.isReadyModelData === true, 'ref', CoreView.prototype.isReady.call(this) === true, 'view', this.cid);
             return this.opts.isReadyModelData === true && CoreView.prototype.isReady.call(this) === true;
         },
         //Function which is called after the render, usally necessary for jQuery plugins.
@@ -4510,17 +4531,35 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var headerItemsView = Backbone.View.extend({
     
     //Default template.
-    template: template,
-
+      template: template,
+    //Options for the param.
+    paramOptions: {
+        selector: "div#titleContainer",
+        template: function(){console.warn('no template define for your param....')}
+    },
     //Initialize the header view.
     initialize: function initializeHeaderItemsView(options) {
       options = options || {};
+      //Define the level params.
+      if (options.levelParams !== undefined) {
+          this.levelParams = options.levelParams;
+      }
       this.listenTo(this.model, 'change', this.render);
     },
-    
+    ////Define the param for the Level.
+    //defineParam: function defineHeaderItemsViewParam(param) {
+    //    if (param === undefined || param === null) {
+    //        this.param = undefined;
+    //    }
+    //    this.param = param;
+    //},
     //Render all the headers items.
     render: function renderHeaderItems(){
-        this.$el.html(this.template({headerItems: this.model.toActiveJSON()}));
+        this.$el.html(this.template({ headerItems: this.model.toActiveJSON() }));
+        var parentName = this.model.processParentName();
+        if (this.levelParams !== undefined && parentName!== undefined && this.levelParams[parentName] !== undefined) {
+            $(this.paramOptions.selector, this.$el).html(this.paramOptions.template(this.levelParams[parentName]));
+        }
         return this;
     },
 
@@ -4549,6 +4588,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var util = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
   var HeaderItems = isInBrowser ? NS.Models.HeaderItems : require('../models/header-items');
   var HeaderItemsView = isInBrowser ? NS.Views.HeaderItemsView : require('./header-items-view');
+  var siteDescriptionHelper =  isInBrowser ? NS.Helpers.siteDescriptionHelper : require('../helpers/site_description_helper');
   var template = isInBrowser ? NS.templates.header : function(){};
   var headerView = Backbone.View.extend({
 
@@ -4559,6 +4599,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     defaultContainerName: ".header",
     //Example of definition of a different view for a header level:
     // Inside the ViewForLevel => Add a property with levelName_[index] and a reference to the view you want.
+    //Warning, this is insife the prototype, only one headerview per application.  
     ViewForLevel:{
       "level_0": undefined,
       "level_1": undefined,
@@ -4576,6 +4617,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       if (options.active) {
         this.processActive(options.active);
       }
+      //Contains all the params for the levels.
+      this.levelParams = {};
 
     },
 
@@ -4599,27 +4642,60 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     },
 
     //Process the site map.
-    processSite: function processSite(site) {
+    processSite: function processSiteHeaderView(site) {
       var grouped = util.groupBySplitChar(site);
       //Erase previous view.
       for (var i = 0; i < this.maxLevel; i++) {
         this[this.levelName + i].remove();
+        //Remove the level.
         delete this[this.levelName + i];//See if it is necessary.
+        //Remove the param inside the object.
+        delete this.levelParams[levelName];
       }
+      var allParams = siteDescriptionHelper.getParams();
       //Create new views
       var index = 0;
       for (var prop in grouped) {
-        var levelName = this.levelName + index;
+         var levelName = this.levelName + index;
+         var menuItms = _.values(grouped[prop]);
+         var levelParams = this.processLevelParams(menuItms, index, allParams);
         //Wich view for the view level.
         var HeaderItemsViewOfLevel = this.ViewForLevel[levelName] || this.HeaderItemsView;
         this[levelName] = new HeaderItemsViewOfLevel({
-          model: new HeaderItems(_.values(grouped[prop]))
+            model: new HeaderItems(menuItms),
+            levelParams: this.levelParams[levelName]
         });
         index++;
       }
       //define the max profoundness level.
       this.maxLevel = index;
       this.render();
+    },
+    //Process the level params for the next level.
+    processLevelParams: function (menuItemsArray, indexLevel, params) {
+        var itemsWithParams = _.filter(menuItemsArray, function (element) { return element.requiredParams !== undefined });
+        //If there is no element 
+        if (!_.isArray(itemsWithParams)) { return undefined; }
+
+        var processParams = {};
+        for (var i = 0, l = itemsWithParams.length; i < l; i++) {
+            var itemWithParams = itemsWithParams[i];
+            if (itemWithParams !== undefined && itemWithParams.name !== undefined && itemWithParams.requiredParams !== undefined && _.isArray(itemWithParams.requiredParams)) {
+                var paramsOfItem = {};
+                //Build a param object for each param
+                for (var j = 0, ln = itemWithParams.requiredParams.length; j < ln; j++) {
+                    var paramName = itemWithParams.requiredParams[j];
+                    paramsOfItem[paramName] = params[paramName];
+                }
+                processParams[itemWithParams.name] = paramsOfItem;
+            }  
+        }
+        //Register a nexlevel params only if necessary.
+        if (!_.isEmpty(processParams)) {
+            var nextLevelName = this.levelName + (indexLevel + 1);
+            this.levelParams[nextLevelName] = processParams;
+        }
+
     },
 
     //Render all the headers items.
@@ -4789,6 +4865,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         sortCollection: function sortCollection(event) {
             event.preventDefault();
+            if (this.isEdit) {
+                return;
+            }
             var collectionInfos = this.model.pageInfo();
             var sortField = event.target.getAttribute("data-name");
             var currentSort = collectionInfos.sortField;
@@ -4957,13 +5036,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global   $, window,_*/
-(function(NS) {
+(function (NS) {
     "use strict";
     // Filename: views/modal-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require('./consult-edit-view');
-    var templateModal = isInBrowser ? NS.templates.modalSkeleton : function(){};
+    var templateModal = isInBrowser ? NS.templates.modalSkeleton : function () { };
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     //var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("../helpers/custom_exception").ArgumentInvalidException;
     var ModalView = ConsultEditView.extend({
@@ -4980,7 +5059,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             isReadyModelData: true,
         }),
         //Configuration of the modal.
-        configuration:{
+        configuration: {
             templateModal: templateModal,
             container: "div[data-modal]",
             selector: "div[data-modal-content]"
@@ -4992,21 +5071,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Events listen by default on the modal.
         events: {
-           "click button[data-dismiss]": "cancelModal",
-           "click button[data-close]" : "closeModal"
+            "click button[data-dismiss]": "cancelModal",
+            "click button[data-close]": "closeModal"
         },
         //Action call on cancel on the modal.
-        cancelModal: function cancelModal(){
+        cancelModal: function cancelModal() {
             //console.log('the modal is cancel');
-            this.trigger('modal:cancel', {cancel: true});
+            this.trigger('modal:cancel', { cancel: true });
         },
-        saveSuccess: function saveSuccessModalClose(jsonModel){
+        saveSuccess: function saveSuccessModalClose(jsonModel) {
             this.trigger('modal:close', jsonModel);
             this.hideModal();
             //console.log('the modal is close is successfull...');
         },
         //Action called on close the modale.
-        closeModal: function closeModal(event){
+        closeModal: function closeModal(event) {
             console.log('the modal is close is called...');
             if (utilHelper.isBackboneModel(this.model)) {
                 this.saveModel();
@@ -5015,31 +5094,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         //Render the modal container.
-        renderModalContainer: function renderModalContainer(){
-          this.$el.html(this.configuration.templateModal(this.getModalData()));
+        renderModalContainer: function renderModalContainer() {
+            this.$el.html(this.configuration.templateModal(this.getModalData()));
         },
         //Render the modal content.
-        renderModalContent : function renderModalContent(){
+        renderModalContent: function renderModalContent() {
             var templateName = this.isEdit ? 'templateEdit' : 'templateConsult';
             $(this.configuration.selector, this.$el).html(this[templateName](this.getRenderData()));
             //**/$(this.configuration.selector, this.$el).modal();
         },
-        getModalData: function(){
+        getModalData: function () {
             return {
                 title: "Modal title..."
             };
         },
-        showModal: function showModal(){
-          $(this.configuration.container, this.$el).modal('show');
+        showModal: function showModal() {
+            this.delegateEvents();
+            $(this.configuration.container, this.$el).modal('show');
         },
-        hideModal: function hideModal(){
-          $(this.configuration.container, this.$el).modal('hide');
+        hideModal: function hideModal() {
+            $(this.configuration.container, this.$el).modal('hide');
         },
         //Render the modal view.
         render: function renderModalView(options) {
             options = options || {};
             this.renderModalContainer();
             this.renderModalContent();
+            this.delegateEvents();
         }
     });
     // Differenciating export for node or browser.
@@ -5245,7 +5326,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 					currentView.model.unsetErrors({
 						silent: false
 					});
-					var criteria = _.clone(_.omit(currentView.model.attributes, currentView.referenceNames));
+					var criteria = _.clone(_.omit(currentView.model.toJSON(), currentView.referenceNames));
 					var pageInfo = currentView.searchResults.pageInfo();
 					currentView.search(criteria, pageInfo)
 						.then(function success(jsonResponse) {
@@ -5283,11 +5364,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 		clearSearchCriteria: function clearSearchCriteria(event) {
 			event.preventDefault();
-			//Backbone.Notification.clearNotifications();
+		    //Backbone.Notification.clearNotifications();
+			var unchanged = {};
+			var vals = this.getUnchangedFields();
+            for (var i in vals) {
+			    unchanged[vals[i]] = this.model.get(vals[i]);
+			}
 			this.model.clear();
+			for (field in unchanged) {
+			    this.model.set(field, unchanged[field], {silent: true});
+			}
 			this.saveSessionCriteria({}); // clear session criteria.
 			this.initialize(); //Call initialize again in order to refresh the view with criteria lists.
 		},
+
+		getUnchangedFields: function getUnchangedFields() { return [] },
         
 		render: function renderSearch() {
 			this.$el.html(this.template(_.extend({

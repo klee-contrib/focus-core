@@ -43,7 +43,7 @@ gulp.task('css-build', function() {
   Building js files
 **********************/
 //Build all the javascripts file.
-gulp.task('browser-build', function() {
+gulp.task('browser-build', ['infos','templates'],function() {
   //Build the js file for the browser.
     gulp.src(['./lib/infos.js', './lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/session_helper.js', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js', 'lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
@@ -74,7 +74,7 @@ gulp.task('templates', function() {
   var defineModule = require('gulp-define-module');
   var declare = require('gulp-declare');
 
-  gulp.src(["lib/templates/*.hbs"])
+  return gulp.src(["lib/templates/*.hbs"])
     .pipe(handlebars())
     .pipe(defineModule('plain'))
     .pipe(declare({
@@ -86,8 +86,15 @@ gulp.task('templates', function() {
 
 
 //Grouping build tasks.
-gulp.task('build', ['infos','css-build','templates', 'browser-build', 'node-build']);
+//Async build
+gulp.task('build', ['css-build', 'browser-build', 'node-build'], function(){
 
+});
+/*gulp.task('build', function (callback) {
+    var runSequence = require('run-sequence');
+    console.log('runSequence');
+    runSequence('infos','css-build','templates', ['browser-build', 'node-build'],callback);
+});*/
 
 /**********************
   Example templates
@@ -120,7 +127,7 @@ gulp.task('infos', function () {
         if (err) {
             console.log(err);
         } else {
-            console.log("The file was saved!");
+            console.log("The infos.js file was created.");
         }
     });
 });
