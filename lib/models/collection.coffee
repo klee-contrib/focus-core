@@ -62,9 +62,9 @@
     # Return a json to Save constructed with the changes object.
     toSaveJSON:(propertyPrefix) ->
       propertyPrefix = propertyPrefix or ""
-      creates = "#{propertyPrefix}Create"
-      updates = "#{propertyPrefix}Update"
-      deletes = "#{propertyPrefix}Delete"
+      creates = "#{propertyPrefix}creates"
+      updates = "#{propertyPrefix}updates"
+      deletes = "#{propertyPrefix}deletes"
       labels = {};
       labels[creates] = _.map(@changes.creates, (value, key) -> return value);
       labels[updates] = _.map(@changes.updates, (value, key) -> return value);

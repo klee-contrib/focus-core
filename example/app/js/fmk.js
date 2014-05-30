@@ -806,7 +806,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	//All regex use in the application.
 	var regex = {
 		email: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-		number: /^-?\d+(?:\.d*)?(?:e[+\-]?\d+)?$/i
+		number: /^-?\d+(?:\.d*)?(?:e[+\-]?\d+)?$/i,
+		phone: /^(\()?\d{3}(\))?(-|\s)?\d{3}(-|\s)\d{4}$/
 	};
 
 	//Function to test an email.
@@ -841,6 +842,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		var isMin = options.min ? numberToValidate > options.min : true;
 		var isMax = options.max ? numberToValidate < options.max : true;
 		return isMin && isMax;
+	}
+
+	function phoneValidation(stringToValidate, options) {
+	    return regex.phone.test(stringToValidate);
 	}
 
 	//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
@@ -939,6 +944,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	var validators = {
 		email: emailValidation,
 		stringLength: stringLength,
+        phone: phoneValidation,
 		number: numberValidation,
 		validate: validate
 	};
@@ -970,12 +976,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
       Collection.prototype.modelName = void 0;
 
-      Collection.prototype.changes = {
-        creates: {},
-        updates: {},
-        deletes: {}
-      };
-
       Collection.prototype.addModel = function(model) {
         if (model.isNew()) {
           return this.changes.creates[model.cid] = model.toSaveJSON();
@@ -985,6 +985,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       };
 
       Collection.prototype.updateModel = function(model) {
+        if (this.changes.deletes[model.cid] != null) {
+          delete this.changes.deletes[model.cid];
+        }
         return this.changes.updates[model.cid] = model.toSaveJSON();
       };
 
@@ -1007,7 +1010,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return models.forEach(this.addModel, this);
       };
 
-      Collection.prototype.initialize = function() {
+      Collection.prototype.initialize = function(options) {
+        options = options || {};
+        this.changes = {
+          creates: {},
+          updates: {},
+          deletes: {}
+        };
         this.on('add', (function(_this) {
           return function(model) {
             return _this.addModel(model);
@@ -1038,22 +1047,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       };
 
       Collection.prototype.toSaveJSON = function(propertyPrefix) {
-        var creates, deletes, updates;
+        var creates, deletes, labels, updates;
         propertyPrefix = propertyPrefix || "";
-        creates = "" + propertyPrefix + "create";
-        updates = "" + propertyPrefix + "update";
-        deletes = "" + propertyPrefix + "delete";
-        return {
-          creates: _.map(this.changes.creates, function(value, key) {
-            return value;
-          }),
-          updates: _.map(this.changes.updates, function(value, key) {
-            return value;
-          }),
-          deletes: _.map(this.changes.deletes, function(value, key) {
-            return value;
-          })
-        };
+        creates = "" + propertyPrefix + "creates";
+        updates = "" + propertyPrefix + "updates";
+        deletes = "" + propertyPrefix + "deletes";
+        labels = {};
+        labels[creates] = _.map(this.changes.creates, function(value, key) {
+          return value;
+        });
+        labels[updates] = _.map(this.changes.updates, function(value, key) {
+          return value;
+        });
+        labels[deletes] = _.map(this.changes.deletes, function(value, key) {
+          return value;
+        });
+        return labels;
       };
 
       return Collection;
@@ -4555,8 +4564,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     //},
     //Render all the headers items.
     render: function renderHeaderItems(){
-        this.$el.html(this.template({ headerItems: this.model.toActiveJSON() }));
         var parentName = this.model.processParentName();
+        this.$el.html(this.template({ headerItems: this.model.toActiveJSON(), parentName: parentName }));
+
         if (this.levelParams !== undefined && parentName!== undefined && this.levelParams[parentName] !== undefined) {
             $(this.paramOptions.selector, this.$el).html(this.paramOptions.template(this.levelParams[parentName]));
         }
@@ -4966,6 +4976,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             options = options || {};
             //If the research was not launch triggered.
             if (!this.opts.isSearchTriggered && !options.isSearchTriggered) {
+                this.$el.html('');
                 return this;
             }
             //If there is no result.
