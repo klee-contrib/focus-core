@@ -77,13 +77,14 @@ this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["modalSkeleton"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, options, functionType="function", escapeExpression=this.escapeExpression, helperMissing=helpers.helperMissing;
+  var buffer = "", stack1, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
   buffer += "<!-- Modal -->\r\n<div class=\"modal fade\" data-modal  datatabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\r\n  <div class=\"modal-dialog\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\r\n        <h4 class=\"modal-title\" id=\"myModalLabel\">";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.title); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
+  options = {hash:{
+    'keyInContext': (true)
+  },data:data};
+  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "title", options) : helperMissing.call(depth0, "t", "title", options)))
     + "</h4>\r\n      </div>\r\n      <div class=\"modal-body\" data-modal-content>\r\n      \r\n      </div>\r\n      <div class=\"modal-footer\">\r\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">";
   options = {hash:{},data:data};
   buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "button.modalClose", options) : helperMissing.call(depth0, "t", "button.modalClose", options)))
@@ -492,7 +493,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     if(siteDescriptionParams[param.name] === undefined){
       throw new ArgumentNullException('The parameter you try to define has not been anticipated by the siteDescription', {param: param, siteParams: siteDescriptionParams});
     }
-    if (siteDescriptionParams[param.name].value === param.value) {
+    if (siteDescriptionParams[param.name].value === param.value && _.isEqual(siteDescriptionParams[param.name].title, param.title)) {
       console.warn('No changes on param', param);
       return false;
     }
@@ -796,9 +797,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global i18n, window*/
-"use strict";
 (function(NS) {
-	//Filename: helpers/validators.js
+    "use strict";
+    //Filename: helpers/validators.js
 	NS = NS || {};
 	//Dependency gestion depending on the fact that we are in the browser or in node.
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -807,7 +808,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	var regex = {
 		email: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 		number: /^-?\d+(?:\.d*)?(?:e[+\-]?\d+)?$/i,
-		phone: /^(\()?\d{3}(\))?(-|\s)?\d{3}(-|\s)\d{4}$/
+		phone: /^[a-zA-Z0-9\-().\s]{10,15}$/
 	};
 
 	//Function to test an email.
@@ -833,12 +834,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	}
 	//Function to  validate that an input is a number.
 	function numberValidation(numberToValidate, options) {
-		options = options || options;
-		numberToValidate = '' + numberToValidate; //Cast it into a number.
-		var isNumber = regex.number.test(numberToValidate);
-		if (!isNumber) {
+	    options = options || options;
+	    if (!numberToValidate) {
+	        return true;
+	    }
+		if (isNaN(numberToValidate)) {
 		    return false;
 		}
+		numberToValidate = +numberToValidate; //Cast it into a number.
 		var isMin = options.min ? numberToValidate > options.min : true;
 		var isMax = options.max ? numberToValidate < options.max : true;
 		return isMin && isMax;
@@ -1772,6 +1775,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             $.ajax({
                 url: ajaxSettings.url,
                 type: ajaxSettings.type,
+                data: ajaxSettings.data,
                 dataType: "json",
                 crossDomain: true,
                 success: function (data) {
@@ -2083,14 +2087,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     selector: $(input),
                     helperName: decorator
                 });
-                //Fixme: Trouver une meilleure solution.
-                if (decorator === "datePicker" && currentvalue !== undefined && currentvalue !== null) {
-                    if (currentvalue.toString() === 'Invalid Date') {
-                        currentvalue = undefined;
-                    } else {
-                        currentvalue = currentvalue.toISOString() //.format('yyyy-MM-ddThh:mm:ss');
-                    }
-                }
 
             } else { //See if an if on currentValue is nececessary.
                 switch (input.getAttribute('type')) {
@@ -2226,6 +2222,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       var dateFormat;
       options = options || {};
       dateFormat = options.dateFormat || format.date;
+      if (prop === void 0) {
+        return void 0;
+      }
+      prop = prop.slice(0, 10);
       return moment(prop).format(dateFormat);
     };
     formaters.dateTime = function(prop, options) {
@@ -3037,9 +3037,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       if (mdt !== undefined && mdt !== null) {
         if (mdt.decorator) {
           //Call a registered helper. See post_rendering_helper_file to see how to register a helper.
+          var nameAttribute = "data-name='" + attr + "'";
+
           postRenderingHelper.callHelper({
             helperName: mdt.decorator, //Get the post rendering helper to call from the metdata, this helper must have been register before.
-            selector: $('[data-name=' + attr + ']', options.viewSelector), //Create a selector on each attribute in the view with its .
+            selector: $("input[" + nameAttribute + "],select[" + nameAttribute + "]", options.viewSelector), //Create a selector on each attribute in the view with its .
             decoratorOptions: mdt.decoratorOptions //Inject decorator options define on the model.
           });
         }
@@ -3508,7 +3510,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             "focus input": "inputFocus", //Deal with the focus in the field.
             "blur input": "inputBlur", //Deal with the focus out of the field.
             "click .panel-collapse.in": "hideCollapse",
-            "click .panel-collapse:not('.in')": "showCollapse"
+            "click .panel-collapse:not('.in')": "showCollapse",
+            "click button[data-loading]": "loadingButton"
         },
         //Input focus event.
         inputFocus: function coreViewInputFocus(event) {
@@ -3651,7 +3654,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             collectionSelector: "tbody tr",
             isForceReload: false,
             isReadyModelData: true,
-            listUrl: undefined
+            listUrl: undefined,
+            isListeningToModelChange: true
         }),
 
         //Initialize function
@@ -3682,7 +3686,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             */
 
                 //render view when the model is loaded
-                this.model.on('change', this.render, this);
+                if (this.opts.isListeningToModelChange) {
+                    this.model.on('change', this.render, this);
+                }
 
                 // In order to be loaded a model has to have an id and the options must be activated.
                 if (this.opts.isModelToLoad && utilHelper.isBackboneModel(this.model)) {
@@ -3719,7 +3725,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             "click .panel-heading": "toogleCollapse",
             "click button[type='submit']": "save",
             "click button.btnCancel": "cancelEdition",
-            "click button.btnBack": "back"
+            "click button.btnBack": "back",
+            "click button[data-loading]": "loadLoadingButton"
         },
 
         //JSON data to attach to the template.
@@ -3813,6 +3820,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         resetSaveButton: function resetSaveButton() {
             $('button[type="submit"]', this.$el).button('reset');
         },
+        resetLoadingButton: function resetLoadingButton(){
+            $('button[data-loading]', this.$el).button('reset');
+        },
+        loadLoadingButton: function loadLoadingButton(event){
+          $(event.target).closest('button[data-loading]').button('loading');
+        },
         //Save method in case of a model.
         saveModel: function saveBackboneModel() {
             //Call the form helper in order to rebuild the model from the form.
@@ -3843,6 +3856,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
                 }, function errorValidation(errors) {
                     currentView.model.setErrors(errors);
+                    currentView.resetSaveButton();
                 });
         },
 
@@ -3977,6 +3991,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         afterRender: function postRenderDetailView() {
             CoreView.prototype.afterRender.call(this);
             $('.collapse', this.$el).collapse('show');
+            //Button loading:
+            $('button[data-loading]').button();
         }
     });
 
@@ -4056,8 +4072,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Default options of the composite view.
         defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
             isForceReload: true,
-            isNavigationOnSave: false
-            , isModelToLoad: false
+            isNavigationOnSave: false,
+            isModelToLoad: false,
+            isListeningToModelChange: false
         }),
 
         //Service to save a model wether it is a model or a collection.
@@ -4147,7 +4164,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //Edition events
             "click button.btnEdit": "toggleEditMode",
             "click button[type='submit']": "save",
-            "click button.btnCancel": "cancelEdition"
+            "click button.btnCancel": "cancelEdition",
+            "click button[data-loading]": "loadLoadingButton"
         },
         // Get the data to give to the template.
         getRenderData: function getRenderDataCompositeView() {
@@ -4756,7 +4774,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Default options of the list view.
         defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
             exportUrl: './Export/Index', //Change it if necessary.,
-            isReadyModelData: true
+            isReadyModelData: true,
+            isListeningToModelChange: false
         }),
         //Dervice to define in order to launch the export.
         exportSvc: undefined,
@@ -4862,7 +4881,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             "click button[type='submit']": "save",
             "click button.btnCancel": "cancelEdition",
             "click button.btnExport": 'export',
-            "click button.btnBack": "back"
+            "click button.btnBack": "back",
+            "click button[data-loading]": "loadLoadingButton"
         },
         changePageFilter: function changePageFilterListView(event) {
             this.model.perPage = +event.target.value;
@@ -5069,16 +5089,28 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             isSaveOnServer: false,
             isReadyModelData: true,
         }),
+        modalTitle: "Modal title i18n key.",
         //Configuration of the modal.
         configuration: {
             templateModal: templateModal,
             container: "div[data-modal]",
-            selector: "div[data-modal-content]"
+            selector: "div[data-modal-content]",
+            //Override the default modal options.
+            modalOptions: {
+                backdrop: 'static',
+                keyboard: true,
+                show: false,
+                remote: false
+            }
         },
         //Initialization of the modal.
         initialize: function initializeModalView(options) {
             options = options || {};
             ConsultEditView.prototype.initialize.call(this, options);
+            //Modal title.
+            this.opts.modalTitle = options.modalTitle || this.modalTitle;
+            this.model.off('change');
+            this.model.on('change', this.renderModalContent, this);
         },
         //Events listen by default on the modal.
         events: {
@@ -5097,7 +5129,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Action called on close the modale.
         closeModal: function closeModal(event) {
-            console.log('the modal is close is called...');
+            event.preventDefault();
+            //console.log('the modal is close is called...');
             if (utilHelper.isBackboneModel(this.model)) {
                 this.saveModel();
             } else if (utilHelper.isBackboneCollection(this.model)) {
@@ -5112,15 +5145,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         renderModalContent: function renderModalContent() {
             var templateName = this.isEdit ? 'templateEdit' : 'templateConsult';
             $(this.configuration.selector, this.$el).html(this[templateName](this.getRenderData()));
-            //**/$(this.configuration.selector, this.$el).modal();
+            $(this.configuration.selector, this.$el).modal(this.configuration.modalOptions);
+            this.afterRender();
+            this.delegateEvents();
         },
         getModalData: function () {
-            return {
-                title: "Modal title..."
-            };
+            return _.extend({
+                title: this.opts.modalTitle,
+            }, this.configuration.modalOptions);
         },
         showModal: function showModal() {
-            this.delegateEvents();
+            
+            //this.delegateEvents();
+            this.model.unsetErrors();
             $(this.configuration.container, this.$el).modal('show');
         },
         hideModal: function hideModal() {
@@ -5131,7 +5168,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             options = options || {};
             this.renderModalContainer();
             this.renderModalContent();
-            this.delegateEvents();
+            //this.delegateEvents();
         }
     });
     // Differenciating export for node or browser.

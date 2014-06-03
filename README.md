@@ -28,3 +28,7 @@ The browser build is inside the `dist/browser/fmk.js`
 
 ## Unit tests
 All unit tests are written with mocha, and can be launched using the `npm run test` command.
+
+
+## moment js date
+http://momentjs.com/timezone/docs/

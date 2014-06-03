@@ -21,6 +21,10 @@
   formaters.date = (prop, options) ->
     options = options or {}
     dateFormat = options.dateFormat or format.date
+    #Convert the isoString to a date without timezone.
+    if prop is undefined
+      return undefined
+    prop = prop.slice(0,10)
     return moment(prop).format(dateFormat)
   
   #Format dateTime
