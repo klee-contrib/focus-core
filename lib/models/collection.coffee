@@ -69,7 +69,18 @@
       labels[creates] = _.map(@changes.creates, (value, key) -> return value);
       labels[updates] = _.map(@changes.updates, (value, key) -> return value);
       labels[deletes] = _.map(@changes.deletes, (value, key) -> return value);
-      return labels;
+      return labels
+    #Save the pervious collection values in order to restore it.
+    savePrevious: ->
+      @previousCollectionValues = @toJSON()
+    # Restore the previous attributes in the model.
+    restorePrevious: (options)->
+      options = options or {}
+      options.silent = options.isSilent or false
+      @reset(@previousCollectionValues, options)
+    # Tells if the previous model is different from the current.
+    isDifferent: ->
+      return not _.isEqual @previousCollectionValues, @toJSON()
   if isInBrowser
     NS.Models = NS.Models or {}
     NS.Models.Collection = Collection

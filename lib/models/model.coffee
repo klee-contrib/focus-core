@@ -5,7 +5,7 @@
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Base class for all models. Define all transverses methods on the model.
   class Model extends Backbone.Model
-
+    defaultIfNew: undefined
     # Initialize method of the model.
     initialize: (options)->
       options = options or {}
@@ -16,6 +16,9 @@
         this.set('isNewModel', true, {silent: true})
       else
         this.set('isNewModel', false, {silent: true})
+      @savePrevious()
+      if(@isNew() and @defaultIfNew? )
+        this.set(@defaultIfNew, { silent: true })
     #Define a method in order to be able to quickly remove errors form the model.
     unsetErrors:(options) ->
       options = options or {}
@@ -36,6 +39,20 @@
     # Return a json to Save.
     toSaveJSON: ->
       Backbone.Model.prototype.toJSON.call(@)
+    # Return true if the model is inside a collection.
+    isInCollection: ->
+      return @collection?
+    # Save the previous attributes into the model.
+    savePrevious: ->
+      @perviousModelValues = @toSaveJSON()
+    # Restore the previous attributes in the model.
+    restorePrevious: (options)->
+      options = options or {}
+      options.silent = options.isSilent or false
+      @clear({silent: true})
+      @set(@perviousModelValues, options)
+    isDifferent: ->
+      return not _.isEqual @perviousModelValues, @toSaveJSON()
   if isInBrowser
     NS.Models = NS.Models or {}
     NS.Models.Model = Model

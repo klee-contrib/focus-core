@@ -34,7 +34,7 @@
     return  moment(prop).format(dateTimeFormat)
   
   #Currency formatter
-  formaters.currency = (prop, options) ->
+  formaters.number = (prop, options) ->
     options = options or {}
     numeralFormat = options.numeralFormat or format.currency
     return numeral(prop).format(numeralFormat);

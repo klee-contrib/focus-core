@@ -1,4 +1,4 @@
-/* name: spa-fmk , version: 0.0.4description: Simple framework for backbone applications.*/
+/* name: spa-fmk , version: 0.1.0description: Simple framework for backbone applications.*/
 /*global window*/
 (function initialization(container) {
   container.Fmk = {
@@ -397,7 +397,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     _.extend(userConfiguration, configurationElements);
     //If the roles are redefine
     if(configurationElements !== undefined && _.isArray(configurationElements.roles)){
-      console.warn('The roles have change, the site description should be reload.');
+      console.info('The roles have change, the site description should be reload.');
       //Attention si les roles sont redéfinis il faut rafraîchir le plan du site.
       //siteDescriptionHelper.regenerateRoutes();
     }
@@ -494,7 +494,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       throw new ArgumentNullException('The parameter you try to define has not been anticipated by the siteDescription', {param: param, siteParams: siteDescriptionParams});
     }
     if (siteDescriptionParams[param.name].value === param.value && _.isEqual(siteDescriptionParams[param.name].title, param.title)) {
-      console.warn('No changes on param', param);
+      console.info('No changes on param', param);
       return false;
     }
     siteDescriptionParams[param.name] = {
@@ -798,8 +798,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global i18n, window*/
 (function(NS) {
-    "use strict";
-    //Filename: helpers/validators.js
+	"use strict";
+	//Filename: helpers/validators.js
 	NS = NS || {};
 	//Dependency gestion depending on the fact that we are in the browser or in node.
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -807,8 +807,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	//All regex use in the application.
 	var regex = {
 		email: /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-		number: /^-?\d+(?:\.d*)?(?:e[+\-]?\d+)?$/i,
-		phone: /^[a-zA-Z0-9\-().\s]{10,15}$/
+		number: /^-?\d+(?:\.d*)?(?:e[+\-]?\d+)?$/i
 	};
 
 	//Function to test an email.
@@ -816,9 +815,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		options = options || options;
 		return regex.email.test(emailToValidate);
 	}
-    //Function to validate a date.
+	//Function to validate a date.
 	function dateValidation(dateToValidate, options) {
-	    return moment(dateToValidate).isValid();
+		return moment(dateToValidate).isValid();
 	}
 
 	//Function to test the length of a string.
@@ -827,19 +826,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			return false;
 		}
 		options = options || {};
-		//console.log(options);
+	    //console.log(options);
+		options.minLength = options.minLength || 0;
 		var isMinLength = options.minLength ? stringToTest.length > options.minLength : true;
 		var isMaxLength = options.maxLength ? stringToTest.length < options.maxLength : true;
 		return isMinLength && isMaxLength;
 	}
 	//Function to  validate that an input is a number.
 	function numberValidation(numberToValidate, options) {
-	    options = options || options;
-	    if (!numberToValidate) {
-	        return true;
-	    }
+		options = options || options;
+		if (!numberToValidate) {
+			return true;
+		}
 		if (isNaN(numberToValidate)) {
-		    return false;
+			return false;
 		}
 		numberToValidate = +numberToValidate; //Cast it into a number.
 		var isMin = options.min ? numberToValidate > options.min : true;
@@ -847,11 +847,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		return isMin && isMax;
 	}
 
-	function phoneValidation(stringToValidate, options) {
-	    return regex.phone.test(stringToValidate);
-	}
-
-	//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
+		//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
 	var validate = function validate(property, validators) {
 		//console.log("validate", property, validators);
 		var errors, res, validator, _i, _len;
@@ -888,16 +884,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 					var prevalidDate = true;
 					return validator.value === true ? (property.value !== null && property.value !== undefined && prevalidString && prevalidDate) : true;
 				case "regex":
+					if (property.value === undefined || property.value === null) {
+						return true;
+					}
 					return validator.value.test(property.value);
-				case "email":
+			    case "email":
+			        if (property.value === undefined || property.value === null) {
+			            return true;
+			        }
 					return emailValidation(property.value, validator.options);
 				case "number":
 					return numberValidation(property.value, validator.options);
 				case "string":
 					var stringToValidate = property.value || "";
 					return stringLength(stringToValidate, validator.options);
-			    case "date":
-			        return dateValidation(property.value, validator.options);
+				case "date":
+					return dateValidation(property.value, validator.options);
 				case "function":
 					return validator.value(property.value, validator.options);
 				default:
@@ -947,7 +949,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	var validators = {
 		email: emailValidation,
 		stringLength: stringLength,
-        phone: phoneValidation,
 		number: numberValidation,
 		validate: validate
 	};
@@ -1066,6 +1067,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return value;
         });
         return labels;
+      };
+
+      Collection.prototype.savePrevious = function() {
+        return this.previousCollectionValues = this.toJSON();
+      };
+
+      Collection.prototype.restorePrevious = function(options) {
+        options = options || {};
+        options.silent = options.isSilent || false;
+        return this.reset(this.previousCollectionValues, options);
+      };
+
+      Collection.prototype.isDifferent = function() {
+        return !_.isEqual(this.previousCollectionValues, this.toJSON());
       };
 
       return Collection;
@@ -1211,6 +1226,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return Model.__super__.constructor.apply(this, arguments);
       }
 
+      Model.prototype.defaultIfNew = void 0;
+
       Model.prototype.initialize = function(options) {
         options = options || {};
         Model.__super__.initialize.call(this, options);
@@ -1221,11 +1238,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           this.unset('id', {
             silent: true
           });
-          return this.set('isNewModel', true, {
+          this.set('isNewModel', true, {
             silent: true
           });
         } else {
-          return this.set('isNewModel', false, {
+          this.set('isNewModel', false, {
+            silent: true
+          });
+        }
+        this.savePrevious();
+        if (this.isNew() && (this.defaultIfNew != null)) {
+          return this.set(this.defaultIfNew, {
             silent: true
           });
         }
@@ -1261,6 +1284,27 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
       Model.prototype.toSaveJSON = function() {
         return Backbone.Model.prototype.toJSON.call(this);
+      };
+
+      Model.prototype.isInCollection = function() {
+        return this.collection != null;
+      };
+
+      Model.prototype.savePrevious = function() {
+        return this.perviousModelValues = this.toSaveJSON();
+      };
+
+      Model.prototype.restorePrevious = function(options) {
+        options = options || {};
+        options.silent = options.isSilent || false;
+        this.clear({
+          silent: true
+        });
+        return this.set(this.perviousModelValues, options);
+      };
+
+      Model.prototype.isDifferent = function() {
+        return !_.isEqual(this.perviousModelValues, this.toSaveJSON());
       };
 
       return Model;
@@ -1925,6 +1969,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     });
                 }
                 if (responseErrors.fieldErrors !== undefined && responseErrors.fieldErrors !== null) {
+                    responseErrors.fieldErrors = _.object(_.map(responseErrors.fieldErrors, function (value, key) { return [key, i18n.t(value)]; }));
                     fieldErrors = responseErrors.fieldErrors;
                 }
             } else if (responseErrors.exceptionType !== undefined) {
@@ -1965,7 +2010,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             errors.globalErrors.forEach(function convertErrorsIntoNotification(element) {
                 errorsGlobal.push({
                     type: "error",
-                    message: element,
+                    message: i18n.t(element),
                     creationDate: Date.now()
                 });
             });
@@ -2234,7 +2279,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       dateTimeFormat = options.dateTimeFormat || format.dateTime;
       return moment(prop).format(dateTimeFormat);
     };
-    formaters.currency = function(prop, options) {
+    formaters.number = function(prop, options) {
       var numeralFormat;
       options = options || {};
       numeralFormat = options.numeralFormat || format.currency;
@@ -3093,7 +3138,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		fetch: function promiseFetchModel(options) {
 			options = options || {};
 			var model = this;
-			console.log('promiseFetchModel', model);
+			//console.log('promiseFetchModel', model);
 			return new Promise(function(resolve, reject) {
 				/*Don't use underscore but could have because bacckbone has a dependency on it.*/
 				options.success = resolve;
@@ -3439,7 +3484,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.opts = _.extend({}, this.defaultOptions, this.customOptions, options);
 
             this.on('toogleIsHidden', this.toogleIsHidden);
-
             this.initializeModel();
 
             /*Register after renger.*/
@@ -3457,6 +3501,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 return _this;
             });
 
+            //Listen to the reference list loading.
+            this.listenTo(this.model, "references:loaded", this.render, this);
+            
             //Load all the references lists which are defined in referenceNames.
             var currentView = this;
             if (_.isArray(this.referenceNames) && this.referenceNames.length > 0) {
@@ -3471,10 +3518,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     }
                     if (UtilHelper.isBackboneCollection(currentView.model)) {
                         _.extend(currentView.model, res); // Add the references as properties of the object without using set which erases the collection.
-                        currentView.model.trigger('change'); // Reset the collection to trigger a render.
+                         // Reset the collection to trigger a render.
                     } else {
-                        currentView.model.set(res); //This trigger a render due to model change.
+                        currentView.model.set(res, {silent: true}); //This trigger a render due to model change.
                     }
+                    currentView.model.trigger('references:loaded');
                     //Inform the view that we are ready to render well.
                 }).then(null, function(error) {
                     currentView.opts.isReadyReferences = true;
@@ -3655,7 +3703,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             isForceReload: false,
             isReadyModelData: true,
             listUrl: undefined,
-            isListeningToModelChange: true
+            isListeningToModelChange: true,
+            formSelector: undefined, //In whitch selector you have to search the form datas (inputs, select,...).
         }),
 
         //Initialize function
@@ -3711,6 +3760,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 .then(function success(jsonModel) {
                     view.opts.isReadyModelData = true;
                     view.model.set(jsonModel);
+                    //view.model.savePrevious();
                 }).then(null, function error(errorResponse) {
                     ErrorHelper.manageResponseErrors(errorResponse, {
                         model: view.model
@@ -3747,10 +3797,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (event) {
                 event.preventDefault();
             }
+            
             this.isEdit = !this.isEdit;
-            this.render({
-                isSearchTriggered: true
-            }); //todo: fix this to have no options.
+            if(this.isEdit){
+                backboneNotification.clearNotifications();
+                this.model.savePrevious();
+            }
+            this.render();
         },
 
         //Deal with the edit button click wether there is an edit mode or not.
@@ -3784,8 +3837,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Save a backbone collection.
         saveCollection: function saveBackboneCollection() {
             //Call the form helper in order to rebuild the collection from the form.
+            var formSelector = this.opts.formSelector || "";
+            var collectionSelector = formSelector + " " + this.opts.collectionSelector;
             form_helper.formCollectionBinder(
-                $(this.opts.collectionSelector, this.$el),
+                $(collectionSelector,this.$el),
                 this.model, {
                     isSilent: false
                 }
@@ -3799,14 +3854,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         mdl.unsetErrors();
                     }, currentView);
                     if (currentView.opts.isSaveOnServer) {
-                        //Call the service in order to save the model.                   
-                        currentView.saveModelSvc(currentView.getDataToSave())
-                            .then(function success(jsonModel) {
-                                currentView.saveSuccess(jsonModel);
-                            }, function error(responseError) {
-                                currentView.saveError(responseError);
-                            })
-                            .then(currentView.resetSaveButton.bind(currentView));
+                        currentView.saveAction();
                     } else {
                         currentView.saveSuccess(currentView.model.toJSON());
                     }
@@ -3829,9 +3877,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Save method in case of a model.
         saveModel: function saveBackboneModel() {
             //Call the form helper in order to rebuild the model from the form.
+            var formSelector = this.opts.formSelector || "";
+            var inputSelector = formSelector + " " +"input";
+            var selectSelector = formSelector + " " + "select";
             form_helper.formModelBinder({
-                inputs: $('input', this.$el),
-                options: $('select', this.$el)
+                inputs: $(inputSelector, this.$el),
+                options: $(selectSelector, this.$el)
             }, this.model);
 
             //Bind the this to the current view for the
@@ -3843,13 +3894,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     //When the model is valid, unset errors.
                     currentView.model.unsetErrors();
                     if (currentView.opts.isSaveOnServer) {
-                        //Call the service in order to save the model.                   
-                        currentView.saveModelSvc(currentView.getDataToSave())
-                            .then(function success(jsonModel) {
-                                currentView.saveSuccess(jsonModel); //.bind(currentView);
-                            }, function error(responseError) {
-                                currentView.saveError(responseError); //.bind(currentView);
-                            });
+                        currentView.saveAction();
                     } else {
                         currentView.saveSuccess(currentView.model.toJSON());
                     }
@@ -3859,7 +3904,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     currentView.resetSaveButton();
                 });
         },
-
+        //Save action call the save Svc.
+        saveAction: function () {
+            var currentView = this;
+            //Call the service in order to save the model.                   
+            return currentView.saveModelSvc(currentView.getDataToSave())
+                .then(function success(jsonModel) {
+                    currentView.saveSuccess(jsonModel);
+                }, function error(responseError) {
+                    currentView.saveError(responseError);
+                })
+                .then(currentView.resetSaveButton.bind(currentView));
+        },
         //Actions on save error
         saveError: function saveErrorConsultEdit(errors) {
 
@@ -3914,6 +3970,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (this.model.isNew()) {
                 Backbone.history.navigate(this.opts.listUrl, true);
             } else {
+                this.model.restorePrevious();
                 this.toggleEditMode();
             }
         },
@@ -3934,7 +3991,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             event.preventDefault();
             var view = this;
             //call delete service
-            this.deleteModelSvc()
+            this.deleteModelSvc(this.model)
                 .then(function success(successResponse) {
                     view.deleteSuccess(successResponse);
                 }, function error(errorResponse) {
@@ -3944,13 +4001,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         //Generate delete navigation url.
         generateDeleteUrl: function generateDeleteUrl() {
-            return "/";
+            return this.opts.listUrl;
         },
 
         // Actions after a delete success.
         deleteSuccess: function deleteConsultEditSuccess(response) {
             //remove the view from the DOM
-            this.model.destroy();
+            if (this.model.isInCollection()) {
+                this.model.collection.remove(this.model);
+            } else {
+                delete this.model;
+            }
             this.remove();
             if (this.opts.isNavigationOnDelete) {
                 //navigate to next page
@@ -4282,13 +4343,21 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Cancel the edition.
         cancelEdition: function cancelEditionCompositeView() {
             // cancelEdit on composite = ToggleEdit on compositeView only + cancelEdit on each child view.
-            ConsultEditView.prototype.toggleEditMode.apply(this);
-            //Render each view inside the configuration.
-            for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
-                var vConf = this.viewsConfiguration[i];
-                //Render each view inside its selector.
-                this[vConf.name].cancelEdition();
+
+            if (this.isCreateMode()) {
+                ConsultEditView.prototype.cancelEdition.call(this);
             }
+            else {
+                ConsultEditView.prototype.toggleEditMode.apply(this);
+
+                //Render each view inside the configuration.
+                for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
+                    var vConf = this.viewsConfiguration[i];
+                    //Render each view inside its selector.
+                    this[vConf.name].cancelEdition();
+                }
+            }
+            
         },
         //After the loadin of the global model datas, dispatch it into the model and collections of each view.
         //todo: Test.
@@ -4817,11 +4886,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         initialize: function initializeListView(options) {
             options = options || {};
             ConsultEditView.prototype.initialize.call(this, options);
-            this.listenTo(this.model, "reset", function () {
-                this.render({
-                    isSearchTriggered: true
-                });
-            }, this);
+            this.listenTo(this.model, "reset", this.render, this);
             // Listen to the model add event.
             this.listenTo(this.model, "add", this.addOne, this);
             var currentView = this;
@@ -4962,18 +5027,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         navigateBack: function navigateBack() {
             Backbone.history.history.back();
         },
-        toggleEditMode: function toggleEditModeWithCollectionSave(event) {
-            ConsultEditView.prototype.toggleEditMode.apply(this, event);
-            if (this.isEdit) {
-                // store the models before edition (slice will copy the collection)
-                this.storedModels = _.map(this.model.models, function (item) {
-                    return item.clone();
-                });
-            }
-        },
         cancelEdition: function cancelListEdition() {
             // reset the collection with the previous models.
-            this.model.reset(this.storedModels);
+            //this.model.reset(this.storedModels);
+            this.model.restorePrevious();
             this.toggleEditMode();
         },
         //Add one line view from the model.
@@ -4994,11 +5051,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         render: function renderListView(options) {
             options = options || {};
-            //If the research was not launch triggered.
-            if (!this.opts.isSearchTriggered && !options.isSearchTriggered) {
-                this.$el.html('');
-                return this;
-            }
+        
             //If there is no result.
             if (this.model.length === 0 && !this.isEdit) {
                 this.renderEmptyList();
@@ -5123,7 +5176,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.trigger('modal:cancel', { cancel: true });
         },
         saveSuccess: function saveSuccessModalClose(jsonModel) {
-            this.trigger('modal:close', jsonModel);
+            var currentModal = this;
+            $(this.configuration.container, this.$el).on('hidden.bs.modal', function () {
+                currentModal.trigger('modal:close', jsonModel);
+                $(currentModal.configuration.container, currentModal.$el).off('hidden.bs.modal');
+            })
             this.hideModal();
             //console.log('the modal is close is successfull...');
         },
@@ -5206,7 +5263,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         fetchDemand: function fetchDemandResultView() {
             this.trigger('results:fetchDemand');
         },
-
+        render: function renderSearchResultView(options) {
+            options = options || {};
+            //If the research was not launch triggered.
+            return ListView.prototype.render.call(this, options);
+        },
         //Function call when there is no result.
         renderEmptyList: function renderEmptySearchResults() {
             //Is recherche launched.
@@ -5218,7 +5279,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 message: i18n.t('search.noResult')
             }, true);*/
         },
-
+        toggleEditMode: function toogleEditModeSRV(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            this.isEdit = !this.isEdit;
+            this.render({
+                isSearchTriggered: true
+            }); //todo: fix this to have no options.
+        },
         //Indicate if the function is ready to be displayed. If not the spinner is display.
         isReady: function readySearchResults() {
             return this.opts.isReadyResultsData === true && ListView.prototype.isReady.call(this);
@@ -5241,207 +5310,207 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global Backbone, _, $, Promise, window*/
 "use strict";
-(function(NS) {
-	// Filename: views/search-view.js
-	NS = NS || {};
-	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
-	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
-	var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
-	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-	var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
-	var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
-	var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
+(function (NS) {
+    // Filename: views/search-view.js
+    NS = NS || {};
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+    var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
+    var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
+    var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
 
-	var SearchView = CoreView.extend({
-		tagName: 'div',
-		className: 'searchView',
-		ResultsView: undefined,
-		Results: undefined,
-		search: undefined,
-		resultsSelector: 'div#results',
-		isMoreCriteria: false,
-		initialize: function initializeSearch(options) {
-			options = options || {};
-			// Call the initialize function of the core view.
-			CoreView.prototype.initialize.call(this, options);
-			this.isSearchTriggered = options.isSearchTriggered || false;
-			this.isReadOnly = options.isReadOnly || false;
-			this.model.set({
-				isCriteriaReadonly: false
-			}, {
-				silent: true
-			});
+    var SearchView = CoreView.extend({
+        tagName: 'div',
+        className: 'searchView',
+        ResultsView: undefined,
+        Results: undefined,
+        search: undefined,
+        resultsSelector: 'div#results',
+        isMoreCriteria: false,
+        initialize: function initializeSearch(options) {
+            options = options || {};
+            // Call the initialize function of the core view.
+            CoreView.prototype.initialize.call(this, options);
+            this.isSearchTriggered = options.isSearchTriggered || false;
+            this.stopListening(this.model, "reset");
+            this.isReadOnly = options.isReadOnly || false;
+            this.model.set({
+                isCriteriaReadonly: false
+            }, {
+                silent: true
+            });
 
-			//init results collection
-			this.searchResults = new this.Results();
-			//initialization of the result view 
-			this.searchResultsView = new this.ResultsView({
-				model: this.searchResults,
-				criteria: this.model
-			});
-			//handle the clear criteria action
-			this.listenTo(this.model, 'change', this.render);
-			this.listenTo(this.searchResultsView, 'results:fetchDemand', function() {
-				this.runSearch(null, {
-					isFormBinded: false
-				});
-			});
-			this.listenTo(this.searchResultsView, 'listview:lineSelected', function() {
-				$('.collapse', this.$el).collapse('hide');
-			});
-			var currentView = this;
-			this.getSessionCriteria().then(function(crit) {
-				//Restore the criteria if save into the session.
-				if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
-					currentView.model.set(crit.criteria, {silent: false});
-					currentView.searchResults.setPageInfo(crit.pageInfo);
-					currentView.isSearchTriggered = true;
-				}
-				//If the serach has to be triggered, trigger it.
-				if (currentView.isSearchTriggered) {
-					currentView.runSearch(null, {
-						isFormBinded: false
-					});
-				}
-			}, function(error) {
-				errorHelper.manageResponseErrors(error);
-			});
+            //init results collection
+            this.searchResults = new this.Results();
+            //initialization of the result view 
+            this.searchResultsView = new this.ResultsView({
+                model: this.searchResults,
+                criteria: this.model
+            });
+            //handle the clear criteria action
+            this.listenTo(this.model, 'change', this.render);
+            this.listenTo(this.searchResultsView, 'results:fetchDemand', function () {
+                this.runSearch(null, {
+                    isFormBinded: false
+                });
+            });
+            this.listenTo(this.searchResultsView, 'listview:lineSelected', function () {
+                $('.collapse', this.$el).collapse('hide');
+            });
+            var currentView = this;
+            this.getSessionCriteria().then(function (crit) {
+                //Restore the criteria if save into the session.
+                if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
+                    currentView.model.set(crit.criteria, { silent: false });
+                    currentView.searchResults.setPageInfo(crit.pageInfo);
+                    currentView.isSearchTriggered = true;
+                }
+                //If the serach has to be triggered, trigger it.
+                if (currentView.isSearchTriggered) {
+                    currentView.runSearch(null, {
+                        isFormBinded: false
+                    });
+                }
+            }, function (error) {
+                errorHelper.manageResponseErrors(error);
+            });
+        },
 
+        events: {
+            "submit form": 'runSearch', // Launch the search.
+            "click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
+            "click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
+            "click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
+            "click .panel-heading": "toogleCollapse"
+        },
+        //Change the fact that the view is in the mode mode or less criteria.
+        toogleMoreCriteria: function toogleMoreCriteria() {
+            this.isMoreCriteria = !this.isMoreCriteria;
+            form_helper.formModelBinder({
+                inputs: $('input', this.$el)
+            }, this.model);
+            this.render();
+        },
+        //get the JSON to attach to the template
+        getRenderData: function getRenderDataSearch() {
+            return this.model.toJSON();
+        },
 
+        editCriteria: function editCriteria() {
+            this.model.set({
+                isCriteriaReadonly: false
+            });
+        },
 
-		},
+        searchSuccess: function searchSuccess(jsonResponse) {
+            this.searchResults.setTotalRecords(jsonResponse.totalRecords);
+            this.searchResults.reset(jsonResponse.values);
+        },
+        searchError: function searchError(response) {
+            this.searchResults.reset([]);
+            ErrorHelper.manageResponseErrors(response, {
+                isDisplay: true
+            });
+        },
 
-		events: {
-			"submit form": 'runSearch', // Launch the search.
-			"click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
-			"click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
-			"click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
-			"click .panel-heading": "toogleCollapse"
-		},
-		//Change the fact that the view is in the mode mode or less criteria.
-		toogleMoreCriteria: function toogleMoreCriteria() {
-			this.isMoreCriteria = !this.isMoreCriteria;
-			form_helper.formModelBinder({
-				inputs: $('input', this.$el)
-			}, this.model);
-			this.render();
-		},
-		//get the JSON to attach to the template
-		getRenderData: function getRenderDataSearch() {
-			return this.model.toJSON();
-		},
-
-		editCriteria: function editCriteria() {
-			this.model.set({
-				isCriteriaReadonly: false
-			});
-		},
-
-		searchSuccess: function searchSuccess(jsonResponse) {
-			this.searchResults.setTotalRecords(jsonResponse.totalRecords);
-			this.searchResults.reset(jsonResponse.values);
-		},
-		searchError: function searchError(response) {
-			this.searchResults.reset([]);
-			ErrorHelper.manageResponseErrors(response, {
-				isDisplay: true
-			});
-		},
-
-		runSearch: function runSearchSearchView(event, options) {
-			var searchButton;
-			if (event !== undefined && event !== null) {
-				event.preventDefault();
-				searchButton = $("button[type=submit]", event.target); // retrieving the button that triggered the search
-			}
-			options = options || {};
-			var isFormBinded = options.isFormBinded === undefined ?  true : options.isFormBinded;
-			//bind form fields on model
-			if (isFormBinded) {
-				form_helper.formModelBinder({
-					inputs: $('input', this.$el),
-					options: $('select', this.$el)
-				}, this.model);
-			}
-			//Render loading inside the search results:
-			this.searchResultsView.opts.isReadyResultsData = false;
-      this.searchResultsView.render();
-			var currentView = this;
-			ModelValidator
+        runSearch: function runSearchSearchView(event, options) {
+            var searchButton;
+            if (event !== undefined && event !== null) {
+                event.preventDefault();
+                searchButton = $("button[type=submit]", event.target); // retrieving the button that triggered the search
+            }
+            options = options || {};
+            var isFormBinded = options.isFormBinded === undefined ? true : options.isFormBinded;
+            //bind form fields on model
+            if (isFormBinded) {
+                form_helper.formModelBinder({
+                    inputs: $('input', this.$el),
+                    options: $('select', this.$el)
+                }, this.model);
+            }
+            //Render loading inside the search results:
+            this.searchResultsView.opts.isReadyResultsData = false;
+            this.searchResultsView.render();
+            var currentView = this;
+            ModelValidator
 				.validate(this.model)
-				.then(function(model) {
-					currentView.model.unsetErrors({
-						silent: false
-					});
-					var criteria = _.clone(_.omit(currentView.model.toJSON(), currentView.referenceNames));
-					var pageInfo = currentView.searchResults.pageInfo();
-					currentView.search(criteria, pageInfo)
+				.then(function (model) {
+				    currentView.model.unsetErrors({
+				        silent: false
+				    });
+				    var criteria = _.clone(_.omit(currentView.model.toJSON(), currentView.referenceNames));
+				    var pageInfo = currentView.searchResults.pageInfo();
+				    currentView.search(criteria, pageInfo)
 						.then(function success(jsonResponse) {
-							//Save the criteria in session.
-							currentView.searchResultsView.opts.isReadyResultsData = true;
-							currentView.saveSessionCriteria({
-								criteria: criteria,
-								pageInfo: pageInfo
-							}).then(function(s) {
-								//console.log('criteria save in session', s);
-								backboneNotification.clearNotifications();
-								return currentView.searchSuccess(jsonResponse);
-							});
+						    //Save the criteria in session.
+						    currentView.searchResultsView.opts.isReadyResultsData = true;
+						    currentView.saveSessionCriteria({
+						        criteria: criteria,
+						        pageInfo: pageInfo
+						    }).then(function (s) {
+						        //console.log('criteria save in session', s);
+						        backboneNotification.clearNotifications();
+						        return currentView.searchSuccess(jsonResponse);
+						    });
 						}).then(null, function error(errorResponse) {
-							currentView.searchResultsView.opts.isReadyResultsData = true;
-							currentView.searchError(errorResponse);
+						    currentView.searchResultsView.opts.isReadyResultsData = true;
+						    currentView.searchError(errorResponse);
 						}).then(function resetButton() {
-							if (searchButton) {
-								searchButton.button('reset');
-							}
+						    if (searchButton) {
+						        searchButton.button('reset');
+						    }
 						});
 				}).then(null, function error(errors) {
-					currentView.model.setErrors(errors);
-					if (searchButton) {
-						searchButton.button('reset');
-					}
+				    currentView.model.setErrors(errors);
+				    if (searchButton) {
+				        searchButton.button('reset');
+				    }
 				});
 
-			if (this.isReadOnly) {
-				this.model.set({
-					isCriteriaReadonly: true
-				});
-			}
-		},
+            if (this.isReadOnly) {
+                this.model.set({
+                    isCriteriaReadonly: true
+                });
+            }
+        },
 
-		clearSearchCriteria: function clearSearchCriteria(event) {
-			event.preventDefault();
-		    //Backbone.Notification.clearNotifications();
-			var unchanged = {};
-			var vals = this.getUnchangedFields();
+        clearSearchCriteria: function clearSearchCriteria(event) {
+            event.preventDefault();
+            //Backbone.Notification.clearNotifications();
+            var unchanged = {};
+            var vals = this.getUnchangedFields();
             for (var i in vals) {
-			    unchanged[vals[i]] = this.model.get(vals[i]);
-			}
-			this.model.clear();
-			for (field in unchanged) {
-			    this.model.set(field, unchanged[field], {silent: true});
-			}
-			this.saveSessionCriteria({}); // clear session criteria.
-			this.initialize(); //Call initialize again in order to refresh the view with criteria lists.
-		},
+                unchanged[vals[i]] = this.model.get(vals[i]);
+            }
+            this.model.clear();
+            for (field in unchanged) {
+                this.model.set(field, unchanged[field], { silent: true });
+            }
+            this.saveSessionCriteria({}); // clear session criteria.
+            this.initialize(); //Call initialize again in order to refresh the view with criteria lists.
+        },
 
-		getUnchangedFields: function getUnchangedFields() { return [] },
-        
-		render: function renderSearch() {
-			this.$el.html(this.template(_.extend({
-				isMoreCriteria: this.isMoreCriteria
-			}, this.getRenderData())));
-			$(this.resultsSelector, this.$el).html(this.searchResultsView.render().el);
-			return this;
-		},
-		afterRender: function postRenderSearchView() {
-			CoreView.prototype.afterRender.call(this);
-			$('.collapse', this.$el).collapse('show');
-		}
-	});
+        getUnchangedFields: function getUnchangedFields() { return [] },
 
-	/*ModelValidator.validate(this.model)
+        render: function renderSearch(options) {
+            options = options || {};
+            CoreView.prototype.render.call(this, options);
+            this.$el.html(this.template(_.extend({
+                isMoreCriteria: this.isMoreCriteria
+            }, this.getRenderData())));
+            $(this.resultsSelector, this.$el).html(this.searchResultsView.render().el);
+            return this;
+        },
+        afterRender: function postRenderSearchView() {
+            CoreView.prototype.afterRender.call(this);
+            $('.collapse', this.$el).collapse('show');
+        }
+    });
+
+    /*ModelValidator.validate(this.model)
 			.catch (currentView.model.setErrors)
 			.then(function(model) {
 				currentView.model.unsetErrors();
@@ -5451,11 +5520,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 					.catch (currentView.searchError.bind(currentView))
 			});*/
 
-	// Differenciating export for node or browser.
-	if (isInBrowser) {
-		NS.Views = NS.Views || {};
-		NS.Views.SearchView = SearchView;
-	} else {
-		module.exports = SearchView;
-	}
+    // Differenciating export for node or browser.
+    if (isInBrowser) {
+        NS.Views = NS.Views || {};
+        NS.Views.SearchView = SearchView;
+    } else {
+        module.exports = SearchView;
+    }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
