@@ -1416,6 +1416,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       totalPages: 10,
       //sort fields
       sortField: {},
+      // export column labels
+      exportColumnLabels: {},
       initialize: function initializePagiatedCollection(options) {
           Collection.prototype.initialize.call(this, options);
           if (this.sortField !== undefined && this.sortField.field !== undefined) {
@@ -1722,8 +1724,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         recurse(data, "");
         return result;
     };
+    //Deeply combine an arbitrary number of JS objects.
+    function combine() {
+        var res = {};
+        var args = _.map(arguments, function (item) {
+            return item && !_.isEmpty(item) ? JSON.flatten(item) : {};
+        });
+        args.unshift(res);
+        _.extend.apply(this, args);
+        return JSON.unflatten(res);
+    }
     //Deeply combine two json.
-    function combine(json1, json2) {
+    function combineTwo(json1, json2) {
         var res = {};
         _.extend(
             res,
@@ -1867,6 +1879,74 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = utilHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global $, _ , window*/
+"use strict";
+(function(NS) {
+  //Filename: helpers/url_helper.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+
+  //*This helper has a dependency on underscore and jQuery.*/
+  var urlHelper = {};
+  // ### generateUrl
+  //  Generate an url with all the parameters
+  //  This function is use in order to build url from a tootname and a object you want to pass into the url as params.
+  //  ```javascript
+  //  var urlHelper = require('../lib/url_helper');
+  //  var url = urlHelper.generateUrl('rootName', {param1: "nom", param2: "nom2"}); 
+  //  //url = '#rootName/?param1=nom&param2=nom2'
+  //  ```
+  urlHelper.generateUrl = function generateUrl(route, params) {
+    var url = '',
+      SEP = '/',
+      PARAM = '?',
+      ET = '&';
+    for (var i = 0, routeLength = route.length; i < routeLength; i++) {
+      url += (route[i] + SEP);
+    }
+    if (typeof params !== "undefined" && params !== null && !_.isEmpty(params)) {
+      url += PARAM;
+      for (var propt in params) {
+        url += (propt + '=' + params[propt] + ET);
+      }
+    }
+    return url.slice(0, -1); //Remove the last ET.
+  };
+
+  //Parse the parameters of the url.
+  urlHelper.parseParam = function parseParam(params) {
+    var result = {};
+    var paramsLength = params.length;
+    //If the string params are not in the chain wich starts with a ?
+    if (paramsLength === 0 || '?' !== params[0]) {
+      throw "parseParam : the params is not well formated : " + params;
+    }
+    var namedParams = params.slice(1).split('&');
+    //For each name param (param=value) we put it in an object, we get pack the parameter we have given in the url.
+    $.each(namedParams, function(index, value) {
+      if (value) {
+        /**/
+        var param = value.split('=');
+        if (param[1] === 'true') {
+          param[1] = true;
+        } else if (param[1] === 'false') {
+          param[1] = false;
+        }
+        result[param[0]] = param[1];
+      }
+    });
+    return result;
+  };
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.urlHelper = urlHelper;
+  } else {
+    module.exports = urlHelper;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global $,window*/
 "use strict";
 (function(NS) {
@@ -1988,8 +2068,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if ((_.isEmpty(fieldErrors) && _.isEmpty(globalErrors))) {
             return null;
         } else {
+
             var errors = {
-                fieldErrors: response.responseJSON.fieldErrors,
+                fieldErrors: fieldErrors,
                 globalErrors: globalErrors
             };
             //If the display options is passed in argument, we display the options.
@@ -2489,6 +2570,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
       };
 
+      MetadataBuilder.prototype.getDomains = function() {
+        return _.clone(this.domains);
+      };
+
       MetadataBuilder.prototype.getDomainsValidationAttrs = function(model) {
         var attr, md, metadatas, valDomAttrs, validators;
         if (model == null) {
@@ -2860,6 +2945,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     //Filename: helpers/odata_helper.js
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('./utilHelper');
+    var urlHelper = isInBrowser ? NS.Helpers.urlHelper : require('./url_helper');
 
     var odataOptions = {
         filter: '$filter',
@@ -2868,6 +2954,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         orderby: '$orderby',
         format: '$format',
         inlinecount: '$inlinecount',
+        exportColumnLabels: 'exportColumnLabels',
         requestType: 'GET'
     };
     var configure = function configure(options) {
@@ -2971,6 +3058,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         val[odataOptions.orderby] = orderToOdata(sortFields);
         val[odataOptions.format] = 'json';
         val[odataOptions.inlinecount] = 'allpages';
+        var exportColumnLabels = [];
+        if(pagesInfo.exportColumnLabels){
+            for(var property in pagesInfo.exportColumnLabels){
+                if(pagesInfo.exportColumnLabels.hasOwnProperty(property)){
+                    exportColumnLabels.push({propertyName: property, propertyLabel: i18n.t(pagesInfo.exportColumnLabels[property])});
+                }
+            }
+        }
+        val[odataOptions.exportColumnLabels] = exportColumnLabels;
         return val;
     }
 
@@ -3320,7 +3416,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
   var siteDescriptionBuilder = isInBrowser ? NS.Helpers.siteDescriptionBuilder : require("./site_description_builder");
   var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("./backbone_notification");
-  
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
   var middleWares = [];
   var middlewarePromise = function middlewarePromise(middleWareFunction) {
     return new Promise(function(resolve, reject) {
@@ -3339,8 +3435,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var Router = Backbone.Router.extend({
     route: function(route, name, callback) {
       var router = this;
-      if (!callback) callback = this[name];
-
+      if (!callback){
+        callback = this[name];
+      }
+      if(callback === undefined || callback === null){
+        throw new ArgumentNullException("The route callback seems to be undefined, please check your router file for your route: ", name);
+      }
       var f = function() {
           //console.log('route before', route);
         //Treat the home case.
@@ -3370,74 +3470,947 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = Router;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global $, _ , window*/
-"use strict";
-(function(NS) {
-  //Filename: helpers/url_helper.js
-  NS = NS || {};
-  //Dependency gestion depending on the fact that we are in the browser or in node.
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+(function() {
+  var S4, domains_definition, guid, metadaBuilder;
 
-  //*This helper has a dependency on underscore and jQuery.*/
-  var urlHelper = {};
-  // ### generateUrl
-  //  Generate an url with all the parameters
-  //  This function is use in order to build url from a tootname and a object you want to pass into the url as params.
-  //  ```javascript
-  //  var urlHelper = require('../lib/url_helper');
-  //  var url = urlHelper.generateUrl('rootName', {param1: "nom", param2: "nom2"}); 
-  //  //url = '#rootName/?param1=nom&param2=nom2'
-  //  ```
-  urlHelper.generateUrl = function generateUrl(route, params) {
-    var url = '',
-      SEP = '/',
-      PARAM = '?',
-      ET = '&';
-    for (var i = 0, routeLength = route.length; i < routeLength; i++) {
-      url += (route[i] + SEP);
-    }
-    if (typeof params !== "undefined" && params !== null && !_.isEmpty(params)) {
-      url += PARAM;
-      for (var propt in params) {
-        url += (propt + '=' + params[propt] + ET);
-      }
-    }
-    return url.slice(0, -1); //Remove the last ET.
-  };
+  metadaBuilder = Fmk.Helpers.metadataBuilder;
 
-  //Parse the parameters of the url.
-  urlHelper.parseParam = function parseParam(params) {
-    var result = {};
-    var paramsLength = params.length;
-    //If the string params are not in the chain wich starts with a ?
-    if (paramsLength === 0 || '?' !== params[0]) {
-      throw "parseParam : the params is not well formated : " + params;
+  domains_definition = Fmk.Helpers.metadataBuilder.getDomains();
+
+  Handlebars.registerHelper('pick', function(val, options) {
+    return options.hash[val];
+  });
+
+  Handlebars.registerHelper("t", function(i18n_key, options) {
+    var maxLength, opt, prefix, result, suffix;
+    opt = options.hash || {};
+    suffix = opt.suffix || "";
+    prefix = opt.prefix || "";
+    maxLength = opt.max;
+    if (opt.keyInContext === true) {
+      i18n_key = this[i18n_key];
     }
-    var namedParams = params.slice(1).split('&');
-    //For each name param (param=value) we put it in an object, we get pack the parameter we have given in the url.
-    $.each(namedParams, function(index, value) {
-      if (value) {
-        /**/
-        var param = value.split('=');
-        if (param[1] === 'true') {
-          param[1] = true;
-        } else if (param[1] === 'false') {
-          param[1] = false;
-        }
-        result[param[0]] = param[1];
-      }
+    result = i18n.t("" + prefix + i18n_key + suffix);
+    if ((maxLength != null) && maxLength < result.length) {
+      result = "" + (result.slice(0, +maxLength)) + "...";
+    }
+    return new Handlebars.SafeString(result);
+  });
+
+  Handlebars.registerHelper("debug", function(optionalValue) {
+    console.log("Current Context");
+    console.log("====================");
+    console.log(this);
+    if (optionalValue) {
+      console.log("Value");
+      console.log("====================");
+      return console.log(optionalValue);
+    }
+  });
+
+
+  /*------------------------------------------- FORM FOR THE INPUTS ------------------------------------------- */
+
+  Handlebars.registerHelper("display_for", function(property, options) {
+    var col, container, containerAttribs, containerCss, dataType, domain, html, htmlId, inputSize, label, labelSize, labelSizeValue, linkClose, linkOpen, linkTo, metadata, modelName, noGrid, noHtml, opt, propertyValue, translationKey, translationRoot;
+    options = options || {};
+    opt = options.hash || {};
+    modelName = this.modelName || opt.modelName || void 0;
+    container = _.extend(this, {
+      modelName: modelName
     });
-    return result;
+    metadata = metadaBuilder.getMetadataForAttribute(container, property);
+    domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] || {};
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
+    }
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    noHtml = opt.noHtml != null ? opt.noHtml : false;
+    noGrid = opt.noGrid != null ? opt.noGrid : false;
+    htmlId = opt.htmlId != null ? "id='" + opt.htmlId + "'" : "";
+    linkTo = opt.linkTo != null ? opt.linkTo : "";
+    linkOpen = (function(_this) {
+      return function() {
+        if (linkTo) {
+          return "<a href='" + linkTo + "' data-bypass>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    linkClose = (function(_this) {
+      return function() {
+        if (linkTo) {
+          return "</a>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (noGrid || opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else if (noHtml) {
+          return "" + (translationKey());
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    propertyValue = (function(_this) {
+      return function() {
+        var key, metadataClass, propValue, value;
+        metadataClass = metadata.style != null ? metadata.style : "";
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if (opt.listKey != null) {
+            key = _this[property];
+            value = _.findWhere(_this[opt.listKey], {
+              code: _this[property]
+            });
+            if (value == null) {
+              value = _.findWhere(_this[opt.listKey], {
+                id: _this[property]
+              });
+            }
+            if (value != null) {
+              propValue = opt.labelProperty ? value[opt.labelProperty] : value.label;
+            } else {
+              propValue = void 0;
+            }
+          }
+          if (noHtml) {
+            return "" + (_.escape(propValue));
+          }
+          if ((metadata.format != null) && (metadata.format.value != null)) {
+            propValue = metadata.format.value(propValue, metadata.format.options);
+          }
+          if (metadata.symbol != null) {
+            propValue = propValue + " " + i18n.t(metadata.symbol);
+          }
+          if (dataType === "checkbox") {
+            propValue = _this[property] ? i18n.t("search.labels.true") : i18n.t("search.labels.false");
+          }
+          if (dataType === "date" && _this[property] !== "") {
+            return "<div " + htmlId + " class='" + metadataClass + "'>" + propValue + "</div>";
+          } else {
+            return "<div " + htmlId + " class='" + metadataClass + "'>" + (linkOpen()) + (_.escape(propValue)) + (linkClose()) + "</div>";
+          }
+        }
+        return "";
+      };
+    })(this);
+    if (noHtml) {
+      return new Handlebars.SafeString("" + (label()) + " " + (propertyValue()));
+    }
+    html = "<div class='form-group " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='form-control-static'>" + (propertyValue()) + "</div> </div> </div> ";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("returns_if_contains", (function(_this) {
+    return function(property, options) {
+      var opt, value;
+      opt = options.hash || {};
+      value = opt.value;
+      if (_.contains(property, value)) {
+        return opt["return"];
+      }
+      return '';
+    };
+  })(this));
+
+  Handlebars.registerHelper("input_for", function(property, options) {
+    var col, container, containerAttribs, containerCss, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
+    options = options || {};
+    html = void 0;
+    translationRoot = void 0;
+    dataType = void 0;
+    opt = options.hash || {};
+    modelName = this.modelName || opt.modelName || void 0;
+    container = _.extend(this, {
+      modelName: modelName
+    });
+    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(container, property);
+    domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] || {};
+    minimalHtml = opt.minimalHtml != null ? opt.minimalHtml : false;
+    noGrid = opt.noGrid ? opt.noGrid : false;
+    isDisplayRequired = false;
+    isRequired = (function(_this) {
+      return function() {
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    symbol = (function(_this) {
+      return function() {
+        var isSymbol;
+        isSymbol = false;
+        if (opt.symbol != null) {
+          isSymbol = opt.symbol;
+        } else if (metadata.symbol != null) {
+          isSymbol = metadata.symbol;
+        }
+        if (isSymbol) {
+          return "<span class='input-group-addon'>" + isSymbol + "</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
+    }
+    readonly = opt.readonly || false;
+    readonly = readonly ? "readonly" : "";
+    disabled = opt.disabled || false;
+    disabled = disabled ? "disabled" : "";
+    inputAttributes = this[opt.inputAttributes] || opt.inputAttributes || "";
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (noGrid || opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true || ((opt.symbol || metadata.symbol) != null);
+    propertyValue = (function(_this) {
+      return function() {
+        var propValue;
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if ((metadata.format != null) && (metadata.format.value != null)) {
+            propValue = metadata.format.value(propValue, metadata.format.options);
+          }
+          if (dataType === "checkbox") {
+            if (propValue) {
+              return 'checked';
+            }
+          }
+          if (dataType === "date" && propValue !== "") {
+            return "value='" + propValue + "'";
+          }
+          if (dataType === "number") {
+            return "value='" + numeral(propValue).value() + "'";
+          } else {
+            return "value='" + (_.escape(propValue)) + "'";
+          }
+        }
+        return "";
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + "  fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
+    decorator = (function(_this) {
+      return function() {
+        if (metadata.decorator != null) {
+          return "data-decorator='" + metadata.decorator + "'";
+        } else {
+          return '';
+        }
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errorSize = (function(_this) {
+      return function() {
+        var errorLength, offsetError;
+        errorLength = 12 - labelSizeValue;
+        offsetError = labelSizeValue;
+        return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
+      };
+    })(this);
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    if (minimalHtml) {
+      html = " <input id='" + property + "' " + (decorator()) + " class=''";
+      html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/>";
+    } else {
+      html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " <input id='" + property + "' " + (decorator()) + " class='";
+      if (dataType !== "checkbox") {
+        html += "form-control ";
+      }
+      html += "input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/> " + (symbol());
+      if (dataType !== "checkbox") {
+        html += "              " + (isRequired());
+      } else {
+        html += "              ";
+      }
+      html += "               </div> </div> " + (errors()) + " </div>";
+    }
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("radio_for", function(property, options) {
+    var checked, col, containerAttribs, containerCss, dataType, defaultValue, disabled, domain, error, errorSize, errorValue, errors, generateRadioButton, html, inputAttributes, inputSize, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, opt, placeholder, possibleValues, radioSize, radioSizeValue, radios, readonly, translationKey, translationRoot, value, _i, _len;
+    options = options || {};
+    html = void 0;
+    translationRoot = void 0;
+    dataType = void 0;
+    opt = options.hash || {};
+    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
+    domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] || {};
+    possibleValues = [];
+    isDisplayRequired = false;
+    isRequired = (function(_this) {
+      return function() {
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "";
+        } else {
+          return generateRadioButton(i18n.t('search.labels.all'), "null", defaultValue === "");
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    switch (dataType) {
+      case "boolean":
+        possibleValues = [true, false];
+        break;
+      default:
+        return "Type " + dataType + " not supported by helper radio_for";
+    }
+    defaultValue = opt.defaultValue !== void 0 ? opt.defaultValue : "";
+    readonly = opt.readonly || false;
+    readonly = readonly ? "readonly" : "";
+    disabled = opt.disabled || false;
+    disabled = disabled ? "disabled" : "";
+    inputAttributes = opt.inputAttributes || "";
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 3;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    radioSizeValue = opt.radioSize || 4;
+    radioSize = "col-sm-" + radioSizeValue + " col-md-" + radioSizeValue + " col-lg-" + radioSizeValue;
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        inputSizeValue = 12 - labelSizeValue;
+        return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
+    checked = (function(_this) {
+      return function(value, isDefault) {
+        var isChecked;
+        isChecked = _this[property] === value || ((_this[property] == null) && isDefault) || false;
+        if (isChecked) {
+          return "checked='checked'";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    generateRadioButton = (function(_this) {
+      return function(label, value, isDefault) {
+        return "<div class='" + radioSize + "'> <div class='input-group'> <span class='input-group-addon'> <input id='" + (property + value) + "' name='" + property + "' data-name='" + property + "' type=radio value='" + value + "' " + (checked(value, isDefault)) + " " + inputAttributes + " " + placeholder + " " + readonly + " " + disabled + "/> </span> <label for='" + (property + value) + "' class='form-control'> " + label + " </label> </div> </div>";
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errorSize = (function(_this) {
+      return function() {
+        var errorLength, offsetError;
+        errorLength = 12 - labelSizeValue;
+        offsetError = labelSizeValue;
+        return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
+      };
+    })(this);
+    radios = isRequired();
+    for (_i = 0, _len = possibleValues.length; _i < _len; _i++) {
+      value = possibleValues[_i];
+      radios += generateRadioButton(i18n.t('search.labels.' + value), value, value === defaultValue);
+    }
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> " + radios + " </div> " + (errors()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("options_selected", function(property, options) {
+    var addOption, col, cssClass, dataMapping, domain, elt, emptyOption, error, errorValue, errors, html, icon, inputSize, isAddOnInput, isAtLine, isRequired, jsonGiven, label, labelSize, labelSizeValue, list, metadata, multiple, opt, optMapping, optName, optToTriggerListKey, optToTriggerName, readonly, selected, translationKey, translationRoot, _i, _len;
+    options = options || {};
+    opt = options.hash || {};
+    cssClass = opt.cssClass != null ? opt.cssClass : "";
+    optName = opt.optName != null ? "data-name='" + opt.optName + "'" : "";
+    optToTriggerName = opt.optToTriggerName != null ? "data-opttotrigger-name='" + opt.optToTriggerName + "'" : "";
+    optToTriggerListKey = opt.optToTriggerListKey != null ? "data-opttotrigger-listkey='" + opt.optToTriggerListKey + "'" : "";
+    optMapping = opt.optMapping != null ? this[opt.optMapping] : null;
+    dataMapping = optMapping != null ? "data-mapping=" + optMapping : "";
+    list = this[opt.listKey] || [];
+    selected = this[property] || opt.selected || void 0;
+    if (opt.addDefault) {
+      list = [
+        {
+          id: void 0,
+          label: ''
+        }
+      ].concat(list);
+    }
+    metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this, property);
+    domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] || {};
+    isRequired = (function(_this) {
+      return function() {
+        var isDisplayRequired;
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    isAtLine = opt.isAtLine || false;
+    readonly = opt.readonly || false;
+    readonly = readonly ? "disabled" : "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + " fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true;
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel == null) {
+          if (isAtLine) {
+            return "<div class='row'><label class='control-label for='" + property + "'> " + (translationKey()) + " </label></div>";
+          } else {
+            return "<label class='control-label " + labelSize + "' for='" + property + "'> " + (translationKey()) + " </label>";
+          }
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    jsonGiven = this;
+    addOption = function(elt) {
+      var id, isSelected, prop;
+      id = elt.id || elt.code;
+      prop = opt.labelProperty ? elt[opt.labelProperty] : elt.label;
+      isSelected = (selected != null) && (id != null) && ((!_.isArray(selected) && id.toString() === selected.toString()) || (_.isArray(selected) && selected.indexOf(id.toString()) > -1)) ? "selected" : "";
+      html += "<option value= '" + id + "'  " + isSelected + ">" + prop + "</option>";
+      return void 0;
+    };
+    multiple = opt.isMultiple ? "multiple style='width:'resolve';'" : "";
+    emptyOption = function() {
+      var isRequiredWithValue;
+      isRequiredWithValue = (selected != null) && (isRequired() !== "");
+      if ((opt.isEmpty === true) || ((opt.isMultiple === true) || (isRequiredWithValue === true)) && (!opt.isNotEmpty)) {
+        return "";
+      }
+      return "<option></option>";
+    };
+    html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='controls " + (inputSize()) + "'> <div class='input-group '> " + (icon()) + " <select id='" + property + "' data-name='" + property + "' " + multiple + " " + readonly + " " + optName + " " + optToTriggerName + " " + optToTriggerListKey + " " + dataMapping + " class='form-control input-sm " + cssClass + "'>" + (emptyOption());
+    for (_i = 0, _len = list.length; _i < _len; _i++) {
+      elt = list[_i];
+      addOption(elt);
+    }
+    html += "</select>" + (isRequired()) + " </div> " + (errors()) + " </div> </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("dateFormat", function(_date, options) {
+    var format, formatedDate, opt;
+    formatedDate = '';
+    if (_date) {
+      opt = options.hash || {};
+      format = opt.format || require('../config').dateFormat;
+      formatedDate = moment(_date).format(format);
+    }
+    return new Handlebars.SafeString(formatedDate);
+  });
+
+  S4 = function() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   };
 
-  // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Helpers = NS.Helpers || {};
-    NS.Helpers.urlHelper = urlHelper;
-  } else {
-    module.exports = urlHelper;
-  }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+  guid = function() {
+    return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
+  };
+
+  Handlebars.registerHelper("button", function(text_key, options) {
+    var button, cssClass, cssId, dataAttributes, icon, isLoading, loading, opt, type;
+    opt = options.hash || {};
+    if (opt.role !== void 0 && !Fmk.Helpers.userHelper.hasRole(opt.role)) {
+      return "";
+    }
+    isLoading = opt.isLoading;
+    cssClass = opt["class"] || "";
+    cssId = opt.id || guid();
+    dataAttributes = opt.dataAttributes || "";
+    type = opt.type || "button";
+    loading = function() {
+      if (isLoading || type === 'submit') {
+        return "data-loading data-loading-text='" + (opt.loadingText || i18n.t('button.loading')) + "'";
+      }
+      return "";
+    };
+    icon = function() {
+      if (opt.icon != null) {
+        return "<i class='fa fa-fw fa-" + opt.icon + "'></i>";
+      } else {
+        return "";
+      }
+    };
+    button = "<button type='" + type + "' " + dataAttributes + " class='btn " + cssClass + "' id='" + cssId + "' " + (loading()) + ">" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>";
+    return new Handlebars.SafeString(button);
+  });
+
+  Handlebars.registerHelper("paginate", function(property, options) {
+    var currentPage, endPage, firstPage, generateLeftArrow, generatePageFilter, generatePageNumber, generatePagination, generateRigthArrow, generateTotal, html, perPage, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    if (this.collection == null) {
+      return "";
+    }
+    if ((this.collection != null) && this.collection.length === 0) {
+      return "";
+    }
+    currentPage = this.currentPage;
+    firstPage = this.firstPage || 1;
+    endPage = this.totalPages || 0;
+    perPage = this.perPage || 10;
+    totalRecords = this.totalRecords;
+    generateLeftArrow = function() {
+      var className;
+      className = currentPage === firstPage ? "disabled" : "";
+      return "<li class='" + className + "'><a href='#' data-bypass data-page='" + firstPage + "'>&laquo;</a></li>";
+    };
+    generatePageNumber = function() {
+      var html, i, _i;
+      html = "";
+      for (i = _i = firstPage; firstPage <= endPage ? _i <= endPage : _i >= endPage; i = firstPage <= endPage ? ++_i : --_i) {
+        html += "<li class='" + (i === currentPage ? 'active' : '') + "'><a href='#' data-bypass data-page='" + i + "'>" + i + "</a></li>";
+      }
+      return html;
+    };
+    generateRigthArrow = function() {
+      var className;
+      className = currentPage === endPage ? "disabled" : "";
+      return "<li class='" + className + "'><a href='#' data-bypass  data-page='" + endPage + "'>&raquo;</a></li>";
+    };
+    generatePagination = function() {
+      if (totalRecords <= perPage) {
+        return "";
+      }
+      return "" + (generateLeftArrow()) + (generatePageNumber()) + (generateRigthArrow());
+    };
+    generatePageFilter = function() {
+      var generateOptions, pageString;
+      pageString = i18n.t("application.pages");
+      generateOptions = function() {
+        var html, i, _i;
+        html = "";
+        for (i = _i = 1; _i <= 4; i = ++_i) {
+          html += "<option value='" + (5 * i) + "' " + (5 * i === perPage ? 'selected' : void 0) + ">" + (5 * i) + " " + pageString + "</option>";
+        }
+        return html;
+      };
+      return "<select class='form-control pageFilter'> " + (generateOptions()) + " </select>";
+    };
+    generateTotal = function() {
+      var resultString;
+      resultString = i18n.t('search.result');
+      if (options.showResultNumber) {
+        return "<div class='badgeResult'>" + resultString + " <span class='badge'>" + totalRecords + "</span></div>";
+      } else {
+        return "";
+      }
+    };
+    html = "<div class='col-md-8'> <ul class='pagination'>" + (generatePagination()) + "</ul> </div> <div class='col-md-2 pagination'> " + (generateTotal()) + " </div> <div class='col-md-2 pagination'> " + (generatePageFilter()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("tableHeaderAction", function(options) {
+    var exportButton, generateTotal, html, resultString, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    totalRecords = this.totalRecords || 0;
+    resultString = i18n.t(options.resultLabel || 'search.result');
+    exportButton = function() {
+      if (options.exportUrl != null) {
+        return "<div class='pull-right export'> <button   data-bypass class='btn btnExport'><i class='fa fa-table'></i>" + (i18n.t('search.export')) + "</button> <a href='" + options.exportUrl + "' data-bypass class='btn hidden btnExport'><i class='fa fa-table'></i> " + (i18n.t('search.export')) + "</a> </div>";
+      }
+      return "";
+    };
+    generateTotal = function() {
+      return "<span class='badge'>" + totalRecords + "</span> " + resultString;
+    };
+    html = "<div class='tableAction'> <div class='pull-left'> " + (generateTotal()) + " </div> " + (exportButton()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("sortColumn", function(property, options) {
+    var generateSortPosition, order, sortField, translationKey;
+    options = options.hash || {};
+    sortField = this.sortField;
+    order = this.order || "asc";
+    translationKey = options.translationKey || void 0;
+    generateSortPosition = function() {
+      var icon;
+      icon = "fa fa-sort";
+      if (property === sortField) {
+        icon += "-" + order;
+      }
+      return "<i class='" + icon + "' data-name='" + property + "'></i>";
+    };
+    if (this.isEdit) {
+      return new Handlebars.SafeString("<span class='sortColumn'>" + (i18n.t(translationKey)) + "</span>");
+    }
+    return new Handlebars.SafeString("<a class='sortColumn'  href='#' data-name='" + property + "' data-bypass>" + (i18n.t(translationKey)) + " " + (this.isEdit ? '' : generateSortPosition()) + "</a>");
+  });
+
+  Handlebars.registerHelper("statusIcon", function(property, options) {
+    var icon;
+    if (typeof (this[property] === "boolean")) {
+      if (this[property]) {
+        icon = "fa fa-check";
+      } else {
+        icon = "fa fa-exclamation";
+      }
+    } else {
+      switch (this[property]) {
+        case 0:
+          icon = "fa fa-ban";
+          break;
+        case 1:
+          icon = "fa fa-exclamation";
+          break;
+        case 2:
+          icon = "fa fa-clock-o";
+          break;
+        case 3:
+          icon = "fa fa-check";
+          break;
+        default:
+          icon = "";
+      }
+    }
+    return new Handlebars.SafeString("<i class='" + icon + "'><i>");
+  });
+
+  Handlebars.registerHelper("progress", function(property, options) {
+    var addElements;
+    addElements = function(elements) {
+      var html, sum;
+      html = "";
+      sum = 0;
+      elements.forEach(function(elt) {
+        if (!_.isEmpty(elt)) {
+          return sum += elt.value;
+        }
+      });
+      elements.forEach(function(elt) {
+        if (!_.isEmpty(elt)) {
+          return html += "<div class='progress-bar progress-bar-" + elt.type + "' style='width: " + (Math.floor(elt.value * 100 / sum)) + "%'> " + elt.label + " </div>";
+        }
+      });
+      return html;
+    };
+    return new Handlebars.SafeString("<div class='progress'>" + (addElements(this[property])) + "</div>");
+  });
+
+
+  /* Example:
+    {{#hasOneRole "ROLE1,ROLE2"}}
+      <div>HTML code</div>
+    {{/hasOneRole}}
+   */
+
+  Handlebars.registerHelper("hasOneRole", function(property, options) {
+    var roles;
+    if (_.isString(property)) {
+      roles = property.split(',');
+      if (Fmk.Helpers.userHelper.hasOneRole(roles)) {
+        return options.fn(this);
+      }
+    }
+  });
+
+
+  /* Example:
+    {{#hasRole "ROLE_NON_EXISTANT"}}
+      <div>HTML code</div>
+    {{/hasRole}}
+   */
+
+  Handlebars.registerHelper("hasRole", function(property, options) {
+    if (_.isString(property) && Fmk.Helpers.userHelper.hasRole(property)) {
+      return options.fn(this);
+    }
+  });
+
+
+  /* Example
+    {{col "6"}}
+   */
+
+  Handlebars.registerHelper("col", function(property) {
+    return "col-xs-" + property + " col-sm-" + property + " col-md-" + property + " col-lg-" + property;
+  });
+
+
+  /* Example
+      {{each collectionProperty}}
+      {{each collectionProperty parentKeys="prop1,prop2"}}
+  
+      {{each object}}
+          {{this.key}} : {{this.value}}
+      {{/each}}
+   */
+
+  Handlebars.registerHelper("each", function(context, options) {
+    var ctx, elem, opt, parentProperties, ret, _i, _len, _ref;
+    options = options || {};
+    opt = options.hash || {};
+    ret = "";
+    parentProperties = void 0;
+    if (opt.parentKeys != null) {
+      parentProperties = _.pick(this, opt.parentKeys.split(','));
+    }
+    context = context || [];
+    if (_.isArray(context)) {
+      _ref = context || [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        elem = _ref[_i];
+        ctx = _.extend(elem, parentProperties);
+        ret = ret + options.fn(ctx);
+      }
+    } else if (_.isObject(context)) {
+      for (elem in context || {}) {
+        ctx = {
+          key: elem,
+          value: _.extend(context[elem], parentProperties)
+        };
+        ret = ret + options.fn(ctx);
+      }
+    }
+    return ret;
+  });
+
+  Handlebars.registerHelper("introspect", function(property, options) {
+    var container, helperName, html, isDisplay, metadatas, modelName, opt, prop;
+    options = options || {};
+    opt = options.hash || {};
+    isDisplay = opt.isDisplay != null ? opt.isDisplay : true;
+    helperName = isDisplay ? "display_for" : "input_for";
+    modelName = this.modelName || property || opt.modelName || void 0;
+    container = _.extend(this, {
+      modelName: modelName
+    });
+    metadatas = Fmk.Helpers.metadataBuilder.getMetadatas(container) || {};
+    html = "";
+    for (prop in metadatas) {
+      if (container[prop] != null) {
+        html = html + Handlebars.helpers[helperName].call(container, prop, {
+          hash: {
+            col: 12
+          }
+        });
+      }
+    }
+    return new Handlebars.SafeString(html);
+  });
+
+
+  /*Handlebars.registerHelper "currency",(property, options) ->  
+    currencySymbol = ''
+    value = ''
+    if (+this[property])? or +this[property] is 0
+      value = +this[property]
+    if typeof value is 'number'
+      value = numeral(value).format(require('./configuration').getConfiguration().format.currency) if value isnt ''#value.toFixed('2') 
+      new Lawnchair({name: 'products'}, $.noop).get('currency', (curr)-> currencySymbol = curr.currencySymbol)
+    html = "<div class='currency'><div class='right'>#{value} #{currencySymbol}</div></div>"
+    new Handlebars.SafeString(html)
+   */
+
+}).call(this);
+
 /*global Backbone, _, window, Promise, $ */
 "use strict";
 (function(NS) {
@@ -3662,6 +4635,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
     var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
+    var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
 
     //Backbone view which can be use in order to create consultation view and edition view.
     var ConsultEditView = CoreView.extend({
@@ -3907,6 +4881,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Save action call the save Svc.
         saveAction: function () {
             var currentView = this;
+            //Add a control on the property saveModelSvc.
+            if(!currentView.saveModelSvc){
+                throw new ArgumentNullException("The service use in order to save the model is not define in the wiew, try to define it: saveModelSvc");
+            }
             //Call the service in order to save the model.                   
             return currentView.saveModelSvc(currentView.getDataToSave())
                 .then(function success(jsonModel) {
@@ -4755,7 +5733,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       for (var prop in grouped) {
          var levelName = this.levelName + index;
          var menuItms = _.values(grouped[prop]);
-         var levelParams = this.processLevelParams(menuItms, index, allParams);
+        this.processLevelParams(menuItms, index, allParams);
+         //this.levelParams = this.processLevelParams(menuItms, index, allParams);
         //Wich view for the view level.
         var HeaderItemsViewOfLevel = this.ViewForLevel[levelName] || this.HeaderItemsView;
         this[levelName] = new HeaderItemsViewOfLevel({
@@ -4770,7 +5749,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     },
     //Process the level params for the next level.
     processLevelParams: function (menuItemsArray, indexLevel, params) {
-        var itemsWithParams = _.filter(menuItemsArray, function (element) { return element.requiredParams !== undefined });
+        var itemsWithParams = _.filter(menuItemsArray, function (element) { return element.requiredParams !== undefined; });
         //If there is no element 
         if (!_.isArray(itemsWithParams)) { return undefined; }
 
@@ -4785,7 +5764,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     paramsOfItem[paramName] = params[paramName];
                 }
                 processParams[itemWithParams.name] = paramsOfItem;
-            }  
+            }
         }
         //Register a nexlevel params only if necessary.
         if (!_.isEmpty(processParams)) {
@@ -4853,7 +5832,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (typeof this.opts.exportUrl === 'string' && typeof this.exportSvc === 'function') {
                 var currentView = this;
                 this.exportSvc(this.getCriteria(), _.extend(this.model.pageInfo(), {
-                    exportId: this.exportId
+                    exportId: this.exportId,
+                    exportColumnLabels: this.model.exportColumnLabels
                 })).then(function (success) {
                     window.open($('a.btnExport', currentView.$el).attr('href'), '_blank');
                     //$('a.btnExport', this.$el).trigger('click');
@@ -5256,6 +6236,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             isReadyResultsData: true
         }),
 
+        // Get the criteria used to get the results.
+        getCriteria : function getCriteriaResultsView(){
+            var criteria = this.opts.searchView.getCriteria();
+            return _.extend({}, ListView.prototype.getCriteria.call(this), criteria);
+        },
+
         //Template use in order to display the fact that there is no results.
         templateNoResults: templateNoResults,
 
@@ -5330,6 +6316,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         search: undefined,
         resultsSelector: 'div#results',
         isMoreCriteria: false,
+
+        //Default options of the search view.
+        defaultOptions: _.extend({}, Fmk.Views.CoreView.prototype.defaultOptions, {
+            isRefreshSearchOnInputChange: true
+        }),
+
         initialize: function initializeSearch(options) {
             options = options || {};
             // Call the initialize function of the core view.
@@ -5348,7 +6340,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //initialization of the result view 
             this.searchResultsView = new this.ResultsView({
                 model: this.searchResults,
-                criteria: this.model
+                criteria: this.model,
+                searchView: this
             });
             //handle the clear criteria action
             this.listenTo(this.model, 'change', this.render);
@@ -5377,15 +6370,28 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }, function (error) {
                 errorHelper.manageResponseErrors(error);
             });
+
+            if (this.opts.isRefreshSearchOnInputChange) {
+                this.events = _.extend({}, this.defaultEvents, this.refreshSearchOnInputChangeEvents);
+            }
+            this.delegateEvents();
         },
 
-        events: {
+        defaultEvents: {
             "submit form": 'runSearch', // Launch the search.
             "click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
             "click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
             "click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
             "click .panel-heading": "toogleCollapse"
         },
+
+        events: this.defaultEvents,
+
+        refreshSearchOnInputChangeEvents: {
+            "change input:not([noRefresh])": "runSearch",
+            "change select:not([noRefresh]) ": "runSearch"
+        },
+
         //Change the fact that the view is in the mode mode or less criteria.
         toogleMoreCriteria: function toogleMoreCriteria() {
             this.isMoreCriteria = !this.isMoreCriteria;
@@ -5416,6 +6422,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             });
         },
 
+        getCriteria: function () {
+            return _.clone(_.omit(this.model.toJSON(), this.referenceNames));
+        },
+
         runSearch: function runSearchSearchView(event, options) {
             var searchButton;
             if (event !== undefined && event !== null) {
@@ -5441,7 +6451,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 				    currentView.model.unsetErrors({
 				        silent: false
 				    });
-				    var criteria = _.clone(_.omit(currentView.model.toJSON(), currentView.referenceNames));
+				    var criteria = currentView.getCriteria();
 				    var pageInfo = currentView.searchResults.pageInfo();
 				    currentView.search(criteria, pageInfo)
 						.then(function success(jsonResponse) {

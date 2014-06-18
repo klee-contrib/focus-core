@@ -8,6 +8,7 @@
   proxyValidationContainer = {}
   # Get the domains definition.
   class MetadataBuilder
+    
     #Initialize the dependencies from the project: the domains and the metadatas.
     initialize: (options, cb) ->
       throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.') if not options?
@@ -17,6 +18,11 @@
       @metadatas = options.metadatas
       @isLog = options.isLog #Define if there is warn or not for metadata properties.
       cb(@domains, @metadatas) if cb?
+
+    # Get the domains as they were initialized in the builder (if initialized).
+    getDomains: ->
+      return _.clone(@domains)
+    
     # Get the validation attributes from the domain.
     getDomainsValidationAttrs: (model) ->
       #console.log('called')
@@ -43,6 +49,7 @@
           # Set the validators inide the container associated with the field.
           valDomAttrs[attr] = validators
       return valDomAttrs
+    # Get all the metadatas from the model.
     getMetadatas: (model) ->
       throw new ArgumentNullException("In order to get metadatas , you must provide a model.") if not model?
       # Construct the metadatas obtained with the model name.
@@ -82,6 +89,7 @@
         #console.log "metadata", metadata
         metadatas[mdlMetadataAttr] = metadata
       return metadatas
+    
     #Get the attributes for one property of a metadata.
     getMetadataForAttribute: (model, attribute) ->
       throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide a model.") if not model?

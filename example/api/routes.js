@@ -1,12 +1,14 @@
+/*global reply*/
 var Hapi = require('hapi');
 ///var Types = require('hapi').Types;
+var contacts = [{},{},{},{}];
 module.exports = [{
 	method: 'GET',
 	path: '/CIL',
 	config: {
 		handler: getCIL
 	}
-},{
+}, {
 	method: 'GET',
 	path: '/reference',
 	config: {
@@ -17,9 +19,6 @@ module.exports = [{
 	path: '/vm',
 	config: {
 		handler: getVms
-		// query: {
-		// 	name: Types.String()
-		// }
 	}
 }, {
 	method: 'GET',
@@ -49,6 +48,103 @@ module.exports = [{
 	path: '/vm/{id}',
 	config: {
 		handler: deleteVm
+	}
+}, {
+	method: 'GET',
+	path: '/contact/{id}',
+	config: {
+		handler: function(request, reply) {
+			var contactId = request.params.id;
+			console.log('/contact/' + contactId);
+			reply({
+				id: contactId,
+				firstName: "Pierre",
+				lastName: "Besson",
+				adress: "12 rue des fleurs 75000 Paris",
+				email: "pierre@besson.com",
+				age: 26
+			});
+		}
+	}
+}, {
+	method: 'GET',
+	path: '/contact',
+	config: {
+		handler: function(request, reply) {
+			console.log('/contact/');
+			reply([{
+				id: 1,
+				firstName: "Pierre",
+				lastName: "Besson",
+				adress: "12 rue des fleurs 75000 Paris",
+				email: "pierre@besson.com",
+				age: 26
+			}, {
+				id: 2,
+				firstName: "Jean",
+				lastName: "Besson",
+				adress: "12 rue des fleurs 75000 Paris",
+				email: "jean@besson.com",
+				age: 1
+			}, {
+				id: 3,
+				firstName: "Jaques",
+				lastName: "Besson",
+				adress: "20 rue des ruelles 59000 Lille",
+				email: "jacques@besson.com",
+				age: 52
+			}]);
+		}
+	}
+}, {
+	method: 'POST',
+	path: '/contact',
+	config: {
+		payload: {parse: true},
+		handler: function adContact(request, reply) {
+			console.log("POST /contact");
+			//var j = request.payload;
+			var contact = {
+				id: contacts.length +1,
+				firstName: request.payload.firstName,
+				lastName: request.payload.lastName,
+				adress: request.payload.adress,
+				email: request.payload.email,
+				age: request.payload.age,
+			};
+
+			contacts.push(contact);
+			//console.log(contact);
+			reply(contact);
+		}
+	}
+},{
+	method: 'PUT',
+	path: '/contact',
+	config: {
+		payload: {parse: true},
+		handler: function updateContact(request, reply) {
+			console.log('PUT /contact');
+			var contact = {
+				id: request.payload.id,
+				firstName: request.payload.firstName,
+				lastName: request.payload.lastName,
+				adress: request.payload.adress,
+				email: request.payload.email,
+				age: request.payload.age,
+			};
+			console.log(contact);
+			reply(contact);
+		}
+	}
+},{
+	method: 'DELETE',
+	path: '/contact/{id}',
+	config: {
+		payload: {parse: true},
+		handler: function updateContact(request, reply) {
+			reply().code(204);
+		}
 	}
 }];
 
@@ -144,15 +240,15 @@ function deleteVm(request, reply) {
 	});
 }
 //Get CIL.
-function getCIL(request, reply){
+function getCIL(request, reply) {
 	reply([{
-			id: "1",
-			label: "CIL1"
-		}, {
-			id: "2",
-			label: "CIL2"
-		}, {
-			id: "3",
-			label: "CIL3"
-		}]);
+		id: "1",
+		label: "CIL1"
+	}, {
+		id: "2",
+		label: "CIL2"
+	}, {
+		id: "3",
+		label: "CIL3"
+	}]);
 }

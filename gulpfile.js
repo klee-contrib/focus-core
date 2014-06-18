@@ -45,7 +45,7 @@ gulp.task('css-build', function() {
 //Build all the javascripts file.
 gulp.task('browser-build', ['infos','templates'],function() {
   //Build the js file for the browser.
-    gulp.src(['./lib/infos.js', './lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/session_helper.js', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js', 'lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
+    gulp.src(['./lib/infos.js', './lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/session_helper.js', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js', 'lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', 'lib/helpers/url_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
     .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
   .pipe(concat('fmk.js'))
     .pipe(gulp.dest('./dist/browser/'))
@@ -74,7 +74,7 @@ gulp.task('templates', function() {
   var defineModule = require('gulp-define-module');
   var declare = require('gulp-declare');
 
-  return gulp.src(["lib/templates/*.hbs"])
+  return gulp.src(["lib/templates/hbs/*.hbs"])
     .pipe(handlebars())
     .pipe(defineModule('plain'))
     .pipe(declare({
@@ -84,7 +84,18 @@ gulp.task('templates', function() {
     .pipe(gulp.dest('lib/templates/'));
 });
 
-
+gulp.task('templateHelper', function(){
+  //Build the js file for the browser.
+    gulp.src([
+      './lib/templates/helpers/common/*.js',
+      './lib/templates/helpers/common/*.coffee',
+      './lib/templates/helpers/*.js',
+      './lib/templates/helpers/*.coffee'
+    ])
+    .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
+    .pipe(concat('templateHelper.js'))
+    .pipe(gulp.dest('./lib/templates/'));
+});
 //Grouping build tasks.
 //Async build
 gulp.task('build', ['css-build', 'browser-build', 'node-build'], function(){
@@ -118,6 +129,7 @@ gulp.task('templatesExample', function() {
 });
 
 
+//Build a file from the package.json in order to have it present in the fmk.js file.
 gulp.task('infos', function () {
     
     var fs = require('fs');

@@ -1,0 +1,1165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+
+<title></title>
+
+<meta name="description" content="">    
+
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link rel="stylesheet" href="css/reveal.min.css">
+  <link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+
+<!-- For syntax highlighting -->
+  <link rel="stylesheet" href="lib/css/zenburn.css">
+
+
+<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+<script>
+  document.write( '<link rel="stylesheet" href="css/print/' +
+    ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + 
+    '.css" type="text/css" media="print">' );
+</script>
+
+<!--[if lt IE 9]>
+<script src="lib/js/html5shiv.js"></script>
+<![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+<!-- Any section element inside of this container is displayed as a slide -->
+<div class="slides">
+
+<section>
+<h1></h1>
+
+<p>
+<h4></h4>
+</p>
+</section>  
+
+
+<section id="spa-and-web-api" class="level1">
+<h1>SPA and WEB API</h1>
+<p><br /> <br /> <br /> Single page application and Web Api <br /> <br /> <br /> <br /> <br /> 10/06/2014 -- Pierre Besson</p>
+</section>
+<section id="architecture" class="level1">
+<h1>Architecture</h1>
+<section id="previous-application-model" class="level2">
+<h2>Previous application model</h2>
+<figure>
+<img src="/images/ppt/FMK_HTML5/Slide07.png" alt="Standard application" /><figcaption>Standard application</figcaption>
+</figure>
+</section>
+<section id="the-server-side-have" class="level2">
+<h2>The server side have:</h2>
+<ul>
+<li>All the business logic (database access, service layer)</li>
+<li>Routing</li>
+<li>Security</li>
+<li>Page rendering (HTML construction, css serving, assets)</li>
+</ul>
+</section>
+<section id="the-browser-side-have" class="level2">
+<h2>The browser side have:</h2>
+<ul>
+<li>A fragment of the UI, for interactions</li>
+<li>That's all ...</li>
+</ul>
+</section>
+<section id="applcation-lifecycle" class="level2">
+<h2>Applcation lifecycle</h2>
+<ol type="1">
+<li>The user request a page</li>
+<li>The server treat the request, it makes one or sevral database requests</li>
+<li>The server construct the pages (<em>html</em>, <em>js</em> , <em>css</em>, <em>images</em>, ...)</li>
+<li>The server return the page to the server inside an http response</li>
+<li>The user request another page</li>
+<li>The server perform again the 2,3,4</li>
+</ol>
+</section>
+<section id="a-necessary-evolution" class="level2">
+<h2>A necessary evolution</h2>
+<p>The application architecture is a model which has to evolve in order to be able to benefit form all new technologies:</p>
+<ul>
+<li>JavaScript performance improvements</li>
+<li>HTML5 APIs (Cache, JS, CSS3)</li>
+</ul>
+<figure>
+<img src="/images/ppt/FMK_HTML5/Slide11.png" alt="JS,HTML,CSS" /><figcaption>JS,HTML,CSS</figcaption>
+</figure>
+<p><a href="/architecture/spa.md">next</a></p>
+</section>
+</section>
+<section id="spa" class="level1">
+<h1>SPA</h1>
+<section id="a-simple-idea" class="level2">
+<h2>A simple idea</h2>
+<p>The application's paradigm has changed. As browser gets faster and faster, it was time to move to JavaScript Applications and Web API. <br /> <img src="/images/ppt/FMK_HTML5/Slide12.png" alt="SPA Schema" /></p>
+</section>
+<section id="schema" class="level2">
+<h2>Schema</h2>
+<figure>
+<img src="/images/ppt/FMK_HTML5/Slide08.png" alt="SPA Schema" /><figcaption>SPA Schema</figcaption>
+</figure>
+</section>
+<section id="the-server-side-have-1" class="level2">
+<h2>The server side have:</h2>
+<ul>
+<li>All the business logic (database access, service layer)</li>
+<li>Routing API</li>
+<li>Security</li>
+</ul>
+</section>
+<section id="the-browser-side-have-1" class="level2">
+<h2>The browser side have:</h2>
+<ul>
+<li>All the browser routing</li>
+<li>Page rendering</li>
+<li>All UI interactions</li>
+<li>Eventually local databases</li>
+<li>The application logic is deported on the browser</li>
+</ul>
+</section>
+<section id="application-lifecycle" class="level2">
+<h2>Application lifecycle</h2>
+<ul>
+<li><strong>First connexion</strong> : the server send <strong>html</strong> file with <strong>one</strong> or two <strong>JavaScript files</strong>, all <strong>assets</strong> (images, fonts) and one <strong>CSS</strong>. (The browser add it into its cache).</li>
+<li>Then the application exchange only via a <strong>REST API</strong> using <strong>ajax</strong>.</li>
+<li>An application can also communicate directly with many other webservices such as : Google maps, adress improvement, ...</li>
+</ul>
+</section>
+<section id="schema-1" class="level2">
+<h2>Schema</h2>
+<figure>
+<img src="/images/ppt/FMK_HTML5/Slide09.png" alt="SPA Schema" /><figcaption>SPA Schema</figcaption>
+</figure>
+</section>
+<section id="consequences" class="level2">
+<h2>Consequences:</h2>
+<ul>
+<li>A lighter network traffic</li>
+<li>Faster applications (User interface complexity is delegated to the browser)</li>
+<li>Performance improvement with browser updates (1 time per two weeks for chrome)</li>
+<li>Asynchronous loading</li>
+<li>Server technology agnostic (only http) <a href="/architecture/json.md">next</a></li>
+</ul>
+</section>
+<section id="json" class="level2">
+<h2><a href="http://json.org">JSON</a></h2>
+<ul>
+<li>Json is a simple format which is a sub part of JavsScript objects. It means <em>JavaScript Object Notation</em></li>
+<li>Each key of the object must be a <em>string</em></li>
+<li><p>Valid JSON:</p>
+<pre class=":json"><code>{
+  &quot;key&quot;: &quot;value&quot;,
+  &quot;person&quot;: {
+&quot;firstName&quot;: &quot;Steve&quot;,
+&quot;lastName&quot;: &quot;Jobs&quot;,
+&quot;age&quot;: 56
+  }
+}</code></pre></li>
+</ul>
+</section>
+<section id="advantages" class="level2">
+<h2>Advantages:</h2>
+<ul>
+<li>Simple structure</li>
+<li>Light on the network exchanges</li>
+<li><strong>JSON</strong> objects are <strong>JavaScript</strong> objects =&gt; <strong>Native interpretation</strong> inside <strong>browsers</strong>. <br /> <a href="/server-side/controller.md">next</a></li>
+</ul>
+</section>
+</section>
+<section id="section" class="level1">
+<h1></h1>
+<section id="server-side" class="level2">
+<h2>Server side</h2>
+<figure>
+<img src="/images/tuto/restfull.gif" alt="RESTFULL API" /><figcaption>RESTFULL API</figcaption>
+</figure>
+</section>
+<section id="controller-route-structure" class="level2">
+<h2>Controller, ROUTE, Structure</h2>
+<p>In order to expose an API, you have to map <em>url</em> to route wich trigger specific actions. We assume that our application is RESTFULL. It means a route is able to CREATE, RETRIEVE, UPDATE, DELETE an object: <strong>CRUD</strong></p>
+<ul>
+<li>A controller should match a simple route with the following actions</li>
+<li><strong>GET</strong> =&gt; Should load an object (somtimes with a <strong>param</strong>)</li>
+<li><strong>POST</strong> =&gt; Should create an object or be use in order to load.</li>
+<li><strong>PUT</strong> =&gt; Should update an object.</li>
+<li><strong>DELETE</strong> =&gt; Delete an object (often take an <strong>id</strong> paramater)</li>
+</ul>
+</section>
+<section id="example" class="level2">
+<h2><a href="http://localhost:8080/contact">Example</a></h2>
+<ul>
+<li>In order to have a controller for a contact: (CRUD)</li>
+</ul>
+</section>
+<section id="post" class="level2">
+<h2>POST</h2>
+<p>http://domainName/contact** =&gt; <strong>CREATE</strong> a contact <br /> <img src="/images/api/POST_Contact.png" alt="POST one element" /></p>
+</section>
+<section id="get" class="level2">
+<h2><strong>GET</strong></h2>
+<p><strong>http://domainName/contact/1</strong> =&gt; <strong>RETRIEVE</strong> all contacts<br /> <img src="/images/api/GET_Contact.png" alt="GET one element" /></p>
+</section>
+<section id="get-1" class="level2">
+<h2><strong>GET</strong></h2>
+<p><strong>http://domainName/contact/1</strong> =&gt; <strong>RETRIEVE</strong> a contact with an id <strong>1</strong> <br /></p>
+<figure>
+<img src="/images/api/GET_Contact_1.png" alt="GET action" /><figcaption>GET action</figcaption>
+</figure>
+</section>
+<section id="put" class="level2">
+<h2><strong>PUT</strong> :</h2>
+<p><strong>http://domainName/contact/1</strong> =&gt; <strong>UPDATE</strong> a contact with an id <strong>1</strong> <br /> <img src="/images/api/PUT_Contact.png" alt="PUT action" /></p>
+</section>
+<section id="delete" class="level2">
+<h2><strong>DELETE</strong></h2>
+<p><strong>http://domainName/contact/1</strong> =&gt; <strong>DELETE</strong> a contact with an id <strong>1</strong> <br /> <img src="/images/api/DELETE_Contact.png" alt="DELETE action" /></p>
+</section>
+<section id="tools-12" class="level2">
+<h2>TOOLS (1/2)</h2>
+<p>In order to easily test web apis, you can use two tools:</p>
+<section id="the-network-tab-of-the-chrome-dev-tools-it-means-you-have-to-write-js-code-in-order-to-perform-ajax-requests-for-other-request-than-get-and-visualize-them." class="level3">
+<h3>The network tab of the chrome dev tools (it means you have to write JS code in order to perform ajax requests for other request than <em>GET</em> and visualize them).</h3>
+<figure>
+<img src="/images/api/CHROME_Network.png" alt="Chrome Network Devtools" /><figcaption>Chrome Network Devtools</figcaption>
+</figure>
+</section>
+</section>
+<section id="tools-22" class="level2">
+<h2>TOOLS (2/2)</h2>
+<section id="the-postman-chrome-extension." class="level3">
+<h3>The <a href="http://www.getpostman.com/">POSTMAN</a> chrome extension.</h3>
+<figure>
+<img src="/images/api/POSTMAN.png" alt="POSTMAN Extension" /><figcaption>POSTMAN Extension</figcaption>
+</figure>
+<p><a href="/server-side/service.md">next</a></p>
+</section>
+</section>
+<section id="server-service-layer" class="level2">
+<h2>Server service layer</h2>
+<ul>
+<li>No major changes</li>
+<li>The service layer of the applications stays the same as before. As the database access layer.</li>
+</ul>
+</section>
+<section id="security" class="level2">
+<h2>Security</h2>
+<ul>
+<li>As the client is a completetly different application than the server. The <strong>server</strong> must be security proof.</li>
+<li>All services must guaranty the security. Because they can be called through any client of the webservice.</li>
+<li>It is also important to set up <strong>unit test</strong> on services in order to have a clear <strong>separation</strong> between the <strong>client</strong> and the <strong>server</strong>.</li>
+</ul>
+</section>
+<section id="service-read" class="level2">
+<h2>Service: READ</h2>
+<ul>
+<li>Objects can be structured or not really</li>
+<li>Objects can be soft, composition of service call with properties</li>
+<li>Objects can have additional metadatas (sort, page, ...)</li>
+</ul>
+</section>
+<section id="servie-write" class="level2">
+<h2>Servie: WRITE</h2>
+<ul>
+<li>The entry type must be an object strongly type</li>
+<li>Must be safe</li>
+</ul>
+</section>
+</section>
+<section id="section-1" class="level1">
+<h1></h1>
+<section id="page-pattern" class="level2">
+<h2>Page pattern</h2>
+<ul>
+<li>With JavaScript, many possibilities exists in order to build pages.</li>
+<li>With far more interactions, loading strategies, client side validation, animations, interactive graphs.</li>
+</ul>
+</section>
+<section id="framework-0.1-first-objective" class="level2">
+<h2>Framework 0.1: First objective</h2>
+<p>The objective of the first version of the JavaScript Framework was to be able to build application with the same pattern as before.</p>
+<ul>
+<li>Search pages</li>
+<li>Result pages (often combine with a search one)</li>
+<li>List pages (Read, write)</li>
+<li>Detail pages (Read, write)</li>
+</ul>
+<p>Even if these pages are not so different from the previous one (in the rendering aspect), the way we build the is completely different. The interactions possibilities are completly differents.</p>
+</section>
+<section id="framework-0.1-second-objective" class="level2">
+<h2>Framework 0.1: Second objective</h2>
+<ul>
+<li>The second objective was to be able to <em>easily</em> build pages which coule be different from the usual patterns.</li>
+<li>Or to create new patterns or improve existing one.</li>
+</ul>
+</section>
+<section id="search-pages-klépierre" class="level2">
+<h2>Search pages: KLéPierre</h2>
+<figure>
+<img src="/images/pattern/Search.PNG" alt="KP_Search" /><figcaption>KP_Search</figcaption>
+</figure>
+</section>
+<section id="list-pages-klépierre" class="level2">
+<h2>List pages : KLéPierre</h2>
+<figure>
+<img src="/images/pattern/List.PNG" alt="KP_Search" /><figcaption>KP_Search</figcaption>
+</figure>
+</section>
+<section id="consult-edit-pages" class="level2">
+<h2>Consult Edit pages</h2>
+<p>Consult and edit example.</p>
+</section>
+<section id="klépierre-consultation" class="level2">
+<h2>KLéPierre Consultation</h2>
+<figure>
+<img src="/images/pattern/Consult.PNG" alt="KP_ConsultEdit_Consult" /><figcaption>KP_ConsultEdit_Consult</figcaption>
+</figure>
+</section>
+<section id="klépierre-edition" class="level2">
+<h2>KléPierre Edition</h2>
+<figure>
+<img src="/images/pattern/Edit.PNG" alt="KP_ConsultEdit_Edit" /><figcaption>KP_ConsultEdit_Edit</figcaption>
+</figure>
+</section>
+<section id="klépierre-edition-with-errors" class="level2">
+<h2>KléPierre Edition with errors</h2>
+<figure>
+<img src="/images/pattern/Edit_Error.PNG" alt="KP_EditErrorsConsultEdit" /><figcaption>KP_EditErrorsConsultEdit</figcaption>
+</figure>
+</section>
+<section id="composite-pages" class="level2">
+<h2>Composite pages</h2>
+<p>Examples of the composite pattern</p>
+</section>
+<section id="klépierre-consultation-1" class="level2">
+<h2>KLéPierre: Consultation</h2>
+<figure>
+<img src="/images/pattern/CompositeComplexConsult.PNG" alt="KP_CComposite_Consult" /><figcaption>KP_CComposite_Consult</figcaption>
+</figure>
+</section>
+<section id="klépierre-edition-1" class="level2">
+<h2>KLéPierre: Edition</h2>
+<figure>
+<img src="/images/pattern/CompositeComplex_Edit.PNG" alt="KP_Composite_Edit" /><figcaption>KP_Composite_Edit</figcaption>
+</figure>
+</section>
+<section id="klépierre-edition-composition" class="level2">
+<h2>KLéPierre: Edition composition</h2>
+<figure>
+<img src="/images/pattern/CompositeExplaination.png" alt="KP_Composite_Explained" /><figcaption>KP_Composite_Explained</figcaption>
+</figure>
+</section>
+</section>
+<section id="section-2" class="level1">
+<h1></h1>
+<section id="application-first-steps" class="level2">
+<h2>Application first steps</h2>
+<figure>
+<img src="/images/tuto/archi-technos-SPA.png" alt="Technos" /><figcaption>Technos</figcaption>
+</figure>
+</section>
+<section id="core-objects" class="level2">
+<h2>Core Objects</h2>
+<p>The Framework is build on the top of an other lightweight JavaScript framework: <a href="http://backbonejs.org">Backbone.js</a>. The main goal of <em>Backbone</em> is to provide concepts an a really flexible skeleton in order to build JavaScript applications. The application objects try to match an MVC pattern with many concepts:</p>
+<ul>
+<li><a href="/first_steps/model.md">Model</a></li>
+<li><a href="/first_steps/collection.md">Collection</a></li>
+<li><a href="/first_steps/view.md">View</a></li>
+<li><a href="/first_steps/template.md">Template</a></li>
+<li><a href="/first_steps/service.md">Service</a></li>
+<li><a href="/first_steps/router.md">Router</a></li>
+</ul>
+</section>
+<section id="router-13" class="level2">
+<h2>Router (1/3)</h2>
+<ul>
+<li>The router is responsible for routing the url on the client side.</li>
+<li>A route can have parameters</li>
+<li>A Route can be a regex</li>
+<li>A Route must have an handler</li>
+</ul>
+</section>
+<section id="router-23" class="level2">
+<h2>Router (2/3)</h2>
+<pre class=":javascript"><code>//Registering routes
+Router.prototype.routes = {
+    &#39;&#39;: &#39;home&#39;,
+    &#39;about&#39;: &#39;about&#39;,
+    &#39;contact&#39;: &#39;contact&#39;,
+    &#39;signin&#39;: &#39;signin&#39;,
+    &#39;contact/:id&#39;: &#39;loadContact&#39;
+  };
+//Handler
+var loadContact = function(id) {
+    return application.layout.content.show(
+      new ContactView({
+        model: new Contact({id: id})
+      }
+    ));
+  };
+</code></pre>
+</section>
+<section id="router-33" class="level2">
+<h2>Router (3/3)</h2>
+<p>The router in the Fmk.js has been modified in order to perform the following actions:</p>
+<ul>
+<li>Right validation (base on the sitemap roles)</li>
+<li>Redirection</li>
+<li>Middleware strategy</li>
+<li>Deals with transverse notifications</li>
+</ul>
+</section>
+<section id="model.js-13" class="level2">
+<h2>Model.js (1/3)</h2>
+<p>A model has to inherit from a <a href="http://backbonejs.org/#Model">Backbone.Model</a>. It looks like this:</p>
+<pre class=":javascript"><code>var ContactModel = Fmk.Models.Model.extend({
+  modelName: &quot;contact&quot;
+  url: &quot;http://domain/api/contact&quot;,
+  initialize: function(options){
+    //Some initialization code here.
+    if(!this.isNew()){
+      this.set({creationDate: new Date()});
+    }
+  },
+  metadatas:{
+    firstName: {
+      &quot;doamain&quot;: &quot;DO_SHORT_LABEL&quot;
+    }
+  }
+});</code></pre>
+</section>
+<section id="model.js-23" class="level2">
+<h2>Model.js (2/3)</h2>
+<ul>
+<li>Has an url property</li>
+<li>Has metadatas</li>
+<li>Maintain attributes (modelName and metadatas attributes)</li>
+<li>Trigger events when updtated</li>
+</ul>
+</section>
+<section id="model.js-33" class="level2">
+<h2>Model.js (3/3)</h2>
+<ul>
+<li>In the <code>Fmk.js</code> the default Backbone model has been extended mainly in order to deal with medatdatas.</li>
+<li>It also have special methods in order to be save.</li>
+<li>The json model is the input and the output of the <strong>services</strong>.</li>
+</ul>
+</section>
+<section id="collection.md-13" class="level2">
+<h2>Collection.md (1/3)</h2>
+<ul>
+<li>A collection is a group of model.</li>
+<li>It has methods to iterate, sort</li>
+<li>It can be use to save a list of data.</li>
+</ul>
+</section>
+<section id="collection-23" class="level2">
+<h2>Collection (2/3)</h2>
+<pre class=":javascript"><code>//Dependencies.
+var URL = require(&#39;../URL&#39;);
+var Contact = require(&#39;./contact&#39;);
+
+module.exports = Fmk.Models.PaginatedCollection.extend({
+    model: Contact,
+    modelName: &quot;demo.contact&quot;,
+    url: URL.demo.contact
+});
+</code></pre>
+</section>
+<section id="collection-33" class="level2">
+<h2>Collection (3/3)</h2>
+<p>Collection have been extended in order to :</p>
+<ul>
+<li>Have pagination</li>
+<li>Sort</li>
+<li>A track of changes</li>
+</ul>
+<pre class=":json"><code>changes:{
+  creates:[],
+  deletes:[],
+  updates: []
+}</code></pre>
+</section>
+<section id="template.js-14" class="level2">
+<h2>Template.js (1/4)</h2>
+<ul>
+<li>Based on the <a href="http://handlebarsjs.com">Handlebars.js</a></li>
+<li>Simple templating language</li>
+<li>A template consume a <em>json</em> object</li>
+<li>Properties are accessed with <code>{{key}}</code></li>
+<li>A set of helpers is available</li>
+<li>Custom Helpers can be written</li>
+</ul>
+</section>
+<section id="template.js-24" class="level2">
+<h2>Template.js (2/4)</h2>
+<pre class=":handlebars"><code>&lt;form&gt;
+  {{input_for &quot;fisrtName&quot;}}
+  {{input_for &quot;lastName&quot;}}
+  {{input_for &quot;age&quot;}}
+  &lt;button type=&#39;submit&#39;&gt;Save&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+</section>
+<section id="template.js-34" class="level2">
+<h2>Template.js (3/4)</h2>
+<p>In the fmk, there are custom helpers: they take care of rendering, using metadatas.</p>
+<ul>
+<li><strong>input_for</strong> : Deals with inputs</li>
+<li><strong>options_selected</strong> : Deals with inputs</li>
+<li><strong>display_for</strong> : Read only fields</li>
+<li><strong>hasRole</strong> : Deals with roler</li>
+<li><strong>t</strong> : Deals with translations.</li>
+</ul>
+</section>
+<section id="template.js-44" class="level2">
+<h2>Template.js (4/4)</h2>
+<p>Example of code for the button:</p>
+<pre class=":coffee"><code>Handlebars.registerHelper &quot;statusIcon&quot;, (property, options)-&gt;
+  if typeof(this[property] == &quot;boolean&quot;)
+    if this[property] then icon = &quot;fa fa-check&quot; else icon = &quot;fa fa-exclamation&quot;
+  else switch this[property]
+    when 0 then icon = &quot;fa fa-ban&quot;;
+    when 1 then icon = &quot;fa fa-exclamation&quot;;
+    when 2 then icon = &quot;fa fa-clock-o&quot;;
+    when 3 then icon = &quot;fa fa-check&quot;;
+    else icon = &quot;&quot;
+  return new Handlebars.SafeString(&quot;&lt;i class=&#39;#{icon}&#39;&gt;&lt;i&gt;&quot;);</code></pre>
+</section>
+<section id="view.js-14" class="level2">
+<h2>View.js (1/4)</h2>
+<p>A view has to inherit from a <a href="http://backbonejs.org/#View">Backbone.View</a>. It looks like this:</p>
+<pre class=":javascript"><code>var ContactView = Backbone.View.extend({
+  url: &quot;http://domain/api/contact&quot;,
+  template: contactTemplate,
+  events:{
+    &quot;click button[type=&#39;submit&#39;]&quot;: &quot;save&quot;
+  }
+  initialize: function(options){
+    //Some initialization code here.
+    var currentView = this;
+    this.contactSvc.load(this.model.get(&#39;id&#39;)).then(function(data){
+      currentView.model.set(data);
+    });
+  },save: function(event){
+    event.preventDefault();
+    this.saveSvc.save().then(
+    //...
+    )
+  }
+});</code></pre>
+</section>
+<section id="view.js-24" class="level2">
+<h2>View.js (2/4)</h2>
+<ul>
+<li>Has to load the model from the service</li>
+<li>Has to render the html when its ready</li>
+<li>Has to bind the DOM event (events property)</li>
+</ul>
+</section>
+<section id="views.js-34" class="level2">
+<h2>Views.js (3/4)</h2>
+<ul>
+<li>A set of views is defined in the Fmk in the <code>Fmk.Views</code> property. All these views has many options and has been designed to cover almost every need in the application.</li>
+<li>They come with a set of options which can be overriden using the <code>customOptions</code> attributes.</li>
+<li>A view must have one or many template(s)</li>
+<li>A view must have one or many services (search, load, save, delete...)</li>
+</ul>
+</section>
+<section id="views.js-44" class="level2">
+<h2>Views.js (4/4)</h2>
+<ul>
+<li><strong>core_view</strong> : The mother of all views</li>
+<li><strong>consult_edit</strong> : Deals with consultation and edition.</li>
+<li><strong>list_view</strong> : Deals with lists but extend consult_edit.</li>
+<li><strong>search_view</strong> : Deals with search.Has to be conbine with a <strong>result_view</strong>.</li>
+<li><strong>composite_view</strong> : Deals with translations.</li>
+</ul>
+</section>
+<section id="service-13" class="level2">
+<h2>Service (1/3)</h2>
+<ul>
+<li>Service layer is a Klee customization</li>
+<li>This layer handle all the requests to the server.</li>
+<li>This layer can also have a 'local' database strategy</li>
+<li>This layer can decide to add a cache</li>
+</ul>
+</section>
+<section id="service-23" class="level2">
+<h2>Service (2/3)</h2>
+<pre class=":javascript"><code>var Reference = require(&#39;../models/reference&#39;);
+var References = require(&#39;../models/references&#39;);
+var Promisify = require(&#39;../models/promisify&#39;);
+/*Instances of both model and collection of virtual machines.*/
+var promiseReference = Promisify.Convert.Model(new Reference());
+var promiseReferences = Promisify.Convert.Collection(new References());
+
+function saveReference(jsonModel) {
+  promiseReference.clear({
+    silent: true
+  });
+  return promiseReference.save(jsonModel);
+}
+
+//Load all the references of the application
+function loadReferences() {
+  promiseReferences.reset(null, {silent: true});
+  return promiseReferences.fetch();
+}
+module.exports = {
+  save: saveReference,
+  loadAll: loadReferences
+};</code></pre>
+</section>
+<section id="service-33" class="level2">
+<h2>Service (3/3)</h2>
+<ul>
+<li>The service can add cache on the client side if it is necessary</li>
+<li><strong>Input</strong> and <strong>Output</strong> can only be <em>JSON</em></li>
+<li>The service layer is build on the top of a future JavaScript core concept: <strong>Promises</strong>.</li>
+</ul>
+</section>
+<section id="promises" class="level2">
+<h2>Promises</h2>
+</section>
+<section id="callback-problem" class="level2">
+<h2>Callback problem</h2>
+<ul>
+<li>Answer to the callback problem which are difficult to manage when the workflow is complex.</li>
+<li>If an <strong>exception</strong> occurs, the <strong>thread</strong> is <strong>broken</strong>.</li>
+<li>A callback must be <strong>register before</strong> its <strong>called</strong>.</li>
+<li>A callback can be trigger <strong>multiple</strong> times.</li>
+</ul>
+</section>
+<section id="state" class="level2">
+<h2>State</h2>
+<ul>
+<li><strong>Pending</strong>: don't get a result.</li>
+<li><strong>Fullfilled</strong>: unable to get a result.</li>
+<li><strong>Rejected</strong>: a problem occurs.</li>
+<li><strong>Setteled</strong>: fullfilled or rejected</li>
+</ul>
+</section>
+<section id="how-it-works" class="level2">
+<h2>How it works</h2>
+<ul>
+<li>Must be followed by a <code>then(onFullFilled, [,onRejected])</code></li>
+<li>Each argument is optional and must be a function</li>
+<li>Only one will be called, <strong>once</strong></li>
+<li>The call is <strong>asynchronous</strong></li>
+</ul>
+</section>
+<section id="the-code" class="level2">
+<h2>The code</h2>
+<pre class=":javascript"><code>var promise = new Promise(function(resolve, reject) {
+    //Do something maybe asynchronous or not
+    var isOk = treatement();
+    if (isOk) {
+      resolve(&quot;It works...&quot;);
+    } else {
+      reject(Error(&quot;It does not work!&quot;))
+}).then(console.log, console.error);</code></pre>
+</section>
+</section>
+<section id="section-3" class="level1">
+<h1></h1>
+<section id="application-structure" class="level2">
+<h2>Application structure</h2>
+<figure>
+<img src="/images/tuto/app.jpg" alt="Application" /><figcaption>Application</figcaption>
+</figure>
+</section>
+<section id="production-structure-12" class="level2">
+<h2>Production structure (1/2)</h2>
+<figure>
+<img src="/images/tuto/files-bundled.png" alt="The bundled files" /><figcaption>The bundled files</figcaption>
+</figure>
+</section>
+<section id="production-structure-22" class="level2">
+<h2>Production structure (2/2)</h2>
+<p>In order to be efficient on the browser, we have to seve:</p>
+<ul>
+<li>One or two JS files</li>
+<li>One css file (or two)</li>
+<li>All the assets</li>
+<li>Cache them on the client</li>
+</ul>
+</section>
+<section id="dev-structure" class="level2">
+<h2>Dev structure</h2>
+<p>In order to have a nice structure inside the project, a bundler is used. This bundler called <a href="http://brunch.io">brunch</a> is built on the top of <a href="http://nodejs.org">Node.js</a>. The bundler role is to convert multiple files (whenever a file is modified) into a single one. <img src="/images/brunch.png" alt="The bundled files" /></p>
+</section>
+<section id="bundle-process" class="level2">
+<h2>Bundle process</h2>
+<figure>
+<img src="/images/tuto/files-bundle-process.png" alt="The bundled process" /><figcaption>The bundled process</figcaption>
+</figure>
+</section>
+<section id="client-side-organization" class="level2">
+<h2>Client side organization</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>directory</strong></th>
+<th style="text-align: left;"><strong>meaning</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">application.js</td>
+<td style="text-align: left;">All the application initialization code</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">assets</td>
+<td style="text-align: left;">All application static ressources (images, fonts, favicon, ...)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lib</td>
+<td style="text-align: left;">Contains all application helpers, the application router(s), template helpers.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">i18n</td>
+<td style="text-align: left;">All application text informations (label, messages, ...). Could contain multiple languages.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">services</td>
+<td style="text-align: left;">Client side service layer. (Ajax or local loading)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">views</td>
+<td style="text-align: left;">Contains all the views. Views in the backbone.js applications are more like controllers. They load their models using services and display the in their templates. Views are also responsible for handling user interactions with the page.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">models</td>
+<td style="text-align: left;">Modelization inside views, match api data. Can have special methods (sort, toJSON, ...). Contains both models and collections</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">views/templates</td>
+<td style="text-align: left;">The templates of the views</td>
+</tr>
+</tbody>
+</table>
+<p>A additional level can be added in each directory if the application is complex and have many pages.</p>
+</section>
+<section id="node.js-13" class="level2">
+<h2>Node.js (1/3)</h2>
+<figure>
+<img src="/images/tuto/node.png" alt="Node.js" /><figcaption>Node.js</figcaption>
+</figure>
+</section>
+<section id="node.js-23" class="level2">
+<h2>Node.js (2/3)</h2>
+<ul>
+<li><strong>module.exports</strong> and <strong>require</strong></li>
+<li>search local, then relative then globals</li>
+</ul>
+</section>
+<section id="node.js-33" class="level2">
+<h2>Node.js (3/3)</h2>
+<figure>
+<img src="/images/tuto/node-exports.jpeg" alt="CommonJS" /><figcaption>CommonJS</figcaption>
+</figure>
+<p><a href="/first_steps">next</a></p>
+</section>
+</section>
+<section id="section-4" class="level1">
+<h1></h1>
+<section id="create-a-simple-page" class="level2">
+<h2>Create a simple page</h2>
+<p>In order to be able to display your first page you need to perform differents actions:</p>
+<ul>
+<li>Create a <a href="http://backbonejs.org/#Model">model</a> which represents the data you want to display and the actions you might want to perform.</li>
+<li>Create a <a href="http://backbonejs.org/#View">view</a> for your page which use your model</li>
+<li>Create a template for your view. The templating language we will use is <a href="http://handlebarsjs.com/">Handlebars</a></li>
+</ul>
+<p>We will take as an example the problem of displaying a contact on a screen, and a list of contact. A contact has the following attributes:</p>
+<ul>
+<li>FirstName</li>
+<li>LastName</li>
+<li>Email</li>
+</ul>
+</section>
+<section id="model-define-the-model" class="level2">
+<h2>Model: Define the model</h2>
+<p>A model has to extend an existing <strong>Backbone.Model</strong> which could be the default <strong>Backbone.Model</strong>.</p>
+<pre class=":javascript"><code>var ContactModel = Backbone.Model.extend({
+  default: {
+    firstName: undefined,
+    lastName: undefined,
+    email: undefined
+  },
+  name: function displayFirstNameLastName(){
+    return this.get(&#39;firstName&#39;) + &#39; &#39; + this.get(&#39;lastName&#39;);
+  }
+});</code></pre>
+</section>
+<section id="model-using-the-model" class="level2">
+<h2>Model : Using the model</h2>
+<p>Now that you have a model, you can try to create a model and play with it.</p>
+<pre class=":javascript"><code>var contact = new ContactModel({firstName: &quot;Robert&quot;, lastName: &quot;Dupont&quot;, email: &quot;robert@dupont.com&quot;});
+console.log(contact.get(&#39;firstName&#39;)); //Display: Robert
+console.log(contact.name()); // Display: Robert Dupont
+//Update the firstName and set its address (a new field)
+contact.set({firstName: &quot;Roberto&quot;, address: &quot;12 rue des fleurs 75000 Paris&quot;});
+console.log(contact.get(&#39;firstName&#39;), contact.get(&#39;address&#39;)); //Display: Roberto, 12 rue des fleurs 75000 Paris</code></pre>
+</section>
+<section id="template-data" class="level2">
+<h2>Template: data</h2>
+<p>A template is written in a template language. This template consume data which are pass to it by th view. The data which are passed to the template are <a href="http://www.json.org/">JSON</a>. Usally, the data passed to the template are a json representation of the model. Here our data would be :</p>
+<pre class=":json"><code>{
+  &quot;firstName&quot;: &quot;Robert&quot;,
+  &quot;lastName&quot;: &quot;Dupont&quot;,
+  &quot;email&quot; : &quot;robert@dupont.com&quot;
+}</code></pre>
+</section>
+<section id="template-file" class="level2">
+<h2>Template: file</h2>
+<p>A template has a <em>.hbs</em> extension. Inside a template you can write plain HTML and when you need to access the value of the data passed inside the view you just have to type a <code>{{propertyName}}</code>. As an example: <code>{{firstName}}</code>.</p>
+<pre class=":handlebars"><code>&lt;p&gt; Mr {{firstName}}  {{lastName}} has the following email: {{email}}.&lt;/p&gt;</code></pre>
+<p>A template will be <em>compiled</em> as a JavaScript function by the <a href="http://brunch.io/">brunch</a> tool. Il will be use as follows: <code>templateFunction(jsonData);</code><br/> it will display:</p>
+<pre class=":html"><code>&lt;p&gt; Mr Robert  Dupont has the following email: robert@dupont.com.&lt;/p&gt;</code></pre>
+</section>
+<section id="view-define" class="level2">
+<h2>View: define</h2>
+<p>A <strong>view</strong> has to extend an existing view or a default Backbone view. The model is not &quot;linked&quot; to the view it has to be pass to the view when instaciated.</p>
+<pre class=":javascript"><code>//We load the template which has been defined in the template part. 
+//This template is (or will be ) compiled as a javascript function.
+var template = require(&#39;./template/contact&#39;); 
+var ContactView = Backbone.View.extend({
+  template: template,
+  render: function renderContactView(){
+    this.$el.html(this.template(this.model.toJSON())); 
+    // The model will be pass to the view in the next part.
+    // Here we inject the json into the template function associated to the template.
+    return this;
+  }
+});</code></pre>
+<p>All view has an <a href="http://backbonejs.org/#View-el">el</a> element which contains all the DOM element of it.</p>
+</section>
+<section id="view-using" class="level2">
+<h2>View: using</h2>
+<pre class=":javascript"><code>var contact = new ContactModel({firstName: &quot;Robert&quot;, lastName: &quot;Dupont&quot;, email: &quot;robert@dupont.com&quot;});
+var contactView = new ContactView({model: contact});
+console.log(contactView.render().el);
+//Will display : &lt;p&gt; Mr Robert  Dupont has the following email: robert@dupont.com.&lt;/p&gt;</code></pre>
+</section>
+<section id="view" class="level2">
+<h2>View</h2>
+</section>
+</section>
+<section id="section-5" class="level1">
+<h1></h1>
+<section id="fmk.js" class="level2">
+<h2>Fmk.js</h2>
+<figure>
+<img src="/images/tuto/fmk.jpg" alt="Practice" /><figcaption>Practice</figcaption>
+</figure>
+</section>
+<section id="not-only-backbone" class="level2">
+<h2>Not only Backbone</h2>
+<p>The JavaScript framework contains many things. Some are build on the top of Backbone as said before (the views, models). But they are many more things.</p>
+<ul>
+<li>Helpers</li>
+<li>Views</li>
+<li>templates</li>
+<li>Models</li>
+</ul>
+</section>
+<section id="domain-definition" class="level2">
+<h2>Domain: definition</h2>
+<p>A domain has many attributes:</p>
+<ul>
+<li><strong>type</strong>: Javascript type <em>boolean</em>, <em>number</em>, <em>string</em>.</li>
+<li><strong>validation</strong>: An array of the validation attributes with the following types: <em>regex</em>, <em>number</em>, <em>string</em>, <em>function</em></li>
+<li><strong>decorator</strong>: the name of a jQuery plugin use for the domain rendreing</li>
+<li><strong>formatter</strong>: <code>{value: function(data, opts){//validate the data}, options: {isCool: true}}</code></li>
+</ul>
+</section>
+<section id="domain-example" class="level2">
+<h2>Domain: Example</h2>
+<pre class=":json"><code>{
+ &quot;DO_LABEL_30&quot;: {
+  &quot;type&quot;: &quot;string&quot;,
+  &quot;validation&quot;: [{
+    &quot;type&quot;: &quot;string&quot;,
+    &quot;options&quot;: {
+      &quot;maxLength&quot;: 30
+    } 
+  }],
+  style: &quot;do_label_30&quot;,
+  required: false
+}</code></pre>
+</section>
+<section id="domain-validation-object-structure" class="level2">
+<h2>Domain: validation: Object structure</h2>
+<p>The validation has to have the following structure:</p>
+<pre class=":javascript"><code>{
+ &#39;type&#39;: &#39;validationType&#39;, /*number, string, date, function, string, regex.*/
+ &#39;value&#39;: valiationValue, //Optional but when need it is the value of the validator
+ &#39;options&#39;: {&#39;opt1&#39;: opt1Value, &#39;opt2&#39;: opt2Value, label: &quot;property.name&quot;} //Optional as its name says.
+}</code></pre>
+</section>
+<section id="number" class="level2">
+<h2>number</h2>
+<p>The number mean the property has to be a number, it will go through a <code>isNaN</code> function after a cast into a int value with the + operator. This validation takes the following options</p>
+<ul>
+<li><strong>max</strong>: The maximum value authorize</li>
+<li><p><strong>min</strong>: The minimum value authorize.</p>
+<pre class=":javascript"><code>{&quot;type&quot;:&quot;number&quot;, &quot;options&quot;: {&quot;min&quot;: 1, &quot;max&quot;: 30}}</code></pre></li>
+</ul>
+</section>
+<section id="string" class="level2">
+<h2>string</h2>
+<p>The string validation will check that the property is a string. It takes the following options:</p>
+<ul>
+<li><strong>minLength</strong>: The minimum length options, has to be an integer.</li>
+<li><p><strong>maxLength</strong>: The maximum length options, has to be an integer. <br /> Example of declaration:</p>
+<pre class=":json"><code>{
+  &quot;type&quot;:&quot;string&quot;, 
+  &quot;options&quot;: {&quot;minLength&quot;: 1, &quot;maxLength&quot;: 30}
+}</code></pre></li>
+</ul>
+</section>
+<section id="regex" class="level2">
+<h2>regex</h2>
+<p>This validation will takes the regex define into the <strong>value</strong> field and apply the following to test if the property value match the <em>Regex</em>: <code>regexValue.test(propertyValue)</code>.<br /> Note that regex takes no options.</p>
+<p>Example of declaration:</p>
+<pre class=":json"><code>{
+  &quot;type&quot;:&quot;regex&quot;, 
+  &quot;value&quot;: /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}$/ 
+}</code></pre>
+</section>
+<section id="function" class="level2">
+<h2>function</h2>
+<pre class=":javascript"><code>//Define a function.
+{
+  &quot;type&quot;:&quot;function&quot;,
+  &quot;value&quot;: function(propertyValue, options){
+    return prop === true;
+  }
+}</code></pre>
+</section>
+<section id="example-1" class="level2">
+<h2>Example</h2>
+<pre class=":json"><code>&quot;DO_ENTIER&quot;: {
+  &quot;type&quot;: &quot;number&quot;,
+  &quot;validation&quot;: [{
+    &quot;type&quot;: &quot;regex&quot;,
+    &quot;value&quot;: &quot;^\\d+$&quot;
+  }],
+},
+&quot;DO_DATE&quot;: {
+  &quot;type&quot;: &quot;date&quot;,
+  &quot;validation&quot;: [{
+    &quot;type&quot;: &quot;date&quot;
+  }]
+},
+&quot;DO_LABEL_30&quot;: {
+  &quot;type&quot;: &quot;string&quot;,
+  &quot;validation&quot;: [{
+    &quot;type&quot;: &quot;string&quot;,
+    &quot;options&quot;: {
+      &quot;maxLength&quot;: 30
+    } 
+  }]
+},
+&quot;DO_CUSTOM&quot;: {
+  &quot;type&quot;: &quot;date&quot;,
+  &quot;validation&quot;: [{
+    &quot;type&quot;: &quot;function&quot;,
+    &quot;value&quot;: function(propertyValue, options){
+      return prop === true;
+    }
+  }]
+},</code></pre>
+</section>
+<section id="site-decription-15" class="level2">
+<h2>Site decription (1/5)</h2>
+<p>jfncjdnvcjdnj</p>
+</section>
+<section id="site-description-25" class="level2">
+<h2>Site description (2/5)</h2>
+<pre class=":javascript"><code>//Function use to build the site description from the 
+var site = function (p) {
+    return {
+        headers: [{
+            name: &quot;home&quot;,
+            url: &quot;#home&quot;,
+            roles: [&#39;ADMIN_GENERAL_CONSULT&#39;]
+        }, {
+            name: &quot;centerStructure&quot;,
+            url: &quot;#centerStructure/sites/siteList&quot;,
+            roles: [&#39;STRUCT_SITE_CONSULT&#39;],
+            headers: [{
+                name: &quot;sites&quot;,
+                url: &quot;#centerStructure/sites/siteList&quot;,
+                roles: [&#39;STRUCT_SITE_CONSULT&#39;],
+                requiredParams: [&#39;sitId&#39;],
+                headers: [{
+                    name: &quot;site&quot;,
+                    url: &quot;#centerStructure/sites/siteDetail/&quot; + p.sitId.value,
+                    roles: [&#39;STRUCT_SITE_CONSULT&#39;]
+                }, {
+                    name: &quot;buildingList&quot;,
+                    url: &quot;#centerStructure/sites/siteDetail/&quot; + p.sitId.value + &quot;/buildingList&quot;,
+                    roles: [&#39;STRUCT_SITE_CONSULT&#39;],
+                    requiredParams: [&#39;bldId&#39;],
+                    pages: [{
+                        name: &quot;building&quot;,
+                        url: &quot;#centerStructure/sites/siteDetail/&quot; + p.sitId.value + &quot;/buildingDetail/&quot; + p.bldId.value,
+                        roles: [&#39;STRUCT_SITE_CONSULT&#39;]
+                    }]
+                }]}]}],
+              pages: [
+                //Test page 
+                {
+                    name: &quot;domainTest&quot;,
+                    url: &quot;#administration/domainTest&quot;,
+                    roles: [&#39;ADMIN_GENERAL_CONSULT&#39;]
+                }]
+    };
+};</code></pre>
+</section>
+<section id="site-description-35" class="level2">
+<h2>Site description (3/5)</h2>
+<pre class=":javascript"><code>//Container for the module exports.
+var siteDescription = {};
+
+//Default name and value parameters.
+var defaultParams = {
+    bldId: {
+        name: &#39;bldId&#39;,
+        value: &#39;:bldId&#39;
+    },
+    cslId: {
+        name: &#39;cslId&#39;,
+        value: &#39;:cslId&#39;
+    },
+    countryCode: {
+        name: &#39;countryCode&#39;,
+        value: &quot;:countryCode&quot;
+    },
+    vatCode: {
+        name: &#39;vatCode&#39;,
+        value: &quot;:vatCode&quot;
+    },
+    roleId: {
+        name: &#39;roleId&#39;,
+        value: &#39;:roleId&#39;
+    },
+    sitId: {
+        name: &#39;sitId&#39;,
+        value: &#39;:sitId&#39;
+    },
+    steId: {
+        name: &#39;steId&#39;,
+        value: &#39;:steId&#39;
+    }
+};</code></pre>
+</section>
+<section id="site-description-45" class="level2">
+<h2>Site description (4/5)</h2>
+<pre class=":javascript"><code>//Exports ther params for initialization.
+siteDescription.params = defaultParams;
+
+//Function to build the site description depending on parameters.
+siteDescription.value = function (params) {
+
+    //Extend the params.
+    var p = _.extend({}, defaultParams, params);
+
+    //Process the site description construction.
+    return site(p);
+};
+
+//Export site description.
+module.exports = siteDescription;</code></pre>
+</section>
+</section>
+<section id="practice" class="level1">
+<h1>Practice</h1>
+<section id="improve-the-contact-view-and-test-it-into-a-real-case" class="level2">
+<h2>Improve the contact view and test it into a real case</h2>
+<figure>
+<img src="/images/tuto/practice.jpeg" alt="Practice" /><figcaption>Practice</figcaption>
+</figure>
+</section>
+</section>
+<section id="tools" class="level1">
+<h1>Tools</h1>
+<section id="page-templae-builder-12" class="level2">
+<h2>Page templae builder (1/2)</h2>
+<ul>
+<li>In order to be able to build an application page. You might need sevral files. One View, One Model, One Collection, One Service, Two Templates.</li>
+<li>It can be pain to alwaws create the same file structure in order to build your application.</li>
+<li>That is why we build a tool in order to create &quot;page&quot; template</li>
+<li>It is based on the same template language as in the application views.</li>
+</ul>
+</section>
+<section id="page-templae-builder-22" class="level2">
+<h2>Page templae builder (2/2)</h2>
+<figure>
+<img src="/images/pattern/templateGenerator.png" alt="Template generator" /><figcaption>Template generator</figcaption>
+</figure>
+</section>
+<section id="chrome-dev-tools" class="level2">
+<h2>Chrome Dev tools</h2>
+<p>Chrome provide us a really great dev tools, you have to get use to them. <img src="/images/tuto/dev-tools.png" alt="Chrome dev tools" /></p>
+</section>
+<section id="console" class="level2">
+<h2>Console</h2>
+<p>You have to ge use to the fact that the console will be usefull. <img src="/images/tuto/console.png" alt="Console" /></p>
+</section>
+<section id="jshint" class="level2">
+<h2>JSHINT</h2>
+<p>Quality tools: <img src="/images/tuto/jshint.png" alt="JSHINT" /></p>
+</section>
+</section>
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+  // Full list of configuration options available here:
+  // https://github.com/hakimel/reveal.js#configuration
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    center: false,
+
+  // available themes are in /css/theme
+      theme: Reveal.getQueryHash().theme || 'default', 
+  
+  // default/cube/page/concave/zoom/linear/fade/none
+      transition: Reveal.getQueryHash().transition || 'default',
+  
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+    { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+    { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+    { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+    // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+  });
+
+</script>
+
+</body>
+</html>
