@@ -8,7 +8,7 @@
   format =
     currency: '0,0.00'
     date: 'L'
-    dateTime: 'LL'
+    dateTime: 'LLL'
     
   # Container for all the formaters.
   formaters = {}

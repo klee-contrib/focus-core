@@ -1,7 +1,6 @@
 # Put your handlebars.js helpers here.
 # Globals variables.
 # Get the domains definition as globals.
-
 metadaBuilder = Fmk.Helpers.metadataBuilder# require('./metadata_builder').metadataBuilder
 domains_definition = Fmk.Helpers.metadataBuilder.getDomains()
 
@@ -163,6 +162,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
   disabled = opt.disabled or false
   disabled = if disabled then "disabled" else ""
   inputAttributes= this[opt.inputAttributes] or opt.inputAttributes or ""
+  cidAttr = if opt.cidSelection = true then "cid='#{@cid}'" else ""
   #Add bootstrap-switch css to checkbox input.
   containerAttribs = opt.containerAttribs or ""
   containerCss = opt.containerCss or ""
@@ -227,7 +227,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
   #Initialize the errors variables => Is there an error, if yes what is the message.
   error = ""
   error = "has-error" if @errors? and @errors[property]?
-  errorValue = if @errors? and @errors[property]? then @errors[property] else ""
+  errorValue = if @errors? and @errors[property]? then i18n.t(@errors[property]) else ""
   errorSize = ()=>
     errorLength = 12 - labelSizeValue
     offsetError = labelSizeValue
@@ -242,7 +242,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
   #   </div>
   if minimalHtml 
       html = " <input id='#{property}' #{decorator()} class=''"
-      html += "data-name='#{property}' type='#{dataType}' #{inputAttributes} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>"
+      html += "data-name='#{property}' type='#{dataType}' #{inputAttributes} #{cidAttr} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>"
   else
       html = "
               <div class='form-group #{error} #{col}'>
@@ -352,7 +352,7 @@ Handlebars.registerHelper "radio_for", (property, options) ->
   #Initialize the errors variables => Is there an error, if yes what is the message.
   error = ""
   error = "has-error" if @errors? and @errors[property]?
-  errorValue = if @errors? and @errors[property]? then @errors[property] else ""
+  errorValue = if @errors? and @errors[property]? then i18n.t(@errors[property]) else ""
   errorSize = ()=>
     errorLength = 12 - labelSizeValue
     offsetError = labelSizeValue
@@ -437,7 +437,7 @@ Handlebars.registerHelper "options_selected", (property, options) ->
   #Initialize the errors variables => Is there an error, if yes what is the message.
   error = ""
   error = "has-error" if @errors? and @errors[property]?
-  errorValue = if @errors? and @errors[property]? then @errors[property] else ""
+  errorValue = if @errors? and @errors[property]? then i18n.t(@errors[property]) else ""
   #Deal with error
   errors = ()=>
     if error == "has-error" then "<span class='#{error} help-inline pull-left' style='color:#b94a48'> #{errorValue } </span>" else ""
@@ -522,7 +522,20 @@ Handlebars.registerHelper "paginate", (property, options)->
   return "" if @collection? and @collection.length is 0
   currentPage = this.currentPage
   firstPage = this.firstPage or 1
-  endPage = (this.totalPages or 0)
+  endPage = this.totalPages or 0
+
+  nbPrint = 4;
+  firstPagePrint = Math.max(firstPage, currentPage - nbPrint)
+  lastPagePrint = Math.min(endPage, currentPage + nbPrint)
+  nbPagePrint = lastPagePrint - firstPagePrint
+  if nbPagePrint < nbPrint * 2
+    if endPage - lastPagePrint > nbPrint
+      lastPagePrint += nbPrint * 2 - nbPagePrint
+    else
+      firstPagePrint -= nbPrint * 2 - nbPagePrint
+  
+  firstPagePrint = Math.max(firstPagePrint, 1);
+   
   perPage = this.perPage or 10
   totalRecords = this.totalRecords
   generateLeftArrow = ()->
@@ -530,7 +543,7 @@ Handlebars.registerHelper "paginate", (property, options)->
     return "<li class='#{className}'><a href='#' data-bypass data-page='#{firstPage}'>&laquo;</a></li>"
   generatePageNumber= ()->
     html = ""
-    (html+= "<li class='#{if i is currentPage then 'active' else ''}'><a href='#' data-bypass data-page='#{i}'>#{i}</a></li>") for i in [firstPage..endPage]
+    (html+= "<li class='#{if i is currentPage then 'active' else ''}'><a href='#' data-bypass data-page='#{i}'>#{i}</a></li>") for i in [firstPagePrint..lastPagePrint]
     return html
   generateRigthArrow = ()->
     className = if currentPage is endPage then "disabled" else ""
@@ -571,7 +584,7 @@ Handlebars.registerHelper "tableHeaderAction", (options)->
   totalRecords = this.totalRecords or 0
   resultString = i18n.t(options.resultLabel or 'search.result')
   exportButton = ->
-    if options.exportUrl?
+    if options.exportUrl? && totalRecords > 0
       return "
         <div class='pull-right export'>
           <button   data-bypass class='btn btnExport'><i class='fa fa-table'></i>#{i18n.t('search.export')}</button>
@@ -705,8 +718,8 @@ Handlebars.registerHelper "introspect", (property, options) ->
   metadatas = Fmk.Helpers.metadataBuilder.getMetadatas(container) or {}
   html = ""
   for prop of metadatas
-    if container[prop]?
-      html =  html + Handlebars.helpers[helperName].call(container, prop, {hash: {col: 12}})
+    #if container[prop]?
+    html =  html + Handlebars.helpers[helperName].call(container, prop, {hash: {col: 12}})
   return new Handlebars.SafeString(html)
 
 

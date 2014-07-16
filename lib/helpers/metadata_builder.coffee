@@ -18,11 +18,11 @@
       @metadatas = options.metadatas
       @isLog = options.isLog #Define if there is warn or not for metadata properties.
       cb(@domains, @metadatas) if cb?
-
+      
     # Get the domains as they were initialized in the builder (if initialized).
     getDomains: ->
       return _.clone(@domains)
-    
+      
     # Get the validation attributes from the domain.
     getDomainsValidationAttrs: (model) ->
       #console.log('called')

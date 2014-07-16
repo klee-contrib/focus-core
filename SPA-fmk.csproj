@@ -118,6 +118,7 @@
     <None Include="lib\helpers\formatter_helper.coffee" />
     <None Include="lib\helpers\language_helper.coffee" />
     <None Include="lib\helpers\metadata_builder.coffee" />
+    <None Include="lib\helpers\view_helper.coffee" />
     <None Include="lib\models\collection.coffee" />
     <None Include="lib\models\model.coffee" />
     <None Include="lib\templates\header.hbs" />
@@ -133,7 +134,6 @@
     <None Include="test\views\header-view-test.coffee" />
     <None Include="test\views\home-page-view-test.coffee" />
     <None Include="test\views\site-view-test.coffee" />
-    <None Include="view_helper.coffee" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="lib\services\" />

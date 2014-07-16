@@ -2,7 +2,7 @@ var hapi = require('hapi');
 var routes = require('./routes');
 
 var config = {cors: true};//, docs: true };
-var server = new hapi.Server('localhost', 8080, config); // 8080 is the port to listen on
+var server = new hapi.Server('localhost', 7777, config); // 8080 is the port to listen on
 
 server.route(routes);
 

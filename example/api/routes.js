@@ -1,7 +1,32 @@
 /*global reply*/
 var Hapi = require('hapi');
+var _ = require('underscore');
 ///var Types = require('hapi').Types;
-var contacts = [{},{},{},{}];
+var data = {
+	contacts: [{
+		id: 1,
+		firstName: "Pierre",
+		lastName: "Besson",
+		adress: "12 rue des fleurs 75000 Paris",
+		email: "pierre@besson.com",
+		age: 26
+	}, {
+		id: 2,
+		firstName: "Jean",
+		lastName: "Besson",
+		adress: "12 rue des fleurs 75000 Paris",
+		email: "jean@besson.com",
+		age: 1
+	}, {
+		id: 3,
+		firstName: "Jaques",
+		lastName: "Besson",
+		adress: "20 rue des ruelles 59000 Lille",
+		email: "jacques@besson.com",
+		age: 52
+	}]
+};
+
 module.exports = [{
 	method: 'GET',
 	path: '/CIL',
@@ -100,12 +125,14 @@ module.exports = [{
 	method: 'POST',
 	path: '/contact',
 	config: {
-		payload: {parse: true},
+		payload: {
+			parse: true
+		},
 		handler: function adContact(request, reply) {
 			console.log("POST /contact");
 			//var j = request.payload;
 			var contact = {
-				id: contacts.length +1,
+				id: data.contacts.length + 1,
 				firstName: request.payload.firstName,
 				lastName: request.payload.lastName,
 				adress: request.payload.adress,
@@ -113,16 +140,18 @@ module.exports = [{
 				age: request.payload.age,
 			};
 
-			contacts.push(contact);
+			data.contacts.push(contact);
 			//console.log(contact);
 			reply(contact);
 		}
 	}
-},{
+}, {
 	method: 'PUT',
 	path: '/contact',
 	config: {
-		payload: {parse: true},
+		payload: {
+			parse: true
+		},
 		handler: function updateContact(request, reply) {
 			console.log('PUT /contact');
 			var contact = {
@@ -137,11 +166,43 @@ module.exports = [{
 			reply(contact);
 		}
 	}
-},{
+}, {
+	method: 'POST',
+	path: '/contacts',
+	config: {
+		payload: {
+			parse: true
+		},
+		handler: function(request, reply) {
+			console.log('/contact/');
+			var contactCriteria = {
+				firstName: request.payload.firstName,
+				lastName: request.payload.lastName,
+				adress: request.payload.adress,
+				email: request.payload.email,
+				age: request.payload.age,
+			};
+			console.log('POST CONTACTS %j', contactCriteria);
+			var res = _.filter(data.contacts, function(ctc) {
+				var isFirstName = contactCriteria.firstName !== undefined ? ctc.firstName === contactCriteria.firstName : true;
+				var isLastName = contactCriteria.lastName !== undefined ? ctc.lastName === contactCriteria.lastName : true;
+				return isFirstName || isLastName;
+			});
+			reply({
+				value: res,
+				odata: {
+					count: res.length
+				}
+			});
+		}
+	}
+}, {
 	method: 'DELETE',
 	path: '/contact/{id}',
 	config: {
-		payload: {parse: true},
+		payload: {
+			parse: true
+		},
 		handler: function updateContact(request, reply) {
 			reply().code(204);
 		}

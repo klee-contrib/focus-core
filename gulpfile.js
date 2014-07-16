@@ -42,11 +42,59 @@ gulp.task('css-build', function() {
 /**********************
   Building js files
 **********************/
+
+
 //Build all the javascripts file.
-gulp.task('browser-build', ['infos','templates'],function() {
+gulp.task('browser-build', ['infos', 'templates'], function() {
   //Build the js file for the browser.
-    gulp.src(['./lib/infos.js', './lib/main.js', './lib/templates/templates.js', 'lib/helpers/custom_exception.coffee', 'lib/helpers/session_helper.js', 'lib/helpers/user_helper.js', 'lib/helpers/site_description_helper.js', 'lib/helpers/site_description_builder.js', 'lib/helpers/validators.js', './lib/models/*', 'lib/views/notifications-view.js', 'lib/helpers/post_rendering_helper.js', 'lib/helpers/util_helper.js', 'lib/helpers/url_helper.js', './lib/helpers/*', 'lib/views/core-view.js', 'lib/views/consult-edit-view.js', './lib/views/*'])
-    .pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
+  gulp.src([
+    './lib/infos.js',
+    './lib/main.js',
+    './lib/templates/templates.js',
+    './lib/helpers/custom_exception.coffee',
+    './lib/helpers/session_helper.js',
+    './lib/helpers/user_helper.js',
+    './lib/helpers/site_description_helper.js',
+    './lib/helpers/site_description_builder.js',
+    './lib/helpers/validators.js',
+    './lib/models/*',
+    './lib/views/notifications-view.js',
+    './lib/helpers/post_rendering_helper.js',
+    './lib/helpers/metadata_builder.coffee',
+    './lib/helpers/util_helper.js',
+    './lib/helpers/url_helper.js',
+    "./lib/helpers/backbone_notification.js",
+      //All helpers
+    "./lib/helpers/post_rendering_builder.js",
+    "./lib/helpers/post_rendering_helper.js",
+    "./lib/helpers/ustom_exception.coffee",
+    "./lib/helpers/promisify_helper.js",
+    "./lib/helpers/error_helper.js",
+    "./lib/helpers/reference_helper.js",
+    "./lib/helpers/form_helper.js",
+    "./lib/helpers/router.js",
+    "./lib/helpers/formatter_helper.coffee",
+    "./lib/helpers/session_helper.js",
+    "./lib/helpers/header_helper.js",
+    "./lib/helpers/site_description_builder.js",
+    "./lib/helpers/language_helper.coffee",
+    "./lib/helpers/site_description_helper.js",
+    //"./lib/helpers/message_helper.js",
+    "./lib/helpers/url_helper.js",
+    "./lib/helpers/metadata_builder.coffee",
+    //"./lib/helpers/backbone_notification.js",
+    "./lib/helpers/user_helper.js",
+    "./lib/helpers/model_validation_promise.js",
+    "./lib/helpers/util_helper.js",
+    "./lib/helpers/odata_helper.js",
+    "./lib/helpers/validators.js",
+    "./lib/helpers/view_helper.coffee",
+    //End all helpers'./lib/helpers/*',
+    './lib/views/core-view.js',
+    './lib/views/consult-edit-view.js',
+    './lib/views/*',
+    "./lib/helpers/message_helper.js"
+  ]).pipe(gulpif(/[.]coffee$/, coffee())).on('error', gutil.log) //browser deploy
   .pipe(concat('fmk.js'))
     .pipe(gulp.dest('./dist/browser/'))
     .pipe(gulp.dest('./example/app/js/'))
@@ -98,7 +146,7 @@ gulp.task('templateHelper', function(){
 });
 //Grouping build tasks.
 //Async build
-gulp.task('build', ['css-build', 'browser-build', 'node-build'], function(){
+gulp.task('build', ['css-build', 'browser-build', 'node-build'], function() {
 
 });
 /*gulp.task('build', function (callback) {
@@ -134,8 +182,8 @@ gulp.task('infos', function () {
     
     var fs = require('fs');
     var pajson = require('./package.json');
-    var string = '/* name: ' + pajson.name + ' , version: ' + pajson.version + 'description: ' + pajson.description +'*/';
-    fs.writeFile("lib/infos.js", string, function (err) {
+  var string = '/* name: ' + pajson.name + ' , version: ' + pajson.version + ' description: ' + pajson.description + "*/ \n (function initialization(container) {var fmk = container.Fmk || {};fmk.name = '"+ pajson.name+"';fmk.version = '"+ pajson.version+"';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);";
+  fs.writeFile("lib/infos.js", string, function(err) {
         if (err) {
             console.log(err);
         } else {
@@ -161,7 +209,6 @@ gulp.task('doc', function() {
 /**********************
   Local example server
 **********************/
-
 
 
 

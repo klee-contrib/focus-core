@@ -796,7 +796,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = siteDescriptionBuilder;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global i18n, window*/
+/*global i18n, window, moment*/
 (function(NS) {
 	"use strict";
 	//Filename: helpers/validators.js
@@ -826,7 +826,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			return false;
 		}
 		options = options || {};
-	    //console.log(options);
+		//console.log(options);
 		options.minLength = options.minLength || 0;
 		var isMinLength = options.minLength ? stringToTest.length > options.minLength : true;
 		var isMaxLength = options.maxLength ? stringToTest.length < options.maxLength : true;
@@ -847,7 +847,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		return isMin && isMax;
 	}
 
-		//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
+	//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
 	var validate = function validate(property, validators) {
 		//console.log("validate", property, validators);
 		var errors, res, validator, _i, _len;
@@ -888,10 +888,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 						return true;
 					}
 					return validator.value.test(property.value);
-			    case "email":
-			        if (property.value === undefined || property.value === null) {
-			            return true;
-			        }
+				case "email":
+					if (property.value === undefined || property.value === null) {
+						return true;
+					}
 					return emailValidation(property.value, validator.options);
 				case "number":
 					return numberValidation(property.value, validator.options);
@@ -3198,13 +3198,54 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global Backbone, Promise, _, window */
-(function (NS) {
-    "use strict";
+(function(NS) {
+	"use strict";
 	//Filename: promisify_helper.js
 	NS = NS || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+	var odataHelper = isInBrowser ? NS.Helpers.odataHelper : require("./odata_helper");
+	 var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
 	// Backbone model with **promise** CRUD method instead of its own methods.
 	var PromiseModel = Backbone.Model.extend({
+		/**
+		 * Set the data for a promise model.
+		 * @param  {object} json to set in the model.
+		 * @param  {object} options on the save function such as the url.
+		 * @return {undefined}
+		 */
+		setData: function setDataPromiseModel(json, options) {
+			options = options || {};
+			if (_.isString(options.url)) {
+				this.urlRoot = options.url;
+			}
+			this.clear({
+				silent: true
+			});
+			this.set(json, {
+				silent: true
+			});
+		},
+		/**
+		 * Save the data for a promise model.
+		 * @param  {object} json to save in the model.
+		 * @param  {object} options on the save function such as the url.
+		 * @return {objet} a promise of save.
+		 */
+		saveData: function setDataPromiseModel(json, options) {
+			this.setData(json, options);
+			return this.save();
+		},
+		/**
+		 * Fetch the model.
+		 * @param  {object} json to set to the model before loading.
+		 * @param  {object} options on the save function such as the url.
+		 * @return {objet} a promise of fetch.
+		 */
+		fetchData: function fetchDataPromiseModel(json, options) {
+			this.setData(json, options);
+			return this.fetch();
+		},
 		//Ovverride the save method on the model in order to Return a promise.
 		save: function saveModel() {
 			var model = this;
@@ -3247,6 +3288,34 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 	// Backbone collection with **promise** CRUD method instead of its own methods.
 	var PromiseCollection = Backbone.Collection.extend({
+		/**
+		 * Fetch the collection datas, clean the share collection and parse.
+		 * @param  {object} this object should have the following structure: {criteria: {key: "val"}, pagesInfos: {}}.
+		 * @param  {object} options can contain a url.
+		 * @return {object} the promise of the fetch and the parse with the Odata.
+		 */
+		fetchData: function fetchDataPromiseCollection(params, options) {
+			options = options || {};
+			params = params || {};
+			if(!_.isObject(params)){
+				throw new ArgumentNullException('fetchDataPromiseCollection: params should be an object');
+			}
+			if(!_.isObject(params.pagesInfos)){
+				throw new ArgumentInvalidException('fetchDataPromiseCollection: params should have a pagesInfos property', params);
+			}
+			//Clean the shared collection.
+			this.reset(null, {
+				silent: true
+			});
+			//If the url wants to be changed it can be done.
+			if (options.url) {
+				this.url = options.url;
+			}
+
+			//Automatically call the odataHelper to create the options.
+			return this.fetch(odataHelper.createOdataOptions(params.criteria, params.pagesInfos))
+				.then(odataHelper.parseOdataResponse);
+		},
 		//Override the default collection fetch method, using and returning a promise.
 		//Options is the options object which is sent to the jquery method.
 		fetch: function promiseFetchCollection(options) {
@@ -3260,14 +3329,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			});
 		},
 		save: function saveCollection() {
-		    var model = this;
-		    var method =  'create';
-		    return new Promise(
-				function (resolve, reject) {
-				    Backbone.sync(method, model, {
-				        success: resolve,
-				        error: reject
-				    });
+			var model = this;
+			var method = 'create';
+			return new Promise(
+				function(resolve, reject) {
+					Backbone.sync(method, model, {
+						success: resolve,
+						error: reject
+					});
 				}
 			);
 		}
@@ -3298,15 +3367,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		return promiseCollection;
 	};
 
-    // Convert an existing Backbone collection to a promise version of its changes 
-    // (when calling save, the { creates: [], deletes: [], updates: [] } object will be posted to collection.url)
+	// Convert an existing Backbone collection to a promise version of its changes 
+	// (when calling save, the { creates: [], deletes: [], updates: [] } object will be posted to collection.url)
 	var ConvertCollectionChanges = function ConvertBackboneCollectionToPromiseCollectionChanges(collection, changes) {
-	    if (collection.url === undefined || collection.urlRoot === null) {
-	        throw new Error("ConvertCollection: The  url of the collection " + collection.modelName + " cannot be undefined.");
-	    }
-	    var promiseCollectionChanges = new PromiseModel(new Backbone.Model(changes));
-	    promiseCollectionChanges.urlRoot = collection.url;
-	    return promiseCollectionChanges;
+		if (collection.url === undefined || collection.urlRoot === null) {
+			throw new Error("ConvertCollection: The  url of the collection " + collection.modelName + " cannot be undefined.");
+		}
+		var promiseCollectionChanges = new PromiseModel(new Backbone.Model(changes));
+		promiseCollectionChanges.urlRoot = collection.url;
+		return promiseCollectionChanges;
 	};
 
 	//Todo: see if it is necessary to expose Model and collection promisified.
@@ -3316,7 +3385,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		Convert: {
 			Model: ConvertModel,
 			Collection: ConvertCollection,
-            CollectionChanges: ConvertCollectionChanges
+			CollectionChanges: ConvertCollectionChanges
 		}
 	};
 
@@ -4385,13 +4454,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     metadatas = Fmk.Helpers.metadataBuilder.getMetadatas(container) || {};
     html = "";
     for (prop in metadatas) {
-      if (container[prop] != null) {
-        html = html + Handlebars.helpers[helperName].call(container, prop, {
-          hash: {
-            col: 12
-          }
-        });
-      }
+      html = html + Handlebars.helpers[helperName].call(container, prop, {
+        hash: {
+          col: 12
+        }
+      });
     }
     return new Handlebars.SafeString(html);
   });
