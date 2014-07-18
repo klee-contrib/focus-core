@@ -1,10 +1,14 @@
 #global $, _
-"use strict"
 ((NS) ->
+  "use strict"
+
   # Filename: helpers/error_helper.js */
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exception class
+  ###
+   * @class Exception class.
+  ###
   class CustomException
     constructor:(@name, @message,@options) ->
       @log()
