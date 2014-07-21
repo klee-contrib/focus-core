@@ -1,16 +1,20 @@
-/* name: spa-fmk , version: 0.1.0description: Simple framework for backbone applications.*/
-/*global window*/
+/* name: spa-fmk , version: 0.1.1 description: Simple framework for backbone applications.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'spa-fmk';fmk.version = '0.1.1';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/*global window, _*/
 (function initialization(container) {
-  container.Fmk = {
+  var fmk = container.Fmk || {};
+  _.extend(fmk, {
     Models: {},
     Views: {},
     Services: {},
     Helpers: {},
-    initialize: function initialize(options){
+    initialize: function initialize(options) {
       this.Helpers.metadataBuilder.initialize(options);
       this.Helpers.modelValidationPromise.initialize(options);
+      //this.Helpers.messageHelper.initialize();
     }
-  };
+  });
+  container.Fmk = fmk;
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 this["Fmk"] = this["Fmk"] || {};
 this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
@@ -152,14 +156,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return buffer;
   });;
 (function() {
-  "use strict";
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(NS) {
+    "use strict";
     var ArgumentInvalidException, ArgumentNullException, CustomException, DependencyException, NotImplementedException, isInBrowser, mod;
     NS = NS || {};
     isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+
+    /*
+     * @class Exception class.
+     */
     CustomException = (function() {
       function CustomException(name, message, options) {
         this.name = name;
@@ -828,8 +836,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		options = options || {};
 		//console.log(options);
 		options.minLength = options.minLength || 0;
-		var isMinLength = options.minLength ? stringToTest.length > options.minLength : true;
-		var isMaxLength = options.maxLength ? stringToTest.length < options.maxLength : true;
+		var isMinLength = options.minLength !== undefined ? stringToTest.length >= options.minLength : true;
+		var isMaxLength = options.maxLength !== undefined ? stringToTest.length <= options.maxLength : true;
 		return isMinLength && isMaxLength;
 	}
 	//Function to  validate that an input is a number.
@@ -842,8 +850,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			return false;
 		}
 		numberToValidate = +numberToValidate; //Cast it into a number.
-		var isMin = options.min ? numberToValidate > options.min : true;
-		var isMax = options.max ? numberToValidate < options.max : true;
+		var isMin = options.min !== undefined ? numberToValidate >= options.min : true;
+		var isMax = options.max !== undefined ? numberToValidate <= options.max : true;
 		return isMin && isMax;
 	}
 
@@ -1052,20 +1060,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
       Collection.prototype.toSaveJSON = function(propertyPrefix) {
         var creates, deletes, labels, updates;
-        propertyPrefix = propertyPrefix || "";
-        creates = "" + propertyPrefix + "creates";
-        updates = "" + propertyPrefix + "updates";
-        deletes = "" + propertyPrefix + "deletes";
+        propertyPrefix = propertyPrefix || "coll";
+        creates = "" + propertyPrefix + "Creates";
+        updates = "" + propertyPrefix + "Updates";
+        deletes = "" + propertyPrefix + "Deletes";
         labels = {};
-        labels[creates] = _.map(this.changes.creates, function(value, key) {
-          return value;
-        });
-        labels[updates] = _.map(this.changes.updates, function(value, key) {
-          return value;
-        });
-        labels[deletes] = _.map(this.changes.deletes, function(value, key) {
-          return value;
-        });
+        labels[creates] = this.changes.creates;
+        labels[updates] = this.changes.updates;
+        labels[deletes] = this.changes.deletes;
         return labels;
       };
 
@@ -1081,6 +1083,63 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
       Collection.prototype.isDifferent = function() {
         return !_.isEqual(this.previousCollectionValues, this.toJSON());
+      };
+
+
+      /*
+        Set errors on a collection element.
+       */
+
+      Collection.prototype.setErrors = function(errors, options) {
+        if (_.isArray(errors)) {
+          return this.setErrorsFromArray(errors, options);
+        } else if (_.isObject(errors)) {
+          return this.setErrorsFromObject(errors, options);
+        }
+      };
+
+      Collection.prototype.setErrorsFromArray = function(errors, options) {
+        var error, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = errors.length; _i < _len; _i++) {
+          error = errors[_i];
+          if ((error.index == null) && typeof error.index !== "number") {
+            console.warn('invalid error', error);
+          }
+          if ((error.errors == null) && typeof error.errors !== "object") {
+            console.warn('invalid error', error);
+          }
+          _results.push(this.at(error.index).set({
+            errors: error.errors
+          }, options));
+        }
+        return _results;
+      };
+
+      Collection.prototype.setErrorsFromObject = function(errors, options) {
+        var err, _results;
+        _results = [];
+        for (err in errors) {
+          if (!_.isString(err)) {
+            console.warn('invalid error', err);
+          }
+          _results.push(this.get(err).set({
+            errors: errors[err]
+          }, options));
+        }
+        return _results;
+      };
+
+      Collection.prototype.jsonFromSaveJson = function(saveJSON) {
+        var changes;
+        changes = [];
+        _.each(saveJSON.creates, function(elt) {
+          return changes.push(elt);
+        });
+        _.each(saveJSON.updates, function(elt) {
+          return changes.push(elt);
+        });
+        return changes;
       };
 
       return Collection;
@@ -1329,11 +1388,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 
   //Notification model
+  /**
+   * [initialize description]
+   * @param  {[type]} )  {                 this.set({                   creationDate: new Date()                       } [description]
+   * @param  {[type]} {                                silent: true      });                      }  } [description]
+   * @return {[type]}    [description]
+   */
   var Notification = Backbone.Model.extend({
     defaults: {
+      /**
+       * [type description]
+       * @type {[type]}
+       */
       type: undefined, //error/warning/success...
-      message: undefined // The message which have to be display.
+      message: undefined, // The message which have to be display.
+      creationDate: undefined
     },
+    /**
+     * Initialize the date of the notification.
+     * @return {undefined}
+     */
     initialize: function initializeNotification() {
       this.set({
         creationDate: new Date()
@@ -1663,6 +1737,268 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   }
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+(function() {
+  "use strict";
+  (function(NS) {
+    var ArgumentNullException, MetadataBuilder, isInBrowser, proxyValidationContainer;
+    NS = NS || {};
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+    proxyValidationContainer = {};
+    MetadataBuilder = (function() {
+      function MetadataBuilder() {}
+
+      MetadataBuilder.prototype.initialize = function(options, cb) {
+        if (options == null) {
+          throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.');
+        }
+        if (options.domains == null) {
+          throw new ArgumentNullException('The metadata builder needs domains in options.');
+        }
+        if (options.metadatas == null) {
+          throw new ArgumentNullException('The metadata builder needs metadatas in options.');
+        }
+        this.domains = options.domains;
+        this.metadatas = options.metadatas;
+        this.isLog = options.isLog;
+        if (cb != null) {
+          return cb(this.domains, this.metadatas);
+        }
+      };
+
+      MetadataBuilder.prototype.getDomains = function() {
+        return _.clone(this.domains);
+      };
+
+      MetadataBuilder.prototype.getDomainsValidationAttrs = function(model) {
+        var attr, md, metadatas, valDomAttrs, validators;
+        if (model == null) {
+          return new ArgumentNullException('The model should exists and have a metadatas property.');
+        }
+        metadatas = this.getMetadatas(model);
+        valDomAttrs = {};
+        for (attr in metadatas) {
+          md = metadatas[attr] || {};
+          if (((md.isValidationOff != null) && md.isValidationOff === false) || (md.isValidationOff == null)) {
+
+            /*_.extend(metadata, md.metadata) if md.metadata?
+            (metadata.domain = md.domain) if md.domain?
+            (metadata.required = md.required) if md.required?
+             */
+            validators = [];
+            if (md.required === true) {
+              validators.push({
+                "type": "required",
+                "value": true
+              });
+            }
+            if ((md.domain != null) && (this.domains[md.domain] != null)) {
+              validators = _.union(validators, this.domains[md.domain].validation);
+            }
+            valDomAttrs[attr] = validators;
+          }
+        }
+        return valDomAttrs;
+      };
+
+      MetadataBuilder.prototype.getMetadatas = function(model) {
+        var entityAttrMetadata, entityMetadatas, mdlMetadata, mdlMetadataAttr, metadata, metadatas, metadatasAttrs, overridenProperties, _i, _len;
+        if (model == null) {
+          throw new ArgumentNullException("In order to get metadatas , you must provide a model.");
+        }
+        entityMetadatas = this.constructEntityMetaDatas(model);
+        metadatas = _.clone(entityMetadatas);
+        metadatasAttrs = _.keys(metadatas);
+        if (model.metadatas != null) {
+          metadatasAttrs = _.union(metadatasAttrs, _.keys(model.metadatas));
+        }
+        for (_i = 0, _len = metadatasAttrs.length; _i < _len; _i++) {
+          mdlMetadataAttr = metadatasAttrs[_i];
+          entityAttrMetadata = entityMetadatas[mdlMetadataAttr];
+          mdlMetadata = (model.metadatas != null) && (model.metadatas[mdlMetadataAttr] != null) ? model.metadatas[mdlMetadataAttr] : void 0;
+          metadata = {};
+          _.extend(metadata, entityAttrMetadata);
+          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+          if (mdlMetadata != null) {
+            if (mdlMetadata.metadata != null) {
+              _.extend(metadata, mdlMetadata.metadata);
+            }
+            _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+            overridenProperties = {};
+            if (mdlMetadata.domain != null) {
+              _.extend(overridenProperties, {
+                domain: mdlMetadata.domain
+              });
+              _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
+            }
+            if (mdlMetadata.required != null) {
+              _.extend(overridenProperties, {
+                required: mdlMetadata.required
+              });
+            }
+            if (mdlMetadata.label != null) {
+              _.extend(overridenProperties, {
+                label: mdlMetadata.label
+              });
+            }
+            if (mdlMetadata.isValidationOff != null) {
+              _.extend(overridenProperties, {
+                isValidationOff: mdlMetadata.isValidationOff
+              });
+            }
+            if (mdlMetadata.style != null) {
+              _.extend(overridenProperties, {
+                style: mdlMetadata.style
+              });
+            }
+            if (mdlMetadata.decorator != null) {
+              _.extend(overridenProperties, {
+                decorator: mdlMetadata.decorator
+              });
+            }
+            if (mdlMetadata.symbol != null) {
+              _.extend(overridenProperties, {
+                symbol: mdlMetadata.symbol
+              });
+            }
+            if (mdlMetadata.decoratorOptions != null) {
+              _.extend(overridenProperties, {
+                decoratorOptions: mdlMetadata.decoratorOptions
+              });
+            }
+            if (!_.isEmpty(overridenProperties)) {
+              _.extend(metadata, overridenProperties);
+            }
+          }
+          metadatas[mdlMetadataAttr] = metadata;
+        }
+        return metadatas;
+      };
+
+      MetadataBuilder.prototype.getMetadataForAttribute = function(model, attribute) {
+        var entityAttrMetadata, mdlMetadata, metadata, overridenProperties;
+        if (model == null) {
+          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide a model.");
+        }
+        if (attribute == null) {
+          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide an attribute.");
+        }
+        entityAttrMetadata = this.constructEntityMetaDatas(model)[attribute];
+        mdlMetadata = (model.metadatas != null) && (model.metadatas[attribute] != null) ? model.metadatas[attribute] : void 0;
+        metadata = {};
+        _.extend(metadata, entityAttrMetadata);
+        _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+        if (mdlMetadata != null) {
+          if (mdlMetadata.metadata != null) {
+            _.extend(metadata, mdlMetadata.metadata);
+          }
+          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+          overridenProperties = {};
+          if (mdlMetadata.domain != null) {
+            _.extend(overridenProperties, {
+              domain: mdlMetadata.domain
+            });
+            _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
+          }
+          if (mdlMetadata.required != null) {
+            _.extend(overridenProperties, {
+              required: mdlMetadata.required
+            });
+          }
+          if (mdlMetadata.label != null) {
+            _.extend(overridenProperties, {
+              label: mdlMetadata.label
+            });
+          }
+          if (mdlMetadata.isValidationOff != null) {
+            _.extend(overridenProperties, {
+              isValidationOff: mdlMetadata.isValidationOff
+            });
+          }
+          if (mdlMetadata.style != null) {
+            _.extend(overridenProperties, {
+              style: mdlMetadata.style
+            });
+          }
+          if (mdlMetadata.decorator != null) {
+            _.extend(overridenProperties, {
+              decorator: mdlMetadata.decorator
+            });
+          }
+          if (mdlMetadata.symbol != null) {
+            _.extend(overridenProperties, {
+              symbol: mdlMetadata.symbol
+            });
+          }
+          if (mdlMetadata.decoratorOptions != null) {
+            _.extend(overridenProperties, {
+              decoratorOptions: mdlMetadata.decoratorOptions
+            });
+          }
+          if (!_.isEmpty(overridenProperties)) {
+            _.extend(metadata, overridenProperties);
+          }
+        }
+        return metadata;
+      };
+
+      MetadataBuilder.prototype.constructEntityMetaDatas = function(model) {
+        var mdName;
+        if (model.modelName != null) {
+          mdName = model.modelName.split('.');
+          if (mdName.length === 1) {
+            if (this.metadatas[model.modelName] != null) {
+              return this.metadatas[model.modelName];
+            } else {
+              if (this.isLog) {
+                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              }
+              return {};
+            }
+          } else {
+            if ((this.metadatas[mdName[0]] != null) && (this.metadatas[mdName[0]][mdName[1]] != null)) {
+              return this.metadatas[mdName[0]][mdName[1]];
+            } else {
+              if (this.isLog) {
+                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              }
+              return {};
+            }
+          }
+        } else {
+          throw new ArgumentNullException('The model should have a model name in order to build its metadatas');
+        }
+      };
+
+      MetadataBuilder.prototype.proxyDomainValidationAttrs = function(model) {
+        return getDomainsValidationAttrs(model);
+        if ((model.modelName != null) && (proxyValidationContainer[model.modelName] != null)) {
+          return proxyValidationContainer[model.modelName];
+        }
+        if (model.modelName != null) {
+          return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model);
+        } else {
+          return getDomainsValidationAttrs(model);
+        }
+      };
+
+      return MetadataBuilder;
+
+    })();
+    if (isInBrowser) {
+      NS.Helpers = NS.Helpers || {};
+      NS.Helpers.MetadataBuilder = MetadataBuilder;
+      return NS.Helpers.metadataBuilder = new MetadataBuilder();
+    } else {
+      return module.exports = {
+        MetadataBuilder: MetadataBuilder,
+        metadataBuilder: new MetadataBuilder()
+      };
+    }
+  })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+
+}).call(this);
+
 ﻿/* global  _ , window, Promise */
 (function(NS) {
     "use strict";
@@ -1948,26 +2284,45 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global $,window*/
-"use strict";
+
+/**
+ * @module helpers/backbone_notifications
+ * @description Global notifications mecanism around the whole application.
+ * @see file helpers/backbone_notifications.js
+ */
+
 (function(NS) {
-  // Filename: helpers/backbone_notifications.js
+  "use strict";
   NS = NS || {};
+  
+  //Dependencies.
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var Notifications = isInBrowser ? NS.Models.Notifications : require('../models/notifications');
   var NotificationsView = isInBrowser ? NS.Views.NotificationsView : require('../views/notifications-view');
-  //Container specific to the application in order to manipulate the notification the way we want.
+ 
+  /**
+   * Container specific to the application in order to manipulate the notification the way we want.
+   * @type {Object}
+   */
   var backboneNotification = {
-    //Contain the a notifications viex in order to add notifications and render it.
+    
+    /**
+     * An instance of the notifications view in order to deal with the notifications.
+     * Which has a Notifications Model. This view is able to manipulate notifications and to render them.
+     * @type {NotificationsView}
+     */
     notificationsView: new NotificationsView({
       model: new Notifications()
     }),
-    //Add a notification in the stack. Is isRender is define and is true, the notifications are displayed.
-    // Example call 
-    //```javascript
-    // Fmk.helpers.backboneNotifications.addNotification({type: "error", message: "Message"}, true);
-    // //Render the notifications in the page.
-    // ```
+    
+    /**
+     * Add a notification in the stack. Is isRender is define and is true, the notifications are displayed.
+     * @param {object}  jsonNotification - A json object representing the notification. Types: warning, error, success.
+     * @param {Boolean} isRender         - Is isRender is define and is true, the notifications are displayed immediately.
+     * @example `Fmk.helpers.backboneNotifications.addNotification({type: "error", message: "Message"}, true);`
+     *   
+     */
     addNotification: function addNotification(jsonNotification, isRender) {
       isRender = isRender || false;
       this.notificationsView.model.add(jsonNotification);
@@ -1975,10 +2330,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.renderNotifications();
       }
     },
-    // Render all the notifications which are in the notifications collection and then clear this list.
-    // The selector can be overriden.
-    // If a timeout is define, the notification is hidden after _timeout_ seconds.
-    // Once the notifications have been rendered, the messages stack is cleared.
+ 
+    /**
+     * Render all the notifications which are in the notifications collection and then clear this list.
+     * Once the notifications have been rendered, the messages stack is cleared
+     * @param  {string} selectorToRender - A css selector twhich define where the notifications are redered. Default us "div#summary"
+     * @param  {integer} timeout         - If a timeout is define, the notification is hidden after _timeout_ seconds.
+     * @return {undefined}
+     */
     renderNotifications: function renderInApplication(selectorToRender, timeout) {
       var selector = selectorToRender || "div#summary";
       //We render all the messages.
@@ -1995,16 +2354,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }, timeout * 1000);
       }
     },
-    //Clear all the notifications in the application on application screen but do not clear the collection.
+    
+    /**
+     * Clear all the displayed notifications.
+     * @param  {string} selectorToRender The css selector describing where the notifications are rendered. Default is "div#summary".
+     * @return @return {undefined}
+     */
     clearNotifications: function clearNotifications(selectorToRender) {
       var selector = selectorToRender || "div#summary";
       $(selector).html('');
       $('button').button('reset');
     },
-    //Clear all error on page 
+    
+    /**
+     * Clear only the errors in the display of the screen.
+     * @param  {string} selectorToRender The css selector describing where the notifications are rendered. Default is "div.notifications div.alert-danger".
+     * @return {[type]}                  [description]
+     */
     clearErrors: function clearErrors(selectorToRender) {
       var selector = selectorToRender || "div.notifications div.alert-danger";
-      $(selector).remove();
+      $(selector).html('');
       $('button').button('reset');
     }
   };
@@ -2016,40 +2385,185 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = backboneNotification;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global window, $ */
+(function(NS) {
+  "use strict";
+  //Filename: post_rendering_builder.js
+  NS = NS || {};
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
+  var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require('./post_rendering_helper').metadataBuilder;
+  //Options must contain a model and a viewSelecrot property.
+  var postRenderingBuilder = function(options) {
+    //When there is no model inide the view, do nothing.
+    if (options === undefined || options === null || !options.model) {
+      return;
+    }
+    //Get all the metadatas of the model.
+    var metadatas = metadataBuilder.getMetadatas(options.model);
+    //Iterate through each attributes of the modoptions.modelel.
+    for (var attr in metadatas) {
+      var mdt = metadatas[attr];
+      /*Check for any of the metadata.*/
+      if (mdt !== undefined && mdt !== null) {
+        if (mdt.decorator) {
+          //Call a registered helper. See post_rendering_helper_file to see how to register a helper.
+          var nameAttribute = "data-name='" + attr + "'";
+
+          postRenderingHelper.callHelper({
+            helperName: mdt.decorator, //Get the post rendering helper to call from the metdata, this helper must have been register before.
+            selector: $("input[" + nameAttribute + "],select[" + nameAttribute + "]", options.viewSelector), //Create a selector on each attribute in the view with its .
+            decoratorOptions: mdt.decoratorOptions //Inject decorator options define on the model.
+          });
+        }
+      }
+    }
+  };
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.postRenderingBuilder = postRenderingBuilder;
+  } else {
+    module.exports = postRenderingBuilder;
+  }
+
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global _, window, i18n*/
-(function (NS) {
+
+/**
+ * @module helpers/error_helper
+ * @description Error handling around the application.
+ * @see file helpers/error_helper.js
+ */
+
+(function(NS) {
     "use strict";
-    /* Filename: helpers/error_helper.js */
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     NS = NS || {};
     var BackboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require('./backbone_notification');
     var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('./util_helper');
-    // transform errors send by API to application errors.
+    var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
+
+    /**
+     * Define all the error types of the exceptions which are defined.
+     * @type {object}
+     */
+    var errorTypes = {
+        entity: "entity",
+        collection: "collection",
+        composite: "composite"
+    };
+
+    /**
+     * Treat the response json of an error.
+     * @param  {object} responseJSON The json response from the server.
+     * @param  {object} options The options containing the model. {model: Backbone.Model}
+     * @return {object} The constructed object from the error response.
+     */
+    function treatEntityExceptions(responseJSON, options) {
+        var errors = responseJSON.errors;
+        if (options.isDisplay || options.model) {
+            displayErrors(errors, options);
+        }
+        if (options.model) {
+            setModelErrors(options.model, errors);
+        }
+        return errors;
+    }
+
+    /**
+     * Treat the collection exceptions.
+     * @param  {object} responseJSON The JSON response from the server.
+     * @param  {object} options Options for error handling. {isDisplay: boolean, model: Backbone.Model}
+     * @return {object} The constructed object from the error response.
+     */
+    function treatCollectionExceptions(responseJSON, options) {
+        var errors = responseJSON.errors;
+        if (options.isDisplay || options.model) {
+            displayErrors(errors, options);
+        }
+        if (options.model) {
+            setCollectionErrors(options.model, errors);
+        }
+        return errors;
+
+    }
+
+    /**
+     * @description s.
+     */
+    /**
+     * Treat with all the custom exception
+     * @param  {object} responseJSON - Response from the server.
+     * @param  {object} options      - Options for the exceptions teratement such as the {model: modelVar}.
+     * @return {object}              - The parsed error response.
+     */
+    function treatBadRequestExceptions(responseJSON, options) {
+        if (responseJSON.type !== undefined) {
+            switch (responseJSON.type) {
+                case errorTypes.entity:
+                    treatEntityExceptions(responseJSON, options);
+                    break;
+                case errorTypes.collection:
+                    treatCollectionExceptions(responseJSON, options);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
+
+    // .
+    /**
+     * Transform errors send by API to application errors. Dispatch depending on the response http code.
+     * @param  {object} response - Object whic
+     * @param  {object} options  - Options for the exceptions teratement such as the model, {model: modelVar}.
+     * @return {object}          - The parsed error response.
+     */
     function manageResponseErrors(response, options) {
         options = options || {};
         response = response || {};
         var responseErrors = response.responseJSON;
         if (responseErrors === undefined) {
             responseErrors = response.responseText;
+        } else {
+            switch (responseErrors.statusCode) {
+                case 400:
+                    treatBadRequestExceptions(responseErrors, options);
+                    break;
+                case 401:
+                    treatBadRequestExceptions(responseErrors, options);
+                    break;
+                default:
+                    break;
+            }
         }
+
 
         //Container for global errors.
         var globalErrors = [];
         var fieldErrors = {};
+
         if (responseErrors !== undefined && responseErrors !== null) {
             // Case of an HTTP Error with a status code: (as an example 404).*/
             if (responseErrors.error !== undefined && responseErrors.error !== null) {
                 //The response json should have the following structure : {statusCode: 404, error: "Not Found"}
                 var message = responseErrors.statusCode ? responseErrors.statusCode + ' ' : '';
-                globalErrors.push(message + i18n.t(responseErrors.error));
+                var parameters = responseErrors.parameters || {};
+                globalErrors.push({
+                    message: message + i18n.t(responseErrors.error),
+                    parameters: parameters
+                });
             } else if (_.isObject(responseErrors)) {
                 if (responseErrors.globalErrors !== undefined && responseErrors.globalErrors !== null) {
-                    responseErrors.globalErrors.forEach(function (error) {
+                    responseErrors.globalErrors.forEach(function(error) {
                         globalErrors.push(error.message);
                     });
                 }
                 if (responseErrors.fieldErrors !== undefined && responseErrors.fieldErrors !== null) {
-                    responseErrors.fieldErrors = _.object(_.map(responseErrors.fieldErrors, function (value, key) { return [key, i18n.t(value)]; }));
+                    responseErrors.fieldErrors = _.object(_.map(responseErrors.fieldErrors, function(value, key) {
+                        return [key, i18n.t(value)];
+                    }));
                     fieldErrors = responseErrors.fieldErrors;
                 }
             } else if (responseErrors.exceptionType !== undefined) {
@@ -2084,22 +2598,40 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
     }
 
-    //Display errors which are defined into the errors.global
-    function displayErrors(errors) {
+    /**
+     * Display errors which are defined into the errors.global.
+     * @param  {array} errors   - An array containing the globam errors.
+     * @param  {object} options - An object which contains the method options such as isDisplay to tell if the errors has to be immediatly displayed.
+     * @return {undefined}
+     */
+    function displayErrors(errors, options) {
+        options = options || {};
+        var isDisplay = options.isDisplay || true;
         if (errors !== undefined && errors.globalErrors !== undefined) {
             var errorsGlobal = [];
             errors.globalErrors.forEach(function convertErrorsIntoNotification(element) {
+                var options = {};
+                if (_.isObject(element)) {
+                    options = formatParameters(element.parameters);
+                    element = element.message;
+                }
                 errorsGlobal.push({
                     type: "error",
-                    message: i18n.t(element),
+                    message: i18n.t(element, options),
                     creationDate: Date.now()
                 });
+
             });
-            BackboneNotification.addNotification(errorsGlobal, true);
+            BackboneNotification.addNotification(errorsGlobal, isDisplay);
         }
     }
 
-    //Set the *model* errors in the fieldErrors.
+    /**
+     * Set the *model* errors in the fieldErrors.
+     * @param {Model} model    - A backbone model.
+     * @param {object} errors  - An object which represents the errros. There should be the follwing structure : `{fieldErrors: {property: "Error Message."}}`.
+     * @param {object} options - Options defined when setting the errors to the model. 
+     */
     function setModelErrors(model, errors, options) {
         if (errors !== undefined && errors.fieldErrors !== undefined) {
             model.set({
@@ -2108,27 +2640,42 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
     }
 
-    //Set errors on a collection.
+    /**
+     * Set the *model* errors in the fieldErrors.
+     * @param {Model} model    - A backbone model.
+     * @param {object} errors  - An object which represents the errros. There should be the follwing structure : `{fieldErrors: {property: "Error Message."}}`.
+     * @param {object} options - Options defined when setting the errors to the model. 
+     */
     function setCollectionErrors(collection, errors, options) {
-        for (var i = 0, l = errors.length; i < l; i++) {
-            var error = errors[i];
-            if (error.index === undefined || error.index === null || typeof error.index !== "number") {
-                console.warn('invalid error', error);
-                break;
-            }
-            if (error.errors === undefined || error.errors === null || typeof error.errors !== "object") {
-                console.warn('invalid error', error);
-                break;
-            }
-            //For the model at the given position in the collection:
-            // Set the error depending on its index.
-            collection.at(errors[i].index).set({
-                errors: errors[i].errors
-            }, options);
-        }
+        collection.setErrors(errors, options);
     }
 
-    //Content of the errorHelper published by the module.
+    /**
+     * Template an error message with parameters.
+     * @param  {object} parameters - The parameters to format.
+     * @return {object}            - The formated parameters.
+     */
+    function formatParameters(parameters) {
+        var options = {}, formatter, value;
+        for (var prop in parameters) {
+            if (parameters.hasOwnProperty(prop)) {
+                if (parameters[prop].domain) {
+                    var domain = metadataBuilder.getDomains()[parameters[prop].domain];
+                    formatter = domain ? domain.format : undefined;
+                } else {
+                    formatter = undefined;
+                }
+                value = formatter && formatter.value ? formatter.value(parameters[prop].value) : parameters[prop].value;
+                options[prop] = value;
+            }
+        }
+        return options;
+    }
+
+    /**
+     * Exposed property of the module.
+     * @type {Object}
+     */
     var errorHelper = {
         manageResponseErrors: manageResponseErrors,
         display: displayErrors,
@@ -2143,15 +2690,107 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = errorHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window, $, Backbone*/
+/*global Promise, $, _, window*/
 "use strict";
 (function(NS) {
-    //Filename: helpers/form_helper.js
+  NS = NS || {};
+  /* Filename: helpers/reference_helper.js  */
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var userHelper = isInBrowser ? NS.Helpers.utilHelper : require("./util_helper");
+
+  //Container for the list and 
+  var configuration = {};
+  
+  //Can be use to override a service, can be call with options = {"referenceName": serviceFunction} 
+  //serviceFunction is obtain with a require. 
+  function configureRefServices(options){
+    _.extend(configuration, options);
+  }
+
+  // This method perform an ajax request within a promise.
+  // Example call : refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
+  var loadList = function loadList(listDesc){
+      return userHelper.promiseAjax({ url: listDesc.url, type: 'GET' });
+  };
+
+  // Load a reference with its list name.
+  // It calls the service which must have been registered.
+  function loadListByName(listName) {
+      return getService(listName);
+  }
+  
+    //Load a service by name.
+  function getService(listName, args) {
+      if (typeof configuration[listName] !== "function") {
+          throw new Error("You are trying to load the reference list: "+ listName + " which does not have a list configure." );
+      }
+      //Call the service, the service must return a promise.
+      return configuration[listName](args);
+  }
+
+    
+  //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
+  // Return an array of many promises for all the given lists.
+  // Be carefull, if there is a problem for one list, the error callback is called.
+  function loadMany(names) {
+      var promises = [];
+      //todo: add a _.isArray tests and throw an rxception.
+      if (names !== undefined) {
+          names.forEach(function (name) {
+              promises.push(loadListByName(name));
+          });
+      }
+    return promises;
+  }
+
+  function getAutoCompleteServiceQuery(listName) {
+      return function (query) {
+          getService(listName, query.term).then(function (results) {
+              query.callback(results);
+          });
+      };
+  }
+
+  var referenceHelper = {
+    loadListByName: loadListByName,
+    loadList: loadList,
+    loadMany: loadMany,
+    getAutoCompleteServiceQuery: getAutoCompleteServiceQuery,
+    configure: configureRefServices
+  };
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.referenceHelper = referenceHelper;
+  } else {
+    module.exports = referenceHelper;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global window, $, Backbone*/
+
+/**
+ * @module helpers/form_helper
+ * @description Helper for _form binding_, deals with models, collections, input, select, jQuery plugins.
+ * @see file helpers/form_helper.js
+ */
+
+(function(NS) {
+    "use strict";
+
+    //Dependencies
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     NS = NS || {};
     var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require("./post_rendering_helper");
-    // ## Helper pour l'ensemble des formulaires.
-    //
+    
+    /**
+     * Helper to bond collections on list dom.
+     * @param  {object} jQuery selector         - A selector which should contains the list of element which dom list element.
+     * @param  {Backbone.Collection} collection - The collection where the reconstructed elements will be injected. 
+     * @param  {object} options                 - {isSilent: boolean}
+     * @return {undefined}
+     */
     var _formCollectionBinder = function forCollectionBinder(selector, collection, options) {
         options = options || {};
         options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
@@ -2175,9 +2814,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
     };
 
-    // #Module de Helper pour l'ensemble des formulaires.
-    // formModelBinder permet de convertir l'ensemble des éléments d'un formulaire en model en fonction de leur attribut data-name.
-    // inputs must be a selector with inputs inside and model a BackBone model.
+    /**
+     * Model binder. Takes the data from the dom element and fill the model. Each dom element should have a _data-name_ property.
+     * @param  {object} data          - An object withe the structure {inputs: jQuerySelector, options: jQuerySelector} w<here jQuery Selector which contains the dom element of a model. inputs for inputs, options for selects.
+     * @param  {Backbone.Model} model - a Backbone.Model where the dom data will be injected to populate the fields.
+     * @param  {object} options       - The default options are: {isSilent: true}
+     * @return {undefined}       
+     */
     var _formModelBinder = function formModelBinder(data, model, options) {
         options = options || {};
         options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
@@ -2190,6 +2833,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
 
     // inputs must be a selector with option:selected inside and model a BackBone model.
+    /**
+     * Bind the model. If the model has a decorator (ie) a jQuery plugin, the data-decorator is use in order to     
+     * @param  {object} inputs           - Selector containing all the inputs.
+     * @param  {Backbone.Model} model    - The model on which there is . 
+     * @param  {object} options          - The default options are: {isSilent: true}.
+     * @return {[type]}         [description]
+     */
     var _formInputModelBinder = function formInputModelBinder(inputs, model, options) {
         options = options || {};
         options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
@@ -2329,6 +2979,70 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = formHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/* global window, Promise, Backbone, i18n*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/router.js
+  NS = NS || {};
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
+  var siteDescriptionBuilder = isInBrowser ? NS.Helpers.siteDescriptionBuilder : require("./site_description_builder");
+  var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("./backbone_notification");
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+  var middleWares = [];
+  var middlewarePromise = function middlewarePromise(middleWareFunction) {
+    return new Promise(function(resolve, reject) {
+      if (middleWareFunction(arguments)) {
+        resolve(arguments);
+      } else {
+        reject(arguments);
+      }
+    });
+  };
+
+  var registerMiddleWare = function registerMiddleWare(middleWareFunction) {
+    middleWares.push(middleWareFunction);
+  };
+  //Extend the backbone router.
+  var Router = Backbone.Router.extend({
+    route: function(route, name, callback) {
+      var router = this;
+      if (!callback){
+        callback = this[name];
+      }
+      if(callback === undefined || callback === null){
+        throw new ArgumentNullException("The route callback seems to be undefined, please check your router file for your route: ", name);
+      }
+      var f = function() {
+          //console.log('route before', route);
+        //Treat the home case.
+        if(route === ""){route = "home";}
+        var n = siteDescriptionBuilder.findRouteName(route);
+        var rt = siteDescriptionBuilder.getRoute(n);
+        //If the route does not exists, or the user does not have any right on the route display an error.
+        if((rt === undefined && route!== '') || !userHelper.hasOneRole(rt.roles)){
+          backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')}, true);
+          return Backbone.history.navigate('', true);
+        }else {
+          //Rendre all the notifications in the stack.
+          backboneNotification.renderNotifications();
+        }
+        //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
+        callback.apply(router, arguments);
+      };
+      return Backbone.Router.prototype.route.call(this, route, name, f);
+    }
+  });
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Helpers = NS.Helpers || {};
+    NS.Helpers.Router = Router;
+  } else {
+    module.exports = Router;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function() {
   "use strict";
   (function(NS) {
@@ -2338,7 +3052,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     format = {
       currency: '0,0.00',
       date: 'L',
-      dateTime: 'LL'
+      dateTime: 'LLL'
     };
     formaters = {};
     formaters.configure = function(options) {
@@ -2516,428 +3230,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 }).call(this);
 
-﻿/* global  _ , window, Promise */
-(function (NS) {
-    "use strict";
-    //Filename: helpers/message_helper.js
-    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-
-    var confirm = function messageHelperConfirm(messageKey) {
-        if (isInBrowser) {
-            // TODO : implement another confirm method (currently we are using native javascript confirm function)
-            return window.confirm(i18n.t(messageKey));
-        }
-        return false;
-    };
-
-    //Message helper.
-    var messageHelper = {
-        confirm: confirm
-    };
-    if (isInBrowser) {
-        NS.Helpers = NS.Helpers || {};
-        NS.Helpers.messageHelper = messageHelper;
-    } else {
-        module.exports = messageHelper;
-    }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-(function() {
-  "use strict";
-  (function(NS) {
-    var ArgumentNullException, MetadataBuilder, isInBrowser, proxyValidationContainer;
-    NS = NS || {};
-    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-    proxyValidationContainer = {};
-    MetadataBuilder = (function() {
-      function MetadataBuilder() {}
-
-      MetadataBuilder.prototype.initialize = function(options, cb) {
-        if (options == null) {
-          throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.');
-        }
-        if (options.domains == null) {
-          throw new ArgumentNullException('The metadata builder needs domains in options.');
-        }
-        if (options.metadatas == null) {
-          throw new ArgumentNullException('The metadata builder needs metadatas in options.');
-        }
-        this.domains = options.domains;
-        this.metadatas = options.metadatas;
-        this.isLog = options.isLog;
-        if (cb != null) {
-          return cb(this.domains, this.metadatas);
-        }
-      };
-
-      MetadataBuilder.prototype.getDomains = function() {
-        return _.clone(this.domains);
-      };
-
-      MetadataBuilder.prototype.getDomainsValidationAttrs = function(model) {
-        var attr, md, metadatas, valDomAttrs, validators;
-        if (model == null) {
-          return new ArgumentNullException('The model should exists and have a metadatas property.');
-        }
-        metadatas = this.getMetadatas(model);
-        valDomAttrs = {};
-        for (attr in metadatas) {
-          md = metadatas[attr] || {};
-          if (((md.isValidationOff != null) && md.isValidationOff === false) || (md.isValidationOff == null)) {
-
-            /*_.extend(metadata, md.metadata) if md.metadata?
-            (metadata.domain = md.domain) if md.domain?
-            (metadata.required = md.required) if md.required?
-             */
-            validators = [];
-            if (md.required === true) {
-              validators.push({
-                "type": "required",
-                "value": true
-              });
-            }
-            if ((md.domain != null) && (this.domains[md.domain] != null)) {
-              validators = _.union(validators, this.domains[md.domain].validation);
-            }
-            valDomAttrs[attr] = validators;
-          }
-        }
-        return valDomAttrs;
-      };
-
-      MetadataBuilder.prototype.getMetadatas = function(model) {
-        var entityAttrMetadata, entityMetadatas, mdlMetadata, mdlMetadataAttr, metadata, metadatas, metadatasAttrs, overridenProperties, _i, _len;
-        if (model == null) {
-          throw new ArgumentNullException("In order to get metadatas , you must provide a model.");
-        }
-        entityMetadatas = this.constructEntityMetaDatas(model);
-        metadatas = _.clone(entityMetadatas);
-        metadatasAttrs = _.keys(metadatas);
-        if (model.metadatas != null) {
-          metadatasAttrs = _.union(metadatasAttrs, _.keys(model.metadatas));
-        }
-        for (_i = 0, _len = metadatasAttrs.length; _i < _len; _i++) {
-          mdlMetadataAttr = metadatasAttrs[_i];
-          entityAttrMetadata = entityMetadatas[mdlMetadataAttr];
-          mdlMetadata = (model.metadatas != null) && (model.metadatas[mdlMetadataAttr] != null) ? model.metadatas[mdlMetadataAttr] : void 0;
-          metadata = {};
-          _.extend(metadata, entityAttrMetadata);
-          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-          if (mdlMetadata != null) {
-            if (mdlMetadata.metadata != null) {
-              _.extend(metadata, mdlMetadata.metadata);
-            }
-            _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-            overridenProperties = {};
-            if (mdlMetadata.domain != null) {
-              _.extend(overridenProperties, {
-                domain: mdlMetadata.domain
-              });
-              _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
-            }
-            if (mdlMetadata.required != null) {
-              _.extend(overridenProperties, {
-                required: mdlMetadata.required
-              });
-            }
-            if (mdlMetadata.label != null) {
-              _.extend(overridenProperties, {
-                label: mdlMetadata.label
-              });
-            }
-            if (mdlMetadata.isValidationOff != null) {
-              _.extend(overridenProperties, {
-                isValidationOff: mdlMetadata.isValidationOff
-              });
-            }
-            if (mdlMetadata.style != null) {
-              _.extend(overridenProperties, {
-                style: mdlMetadata.style
-              });
-            }
-            if (mdlMetadata.decorator != null) {
-              _.extend(overridenProperties, {
-                decorator: mdlMetadata.decorator
-              });
-            }
-            if (mdlMetadata.symbol != null) {
-              _.extend(overridenProperties, {
-                symbol: mdlMetadata.symbol
-              });
-            }
-            if (mdlMetadata.decoratorOptions != null) {
-              _.extend(overridenProperties, {
-                decoratorOptions: mdlMetadata.decoratorOptions
-              });
-            }
-            if (!_.isEmpty(overridenProperties)) {
-              _.extend(metadata, overridenProperties);
-            }
-          }
-          metadatas[mdlMetadataAttr] = metadata;
-        }
-        return metadatas;
-      };
-
-      MetadataBuilder.prototype.getMetadataForAttribute = function(model, attribute) {
-        var entityAttrMetadata, mdlMetadata, metadata, overridenProperties;
-        if (model == null) {
-          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide a model.");
-        }
-        if (attribute == null) {
-          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide an attribute.");
-        }
-        entityAttrMetadata = this.constructEntityMetaDatas(model)[attribute];
-        mdlMetadata = (model.metadatas != null) && (model.metadatas[attribute] != null) ? model.metadatas[attribute] : void 0;
-        metadata = {};
-        _.extend(metadata, entityAttrMetadata);
-        _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-        if (mdlMetadata != null) {
-          if (mdlMetadata.metadata != null) {
-            _.extend(metadata, mdlMetadata.metadata);
-          }
-          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-          overridenProperties = {};
-          if (mdlMetadata.domain != null) {
-            _.extend(overridenProperties, {
-              domain: mdlMetadata.domain
-            });
-            _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
-          }
-          if (mdlMetadata.required != null) {
-            _.extend(overridenProperties, {
-              required: mdlMetadata.required
-            });
-          }
-          if (mdlMetadata.label != null) {
-            _.extend(overridenProperties, {
-              label: mdlMetadata.label
-            });
-          }
-          if (mdlMetadata.isValidationOff != null) {
-            _.extend(overridenProperties, {
-              isValidationOff: mdlMetadata.isValidationOff
-            });
-          }
-          if (mdlMetadata.style != null) {
-            _.extend(overridenProperties, {
-              style: mdlMetadata.style
-            });
-          }
-          if (mdlMetadata.decorator != null) {
-            _.extend(overridenProperties, {
-              decorator: mdlMetadata.decorator
-            });
-          }
-          if (mdlMetadata.symbol != null) {
-            _.extend(overridenProperties, {
-              symbol: mdlMetadata.symbol
-            });
-          }
-          if (mdlMetadata.decoratorOptions != null) {
-            _.extend(overridenProperties, {
-              decoratorOptions: mdlMetadata.decoratorOptions
-            });
-          }
-          if (!_.isEmpty(overridenProperties)) {
-            _.extend(metadata, overridenProperties);
-          }
-        }
-        return metadata;
-      };
-
-      MetadataBuilder.prototype.constructEntityMetaDatas = function(model) {
-        var mdName;
-        if (model.modelName != null) {
-          mdName = model.modelName.split('.');
-          if (mdName.length === 1) {
-            if (this.metadatas[model.modelName] != null) {
-              return this.metadatas[model.modelName];
-            } else {
-              if (this.isLog) {
-                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
-              }
-              return {};
-            }
-          } else {
-            if ((this.metadatas[mdName[0]] != null) && (this.metadatas[mdName[0]][mdName[1]] != null)) {
-              return this.metadatas[mdName[0]][mdName[1]];
-            } else {
-              if (this.isLog) {
-                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
-              }
-              return {};
-            }
-          }
-        } else {
-          throw new ArgumentNullException('The model should have a model name in order to build its metadatas');
-        }
-      };
-
-      MetadataBuilder.prototype.proxyDomainValidationAttrs = function(model) {
-        return getDomainsValidationAttrs(model);
-        if ((model.modelName != null) && (proxyValidationContainer[model.modelName] != null)) {
-          return proxyValidationContainer[model.modelName];
-        }
-        if (model.modelName != null) {
-          return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model);
-        } else {
-          return getDomainsValidationAttrs(model);
-        }
-      };
-
-      return MetadataBuilder;
-
-    })();
-    if (isInBrowser) {
-      NS.Helpers = NS.Helpers || {};
-      NS.Helpers.MetadataBuilder = MetadataBuilder;
-      return NS.Helpers.metadataBuilder = new MetadataBuilder();
-    } else {
-      return module.exports = {
-        MetadataBuilder: MetadataBuilder,
-        metadataBuilder: new MetadataBuilder()
-      };
-    }
-  })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-
-}).call(this);
-
-/*global Promise, _, window, Backbone*/
-(function(NS) {
-  "use strict";
-  NS = NS || {};
-  //Filename: helpers/model_validation_promise.js
-
-  //Dependency gestion depending on the fact that we are in the browser or in node.
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
-  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
-  var validators = isInBrowser ? NS.Helpers.validators : require('./validators');
-  
-  //Validation function without promises.
-  //This can  is use in promise validation function and in the collection validation.
-  //In order to return only one promise well structured.
-  var validateNoPromise = function validateModelWithoutPromise(model) {
-    var errors = {};
-    //Looping through each attributes.
-    validateDomainAttributes(model, errors);
-    validateCustomAttributes(model, errors);
-    //Promisify the validations , if there is errors call the reject else call resolve with the model.
-    if (_.isEmpty(errors)) {
-      return {isValid: true, data: model};
-    } else {
-      return {isValid: false, data: errors};
-    }
-  };
-
-  var validate = function validateModel(model) {
-    var validationResult = validateNoPromise(model);
-    return new Promise(function promiseValidation(resolve, reject) {
-      //console.dir("Errors", errors);
-      if (validationResult.isValid) {
-        //console.log('resolve');
-        resolve(validationResult.data);
-      } else {
-        //console.log('reject');
-        reject(validationResult.data);
-      }
-      return undefined;
-    });
-  };
-
-  //Validate the model customs attributes.
-  var validateCustomAttributes = function validateCustomAttributes(model, errors) {
-    if (!model) {
-      throw new ArgumentNullException('The model should exist');
-    }
-    //Validating only the model at
-    for (var attr in model.attributes) {
-      //console.log("Attr", attr);
-      if (!model.isValid(attr)) {
-        var domainMessage = errors[attr] !== null && errors[attr] !== undefined ? errors[attr] : '';
-        errors[attr] = '' + domainMessage + '' + attr + " not valid."; // Todo: translate the message.
-      }
-    }
-  };
-
-  //Get the validation "standard" attributes of a Backbone.model.
-  var getValidatedAttrs = function(model) {
-    return _.reduce(_.keys(_.result(model, 'validation') || {}), function(memo, key) {
-      memo[key] = void 0;
-      return memo;
-    }, {});
-  };
-
-  //Validate the validation domains attributes.
-  var validateDomainAttributes = function validateDomainAttributes(model, errors) {
-    var validatorsOfDomain = metadataBuilder.getDomainsValidationAttrs(model);
-    //console.log("validators %j", validatorsOfDomain);
-    //Validate only the attributes of the model not all the validators int he metdadaga of the model.
-    for (var attr in model.attributes) {
-      //Validate the model only of there is the attribute on the model.
-      var valRes = validators.validate({
-        name: attr,
-        value: model.get(attr)
-      }, validatorsOfDomain[attr]);
-
-      //If there is no error dont set any errors. 
-      if (valRes.errors !== undefined && valRes.errors.length > 0) {
-        errors[attr] = valRes.errors.join(',');
-      }
-    }
-  };
-  //Validate a Backbone.Collection, return a promises.
-  var validateAll = function validateCollection(collection) {
-    if (!collection instanceof Backbone.Collection) {
-      throw new ArgumentInvalidException("Only a backbone collection can be validateAll", collection);
-    }
-    return new Promise(function(successCb, errorCb) {
-      //Container for all errors.
-      var errors = [];
-      var modelIndex = 0;
-      //Iterate over each collections.
-      collection.forEach(function(model) {
-        var validationResult = validateNoPromise(model);
-        if (!validationResult.isValid) {
-          errors.push({
-            index: modelIndex,
-            errors: validationResult.data
-          });
-        }
-        modelIndex++;
-      }, this);
-      if (errors.length > 0) {
-        //If the errors array is not empty, cb the promise errors.
-        errorCb(errors);
-      } else {
-        // Else call success callback with the collection.
-        successCb(collection);
-      }
-    });
-  };
-
-  // Initialize the domains and the metadatas.
-  var initialize = function initializeModelValiationPromise(options) {
-    metadataBuilder.initialize(options);
-  };
-
-  if (isInBrowser) {
-    NS.Helpers = NS.Helpers || {};
-    NS.Helpers.modelValidationPromise = {
-      validate: validate,
-      initialize: initialize,
-      validateAll: validateAll
-    };
-  } else {
-    module.exports = {
-      validate: validate,
-      validateAll: validateAll,
-      initialize: initialize
-    };
-  }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global _, $, window*/
 "use strict";
 (function(NS) {
@@ -3155,48 +3447,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = odataHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, $ */
-(function(NS) {
-  "use strict";
-  //Filename: post_rendering_builder.js
-  NS = NS || {};
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
-  var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require('./post_rendering_helper').metadataBuilder;
-  //Options must contain a model and a viewSelecrot property.
-  var postRenderingBuilder = function(options) {
-    //When there is no model inide the view, do nothing.
-    if (options === undefined || options === null || !options.model) {
-      return;
-    }
-    //Get all the metadatas of the model.
-    var metadatas = metadataBuilder.getMetadatas(options.model);
-    //Iterate through each attributes of the modoptions.modelel.
-    for (var attr in metadatas) {
-      var mdt = metadatas[attr];
-      /*Check for any of the metadata.*/
-      if (mdt !== undefined && mdt !== null) {
-        if (mdt.decorator) {
-          //Call a registered helper. See post_rendering_helper_file to see how to register a helper.
-          var nameAttribute = "data-name='" + attr + "'";
-
-          postRenderingHelper.callHelper({
-            helperName: mdt.decorator, //Get the post rendering helper to call from the metdata, this helper must have been register before.
-            selector: $("input[" + nameAttribute + "],select[" + nameAttribute + "]", options.viewSelector), //Create a selector on each attribute in the view with its .
-            decoratorOptions: mdt.decoratorOptions //Inject decorator options define on the model.
-          });
-        }
-      }
-    }
-  };
-  if (isInBrowser) {
-    NS.Helpers = NS.Helpers || {};
-    NS.Helpers.postRenderingBuilder = postRenderingBuilder;
-  } else {
-    module.exports = postRenderingBuilder;
-  }
-
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global Backbone, Promise, _, window */
 (function(NS) {
 	"use strict";
@@ -3298,10 +3548,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			options = options || {};
 			params = params || {};
 			if(!_.isObject(params)){
-				throw new ArgumentNullException('fetchDataPromiseCollection: params should be an object');
+				throw new ArgumentNullException('fetchDataPromiseCollection: params should be an object, check your service');
 			}
 			if(!_.isObject(params.pagesInfos)){
-				throw new ArgumentInvalidException('fetchDataPromiseCollection: params should have a pagesInfos property', params);
+				throw new ArgumentInvalidException('fetchDataPromiseCollection: params should have a pagesInfos property, check your service', params);
 			}
 			//Clean the shared collection.
 			this.reset(null, {
@@ -3397,146 +3647,139 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		module.exports = promisifyHelper;
 	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global Promise, $, _, window*/
-"use strict";
-(function(NS) {
-  NS = NS || {};
-  /* Filename: helpers/reference_helper.js  */
-  //Dependency gestion depending on the fact that we are in the browser or in node.
-  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var userHelper = isInBrowser ? NS.Helpers.utilHelper : require("./util_helper");
-
-  //Container for the list and 
-  var configuration = {};
-  
-  //Can be use to override a service, can be call with options = {"referenceName": serviceFunction} 
-  //serviceFunction is obtain with a require. 
-  function configureRefServices(options){
-    _.extend(configuration, options);
-  }
-
-  // This method perform an ajax request within a promise.
-  // Example call : refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
-  var loadList = function loadList(listDesc){
-      return userHelper.promiseAjax({ url: listDesc.url, type: 'GET' });
-  };
-
-  // Load a reference with its list name.
-  // It calls the service which must have been registered.
-  function loadListByName(listName) {
-      return getService(listName);
-  }
-  
-    //Load a service by name.
-  function getService(listName, args) {
-      if (typeof configuration[listName] !== "function") {
-          throw new Error("You are trying to load the reference list: "+ listName + " which does not have a list configure." );
-      }
-      //Call the service, the service must return a promise.
-      return configuration[listName](args);
-  }
-
-    
-  //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
-  // Return an array of many promises for all the given lists.
-  // Be carefull, if there is a problem for one list, the error callback is called.
-  function loadMany(names) {
-      var promises = [];
-      //todo: add a _.isArray tests and throw an rxception.
-      if (names !== undefined) {
-          names.forEach(function (name) {
-              promises.push(loadListByName(name));
-          });
-      }
-    return promises;
-  }
-
-  function getAutoCompleteServiceQuery(listName) {
-      return function (query) {
-          getService(listName, query.term).then(function (results) {
-              query.callback(results);
-          });
-      };
-  }
-
-  var referenceHelper = {
-    loadListByName: loadListByName,
-    loadList: loadList,
-    loadMany: loadMany,
-    getAutoCompleteServiceQuery: getAutoCompleteServiceQuery,
-    configure: configureRefServices
-  };
-
-  // Differenciating export for node or browser.
-  if (isInBrowser) {
-    NS.Helpers = NS.Helpers || {};
-    NS.Helpers.referenceHelper = referenceHelper;
-  } else {
-    module.exports = referenceHelper;
-  }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, Promise, Backbone, i18n*/
+/*global Promise, _, window, Backbone*/
 (function(NS) {
   "use strict";
-  //Filename: helpers/router.js
   NS = NS || {};
+  //Filename: helpers/model_validation_promise.js
+
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-  var userHelper = isInBrowser ? NS.Helpers.userHelper : require("./user_helper");
-  var siteDescriptionBuilder = isInBrowser ? NS.Helpers.siteDescriptionBuilder : require("./site_description_builder");
-  var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("./backbone_notification");
   var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-  var middleWares = [];
-  var middlewarePromise = function middlewarePromise(middleWareFunction) {
-    return new Promise(function(resolve, reject) {
-      if (middleWareFunction(arguments)) {
-        resolve(arguments);
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+  var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
+  var validators = isInBrowser ? NS.Helpers.validators : require('./validators');
+  
+  //Validation function without promises.
+  //This can  is use in promise validation function and in the collection validation.
+  //In order to return only one promise well structured.
+  var validateNoPromise = function validateModelWithoutPromise(model) {
+    var errors = {};
+    //Looping through each attributes.
+    validateDomainAttributes(model, errors);
+    validateCustomAttributes(model, errors);
+    //Promisify the validations , if there is errors call the reject else call resolve with the model.
+    if (_.isEmpty(errors)) {
+      return {isValid: true, data: model};
+    } else {
+      return {isValid: false, data: errors};
+    }
+  };
+
+  var validate = function validateModel(model) {
+    var validationResult = validateNoPromise(model);
+    return new Promise(function promiseValidation(resolve, reject) {
+      //console.dir("Errors", errors);
+      if (validationResult.isValid) {
+        //console.log('resolve');
+        resolve(validationResult.data);
       } else {
-        reject(arguments);
+        //console.log('reject');
+        reject(validationResult.data);
+      }
+      return undefined;
+    });
+  };
+
+  //Validate the model customs attributes.
+  var validateCustomAttributes = function validateCustomAttributes(model, errors) {
+    if (!model) {
+      throw new ArgumentNullException('The model should exist');
+    }
+    //Validating only the model at
+    for (var attr in model.attributes) {
+      //console.log("Attr", attr);
+      if (!model.isValid(attr)) {
+        var domainMessage = errors[attr] !== null && errors[attr] !== undefined ? errors[attr] : '';
+        errors[attr] = '' + domainMessage + '' + attr + " not valid."; // Todo: translate the message.
+      }
+    }
+  };
+
+  //Get the validation "standard" attributes of a Backbone.model.
+  var getValidatedAttrs = function(model) {
+    return _.reduce(_.keys(_.result(model, 'validation') || {}), function(memo, key) {
+      memo[key] = void 0;
+      return memo;
+    }, {});
+  };
+
+  //Validate the validation domains attributes.
+  var validateDomainAttributes = function validateDomainAttributes(model, errors) {
+    var validatorsOfDomain = metadataBuilder.getDomainsValidationAttrs(model);
+    //console.log("validators %j", validatorsOfDomain);
+    //Validate only the attributes of the model not all the validators int he metdadaga of the model.
+    for (var attr in model.attributes) {
+      //Validate the model only of there is the attribute on the model.
+      var valRes = validators.validate({
+        name: attr,
+        value: model.get(attr)
+      }, validatorsOfDomain[attr]);
+
+      //If there is no error dont set any errors. 
+      if (valRes.errors !== undefined && valRes.errors.length > 0) {
+        errors[attr] = valRes.errors.join(',');
+      }
+    }
+  };
+  //Validate a Backbone.Collection, return a promises.
+  var validateAll = function validateCollection(collection) {
+    if (!collection instanceof Backbone.Collection) {
+      throw new ArgumentInvalidException("Only a backbone collection can be validateAll", collection);
+    }
+    return new Promise(function(successCb, errorCb) {
+      //Container for all errors.
+      var errors = [];
+      var modelIndex = 0;
+      //Iterate over each collections.
+      collection.forEach(function(model) {
+        var validationResult = validateNoPromise(model);
+        if (!validationResult.isValid) {
+          errors.push({
+            index: modelIndex,
+            errors: validationResult.data
+          });
+        }
+        modelIndex++;
+      }, this);
+      if (errors.length > 0) {
+        //If the errors array is not empty, cb the promise errors.
+        errorCb(errors);
+      } else {
+        // Else call success callback with the collection.
+        successCb(collection);
       }
     });
   };
 
-  var registerMiddleWare = function registerMiddleWare(middleWareFunction) {
-    middleWares.push(middleWareFunction);
+  // Initialize the domains and the metadatas.
+  var initialize = function initializeModelValiationPromise(options) {
+    metadataBuilder.initialize(options);
   };
-  //Extend the backbone router.
-  var Router = Backbone.Router.extend({
-    route: function(route, name, callback) {
-      var router = this;
-      if (!callback){
-        callback = this[name];
-      }
-      if(callback === undefined || callback === null){
-        throw new ArgumentNullException("The route callback seems to be undefined, please check your router file for your route: ", name);
-      }
-      var f = function() {
-          //console.log('route before', route);
-        //Treat the home case.
-        if(route === ""){route = "home";}
-        var n = siteDescriptionBuilder.findRouteName(route);
-        var rt = siteDescriptionBuilder.getRoute(n);
-        //If the route does not exists, or the user does not have any right on the route display an error.
-        if((rt === undefined && route!== '') || !userHelper.hasOneRole(rt.roles)){
-          backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')}, true);
-          return Backbone.history.navigate('', true);
-        }else {
-          //Rendre all the notifications in the stack.
-          backboneNotification.renderNotifications();
-        }
-        //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
-        callback.apply(router, arguments);
-      };
-      return Backbone.Router.prototype.route.call(this, route, name, f);
-    }
-  });
 
-  // Differenciating export for node or browser.
   if (isInBrowser) {
     NS.Helpers = NS.Helpers || {};
-    NS.Helpers.Router = Router;
+    NS.Helpers.modelValidationPromise = {
+      validate: validate,
+      initialize: initialize,
+      validateAll: validateAll
+    };
   } else {
-    module.exports = Router;
+    module.exports = {
+      validate: validate,
+      validateAll: validateAll,
+      initialize: initialize
+    };
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function() {
@@ -3721,7 +3964,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   })(this));
 
   Handlebars.registerHelper("input_for", function(property, options) {
-    var col, container, containerAttribs, containerCss, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
+    var cidAttr, col, container, containerAttribs, containerCss, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
     options = options || {};
     html = void 0;
     translationRoot = void 0;
@@ -3777,6 +4020,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     disabled = opt.disabled || false;
     disabled = disabled ? "disabled" : "";
     inputAttributes = this[opt.inputAttributes] || opt.inputAttributes || "";
+    cidAttr = (opt.cidSelection = true) ? "cid='" + this.cid + "'" : "";
     containerAttribs = opt.containerAttribs || "";
     containerCss = opt.containerCss || "";
     labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
@@ -3865,7 +4109,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     if ((this.errors != null) && (this.errors[property] != null)) {
       error = "has-error";
     }
-    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
     errorSize = (function(_this) {
       return function() {
         var errorLength, offsetError;
@@ -3885,7 +4129,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     })(this);
     if (minimalHtml) {
       html = " <input id='" + property + "' " + (decorator()) + " class=''";
-      html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/>";
+      html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + cidAttr + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/>";
     } else {
       html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " <input id='" + property + "' " + (decorator()) + " class='";
       if (dataType !== "checkbox") {
@@ -4001,7 +4245,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     if ((this.errors != null) && (this.errors[property] != null)) {
       error = "has-error";
     }
-    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
     errorSize = (function(_this) {
       return function() {
         var errorLength, offsetError;
@@ -4125,7 +4369,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     if ((this.errors != null) && (this.errors[property] != null)) {
       error = "has-error";
     }
-    errorValue = (this.errors != null) && (this.errors[property] != null) ? this.errors[property] : "";
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
     errors = (function(_this) {
       return function() {
         if (error === "has-error") {
@@ -4210,7 +4454,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   });
 
   Handlebars.registerHelper("paginate", function(property, options) {
-    var currentPage, endPage, firstPage, generateLeftArrow, generatePageFilter, generatePageNumber, generatePagination, generateRigthArrow, generateTotal, html, perPage, totalRecords;
+    var currentPage, endPage, firstPage, firstPagePrint, generateLeftArrow, generatePageFilter, generatePageNumber, generatePagination, generateRigthArrow, generateTotal, html, lastPagePrint, nbPagePrint, nbPrint, perPage, totalRecords;
     options = options || {};
     options = options.hash || {};
     if (this.collection == null) {
@@ -4222,6 +4466,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     currentPage = this.currentPage;
     firstPage = this.firstPage || 1;
     endPage = this.totalPages || 0;
+    nbPrint = 4;
+    firstPagePrint = Math.max(firstPage, currentPage - nbPrint);
+    lastPagePrint = Math.min(endPage, currentPage + nbPrint);
+    nbPagePrint = lastPagePrint - firstPagePrint;
+    if (nbPagePrint < nbPrint * 2) {
+      if (endPage - lastPagePrint > nbPrint) {
+        lastPagePrint += nbPrint * 2 - nbPagePrint;
+      } else {
+        firstPagePrint -= nbPrint * 2 - nbPagePrint;
+      }
+    }
+    firstPagePrint = Math.max(firstPagePrint, 1);
     perPage = this.perPage || 10;
     totalRecords = this.totalRecords;
     generateLeftArrow = function() {
@@ -4232,7 +4488,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     generatePageNumber = function() {
       var html, i, _i;
       html = "";
-      for (i = _i = firstPage; firstPage <= endPage ? _i <= endPage : _i >= endPage; i = firstPage <= endPage ? ++_i : --_i) {
+      for (i = _i = firstPagePrint; firstPagePrint <= lastPagePrint ? _i <= lastPagePrint : _i >= lastPagePrint; i = firstPagePrint <= lastPagePrint ? ++_i : --_i) {
         html += "<li class='" + (i === currentPage ? 'active' : '') + "'><a href='#' data-bypass data-page='" + i + "'>" + i + "</a></li>";
       }
       return html;
@@ -4281,7 +4537,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     totalRecords = this.totalRecords || 0;
     resultString = i18n.t(options.resultLabel || 'search.result');
     exportButton = function() {
-      if (options.exportUrl != null) {
+      if ((options.exportUrl != null) && totalRecords > 0) {
         return "<div class='pull-right export'> <button   data-bypass class='btn btnExport'><i class='fa fa-table'></i>" + (i18n.t('search.export')) + "</button> <a href='" + options.exportUrl + "' data-bypass class='btn hidden btnExport'><i class='fa fa-table'></i> " + (i18n.t('search.export')) + "</a> </div>";
       }
       return "";
@@ -4651,11 +4907,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Get the criteria from the session storage if exists.
         getSessionCriteria: function getCriteria() {
-            return sessionHelper.getItem(window.location.hash);
+            return sessionHelper.getItem(this.getCriteriaId());
         },
         //Save the criteria in the session storage.
         saveSessionCriteria: function saveSessionCriteria(criteria) {
-            return sessionHelper.saveItem(window.location.hash, criteria);
+            return sessionHelper.saveItem(this.getCriteriaId(), criteria);
+        },
+        // Get the id of the criteria.
+        getCriteriaId: function getCriteriaId() {
+            var hash = window.location.hash;
+            if (this.model.modelName != undefined) {
+                hash += this.model.modelName;
+            }
+            if (this.opts.criteriaId!= undefined) {
+                hash += this.opts.criteriaId;
+            }
+            return hash;
         },
         //Call the history back.
         back: function back() {
@@ -4713,6 +4980,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //The default class for this view.
         className: 'consultEditView',
 
+        // Service to initialize the model
+        getNewModelSvc: undefined,
+
         //Service to get the model.
         getModelSvc: undefined,
 
@@ -4767,6 +5037,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 if (this.isCreateMode(options)) {
                     this.isEdit = true;
                     this.opts.isModelToLoad = false;
+                    this.loadGetNewModelData();
                 }
 
                 /*
@@ -4807,6 +5078,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         model: view.model
                     });
                 });
+        },
+
+        //This function is use in order to retrieve the data from the api using a service.
+        loadGetNewModelData: function loadGetNewModelData() {
+            if (this.getNewModelSvc != undefined) {
+                var view = this;
+                this.getNewModelSvc()
+                    .then(function success(jsonModel) {
+                        view.opts.isReadyModelData = true;
+                        view.model.set(jsonModel);
+                        //view.model.savePrevious();
+                    }).then(null, function error(errorResponse) {
+                        ErrorHelper.manageResponseErrors(errorResponse, {
+                            model: view.model
+                        });
+                    });
+            }
         },
 
         //Events handle by the view with user interaction
@@ -4878,14 +5166,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Save a backbone collection.
         saveCollection: function saveBackboneCollection() {
             //Call the form helper in order to rebuild the collection from the form.
-            var formSelector = this.opts.formSelector || "";
-            var collectionSelector = formSelector + " " + this.opts.collectionSelector;
-            form_helper.formCollectionBinder(
-                $(collectionSelector,this.$el),
-                this.model, {
-                    isSilent: false
-                }
-            );
+            this.bindToModel();
             //Bind the this to the current view for the
             var currentView = this;
             ModelValidator.validateAll(currentView.model)
@@ -4915,16 +5196,31 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         loadLoadingButton: function loadLoadingButton(event){
           $(event.target).closest('button[data-loading]').button('loading');
         },
+        bindToModel: function () {
+            if (utilHelper.isBackboneModel(this.model)) {
+                var formSelector = this.opts.formSelector || "";
+                var inputSelector = formSelector + " " + "input";
+                var selectSelector = formSelector + " " + "select";
+                form_helper.formModelBinder({
+                    inputs: $(inputSelector, this.$el),
+                    options: $(selectSelector, this.$el)
+                }, this.model);
+            } else if (utilHelper.isBackboneCollection(this.model)) {
+                var formSelector = this.opts.formSelector || "";
+                var collectionSelector = formSelector + " " + this.opts.collectionSelector;
+                form_helper.formCollectionBinder(
+                    $(collectionSelector, this.$el),
+                    this.model, {
+                        isSilent: false
+                    }
+                );
+            }
+
+            
+        },
         //Save method in case of a model.
         saveModel: function saveBackboneModel() {
-            //Call the form helper in order to rebuild the model from the form.
-            var formSelector = this.opts.formSelector || "";
-            var inputSelector = formSelector + " " +"input";
-            var selectSelector = formSelector + " " + "select";
-            form_helper.formModelBinder({
-                inputs: $(inputSelector, this.$el),
-                options: $(selectSelector, this.$el)
-            }, this.model);
+            this.bindToModel();
 
             //Bind the this to the current view for the
             var currentView = this;
@@ -5012,6 +5308,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Cancel the edition.
         cancelEdition: function cancelEditionConsultEditView() {
+            backboneNotification.clearNotifications();
             if (this.model.isNew()) {
                 Backbone.history.navigate(this.opts.listUrl, true);
             } else {
@@ -5058,6 +5355,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 delete this.model;
             }
             this.remove();
+            this.resetLoadingButton();
             if (this.opts.isNavigationOnDelete) {
                 //navigate to next page
                 Backbone.history.navigate(this.generateDeleteUrl(), true);
@@ -5070,6 +5368,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             ErrorHelper.manageResponseErrors(errorResponse, {
                 isDisplay: true
             });
+            this.resetLoadingButton();
         },
         //Render function.
         render: function renderConsultEditView() {
@@ -5099,6 +5398,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             $('.collapse', this.$el).collapse('show');
             //Button loading:
             $('button[data-loading]').button();
+
+            var errorField = $('input', 'div.form-group.has-error', this.$el)[0];
+            if (errorField === undefined) {
+                errorField = $('select', 'div.form-group.has-error', this.$el)[0];
+            }
+            if (errorField !== undefined) {
+                errorField.focus();
+            }
         }
     });
 
@@ -5304,6 +5611,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 this[vConf.name].toggleEditMode();
             }
         },
+        bindToModel: function(){
+            var compoView = this;
+            for (var i = 0, l = compoView.viewsConfiguration.length; i < l; i++) {
+                var viewConf = compoView.viewsConfiguration[i];
+                compoView[viewConf.name].bindToModel();
+            }
+            this.model.set(this.buildJSONToSave());
+        },
         //Submit the compoosite view.
         save: function saveCompositeView(event) {
             event.preventDefault();
@@ -5314,10 +5629,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             function buildPromisesFromViewConfiguration(vConf) {
                 if (vConf.type === "model") {
                     //Bind the model.
-                    formHelper.formModelBinder({
-                        inputs: $('input', compoView[vConf.name].$el),
-                        options: $('select', compoView[vConf.name].$el)
-                    }, compoView[vConf.name].model);
+                    compoView[vConf.name].bindToModel();
                     promisesValidationContainer.push(
                         //A promise is created in order to be resolve by the promise.all.
                         //Otherwise, the promise returned by the validation is already resolve when the promise.all is treated.
@@ -5337,11 +5649,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 } else {
                     //The view of the collection must have a collectionSelectot to be able to work.
                     //Bind the collection.
-                    formHelper.formCollectionBinder(
-                        $(compoView[vConf.name].opts.collectionSelector, compoView[vConf.name].$el),
-                        compoView[vConf.name].model,
-                        { isSilent: false }
-                    );
+                    compoView[vConf.name].bindToModel();
 
                     //Push promises inside the container.
                     promisesValidationContainer.push(
@@ -5932,7 +6240,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         initialize: function initializeListView(options) {
             options = options || {};
+            //Container for the views of each line in case it is usefull.
+            this.lineViewsContainer = {};
             ConsultEditView.prototype.initialize.call(this, options);
+            this.isSearchTriggered = options.isSearchTriggered || false;
             this.listenTo(this.model, "reset", this.render, this);
             // Listen to the model add event.
             this.listenTo(this.model, "add", this.addOne, this);
@@ -6057,7 +6368,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         lineSelection: function lineSelectionSearchResults(event) {
             //todo: should the be unactivated if there is aview per line and delegate to the line. , this.viewForEachLineConfiguration.isActive
             event.preventDefault();
-            var id = +$(event.target).closest("[data-selection]").attr('data-selection');
+            var id = $(event.target).closest("[data-selection]").attr('data-selection');
             if (this.isShowDetailInside) {
                 this.detailId = id;
                 $('.collapse', this.$el).collapse('hide');
@@ -6090,10 +6401,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //Copy the references to the child.
             model.set(_.pick(this.model, this.referenceNames), { silent: true });
             //
+            var lineView = new this.viewForEachLineConfiguration.LineView(_.extend({
+                model: model
+            }, opt));
+            this.lineViewsContainer[model.cid] = lineView;
             $(this.viewForEachLineConfiguration.parentContainer, this.$el).append(
-                new this.viewForEachLineConfiguration.LineView(_.extend({
-                    model: model
-                }, opt)).render().el
+                lineView.render().el
             );
         },
         render: function renderListView(options) {
@@ -6114,7 +6427,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             $('.collapse', this.$el).collapse('show');
         },
         renderEmptyList: function renderEmptyList() {
-            // placeholder for empty list.
             this.renderList();
         },
         renderList: function renderList() {
@@ -6133,7 +6445,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 isViewForLine: this.viewForEachLineConfiguration.isActive
             }, {
                 exportUrl: this.opts.exportUrl + '/' + this.exportId
-            }, _.pick(this.model, this.referenceNames), { isEdit: this.isEdit }, this.additionalData())));
+            }, _.pick(this.model, this.referenceNames, "modelName", "metadatas"), { isEdit: this.isEdit }, this.additionalData())));
 
             //Conditionnal code for rendering a line foreachView
             if (this.viewForEachLineConfiguration.isActive) {
@@ -6149,6 +6461,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         saveCriteria: function (criteria, pageInfo) {
+            this.saveSessionCriteria({
+                criteria: criteria,
+                pageInfo: pageInfo
+            });
         }
         //,
         //triggerSaveModels: function triggerSaveModels() {
@@ -6227,7 +6543,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             $(this.configuration.container, this.$el).on('hidden.bs.modal', function () {
                 currentModal.trigger('modal:close', jsonModel);
                 $(currentModal.configuration.container, currentModal.$el).off('hidden.bs.modal');
-            })
+            });
             this.hideModal();
             //console.log('the modal is close is successfull...');
         },
@@ -6256,7 +6572,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         getModalData: function () {
             return _.extend({
                 title: this.opts.modalTitle,
-            }, this.configuration.modalOptions);
+            }, this.configuration.modalOptions, this.opts);
         },
         showModal: function showModal() {
             
@@ -6324,13 +6640,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Function call when there is no result.
         renderEmptyList: function renderEmptySearchResults() {
             //Is recherche launched.
-            this.$el.html(this.templateNoResults({
-                message: i18n.t('search.noResult')
-            }));
-            /*backboneNotification.addNotification({
-                type: 'info',
-                message: i18n.t('search.noResult')
-            }, true);*/
+            if (this.isSearchTriggered) {
+                this.$el.html(this.templateNoResults({
+                    message: i18n.t('search.noResult')
+                }));
+            } else {
+                this.$el.html(this.templateNoResults({
+                    message: i18n.t('search.ready')
+                }));
+            }
         },
         toggleEditMode: function toogleEditModeSRV(event) {
             if (event) {
@@ -6408,7 +6726,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.searchResultsView = new this.ResultsView({
                 model: this.searchResults,
                 criteria: this.model,
-                searchView: this
+                searchView: this,
+                isSearchTriggered : false
             });
             //handle the clear criteria action
             this.listenTo(this.model, 'change', this.render);
@@ -6439,7 +6758,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             });
 
             if (this.opts.isRefreshSearchOnInputChange) {
-                this.events = _.extend({}, this.defaultEvents, this.refreshSearchOnInputChangeEvents);
+                this.events = _.extend({}, this.events, this.defaultEvents, this.refreshSearchOnInputChangeEvents);
             }
             this.delegateEvents();
         },
@@ -6449,14 +6768,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             "click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
             "click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
             "click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
-            "click .panel-heading": "toogleCollapse"
+            "click .panel-heading": "toogleCollapse",
+            "click button.btnCreate": "create",
         },
-
         events: this.defaultEvents,
 
         refreshSearchOnInputChangeEvents: {
-            "change input:not([noRefresh])": "runSearch",
-            "change select:not([noRefresh]) ": "runSearch"
+            "change [data-refresh]  input:not([noRefresh])": "runSearch",
+            "change [data-refresh] select:not([noRefresh]) ": "runSearch"
         },
 
         //Change the fact that the view is in the mode mode or less criteria.
@@ -6477,6 +6796,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 isCriteriaReadonly: false
             });
         },
+        create: function createNavigate() {
+            this.searchResultsView.create();
+        },
 
         searchSuccess: function searchSuccess(jsonResponse) {
             this.searchResults.setTotalRecords(jsonResponse.totalRecords);
@@ -6485,7 +6807,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         searchError: function searchError(response) {
             this.searchResults.reset([]);
             ErrorHelper.manageResponseErrors(response, {
-                isDisplay: true
+                isDisplay: true,
+                model: this.model
             });
         },
 
@@ -6495,7 +6818,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         runSearch: function runSearchSearchView(event, options) {
             var searchButton;
-            if (event !== undefined && event !== null) {
+            var isEvent = event !== undefined && event !== null;
+            if (isEvent) {
                 event.preventDefault();
                 searchButton = $("button[type=submit]", event.target); // retrieving the button that triggered the search
             }
@@ -6520,10 +6844,17 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 				    });
 				    var criteria = currentView.getCriteria();
 				    var pageInfo = currentView.searchResults.pageInfo();
+
+				    if (isEvent) {
+				        pageInfo.currentPage = 1;
+				    }
+
 				    currentView.search(criteria, pageInfo)
 						.then(function success(jsonResponse) {
 						    //Save the criteria in session.
 						    currentView.searchResultsView.opts.isReadyResultsData = true;
+						    currentView.searchResultsView.isSearchTriggered = true;
+						    currentView.searchResults.setPageInfo(pageInfo);
 						    currentView.saveSessionCriteria({
 						        criteria: criteria,
 						        pageInfo: pageInfo
@@ -6603,5 +6934,79 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         NS.Views.SearchView = SearchView;
     } else {
         module.exports = SearchView;
+    }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+﻿/* global  _ , window, Promise,$, Backbone */
+(function(NS) {
+    "use strict";
+    //Filename: helpers/message_helper.js
+    var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    //create a modal in the DOM.
+    var ModalView = isInBrowser ? NS.Views.ModalView : require('../views/modal-view');
+
+    var isInitialize = false;
+    var ConfirmView = ModalView.extend({
+        modalTitle: " ",
+        customOptions: {isEdit: false},
+        templateConsult: function(data) {
+            return ""+ data.message;
+        },
+        //configuration: _.extend({}, ModalView.prototype.configuration, {templateModal: });
+    });
+    var confirmView = new ConfirmView({
+        modelName: "confirmModel",
+        isButtonLabelRedefinition: false
+    });
+    //if (!$('div[data-modal-confirm]').length) {
+    //Register the modal in the DOM.
+    function initialize() {
+        $('div#modalConfirmContainer').append(confirmView.render().el);
+        isInitialize = true;
+    }
+
+    //Create an event manager.
+    var eventManager = _.extend({}, Backbone.Events);
+
+    //Confirm promise version.
+    var confirm = function messageHelperConfirm(messageKey, options) {
+        options = options || {};
+        //Save the initial opts;
+        var initialOpts = confirmView.opts;
+        _.extend(confirmView.opts, options);
+        confirmView.modalTitle = messageKey;
+        confirmView.model.set({'message': messageKey},{silent: true});
+        confirmView.render();
+        return new Promise(function(resolve, reject) {
+            confirmView.showModal();
+            //Listen to once to the close event of the modal.
+            eventManager.listenToOnce(confirmView, "modal:close", function(data) {
+                eventManager.stopListening(confirmView, 'modal:cancel');
+                confirmView.opts = initialOpts;
+                resolve(messageKey);
+            });
+            //Listen to once the cancel event on the modal.
+            eventManager.listenToOnce(confirmView, "modal:cancel", function(data) {
+                eventManager.stopListening(confirmView, 'modal:close');
+                confirmView.opts = initialOpts;
+                reject(options.cancelMessageKey || {
+                    responseJSON: {
+                        "error": i18n.t("error.operationCancelled")
+                    }
+                });
+            });
+        });
+        
+    };
+
+    //Message helper.
+    var messageHelper = {
+        confirm: confirm,
+        initialize: initialize
+    };
+    if (isInBrowser) {
+        NS.Helpers = NS.Helpers || {};
+        NS.Helpers.messageHelper = messageHelper;
+    } else {
+        module.exports = messageHelper;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
