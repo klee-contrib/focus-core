@@ -14,8 +14,8 @@
     "code-report": "./node_modules/plato/bin/plato -r -d report -l .jshintrc -t 'Framework javascript Kleegroup.' lib/*"
   },
   "repository": {
-    "type": "tfs",
-    "url": "http://tfs12-part:8080/tfs/PGC/SPA-Fmk/"
+    "type": "git",
+    "url": "https://github.com/KleeGroup/focus"
   },
   "keywords": [
     "fmk",
@@ -49,9 +49,11 @@
     "docco": "~0.6.3",
     "hapi": "^4.0.0",
     "plato": "^1.0.1",
-	  "rcfinder": "0.1.4",
-	"lodash._reinterpolate": "~2.4.1",
-	"lodash.template": "~2.4.1"
+    "rcfinder": "0.1.4",
+    "lodash._reinterpolate": "~2.4.1",
+    "lodash.template": "~2.4.1",
+    "gulp": "~3.8.6",
+    "gulp-if": "~1.2.4"
   },
   "devDependencies": {
     "gulp": "~3.5.5",
