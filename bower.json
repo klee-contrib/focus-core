@@ -1,0 +1,24 @@
+{
+  "name": "focus",
+  "version": "0.1.2",
+  "homepage": "https://github.com/KleeGroup/focus",
+  "authors": [
+    "Pierre Besson <pierre.besson7@gmail.com>"
+  ],
+  "description": "Easy framework for single page application.",
+  "main": "dist/browser/fmk.js",
+  "keywords": [
+    "Backbone",
+    "js",
+    "SPA",
+    "Promise"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
