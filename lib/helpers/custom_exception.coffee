@@ -7,13 +7,17 @@
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exception class
   ###
+   * Creates a new CustomException.
    * @class Exception class.
   ###
   class CustomException
+    # @constructor
     constructor:(@name, @message,@options) ->
       @log()
+    #Log the content of the exception.
     log: ->
       console.error("name", @name, "message", @message, "options", @options)
+    # JSONify the content of the exception.
     toJSON:->
       return {"name": @name, "message": @message,  "options": @options}
   # Exception for a not implemented method.

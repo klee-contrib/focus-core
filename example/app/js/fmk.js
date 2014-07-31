@@ -1,5 +1,5 @@
-/* name: spa-fmk , version: 0.1.1 description: Simple framework for backbone applications.*/ 
- (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'spa-fmk';fmk.version = '0.1.1';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/* name: spa-fmk , version: 0.1.2 description: Simple framework for backbone applications.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'spa-fmk';fmk.version = '0.1.2';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 /*global window, _*/
 (function initialization(container) {
   var fmk = container.Fmk || {};
@@ -166,6 +166,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 
     /*
+     * Creates a new CustomException.
      * @class Exception class.
      */
     CustomException = (function() {
@@ -2016,7 +2017,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             return data;
         if ("" in data)
             return data[""];
-        var result = {}, cur, prop, idx, last, temp;
+        var result = {},
+            cur, prop, idx, last, temp;
         for (var p in data) {
             cur = result;
             prop = "";
@@ -2063,7 +2065,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     //Deeply combine an arbitrary number of JS objects.
     function combine() {
         var res = {};
-        var args = _.map(arguments, function (item) {
+        var args = _.map(arguments, function(item) {
             return item && !_.isEmpty(item) ? JSON.flatten(item) : {};
         });
         args.unshift(res);
@@ -2081,16 +2083,16 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return JSON.unflatten(res);
     }
     //Group datas by split char.
-    function groupBySplitChar(data, options){
+    function groupBySplitChar(data, options) {
         options = options || {};
-        if(!_.isObject(data)){
+        if (!_.isObject(data)) {
             throw new ArgumentInvalidException('Data must be an object', data);
         }
         var splitKey = options.splitKey || '.';
         var resutContainer = {};
-        for(var prop in data){
+        for (var prop in data) {
             var l = prop.split(splitKey).length;
-            if(!_.isObject(resutContainer[l])){
+            if (!_.isObject(resutContainer[l])) {
                 resutContainer[l] = {};
             }
             resutContainer[l][prop] = data[prop];
@@ -2098,18 +2100,24 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return resutContainer;
     }
     //Generate four random hex digits.
-    function splitLevel(source,  options){
-        options = options ||{};
-        var splitChar = options.splitChar ||'.';
+    function splitLevel(source, options) {
+        options = options || {};
+        var splitChar = options.splitChar || '.';
         var depth = options.depth || source.length;
         //if(depth === 0){return source;}
-        return _.reduce(source.split(splitChar,depth), function(memo, val){return memo + val + splitChar ;}, '').slice(0,-1);
+        return _.reduce(source.split(splitChar, depth), function(memo, val) {
+            return memo + val + splitChar;
+        }, '').slice(0, -1);
     }
 
     function S4() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     }
-    //Generate a pseudo-GUID by concatenating random hexadecimal.
+   
+    /**
+     * Generate a pseudo-GUID by concatenating random hexadecimal
+     * @return {string} A guid.
+     */
     function guid() {
         return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
     }
@@ -2143,6 +2151,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
 
     };
+    /**
+     * Sort an object by its keys.
+     * @param  {object} object - The object to sort.
+     * @return {object}        - The sorted object.
+     */
+    var sortObject = function sortObject(object) {
+        if(!_.isObject(object)){
+            throw new ArgumentInvalidException("object");
+        }
+        var tmp = {};
+        var sortedKeys = _.sortBy(_.keys(object), function(d) {
+            return d;
+        });
+        for (var i = 0; i < sortedKeys.length; i++) {
+            tmp[sortedKeys[i]] = object[sortedKeys[i]];
+        }
+        return tmp;
+    };
+
     //Method to call in order to know if a model is a model.
     var isBackboneModel = function isBackboneModel(model) {
         return model !== undefined && model !== null && typeof model.has === "function";
@@ -2170,11 +2197,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 data: ajaxSettings.data,
                 dataType: "json",
                 crossDomain: true,
-                success: function (data) {
+                success: function(data) {
                     //references[listDesc.name] = data; //In order to not reload the next time,  warning, as promises are asynchronous, when the promise is define, this could be false.
                     resolve(data);
                 },
-                error: function (error) {
+                error: function(error) {
                     reject(error);
                 }
             });
@@ -2183,7 +2210,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
     // Returns a promise that is automatically rejected with an error message.
     var promiseRejectWithMessage = function promiseRejectWithMessage(messageKey) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             reject({
                 responseJSON: {
                     "error": messageKey
@@ -2206,7 +2233,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         isBackboneCollection: isBackboneCollection,
         isBackboneView: isBackboneView,
         promiseAjax: promiseAjax,
-        promiseRejectWithMessage: promiseRejectWithMessage
+        promiseRejectWithMessage: promiseRejectWithMessage,
+        sortObject: sortObject
     };
     if (isInBrowser) {
         NS.Helpers = NS.Helpers || {};
@@ -2797,10 +2825,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (selector !== undefined && selector !== null && collection instanceof Backbone.Collection) {
             //collection.reset(null, {silent: true}); // The collection is cleared.
             var index = 0;
+            //@todo: Check if there is a problem on collection save, the selector could have been change, do a clone.
             Array.prototype.forEach.call(selector, function(modelLineSelector) {
                 //var model = new collection.model();
                 this.formModelBinder({
-                        inputs: $('input', modelLineSelector),
+                        inputs: $('input, textarea', modelLineSelector),
                         options: $('select', modelLineSelector)
                     },
                     collection.at(index), //Model to populate.
@@ -2864,6 +2893,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     helperName: decorator
                 });
 
+            }else if (input.tagName === "TEXTAREA") {
+                currentvalue = input.value;
             } else { //See if an if on currentValue is nececessary.
                 switch (input.getAttribute('type')) {
                     case "checkbox":
@@ -3090,9 +3121,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 }).call(this);
 
-"use strict";
 /*global window*/
-(function (NS) {
+(function(NS) {
+    "use strict";
+
     // Filename: helpers/metadata_builder.coffee
     NS = NS || {};
     //Dependency gestion depending on the fact that we are in the browser or in node.
@@ -3106,11 +3138,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 var active = i === 0 ? "active" : "";
                 var subHeaders = headersElements[i].subHeader;
                 var subHeaderData = [];
-                for (var j = 0 ; j < subHeaders.length ; j++) {
+                for (var j = 0; j < subHeaders.length; j++) {
                     var sub2HeaderData = [];
                     if (subHeaders[j].sub2Header !== undefined) {
                         var sub2Headers = subHeaders[j].sub2Header;
-                        for (var k = 0 ; k < sub2Headers.length ; k++) {
+                        for (var k = 0; k < sub2Headers.length; k++) {
                             var sub2HeaderName = sub2Headers[k].name;
                             var sub2Header = {
                                 cssId: "nav-" + sub2HeaderName,
@@ -3454,8 +3486,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	NS = NS || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 	var odataHelper = isInBrowser ? NS.Helpers.odataHelper : require("./odata_helper");
-	 var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+	var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+	var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+
+
+
 	// Backbone model with **promise** CRUD method instead of its own methods.
 	var PromiseModel = Backbone.Model.extend({
 		/**
@@ -3547,10 +3582,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		fetchData: function fetchDataPromiseCollection(params, options) {
 			options = options || {};
 			params = params || {};
-			if(!_.isObject(params)){
+			if (!_.isObject(params)) {
 				throw new ArgumentNullException('fetchDataPromiseCollection: params should be an object, check your service');
 			}
-			if(!_.isObject(params.pagesInfos)){
+			if (!_.isObject(params.pagesInfos)) {
 				throw new ArgumentInvalidException('fetchDataPromiseCollection: params should have a pagesInfos property, check your service', params);
 			}
 			//Clean the shared collection.
@@ -3573,7 +3608,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			var collection = this;
 			return new Promise(function(resolve, reject) {
 				/*Don't use underscore but could have because bacckbone has a dependency on it.*/
-				options.success = resolve;
+				options.success = function(data, textStatus, request) {
+					console.info(request.getAllResponseHeaders());
+					resolve(data);
+				};
 				options.error = reject;
 				Backbone.sync('read', collection, options);
 			});
@@ -3628,6 +3666,45 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		return promiseCollectionChanges;
 	};
 
+	/**
+	 * Generate a modle from  a json object and a url.
+	 * @param  {string} url  - The server api url.
+	 * @param  {object} json - JSON object representing the model properties.
+	 * @return {PromiseModel}      - A backbone model promisified with the good url.
+	 */
+	var generateModel = function generateModel(url, json) {
+		if (json!== undefined && json !== null && !_.isObject(json)) {
+			throw new ArgumentInvalidException(json);
+		}
+		if (!_.isString(url)) {
+			throw new ArgumentInvalidException(url);
+		}
+		var Model = PromiseModel.extend({
+			urlRoot: url
+		});
+		return new Model(json);
+	};
+
+	/**
+	 * Generate a collection from an url , json and metadatas.
+	 * @param  {[type]} url       [description]
+	 * @param  {[type]} json      [description]
+	 * @param  {[type]} metadatas [description]
+	 * @return {[type]}           [description]
+	 */
+	var generateCollection = function generateCollection(url, json) {
+		if (json !== undefined && !_.isArray(json)) {
+			throw new ArgumentInvalidException(json);
+		}
+		if (!_.isString(url)) {
+			throw new ArgumentInvalidException(url);
+		}
+		var Collection = PromiseCollection.extend({
+			url: url
+		});
+		return new Collection(json);
+	};
+
 	//Todo: see if it is necessary to expose Model and collection promisified.
 	var promisifyHelper = {
 		Model: PromiseModel,
@@ -3636,7 +3713,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			Model: ConvertModel,
 			Collection: ConvertCollection,
 			CollectionChanges: ConvertCollectionChanges
-		}
+		},
+		model: generateModel,
+		collection: generateCollection
 	};
 
 	// Differenciating export for node or browser.
@@ -5199,7 +5278,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         bindToModel: function () {
             if (utilHelper.isBackboneModel(this.model)) {
                 var formSelector = this.opts.formSelector || "";
-                var inputSelector = formSelector + " " + "input";
+                var inputSelector = formSelector + " " + "input, " + formSelector + " " + "textarea";
                 var selectSelector = formSelector + " " + "select";
                 form_helper.formModelBinder({
                     inputs: $(inputSelector, this.$el),
@@ -6936,27 +7015,36 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = SearchView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/* global  _ , window, Promise,$, Backbone */
+﻿/* global  _ , window, Promise,$, Backbone, i18n */
+/**
+ * @module helpers/message_helper
+ * @description Message helper to deal wit confirm, alert, ...
+ * @see file helpers/message_helper.js
+ */
+
 (function(NS) {
     "use strict";
-    //Filename: helpers/message_helper.js
+    //Filename: 
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    //create a modal in the DOM.
+    //Dependencies.
     var ModalView = isInBrowser ? NS.Views.ModalView : require('../views/modal-view');
-
     var isInitialize = false;
+
     var ConfirmView = ModalView.extend({
         modalTitle: " ",
         customOptions: {isEdit: false},
         templateConsult: function(data) {
-            return ""+ data.message;
+            return "" + data.message;
         },
         //configuration: _.extend({}, ModalView.prototype.configuration, {templateModal: });
     });
+
+    //Create a Modal in the dom for containige the alert page.
     var confirmView = new ConfirmView({
         modelName: "confirmModel",
         isButtonLabelRedefinition: false
     });
+
     //if (!$('div[data-modal-confirm]').length) {
     //Register the modal in the DOM.
     function initialize() {
@@ -6967,7 +7055,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     //Create an event manager.
     var eventManager = _.extend({}, Backbone.Events);
 
-    //Confirm promise version.
+    /**
+     * Helper to replace the confirm of JavaScript.
+     * @param  {string} messageKey - internationalization key.
+     * @param  {[type]} options    [description]
+     * @return {[type]}            [description]
+     */
     var confirm = function messageHelperConfirm(messageKey, options) {
         options = options || {};
         //Save the initial opts;

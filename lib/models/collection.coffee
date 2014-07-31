@@ -106,6 +106,9 @@
         @get(err).set({
             errors: errors[err]
         }, options)
+    # Unset errors.
+    unsetErrors: (options) ->
+      @forEach((mdl)-> mdl.unsetErrors(options))
     jsonFromSaveJson:(saveJSON)->
       changes = []
       _.each(saveJSON.creates, (elt)->changes.push(elt))
