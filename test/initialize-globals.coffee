@@ -14,6 +14,8 @@ exports.load = (options)->
     global.Backbone.Validation = require 'backbone-validation'
     global.config = require '../lib/config'
     global.i18n = require('i18next')
+    global.window = {}
+    _.extend(global.window, require('./mock/dom-storage'))
     global.$ = () ->
       console.log('$ does not exists in node... Try jsdom ') if options.log?
     #Initialization of the translations.
