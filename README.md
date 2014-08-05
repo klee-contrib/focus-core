@@ -1,5 +1,6 @@
 spa-fmk
 =======
+[![Build Status](https://travis-ci.org/KleeGroup/focus.svg)](https://travis-ci.org/KleeGroup/focus.svg)
 
 **Currently in dev**
 
