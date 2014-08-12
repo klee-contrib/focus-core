@@ -7,7 +7,7 @@ spa-fmk
 Fmk for spa application.
 
 ## What's inside
-See our [wiki](wiki)
+See our [wiki](https://github.com/KleeGroup/focus/wiki)
 
 
 ## How to build the lib
@@ -29,12 +29,13 @@ It uses **mocha**.
 You have to configure the `build.json` file which is at the root directory in order to copy the fmk.js dile into your **vendor** directory insode your application.
 Then in your project, [brunch](http://brunch.io) should use it automatically.
 _Tip:_ Remember in order to launch brunch: `brunch w` in  the directory of your SPA project.
+You can look at the [focus-starter-kit](https://github.com/KleeGroup/focus-starter-kit) project to have an example application using this fmk.
 
 ## Dependencies:
 
 ### Browser
 
-- jQuery
+- [jQuery](http://jquery.com)
 - [Underscore.js](http://underscorejs.org/)
 - [Backbone.js](http://backbonejs.org/)
 - [Moment.js](http://momentjs.com/timezone/docs/)
@@ -47,4 +48,3 @@ _Tip:_ Remember in order to launch brunch: `brunch w` in  the directory of your 
 - [Backbone.js](http://backbonejs.org/)
 - [Mocha](http://visionmedia.github.io/mocha/)
 - Promises with [Bluebird](https://github.com/petkaantonov/bluebird)
-- [Numeral](http://numeraljs.com/)
