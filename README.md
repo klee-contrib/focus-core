@@ -7,10 +7,7 @@ spa-fmk
 Fmk for spa application.
 
 ## What's inside
-- [Guide](./guide/README.html)
-- [Helpers](./helpers/backbone_notification.html) 
-- [Models](./models/model.html)
-- [Views](./views/core-view.html)
+See our [wiki](wiki)
 
 
 ## How to build the lib
