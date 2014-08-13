@@ -52,6 +52,7 @@ gulp.task('browser-build', ['infos', 'templates'], function() {
     './lib/main.js',
     './lib/templates/templates.js',
     './lib/helpers/custom_exception.coffee',
+    './lib/core/http_response_parser.js',
     './lib/helpers/session_helper.js',
     './lib/helpers/user_helper.js',
     './lib/helpers/site_description_helper.js',
