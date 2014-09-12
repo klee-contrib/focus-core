@@ -140,6 +140,15 @@ Handlebars.registerHelper "input_for", (property, options) ->
   #console.log "domain", domain
   minimalHtml = if opt.minimalHtml? then opt.minimalHtml else false
   noGrid = if opt.noGrid then opt.noGrid else false
+  autoCompleteFields = (context)->
+    subHTML = ""
+    if opt.autoCompleteFields
+      fieldNames = opt.autoCompleteFields.split(',')
+      fieldNames.forEach((fieldName)->
+        if context[fieldName]
+          subHTML = subHTML + "data-#{fieldName}='#{context[fieldName]}'"
+      )        
+    return subHTML
   isDisplayRequired = false
   isRequired = ()=>
     isDisplayRequired = false
@@ -254,7 +263,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
                 <div class='#{inputSize()} #{containerCss}' #{containerAttribs}>
                     <div class='#{if isAddOnInput then 'input-group' else ""}'>
                    #{icon()}
-                  <input id='#{property}' #{decorator()} class='"
+                  <input id='#{property}' #{decorator()} #{autoCompleteFields(@)} class='"
       if(dataType != "checkbox") then html +="form-control "
       html += "input-sm' data-name='#{property}' type='#{dataType}' #{inputAttributes} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>
                   #{symbol()}"
