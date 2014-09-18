@@ -140,10 +140,10 @@ Handlebars.registerHelper "input_for", (property, options) ->
   #console.log "domain", domain
   minimalHtml = if opt.minimalHtml? then opt.minimalHtml else false
   noGrid = if opt.noGrid then opt.noGrid else false
-  autoCompleteFields = (context)->
+  dataFields = (context)->
     subHTML = ""
-    if opt.autoCompleteFields
-      fieldNames = opt.autoCompleteFields.split(',')
+    if opt.dataFields
+      fieldNames = opt.dataFields.split(',')
       fieldNames.forEach((fieldName)->
         if context[fieldName]
           subHTML = subHTML + "data-#{fieldName}='#{context[fieldName]}'"
@@ -254,7 +254,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
   #     <input type="text" class="form-control" id="exampleInputEmail" placeholder="Enter email">
   #   </div>
   if minimalHtml 
-      html = " <input id='#{property}' #{decorator()} class=''"
+      html = " <input id='#{property}' #{dataFields(@)} #{decorator()} class=''"
       html += "data-name='#{property}' type='#{dataType}' #{inputAttributes} #{cidAttr} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>"
   else
       html = "
@@ -263,7 +263,7 @@ Handlebars.registerHelper "input_for", (property, options) ->
                 <div class='#{inputSize()} #{containerCss}' #{containerAttribs}>
                     <div class='#{if isAddOnInput then 'input-group' else ""}'>
                    #{icon()}
-                  <input id='#{property}' #{decorator()} #{autoCompleteFields(@)} class='"
+                  <input id='#{property}' #{decorator()} #{dataFields(@)} class='"
       if(dataType != "checkbox") then html +="form-control "
       html += "input-sm' data-name='#{property}' type='#{dataType}' #{inputAttributes} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>
                   #{symbol()}"
@@ -749,3 +749,110 @@ Handlebars.registerHelper "introspect", (property, options) ->
     new Lawnchair({name: 'products'}, $.noop).get('currency', (curr)-> currencySymbol = curr.currencySymbol)
   html = "<div class='currency'><div class='right'>#{value} #{currencySymbol}</div></div>"
   new Handlebars.SafeString(html)###
+###
+  Helper pour uniformiser l'utilisation des formulaires.
+  Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
+###
+Handlebars.registerHelper 'form', (options)->
+    return "<form novalidate class='form-horizontal' role='form'>#{options.fn(@)}</form>"
+###
+  Helper pour uniformiser l'utilisation des formulaires.
+  Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
+###
+Handlebars.registerHelper 'display', (options)->
+    return "<form novalidate class='form-horizontal' role='form'>#{options.fn(@)}</form>"
+###
+  Helper pour uniformiser l'utilisation des formulaires.
+  Exemple: {{#button_toolbar}} {{{button_cancel}} {{button_save}} {{/button_toolbar}}
+###
+Handlebars.registerHelper 'btn_toolbar', (options)->
+    return "<div class='btn-toolbar'><div class='btn-group'>#{options.fn(@)}</div></div>"
+###
+  Helper pour uniformiser l'utilisation des panel.
+  Exemple: {{#panel}} {{{#form}} {{/form}} {{/panel}}
+  Exemple: {{#panel "titlekey"}} {{{#form}} {{/form}} {{/panel}}
+###
+Handlebars.registerHelper 'panel', (title, options)->
+    opt = (options or {}).hash or {}
+    if _.isObject(title)
+      options = title 
+      title = undefined
+    editButton = ->
+      return if opt.edit then Handlebars.helpers.button_edit.call(@, {hash: {icon: "pencil"}}) else ""
+    saveButton = ->
+      return if opt.save then Handlebars.helpers.button_save.call(@, undefined, {hash: {icon: "save"}}) else ""
+    cancelButton = ->
+      return if opt.save then Handlebars.helpers.button_cancel.call(@, {hash: {icon: "undo"}}) else ""
+    title =  if not title? then "" else i18n.t(title)
+    html = "<div class='panel panel-default'>
+          <div class='panel-heading'>#{title} #{editButton()} #{saveButton()} #{cancelButton()}</div>
+          <div class='panel-body'>#{options.fn(@)}</div>
+        </div>"
+    return html
+###
+  Helper pour uniformiser l'utilisation des formulaires.
+  Exemple: {{#page "page.title" panelTitle="page.panel.title"}} {{input_for "firstName"}} {{/page}}
+###
+Handlebars.registerHelper 'page', (title, options)->
+  options = options or {}
+  opt = options.hash or {}
+  console.error("noTitleInYourTemplate")if not _.isString(title)    
+  html = "
+      <h1>#{i18n.t(title)}</h1>
+      <div class='page-content'>
+        #{options.fn(@)}
+      </div>
+  "
+  return html
+
+###
+  Helper pour uniformiser l'utilisation des formulaires.
+  Exemple: {{#criteria}}{{#form}} {{input_for "firstName"}} {{/form}}{{/criteria}}
+###
+Handlebars.registerHelper 'criteria', (title, options)->
+  options = options or {}
+  if _.isObject(title)
+      options = title 
+      title = undefined
+    title =  if not title? then "" else i18n.t(title)
+  html = "
+      <div class='criteria'>
+        <h2>#{title}</h2>
+        #{options.fn(@)}
+      </div>
+  "
+  return html
+
+# Create the default _opening_ html for table result. Works as a tag.
+# Works with _close_result_table_ helper.
+Handlebars.registerHelper "result", (options)->
+  options = options or {}
+  opt = options.hash or {}
+  isTable = if opt.isTable? then opt.isTable else true
+  resultLabel = if opt.resultLabel then i18n.t(opt.resultLabel) else undefined
+  listTagName = if isTable then "table" else "ul"
+  elementTagName = if isTable then "tr" else "li"
+  striped = if opt.striped? then opt.stripped else true
+  cssClass = if isTable then defaults.cssClass.table else defaults.cssClass.list
+  if opt.cssClass? then cssClass= "#{cssClass} opt.cssClass"
+  if striped 
+    cssClass = cssClass + "  table-striped"
+  # Generate the header actions.
+  tableHeaderActions = ()=>
+    showHeaderActions = if opt.showHeaderActions? then opt.showHeaderActions else true
+    return if showHeaderActions then "#{Handlebars.helpers.tableHeaderAction.call(this, {hash:{resultLabel: '', exportUrl: this.exportUrl, resultLabel: resultLabel}})} <hr />" else ""
+  # Render the pagination Pagination.
+  paginate = ()=>
+    isPaginate = if opt.isPaginate? then opt.isPaginate else true
+    if isPaginate
+      Handlebars.helpers.paginate.call(this, {hash:{showResultNumber:false}})
+    else ""
+  # Produce the html to render.
+  html = " #{tableHeaderActions()}
+              <#{listTagName} class='#{cssClass}'>
+                #{options.fn(@)}
+              </#{listTagName}>
+            #{paginate()}
+          <div id='lineSelectionContainer'></div>
+  "
+  return new Handlebars.SafeString(html)
