@@ -33,7 +33,6 @@
     "backbone-validation": "~0.9.1",
     "bluebird": "~2.3.2",
     "chai": "~1.9.1",
-    "hapi": "^6.9.0",
     "i18next": "~1.7.4",
     "sinon": "~1.10.3",
     "sinon-chai": "~2.5.0",
@@ -41,6 +40,7 @@
   },
   "devDependencies": {
     "jshint-stylish": "~1.0.0",
+    "hapi": "^6.9.0",
     "mocha": "~1.21.4",
     "express": "~4.9.4",
     "gulp-util": "~3.0.1",
