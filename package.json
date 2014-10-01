@@ -29,14 +29,15 @@
     "_mocha": "/node_modules/mocha/bin/_mocha"
   },
   "dependencies": {
-    "sinon-chai": "~2.5.0",
-    "underscore": "~1.7.0",
     "backbone": "~1.1.2",
+    "backbone-validation": "~0.9.1",
     "bluebird": "~2.3.2",
     "chai": "~1.9.1",
-    "backbone-validation": "~0.9.1",
+    "hapi": "^6.9.0",
     "i18next": "~1.7.4",
-    "sinon": "~1.10.3"
+    "sinon": "~1.10.3",
+    "sinon-chai": "~2.5.0",
+    "underscore": "~1.7.0"
   },
   "devDependencies": {
     "jshint-stylish": "~1.0.0",
