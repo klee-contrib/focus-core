@@ -1,6 +1,6 @@
 {
-  "name": "spa-fmk",
-  "version": "0.1.4",
+  "name": "focus",
+  "version": "0.1.5",
   "description": "Simple framework for backbone applications.",
   "main": "index.js",
   "directories": {
