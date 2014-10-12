@@ -833,7 +833,7 @@ Handlebars.registerHelper "result", (options)->
   listTagName = if isTable then "table" else "ul"
   elementTagName = if isTable then "tr" else "li"
   striped = if opt.striped? then opt.stripped else true
-  cssClass = if isTable then defaults.cssClass.table else defaults.cssClass.list
+  cssClass = if isTable then "table table-condensed" else "list-group"
   if opt.cssClass? then cssClass= "#{cssClass} opt.cssClass"
   if striped 
     cssClass = cssClass + "  table-striped"
@@ -855,4 +855,13 @@ Handlebars.registerHelper "result", (options)->
             #{paginate()}
           <div id='lineSelectionContainer'></div>
   "
+  return new Handlebars.SafeString(html)
+
+# create the default container for search results.
+Handlebars.registerHelper "result_container", (i18n_key, options)->
+  options = options or {}
+  opt = options.hash or {} 
+  #Default width
+  width = opt.width or 12
+  html = "<div id='results' class='#{Handlebars.helpers.col.call(this, width)}}'></div>"
   return new Handlebars.SafeString(html)

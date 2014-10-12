@@ -1,5 +1,5 @@
-/* name: focus , version: 0.1.6 description: Simple framework for backbone applications.*/ 
- (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.6';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/* name: focus , version: 0.1.5 description: Simple framework for backbone applications.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.5';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 /*global window, _*/
 (function initialization(container) {
   var fmk = container.Fmk || {};
@@ -24,7 +24,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"navbar-static-top header\">\r\n  \r\n</div>\r\n<div>\r\n  <i class=\"fa fa-spinner fa-spin hidden\" id='ajaxIndicator'></i>\r\n</div>";
+  return "<div class=\"navbar-static-top header\">\n  \n</div>\n<div>\n  <i class=\"fa fa-spinner fa-spin hidden\" id='ajaxIndicator'></i>\n</div>";
   });;
 this["Fmk"] = this["Fmk"] || {};
 this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
@@ -36,7 +36,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1, helper, options;
-  buffer += "\r\n             <li id='";
+  buffer += "\n             <li id='";
   if (helper = helpers.cssId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.cssId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
@@ -51,7 +51,7 @@ function program1(depth0,data) {
   if (helper = helpers.dataAttributes) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.dataAttributes); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + " >\r\n                <a href=\"";
+    + " >\n                <a href=\"";
   if (helper = helpers.route) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.route); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
@@ -60,7 +60,7 @@ function program1(depth0,data) {
     'prefix': ("header."),
     'suffix': (".title")
   },data:data},helper ? helper.call(depth0, (depth0 && depth0.name), options) : helperMissing.call(depth0, "t", (depth0 && depth0.name), options)))
-    + "</a>\r\n             </li>\r\n          ";
+    + "</a>\n             </li>\n          ";
   return buffer;
   }
 function program2(depth0,data) {
@@ -69,10 +69,10 @@ function program2(depth0,data) {
   return "active";
   }
 
-  buffer += "<div class=\"navbar-default\">\r\n    <div class=\"container\">\r\n      <div class=\"navbar-header\">\r\n        <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\">\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n        </button>\r\n        <a class=\"navbar-brand\" href=\"#\"></a>\r\n      </div>\r\n      <div class=\"navbar-collapse collapse\" >\r\n        <ul class=\"nav navbar-nav\">\r\n          ";
+  buffer += "<div class=\"navbar-default\">\n    <div class=\"container\">\n      <div class=\"navbar-header\">\n        <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\">\n          <span class=\"icon-bar\"></span>\n          <span class=\"icon-bar\"></span>\n          <span class=\"icon-bar\"></span>\n        </button>\n        <a class=\"navbar-brand\" href=\"#\"></a>\n      </div>\n      <div class=\"navbar-collapse collapse\" >\n        <ul class=\"nav navbar-nav\">\n          ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.headerItems), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n    </ul>\r\n  </div>\r\n</div>";
+  buffer += "\n    </ul>\n  </div>\n</div>";
   return buffer;
   });;
 this["Fmk"] = this["Fmk"] || {};
@@ -83,15 +83,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  buffer += "<!-- Modal -->\r\n<div class=\"modal fade\" data-modal  datatabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\r\n  <div class=\"modal-dialog\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\r\n        <h4 class=\"modal-title\" id=\"myModalLabel\">"
+  buffer += "<!-- Modal -->\n<div class=\"modal fade\" data-modal  datatabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n        <h4 class=\"modal-title\" id=\"myModalLabel\">"
     + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{
     'keyInContext': (true)
   },data:data},helper ? helper.call(depth0, "title", options) : helperMissing.call(depth0, "t", "title", options)))
-    + "</h4>\r\n      </div>\r\n      <div class=\"modal-body\" data-modal-content>\r\n      \r\n      </div>\r\n      <div class=\"modal-footer\">\r\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">"
+    + "</h4>\n      </div>\n      <div class=\"modal-body\" data-modal-content>\n      \n      </div>\n      <div class=\"modal-footer\">\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">"
     + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "button.modalClose", options) : helperMissing.call(depth0, "t", "button.modalClose", options)))
-    + "</button>\r\n        <button type=\"button\" class=\"btn btn-primary\" data-close=\"modal\">"
+    + "</button>\n        <button type=\"button\" class=\"btn btn-primary\" data-close=\"modal\">"
     + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "button.modalSave", options) : helperMissing.call(depth0, "t", "button.modalSave", options)))
-    + "</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>";
+    + "</button>\n      </div>\n    </div>\n  </div>\n</div>";
   return buffer;
   });;
 this["Fmk"] = this["Fmk"] || {};
@@ -119,11 +119,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1, helper;
-  buffer += "\r\n    <strong>";
+  buffer += "\n    <strong>";
   if (helper = helpers.message) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.message); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "</strong><br />\r\n  ";
+    + "</strong><br />\n  ";
   return buffer;
   }
 
@@ -131,10 +131,10 @@ function program1(depth0,data) {
   if (helper = helpers.cssMessageType) { stack1 = helper.call(depth0, {hash:{},data:data}); }
   else { helper = (depth0 && depth0.cssMessageType); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "'>\r\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\r\n  ";
+    + "'>\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\n  ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n</div>";
+  buffer += "\n</div>";
   return buffer;
   });;
 this["Fmk"] = this["Fmk"] || {};
@@ -145,9 +145,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class='spinner-container'>\r\n       <div class='spinner'>\r\n          <div class=\"three-quarters\">\r\n            "
+  buffer += "<div class='spinner-container'>\n       <div class='spinner'>\n          <div class=\"three-quarters\">\n            "
     + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "application.loading", options) : helperMissing.call(depth0, "t", "application.loading", options)))
-    + "\r\n          </div>\r\n       </div>\r\n   </div>";
+    + "\n          </div>\n       </div>\n   </div>";
   return buffer;
   });;
 (function() {
@@ -746,7 +746,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = siteDescriptionHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, _*/
+/* global window, _, Backbone*/
 (function(NS) {
   "use strict";
   //Filename: helpers/routes_helper.js
@@ -766,12 +766,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       siteDescription = siteDescriptionHelper.getSite();
       regenerateRoutes();
       return siteDescription;
-    }return false;
+    }
+    return false;
   };
 
   //Regenerate the application routes.
   var regenerateRoutes = function regenerateRoutes() {
-    generateRoutes(siteDescription);
+    processElement(siteDescription);
   };
 
   //Process the name of 
@@ -891,69 +892,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                    .replace(splatParam, '([^?]*?)');
       return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
     };
-
-
-
-
-  //Generate the routes fromSiteDescription.
-  var generateRoutes = function generateRoutes(elementDesc, prefix) {
-    if (!elementDesc) {
-      console.warn('The siteDescription does not exists', elementDesc);
-      return;
-    }
-
-    return processElement(elementDesc, prefix);
-
-    var pfx = processName(prefix, elementDesc.name);
-
-    //process headers routes.
-    var headers = elementDesc.header;
-    for (var siteDescIdx in headers) {
-      var siteDesc = headers[siteDescIdx];
-      var prefixsiteDesc = processName(pfx, siteDesc.name);
-      //console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
-      if (siteDesc.header) {
-        generateRoutes(siteDesc, prefixsiteDesc);
-      } else {
-        addRouteForUser(siteDesc, prefixsiteDesc);
-      }
-    }
-    addRouteForUser(elementDesc, pfx);
-
-  };
-
-  //Add a route for a user.
-
-  var addRouteForUser = function addRouteForUser(element, prefix) {
-    //console.log('addRouteForUser', 'prefix', prefix);
-    if (!element) {
-      return;
-      //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
-    }
-    if (prefix === undefined || prefix === null || prefix === "") {
-      prefix = "";
-      //throw new ArgumentNullException("The prefix to add a route should not be undefined.", prefix);
-    }
-    //Add the route only if the user has one of the required role.
-    if (element.roles !== undefined && element.url !== undefined)
-      if (userHelper.hasOneRole(element.roles)) {
-        var route = {
-          roles: element.roles,
-          name: prefix,
-          route: element.url
-        };
-        routes[element.url] = route;
-        siteStructure[prefix] = route;
-      }
-      //process the site not in the menus  
-    if (element.pages !== undefined && element.pages !== null) {
-      for (var rtIdx in element.pages) {
-        addRouteForUser(element.pages[rtIdx], prefix);
-      }
-    }
-
-  };
-
 
   //Get the siteDescription.
   var getSiteDescription = function getSiteDescription() {
@@ -1536,7 +1474,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       };
 
       Model.prototype.toSaveJSON = function() {
-        return Backbone.Model.prototype.toJSON.call(this);
+        var json;
+        json = Backbone.Model.prototype.toJSON.call(this);
+        return _.omit(json, 'isNew', 'metadatas', 'cid');
       };
 
       Model.prototype.isInCollection = function() {
@@ -2516,19 +2456,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 (function(NS) {
   "use strict";
   NS = NS || {};
-
+  
   //Dependencies.
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var Notifications = isInBrowser ? NS.Models.Notifications : require('../models/notifications');
   var NotificationsView = isInBrowser ? NS.Views.NotificationsView : require('../views/notifications-view');
-
+ 
   /**
    * Container specific to the application in order to manipulate the notification the way we want.
    * @type {Object}
    */
   var backboneNotification = {
-
+    
     /**
      * An instance of the notifications view in order to deal with the notifications.
      * Which has a Notifications Model. This view is able to manipulate notifications and to render them.
@@ -2537,13 +2477,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     notificationsView: new NotificationsView({
       model: new Notifications()
     }),
-
+    
     /**
      * Add a notification in the stack. Is isRender is define and is true, the notifications are displayed.
      * @param {object}  jsonNotification - A json object representing the notification. Types: warning, error, success.
      * @param {Boolean} isRender         - Is isRender is define and is true, the notifications are displayed immediately.
      * @example `Fmk.helpers.backboneNotifications.addNotification({type: "error", message: "Message"}, true);`
-     *
+     *   
      */
     addNotification: function addNotification(jsonNotification, isRender) {
       isRender = isRender || false;
@@ -2552,23 +2492,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         this.renderNotifications();
       }
     },
-
+ 
     /**
      * Render all the notifications which are in the notifications collection and then clear this list.
      * Once the notifications have been rendered, the messages stack is cleared
      * @param  {string} selectorToRender - A css selector twhich define where the notifications are redered. Default us "div#summary"
      * @param  {integer} timeout         - If a timeout is define, the notification is hidden after _timeout_ seconds.
-     * @param {boolean} isReset - Does the model needs to be reset.
      * @return {undefined}
      */
-    renderNotifications: function renderInApplication(selectorToRender, timeout, isReset) {
+    renderNotifications: function renderInApplication(selectorToRender, timeout) {
       var selector = selectorToRender || "div#summary";
       //We render all the messages.
-      $(selector).append(this.notificationsView.render().el);
+      $(selector).html(this.notificationsView.render().el);
       //We empty the collection which contains all the notification messages.
-      if (isReset) {
-        this.notificationsView.model.reset();
-      }
+      this.notificationsView.model.reset();
       $('button').button('reset');
       var that = this;
       //timeout = timeout || 5;
@@ -2579,7 +2516,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }, timeout * 1000);
       }
     },
-
+    
     /**
      * Clear all the displayed notifications.
      * @param  {string} selectorToRender The css selector describing where the notifications are rendered. Default is "div#summary".
@@ -2587,11 +2524,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      */
     clearNotifications: function clearNotifications(selectorToRender) {
       var selector = selectorToRender || "div#summary";
-      this.notificationsView.model.reset();
       $(selector).html('');
       $('button').button('reset');
     },
-
+    
     /**
      * Clear only the errors in the display of the screen.
      * @param  {string} selectorToRender The css selector describing where the notifications are rendered. Default is "div.notifications div.alert-danger".
@@ -2604,10 +2540,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     }
   };
   // Differenciating export for node or browser.
-  if (isInBrowser) {
+  if(isInBrowser){
     NS.Helpers = NS.Helpers || {};
     NS.Helpers.backboneNotification = backboneNotification;
-  } else {
+  }else {
     module.exports = backboneNotification;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
@@ -5282,7 +5218,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     listTagName = isTable ? "table" : "ul";
     elementTagName = isTable ? "tr" : "li";
     striped = opt.striped != null ? opt.stripped : true;
-    cssClass = isTable ? defaults.cssClass.table : defaults.cssClass.list;
+    cssClass = isTable ? "table table-condensed" : "list-group";
     if (opt.cssClass != null) {
       cssClass = "" + cssClass + " opt.cssClass";
     }
@@ -5322,6 +5258,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       };
     })(this);
     html = " " + (tableHeaderActions()) + " <" + listTagName + " class='" + cssClass + "'> " + (options.fn(this)) + " </" + listTagName + "> " + (paginate()) + " <div id='lineSelectionContainer'></div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("result_container", function(i18n_key, options) {
+    var html, opt, width;
+    options = options || {};
+    opt = options.hash || {};
+    width = opt.width || 12;
+    html = "<div id='results' class='" + (Handlebars.helpers.col.call(this, width)) + "}'></div>";
     return new Handlebars.SafeString(html);
   });
 
@@ -5406,14 +5351,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         res[currentView.referenceNames[i]] = results[i];
                         //The results are save into an object with a name for each reference list.
                     }
-                    if (UtilHelper.isBackboneCollection(currentView.model)) {
-                        _.extend(currentView.model, res); // Add the references as properties of the object without using set which erases the collection.
-                        // Reset the collection to trigger a render.
-                    } else {
-                        currentView.model.set(res, {
-                            silent: true
-                        }); //This trigger a render due to model change.
-                    }
+                    //Add the reference lists as model properties.
+                    _.extend(currentView.model, res);
                     currentView.model.trigger('references:loaded');
                     //Inform the view that we are ready to render well.
                 }).then(null, function(error) {
@@ -5526,10 +5465,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         // Get the id of the criteria.
         getCriteriaId: function getCriteriaId() {
             var hash = window.location.hash;
-            if (this.model.modelName != undefined) {
+            if (this.model.modelName !== undefined) {
                 hash += this.model.modelName;
             }
-            if (this.opts.criteriaId != undefined) {
+            if (this.opts.criteriaId !== undefined) {
                 hash += this.opts.criteriaId;
             }
             return hash;
@@ -5563,7 +5502,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
 //```
 /*global window, Backbone, $, i18n, _*/
-(function (NS) {
+(function(NS) {
     "use strict";
     //Filename: views/consult-edit-view.js
     NS = NS || {};
@@ -5609,37 +5548,104 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         templateConsult: undefined,
 
         //Additional data to pass to the template.
-        additionalData: function () {
+        additionalData: function() {
             return undefined;
         },
-
-        //Default options for the view.
+        /**
+         * Default options of the view. These options can be overriden by using customOptions property of the view.
+         * In order to access this options, the view has a property called `this.opts`.
+         * @type {[type]}
+         */
         defaultOptions: _.extend({}, CoreView.prototype.defaultOptions, {
+            /**
+             * Does the view has to load the model from the service define in `getModelSvc`.
+             * @type {Boolean}
+             */
             isModelToLoad: true, //By default the model is loaded.
+            /**
+             * If true, there is  an edit mode in the view.
+             * @type {Boolean}
+             */
             isEditMode: true,
+            /**
+             * If there is an edit mode and this property is true, the view can start in edit mode. The templateEdit will be rendered.
+             * @type {Boolean}
+             */
+            isEdit: true,
+            /**
+             * If true, the view will navigate to the `generateNavigationUrl` url.
+             * @type {Boolean}
+             */
             isNavigationOnSave: true,
+            /**
+             * If true, the view will navigate to the `generateDeleteUrl` url.
+             * @type {Boolean}
+             */
             isNavigationOnDelete: true,
+            /**
+             * If true, the view will attempt to call the `saveModelSvc` in the `saveAction` when there is a submit.
+             * If you have a composite or a list view, maybe you want the parent view to deal with the save.
+             * @type {Boolean}
+             */
             isSaveOnServer: true,
+            /**
+             * When the view is a list view, this selector is use to identify the view of each line.
+             * It could be `ul li`.
+             * @type {String}
+             */
             collectionSelector: "tbody tr",
+            /**
+             * If there is no navigatio on save, and dhis parameter is true, the view attempt to reload the page (using Backbone not the naigator refresh).
+             * @type {Boolean}
+             */
             isForceReload: false,
+            /**
+             * This parameter is use in order to know if the view is ready to be displayed.
+             * If not, the spinner is render (see isReady function).
+             * @type {Boolean}
+             */
             isReadyModelData: true,
+            /**
+             * This parameter can be use in order to have a back to the list button.
+             * @type {string}
+             */
             listUrl: undefined,
+            /**
+             * If true, the view will listen to the `model:change` event.
+             * @type {Boolean}
+             */
             isListeningToModelChange: true,
+            /**
+             * If you need to specify a selector in which the input, select, textarea are searched.
+             * @type {string}
+             */
             formSelector: undefined, //In whitch selector you have to search the form datas (inputs, select,...).,
+            /**
+             * Define if the type of model of the view is a model or a collection.
+             * @type {String}
+             */
             modelType: "model"
         }),
 
-        //Initialize function
+        /**
+         * Initialize the consult edit view.
+         * @param  {object} options - All options you need to pass to the view.
+         * These will extend the defaultOptions and customOptions of the view.
+         * All options will be in the `opts` property of the view.
+         * @return {undefined}
+         */
         initialize: function initializeConsultEdit(options) {
             options = options || {};
+            //Call the parent initialize.
             CoreView.prototype.initialize.call(this, options);
+
             //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options. 
             this.isEdit = (this.opts.isEditMode && this.opts.isEdit) || false;
 
             //Transform the listUrl
             if (this.opts.listUrl) {
                 var currentView = this;
-                this.opts.listUrl = this.opts.listUrl.replace(/\:(\w+)/g, function (match) {
+                this.opts.listUrl = this.opts.listUrl.replace(/\:(\w+)/g, function(match) {
                     return currentView.opts[match.replace(":", "")];
                 });
             }
@@ -5650,12 +5656,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     this.opts.isModelToLoad = false;
                     this.loadGetNewModelData();
                 }
-
-                /*
-            else if (!isBackboneModel && this.model.isCreate) {
-               this.opts.isModelToLoad = false;
-            }
-            */
 
                 //render view when the model is loaded
                 if (this.opts.isListeningToModelChange) {
@@ -5671,19 +5671,37 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         // returns true if the view should be rendered in creation mode.
+        /**
+         * Function wich process the fact that the view is in create.
+         * @param  {object}  options [description]
+         * @return {Boolean}  - true if the view is in create mode.
+         */
         isCreateMode: function isCreateModeConsultEdit(options) {
             var isBackboneModel = utilHelper.isBackboneModel(this.model);
             return this.opts.isCreateMode || (isBackboneModel && this.opts.isModelToLoad && this.model.get('isNewModel'));
         },
         //This function is use in order to retrieve the data from the api using a service.
+        /**
+         * Load the model from the gerModelSvc function which should be a Promise.
+         * @param  {string} id - model identifier.
+         * @return {undefined}
+         */
         loadModelData: function loadModelData(id) {
             var view = this;
             var idValue = id || this.model.get('id');
+            if (!this.getModelSvc) {
+                throw new ArgumentNullException('The getModelSvc should be a service which returns a promise, it is undefined here.', this);
+            }
             this.getModelSvc(idValue)
                 .then(function success(jsonModel) {
                     view.opts.isReadyModelData = true;
-                    view.model.set(jsonModel);
-                    //view.model.savePrevious();
+                    if (jsonModel === undefined) {
+                        //manually trigger the change event in the case of empty object returned.
+                        view.model.trigger('change');
+                    } else {
+                        view.model.set(jsonModel);//change and change:property
+                    }
+
                 }).then(null, function error(errorResponse) {
                     ErrorHelper.manageResponseErrors(errorResponse, {
                         model: view.model
@@ -5693,7 +5711,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         //This function is use in order to retrieve the data from the api using a service.
         loadGetNewModelData: function loadGetNewModelData() {
-            if (this.getNewModelSvc != undefined) {
+            if (this.getNewModelSvc !== undefined) {
                 var view = this;
                 this.getNewModelSvc()
                     .then(function success(jsonModel) {
@@ -5710,21 +5728,33 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         //Events handle by the view with user interaction
         events: {
+            // Deals with the edit button click.
             "click button.btnEdit": "edit",
+            // Deals with the delete button.
             "click button.btnDelete": "deleteItem",
+            // Deals with the panel collapse event.
             "click .panel-heading": "toogleCollapse",
+            // Deals with the submit button.
             "click button[type='submit']": "save",
+            // Deals withe the candel button.
             "click button.btnCancel": "cancelEdition",
+            // Deals with the button back.
             "click button.btnBack": "back",
+            // Deals with the data-loading button event.
             "click button[data-loading]": "loadLoadingButton"
         },
 
         //JSON data to attach to the template.
         getRenderData: function getRenderDataConsultEdit() {
-            if (this.opts.listUrl === undefined) {
-                return this.model.toJSON();
+            var jsonToRender = this.model.toJSON();
+            //Add the reference lists names to the json.
+            if(this.referenceNames){
+                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
             }
-            return _.extend({}, this.model.toJSON(), { listUrl: this.opts.listUrl });
+            if (this.opts.listUrl){
+                jsonToRender.listUrl = this.opts.listUrl;
+            }
+            return jsonToRender;
         },
 
         //genarate navigation url usefull if the edit mode is not on the same page.
@@ -5737,9 +5767,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (event) {
                 event.preventDefault();
             }
-            
+
             this.isEdit = !this.isEdit;
-            if(this.isEdit){
+            if (this.isEdit) {
                 backboneNotification.clearNotifications();
                 this.model.savePrevious();
             }
@@ -5757,11 +5787,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Get the json data to be save by the view.
         getDataToSave: function getDataToSaveDetailEdit() {
-            if (utilHelper.isBackboneModel(this.model)) {
-                return this.model.toJSON();
-            } else {
-                return this.model.toSaveJSON();
-            }
+            return this.model.toSaveJSON();
         },
         //Deal with the save event on the page.
         save: function saveConsultEdit(event) {
@@ -5783,7 +5809,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             ModelValidator.validateAll(currentView.model)
                 .then(function successValidation() {
                     //When the model is valid, unset errors.
-                    currentView.model.forEach(function (mdl) {
+                    currentView.model.forEach(function(mdl) {
                         mdl.unsetErrors();
                     }, currentView);
                     if (currentView.opts.isSaveOnServer) {
@@ -5801,16 +5827,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         resetSaveButton: function resetSaveButton() {
             $('button[type="submit"]', this.$el).button('reset');
         },
-        resetLoadingButton: function resetLoadingButton(){
+        resetLoadingButton: function resetLoadingButton() {
             $('button[data-loading]', this.$el).button('reset');
         },
-        loadLoadingButton: function loadLoadingButton(event){
-          $(event.target).closest('button[data-loading]').button('loading');
+        loadLoadingButton: function loadLoadingButton(event) {
+            $(event.target).closest('button[data-loading]').button('loading');
         },
         bindToModel: function bindToModelConsultEdit() {
             var formSelector = this.opts.formSelector || "";
             if (utilHelper.isBackboneModel(this.model)) {
-                this.model.unsetErrors({ silent: true });
+                this.model.unsetErrors({
+                    silent: true
+                });
                 var inputSelector = formSelector + " " + "input, " + formSelector + " " + "textarea";
                 var selectSelector = formSelector + " " + "select";
                 form_helper.formModelBinder({
@@ -5818,7 +5846,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     options: $(selectSelector, this.$el)
                 }, this.model);
             } else if (utilHelper.isBackboneCollection(this.model)) {
-                this.model.unsetErrors({silent: true});
+                this.model.unsetErrors({
+                    silent: true
+                });
                 var collectionSelector = formSelector + " " + this.opts.collectionSelector;
                 form_helper.formCollectionBinder(
                     $(collectionSelector, this.$el),
@@ -5852,11 +5882,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 });
         },
         //Save action call the save Svc.
-        saveAction: function () {
+        saveAction: function saveActionConsultEdit() {
             var currentView = this;
             //Add a control on the property saveModelSvc.
-            if(!currentView.saveModelSvc){
-                throw new ArgumentNullException("The service use in order to save the model is not define in the wiew, try to define it: saveModelSvc");
+            if (!currentView.saveModelSvc) {
+                throw new ArgumentNullException("'The saveModeSvc should be a service which returns a promise, it is undefined here.");
             }
             //Call the service in order to save the model.                   
             return currentView.saveModelSvc(currentView.getDataToSave())
@@ -5912,7 +5942,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         //Contains all the business validation promises.
-        businessValidationPromises: function () {
+        businessValidationPromises: function() {
             //Return an array of  promises
             return [];
         },
@@ -5943,6 +5973,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             event.preventDefault();
             var view = this;
             //call delete service
+            if (!this.deleteModelSvc) {
+                throw new ArgumentNullException('The deleteModelSvc should be a service which returns a promise, it is undefined here.', this);
+            }
             this.deleteModelSvc(this.model)
                 .then(function success(successResponse) {
                     view.deleteSuccess(successResponse);

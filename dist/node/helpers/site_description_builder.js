@@ -1,4 +1,4 @@
-/* global window, _*/
+/* global window, _, Backbone*/
 (function(NS) {
   "use strict";
   //Filename: helpers/routes_helper.js
@@ -18,12 +18,13 @@
       siteDescription = siteDescriptionHelper.getSite();
       regenerateRoutes();
       return siteDescription;
-    }return false;
+    }
+    return false;
   };
 
   //Regenerate the application routes.
   var regenerateRoutes = function regenerateRoutes() {
-    generateRoutes(siteDescription);
+    processElement(siteDescription);
   };
 
   //Process the name of 
@@ -143,69 +144,6 @@
                    .replace(splatParam, '([^?]*?)');
       return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
     };
-
-
-
-
-  //Generate the routes fromSiteDescription.
-  var generateRoutes = function generateRoutes(elementDesc, prefix) {
-    if (!elementDesc) {
-      console.warn('The siteDescription does not exists', elementDesc);
-      return;
-    }
-
-    return processElement(elementDesc, prefix);
-
-    var pfx = processName(prefix, elementDesc.name);
-
-    //process headers routes.
-    var headers = elementDesc.header;
-    for (var siteDescIdx in headers) {
-      var siteDesc = headers[siteDescIdx];
-      var prefixsiteDesc = processName(pfx, siteDesc.name);
-      //console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
-      if (siteDesc.header) {
-        generateRoutes(siteDesc, prefixsiteDesc);
-      } else {
-        addRouteForUser(siteDesc, prefixsiteDesc);
-      }
-    }
-    addRouteForUser(elementDesc, pfx);
-
-  };
-
-  //Add a route for a user.
-
-  var addRouteForUser = function addRouteForUser(element, prefix) {
-    //console.log('addRouteForUser', 'prefix', prefix);
-    if (!element) {
-      return;
-      //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
-    }
-    if (prefix === undefined || prefix === null || prefix === "") {
-      prefix = "";
-      //throw new ArgumentNullException("The prefix to add a route should not be undefined.", prefix);
-    }
-    //Add the route only if the user has one of the required role.
-    if (element.roles !== undefined && element.url !== undefined)
-      if (userHelper.hasOneRole(element.roles)) {
-        var route = {
-          roles: element.roles,
-          name: prefix,
-          route: element.url
-        };
-        routes[element.url] = route;
-        siteStructure[prefix] = route;
-      }
-      //process the site not in the menus  
-    if (element.pages !== undefined && element.pages !== null) {
-      for (var rtIdx in element.pages) {
-        addRouteForUser(element.pages[rtIdx], prefix);
-      }
-    }
-
-  };
-
 
   //Get the siteDescription.
   var getSiteDescription = function getSiteDescription() {

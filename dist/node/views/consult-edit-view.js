@@ -1,5 +1,5 @@
 /*global window, Backbone, $, i18n, _*/
-(function (NS) {
+(function(NS) {
     "use strict";
     //Filename: views/consult-edit-view.js
     NS = NS || {};
@@ -45,37 +45,104 @@
         templateConsult: undefined,
 
         //Additional data to pass to the template.
-        additionalData: function () {
+        additionalData: function() {
             return undefined;
         },
-
-        //Default options for the view.
+        /**
+         * Default options of the view. These options can be overriden by using customOptions property of the view.
+         * In order to access this options, the view has a property called `this.opts`.
+         * @type {[type]}
+         */
         defaultOptions: _.extend({}, CoreView.prototype.defaultOptions, {
+            /**
+             * Does the view has to load the model from the service define in `getModelSvc`.
+             * @type {Boolean}
+             */
             isModelToLoad: true, //By default the model is loaded.
+            /**
+             * If true, there is  an edit mode in the view.
+             * @type {Boolean}
+             */
             isEditMode: true,
+            /**
+             * If there is an edit mode and this property is true, the view can start in edit mode. The templateEdit will be rendered.
+             * @type {Boolean}
+             */
+            isEdit: true,
+            /**
+             * If true, the view will navigate to the `generateNavigationUrl` url.
+             * @type {Boolean}
+             */
             isNavigationOnSave: true,
+            /**
+             * If true, the view will navigate to the `generateDeleteUrl` url.
+             * @type {Boolean}
+             */
             isNavigationOnDelete: true,
+            /**
+             * If true, the view will attempt to call the `saveModelSvc` in the `saveAction` when there is a submit.
+             * If you have a composite or a list view, maybe you want the parent view to deal with the save.
+             * @type {Boolean}
+             */
             isSaveOnServer: true,
+            /**
+             * When the view is a list view, this selector is use to identify the view of each line.
+             * It could be `ul li`.
+             * @type {String}
+             */
             collectionSelector: "tbody tr",
+            /**
+             * If there is no navigatio on save, and dhis parameter is true, the view attempt to reload the page (using Backbone not the naigator refresh).
+             * @type {Boolean}
+             */
             isForceReload: false,
+            /**
+             * This parameter is use in order to know if the view is ready to be displayed.
+             * If not, the spinner is render (see isReady function).
+             * @type {Boolean}
+             */
             isReadyModelData: true,
+            /**
+             * This parameter can be use in order to have a back to the list button.
+             * @type {string}
+             */
             listUrl: undefined,
+            /**
+             * If true, the view will listen to the `model:change` event.
+             * @type {Boolean}
+             */
             isListeningToModelChange: true,
+            /**
+             * If you need to specify a selector in which the input, select, textarea are searched.
+             * @type {string}
+             */
             formSelector: undefined, //In whitch selector you have to search the form datas (inputs, select,...).,
+            /**
+             * Define if the type of model of the view is a model or a collection.
+             * @type {String}
+             */
             modelType: "model"
         }),
 
-        //Initialize function
+        /**
+         * Initialize the consult edit view.
+         * @param  {object} options - All options you need to pass to the view.
+         * These will extend the defaultOptions and customOptions of the view.
+         * All options will be in the `opts` property of the view.
+         * @return {undefined}
+         */
         initialize: function initializeConsultEdit(options) {
             options = options || {};
+            //Call the parent initialize.
             CoreView.prototype.initialize.call(this, options);
+
             //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options. 
             this.isEdit = (this.opts.isEditMode && this.opts.isEdit) || false;
 
             //Transform the listUrl
             if (this.opts.listUrl) {
                 var currentView = this;
-                this.opts.listUrl = this.opts.listUrl.replace(/\:(\w+)/g, function (match) {
+                this.opts.listUrl = this.opts.listUrl.replace(/\:(\w+)/g, function(match) {
                     return currentView.opts[match.replace(":", "")];
                 });
             }
@@ -86,12 +153,6 @@
                     this.opts.isModelToLoad = false;
                     this.loadGetNewModelData();
                 }
-
-                /*
-            else if (!isBackboneModel && this.model.isCreate) {
-               this.opts.isModelToLoad = false;
-            }
-            */
 
                 //render view when the model is loaded
                 if (this.opts.isListeningToModelChange) {
@@ -107,19 +168,37 @@
             }
         },
         // returns true if the view should be rendered in creation mode.
+        /**
+         * Function wich process the fact that the view is in create.
+         * @param  {object}  options [description]
+         * @return {Boolean}  - true if the view is in create mode.
+         */
         isCreateMode: function isCreateModeConsultEdit(options) {
             var isBackboneModel = utilHelper.isBackboneModel(this.model);
             return this.opts.isCreateMode || (isBackboneModel && this.opts.isModelToLoad && this.model.get('isNewModel'));
         },
         //This function is use in order to retrieve the data from the api using a service.
+        /**
+         * Load the model from the gerModelSvc function which should be a Promise.
+         * @param  {string} id - model identifier.
+         * @return {undefined}
+         */
         loadModelData: function loadModelData(id) {
             var view = this;
             var idValue = id || this.model.get('id');
+            if (!this.getModelSvc) {
+                throw new ArgumentNullException('The getModelSvc should be a service which returns a promise, it is undefined here.', this);
+            }
             this.getModelSvc(idValue)
                 .then(function success(jsonModel) {
                     view.opts.isReadyModelData = true;
-                    view.model.set(jsonModel);
-                    //view.model.savePrevious();
+                    if (jsonModel === undefined) {
+                        //manually trigger the change event in the case of empty object returned.
+                        view.model.trigger('change');
+                    } else {
+                        view.model.set(jsonModel);//change and change:property
+                    }
+
                 }).then(null, function error(errorResponse) {
                     ErrorHelper.manageResponseErrors(errorResponse, {
                         model: view.model
@@ -129,7 +208,7 @@
 
         //This function is use in order to retrieve the data from the api using a service.
         loadGetNewModelData: function loadGetNewModelData() {
-            if (this.getNewModelSvc != undefined) {
+            if (this.getNewModelSvc !== undefined) {
                 var view = this;
                 this.getNewModelSvc()
                     .then(function success(jsonModel) {
@@ -146,21 +225,33 @@
 
         //Events handle by the view with user interaction
         events: {
+            // Deals with the edit button click.
             "click button.btnEdit": "edit",
+            // Deals with the delete button.
             "click button.btnDelete": "deleteItem",
+            // Deals with the panel collapse event.
             "click .panel-heading": "toogleCollapse",
+            // Deals with the submit button.
             "click button[type='submit']": "save",
+            // Deals withe the candel button.
             "click button.btnCancel": "cancelEdition",
+            // Deals with the button back.
             "click button.btnBack": "back",
+            // Deals with the data-loading button event.
             "click button[data-loading]": "loadLoadingButton"
         },
 
         //JSON data to attach to the template.
         getRenderData: function getRenderDataConsultEdit() {
-            if (this.opts.listUrl === undefined) {
-                return this.model.toJSON();
+            var jsonToRender = this.model.toJSON();
+            //Add the reference lists names to the json.
+            if(this.referenceNames){
+                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
             }
-            return _.extend({}, this.model.toJSON(), { listUrl: this.opts.listUrl });
+            if (this.opts.listUrl){
+                jsonToRender.listUrl = this.opts.listUrl;
+            }
+            return jsonToRender;
         },
 
         //genarate navigation url usefull if the edit mode is not on the same page.
@@ -173,9 +264,9 @@
             if (event) {
                 event.preventDefault();
             }
-            
+
             this.isEdit = !this.isEdit;
-            if(this.isEdit){
+            if (this.isEdit) {
                 backboneNotification.clearNotifications();
                 this.model.savePrevious();
             }
@@ -193,11 +284,7 @@
         },
         //Get the json data to be save by the view.
         getDataToSave: function getDataToSaveDetailEdit() {
-            if (utilHelper.isBackboneModel(this.model)) {
-                return this.model.toJSON();
-            } else {
-                return this.model.toSaveJSON();
-            }
+            return this.model.toSaveJSON();
         },
         //Deal with the save event on the page.
         save: function saveConsultEdit(event) {
@@ -219,7 +306,7 @@
             ModelValidator.validateAll(currentView.model)
                 .then(function successValidation() {
                     //When the model is valid, unset errors.
-                    currentView.model.forEach(function (mdl) {
+                    currentView.model.forEach(function(mdl) {
                         mdl.unsetErrors();
                     }, currentView);
                     if (currentView.opts.isSaveOnServer) {
@@ -237,16 +324,18 @@
         resetSaveButton: function resetSaveButton() {
             $('button[type="submit"]', this.$el).button('reset');
         },
-        resetLoadingButton: function resetLoadingButton(){
+        resetLoadingButton: function resetLoadingButton() {
             $('button[data-loading]', this.$el).button('reset');
         },
-        loadLoadingButton: function loadLoadingButton(event){
-          $(event.target).closest('button[data-loading]').button('loading');
+        loadLoadingButton: function loadLoadingButton(event) {
+            $(event.target).closest('button[data-loading]').button('loading');
         },
         bindToModel: function bindToModelConsultEdit() {
             var formSelector = this.opts.formSelector || "";
             if (utilHelper.isBackboneModel(this.model)) {
-                this.model.unsetErrors({ silent: true });
+                this.model.unsetErrors({
+                    silent: true
+                });
                 var inputSelector = formSelector + " " + "input, " + formSelector + " " + "textarea";
                 var selectSelector = formSelector + " " + "select";
                 form_helper.formModelBinder({
@@ -254,7 +343,9 @@
                     options: $(selectSelector, this.$el)
                 }, this.model);
             } else if (utilHelper.isBackboneCollection(this.model)) {
-                this.model.unsetErrors({silent: true});
+                this.model.unsetErrors({
+                    silent: true
+                });
                 var collectionSelector = formSelector + " " + this.opts.collectionSelector;
                 form_helper.formCollectionBinder(
                     $(collectionSelector, this.$el),
@@ -288,11 +379,11 @@
                 });
         },
         //Save action call the save Svc.
-        saveAction: function () {
+        saveAction: function saveActionConsultEdit() {
             var currentView = this;
             //Add a control on the property saveModelSvc.
-            if(!currentView.saveModelSvc){
-                throw new ArgumentNullException("The service use in order to save the model is not define in the wiew, try to define it: saveModelSvc");
+            if (!currentView.saveModelSvc) {
+                throw new ArgumentNullException("'The saveModeSvc should be a service which returns a promise, it is undefined here.");
             }
             //Call the service in order to save the model.                   
             return currentView.saveModelSvc(currentView.getDataToSave())
@@ -348,7 +439,7 @@
             }
         },
         //Contains all the business validation promises.
-        businessValidationPromises: function () {
+        businessValidationPromises: function() {
             //Return an array of  promises
             return [];
         },
@@ -379,6 +470,9 @@
             event.preventDefault();
             var view = this;
             //call delete service
+            if (!this.deleteModelSvc) {
+                throw new ArgumentNullException('The deleteModelSvc should be a service which returns a promise, it is undefined here.', this);
+            }
             this.deleteModelSvc(this.model)
                 .then(function success(successResponse) {
                     view.deleteSuccess(successResponse);

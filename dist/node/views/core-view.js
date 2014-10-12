@@ -77,14 +77,8 @@
                         res[currentView.referenceNames[i]] = results[i];
                         //The results are save into an object with a name for each reference list.
                     }
-                    if (UtilHelper.isBackboneCollection(currentView.model)) {
-                        _.extend(currentView.model, res); // Add the references as properties of the object without using set which erases the collection.
-                        // Reset the collection to trigger a render.
-                    } else {
-                        currentView.model.set(res, {
-                            silent: true
-                        }); //This trigger a render due to model change.
-                    }
+                    //Add the reference lists as model properties.
+                    _.extend(currentView.model, res);
                     currentView.model.trigger('references:loaded');
                     //Inform the view that we are ready to render well.
                 }).then(null, function(error) {
@@ -197,10 +191,10 @@
         // Get the id of the criteria.
         getCriteriaId: function getCriteriaId() {
             var hash = window.location.hash;
-            if (this.model.modelName != undefined) {
+            if (this.model.modelName !== undefined) {
                 hash += this.model.modelName;
             }
-            if (this.opts.criteriaId != undefined) {
+            if (this.opts.criteriaId !== undefined) {
                 hash += this.opts.criteriaId;
             }
             return hash;

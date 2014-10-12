@@ -38,7 +38,8 @@
       
     # Return a json to Save.
     toSaveJSON: ->
-      Backbone.Model.prototype.toJSON.call(@)
+      json = Backbone.Model.prototype.toJSON.call(@)
+      return _.omit(json, 'isNew', 'metadatas', 'cid')
     # Return true if the model is inside a collection.
     isInCollection: ->
       return @collection?
