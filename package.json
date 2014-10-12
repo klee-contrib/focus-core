@@ -45,19 +45,19 @@
     "underscore": "~1.7.0"
   },
   "devDependencies": {
-    "jshint-stylish": "~1.0.0",
-    "hapi": "^6.9.0",
-    "mocha": "~1.21.4",
+    "eslint": "^0.8.2",
     "express": "~4.9.4",
-    "gulp-util": "~3.0.1",
-    "gulp-coffeelint": "~0.4.0",
-    "gulp-coffee": "~2.2.0",
-    "gulp-concat": "~2.4.1",
-    "gulp-if": "~1.2.4",
     "gulp": "~3.8.8",
-    "gulp-jshint": "~1.8.4",
-    "gulp-handlebars": "~3.0.1",
+    "gulp-coffee": "~2.2.0",
+    "gulp-coffeelint": "~0.4.0",
+    "gulp-concat": "~2.4.1",
+    "gulp-declare": "~0.3.0",
     "gulp-define-module": "~0.1.1",
-    "gulp-declare": "~0.3.0"
+    "gulp-if": "~1.2.4",
+    "gulp-jshint": "~1.8.4",
+    "gulp-util": "~3.0.1",
+    "hapi": "^6.9.0",
+    "jshint-stylish": "~1.0.0",
+    "mocha": "~1.21.4"
   }
 }
