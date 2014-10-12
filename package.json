@@ -1,6 +1,6 @@
 {
   "name": "focus",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Simple framework for backbone applications.",
   "main": "index.js",
   "directories": {
