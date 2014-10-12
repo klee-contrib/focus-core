@@ -33,15 +33,16 @@
     "backbone-validation": "~0.9.1",
     "bluebird": "~2.3.2",
     "chai": "~1.9.1",
+    "coffee-script": "^1.8.0",
+    "coffee-script-brunch": "~1.8.1",
+    "gulp-handlebars": "~2.2.0",
+    "gulp-wrap": "~0.3.0",
+    "handlebars": "~1.3.0",
     "i18next": "~1.7.4",
+    "javascript-brunch": "~1.7.1",
     "sinon": "~1.10.3",
     "sinon-chai": "~2.5.0",
-    "underscore": "~1.7.0",
-    "javascript-brunch": "~1.7.1",
-    "coffee-script-brunch": "~1.8.1",
-    "handlebars": "~1.3.0",
-    "gulp-wrap": "~0.3.0",
-    "gulp-handlebars": "~2.2.0"
+    "underscore": "~1.7.0"
   },
   "devDependencies": {
     "jshint-stylish": "~1.0.0",
