@@ -1,8 +1,8 @@
 {
   "name": "focus",
-  "version": "0.1.8",
-  "description": "Simple framework for backbone applications.",
-  "main": "index.js",
+  "version": "0.1.9",
+  "description": "Klee group framework for SinglePageApplication.",
+  "main": "dist/node/index.js",
   "directories": {
     "test": "test"
   },
