@@ -1,5 +1,5 @@
-/* name: spa-fmk , version: 0.1.2 description: Simple framework for backbone applications.*/ 
- (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'spa-fmk';fmk.version = '0.1.2';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/* name: focus , version: 0.1.9 description: Klee group framework for SinglePageApplication.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.9';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 /*global window, _*/
 (function initialization(container) {
   var fmk = container.Fmk || {};
@@ -24,7 +24,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<div class=\"navbar-static-top header\">\r\n  \r\n</div>\r\n<div>\r\n  <i class=\"fa fa-spinner fa-spin hidden\" id='ajaxIndicator'></i>\r\n</div>";
+  return "<div class=\"navbar-static-top header\">\n  \n</div>\n<div>\n  <i class=\"fa fa-spinner fa-spin hidden\" id='ajaxIndicator'></i>\n</div>";
   });;
 this["Fmk"] = this["Fmk"] || {};
 this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
@@ -35,33 +35,32 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 function program1(depth0,data) {
   
-  var buffer = "", stack1, options;
-  buffer += "\r\n             <li id='";
-  if (stack1 = helpers.cssId) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.cssId); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  var buffer = "", stack1, helper, options;
+  buffer += "\n             <li id='";
+  if (helper = helpers.cssId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.cssId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + "' class=\"";
-  if (stack1 = helpers.cssClass) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.cssClass); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if (helper = helpers.cssClass) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.cssClass); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isActive), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\" ";
-  if (stack1 = helpers.dataAttributes) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.dataAttributes); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if (helper = helpers.dataAttributes) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.dataAttributes); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + " >\r\n                <a href=\"";
-  if (stack1 = helpers.route) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.route); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+    + " >\n                <a href=\"";
+  if (helper = helpers.route) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.route); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
-    + "\">";
-  options = {hash:{
+    + "\">"
+    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{
     'prefix': ("header."),
     'suffix': (".title")
-  },data:data};
-  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, (depth0 && depth0.name), options) : helperMissing.call(depth0, "t", (depth0 && depth0.name), options)))
-    + "</a>\r\n             </li>\r\n          ";
+  },data:data},helper ? helper.call(depth0, (depth0 && depth0.name), options) : helperMissing.call(depth0, "t", (depth0 && depth0.name), options)))
+    + "</a>\n             </li>\n          ";
   return buffer;
   }
 function program2(depth0,data) {
@@ -70,10 +69,10 @@ function program2(depth0,data) {
   return "active";
   }
 
-  buffer += "<div class=\"navbar-default\">\r\n    <div class=\"container\">\r\n      <div class=\"navbar-header\">\r\n        <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\">\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n          <span class=\"icon-bar\"></span>\r\n        </button>\r\n        <a class=\"navbar-brand\" href=\"#\"></a>\r\n      </div>\r\n      <div class=\"navbar-collapse collapse\" >\r\n        <ul class=\"nav navbar-nav\">\r\n          ";
+  buffer += "<div class=\"navbar-default\">\n    <div class=\"container\">\n      <div class=\"navbar-header\">\n        <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\">\n          <span class=\"icon-bar\"></span>\n          <span class=\"icon-bar\"></span>\n          <span class=\"icon-bar\"></span>\n        </button>\n        <a class=\"navbar-brand\" href=\"#\"></a>\n      </div>\n      <div class=\"navbar-collapse collapse\" >\n        <ul class=\"nav navbar-nav\">\n          ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.headerItems), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n    </ul>\r\n  </div>\r\n</div>";
+  buffer += "\n    </ul>\n  </div>\n</div>";
   return buffer;
   });;
 this["Fmk"] = this["Fmk"] || {};
@@ -81,21 +80,18 @@ this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["modalSkeleton"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  var buffer = "", helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  buffer += "<!-- Modal -->\r\n<div class=\"modal fade\" data-modal  datatabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\r\n  <div class=\"modal-dialog\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\r\n        <h4 class=\"modal-title\" id=\"myModalLabel\">";
-  options = {hash:{
+  buffer += "<!-- Modal -->\n<div class=\"modal fade\" data-modal  datatabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n        <h4 class=\"modal-title\" id=\"myModalLabel\">"
+    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{
     'keyInContext': (true)
-  },data:data};
-  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "title", options) : helperMissing.call(depth0, "t", "title", options)))
-    + "</h4>\r\n      </div>\r\n      <div class=\"modal-body\" data-modal-content>\r\n      \r\n      </div>\r\n      <div class=\"modal-footer\">\r\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">";
-  options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "button.modalClose", options) : helperMissing.call(depth0, "t", "button.modalClose", options)))
-    + "</button>\r\n        <button type=\"button\" class=\"btn btn-primary\" data-close=\"modal\">";
-  options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "button.modalSave", options) : helperMissing.call(depth0, "t", "button.modalSave", options)))
-    + "</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>";
+  },data:data},helper ? helper.call(depth0, "title", options) : helperMissing.call(depth0, "t", "title", options)))
+    + "</h4>\n      </div>\n      <div class=\"modal-body\" data-modal-content>\n      \n      </div>\n      <div class=\"modal-footer\">\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">"
+    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "button.modalClose", options) : helperMissing.call(depth0, "t", "button.modalClose", options)))
+    + "</button>\n        <button type=\"button\" class=\"btn btn-primary\" data-close=\"modal\">"
+    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "button.modalSave", options) : helperMissing.call(depth0, "t", "button.modalSave", options)))
+    + "</button>\n      </div>\n    </div>\n  </div>\n</div>";
   return buffer;
   });;
 this["Fmk"] = this["Fmk"] || {};
@@ -103,12 +99,12 @@ this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["noResults"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, helper, functionType="function", escapeExpression=this.escapeExpression;
 
 
   buffer += "<div class=\"noResults\">";
-  if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if (helper = helpers.message) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.message); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + "</div>";
   return buffer;
@@ -118,22 +114,22 @@ this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["notifications"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, helper, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = "", stack1;
+  var buffer = "", stack1, helper;
   buffer += "\n    <strong>";
-  if (stack1 = helpers.message) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.message); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if (helper = helpers.message) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.message); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + "</strong><br />\n  ";
   return buffer;
   }
 
   buffer += "<div class='alert alert-";
-  if (stack1 = helpers.cssMessageType) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.cssMessageType); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
+  if (helper = helpers.cssMessageType) { stack1 = helper.call(depth0, {hash:{},data:data}); }
+  else { helper = (depth0 && depth0.cssMessageType); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
   buffer += escapeExpression(stack1)
     + "'>\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\n  ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
@@ -146,13 +142,12 @@ this["Fmk"]["templates"] = this["Fmk"]["templates"] || {};
 this["Fmk"]["templates"]["spinner"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  var buffer = "", helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class='spinner-container'>\r\n       <div class='spinner'>\r\n          <div class=\"three-quarters\">\r\n            ";
-  options = {hash:{},data:data};
-  buffer += escapeExpression(((stack1 = helpers['t'] || (depth0 && depth0['t'])),stack1 ? stack1.call(depth0, "application.loading", options) : helperMissing.call(depth0, "t", "application.loading", options)))
-    + "\r\n          </div>\r\n       </div>\r\n   </div>";
+  buffer += "<div class='spinner-container'>\n       <div class='spinner'>\n          <div class=\"three-quarters\">\n            "
+    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "application.loading", options) : helperMissing.call(depth0, "t", "application.loading", options)))
+    + "\n          </div>\n       </div>\n   </div>";
   return buffer;
   });;
 (function() {
@@ -249,11 +244,203 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 }).call(this);
 
-//Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
-/* global window, Promise, Backbone, i18n*/
+/*global _, window*/
+
+/**
+ * @module core/http_response_parser
+ * @description Global notifications mecanism around the whole application.
+ * @see file helpers/backbone_notifications.js
+ * @author pbesson
+ */
+
+/*
+  Jquery ajax error and success [documentation](http://api.jquery.com/jquery.ajax/).
+  error
+    Type: Function( jqXHR jqXHR, String textStatus, String errorThrown )
+    A function to be called if the request fails. The function receives three arguments: The jqXHR (in jQuery 1.4.x, XMLHttpRequest) object, a string describing the type of error that occurred and an optional exception object, if one occurred. Possible values for the second argument (besides null) are "timeout", "error", "abort", and "parsererror". When an HTTP error occurs, errorThrown receives the textual portion of the HTTP status, such as "Not Found" or "Internal Server Error." As of jQuery 1.5, the error setting can accept an array of functions. Each function will be called in turn. Note: This handler is not called for cross-domain script and cross-domain JSONP requests. This is an Ajax Event.
+  success: 
+    Type: Function( PlainObject data, String textStatus, jqXHR jqXHR )
+    A function to be called if the request succeeds. The function gets passed three arguments: The data returned from the server, formatted according to the dataType parameter; a string describing the status; and the jqXHR (in jQuery 1.4.x, XMLHttpRequest) object. As of jQuery 1.5, the success setting can accept an array of functions. Each function will be called in turn. This is an Ajax Event.
+ */
+
+
 (function(NS) {
   "use strict";
-  //Filename: helpers/router.js
+  NS = NS || {};
+
+  //Dependencies.
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+  var httpHelper = isInBrowser ? NS.Helpers.httpHelper : require("../helpers/http_helper");
+  /**
+   * Default configuration.
+   * @type {Object}
+   */
+  var config = {
+    totalCountKey: "odata.count",
+    valuesKey: "values"
+  };
+
+  /**
+   * Configure the response parser.
+   * @param  {object} extendConf - the property you want to configure in the configuration.
+   * @return {[type]}            [description]
+   */
+  var configure = function configureHttpResponseParser(extendConf) {
+    if (!_.isObject(extendConf)) {
+      return;
+    }
+    _.extend(config, extendConf);
+  };
+
+  /**
+   * All the headers.
+   * @type {Object}
+   */
+  var HEADERS_KEYS = {
+    CONTENT_TYPE: "Content-Type",
+    TOTAL_COUNT: "X-Total-Count",
+    ACCESS_TOKEN: "x-access-token"
+  };
+  /**
+   * All the content types.
+   * @type {Object}
+   */
+  var CONTENT_TYPES = {
+    LIST: "application/json+list",
+    LIST_META: "application/json+list+meta",
+    ENTITY_DESC: "applicatin/json+",
+    ENTITY: "application/json"
+  };
+
+  /**
+   * Get the object name from the content type.
+   * @param  {string} contentType - The content type.
+   * @return {string} The name of the object.
+   */
+  var getObjectName = function getObjectNameFromContentType(contentType) {
+    var splitContent = contentType.split('+');
+    if (splitContent !== undefined && splitContent.length > 1) {
+      return splitContent[1].split(';')[0];
+
+    }
+    return undefined;
+  };
+  /**
+   * Parse an entity http response.
+   * @param  {jqXHR} response   - jQuery XmlHttpRequest.
+   * @param {object} contentType -  Object name in the contentType.
+   * @return {object}           - The parse response.
+   */
+  var entityParser = function entityParser(response, contentType) {
+    var entity = response.responseJSON;
+    //Set an object name if it is given as argument.
+    if (contentType) {
+      entity._objectName = getObjectName(contentType);
+    }
+    return entity;
+  };
+
+  /**
+   * Collection response parser.
+   * {jqXHR} response - jQuery XmlHttpRequest.
+   * @return {object}         - The parse response.
+   */
+  var collectionParser = function collectionParser(response, isMetaInHeader) {
+
+    var totalCount, values;
+    var jsonResponse = response.responseJSON;
+
+    if (isMetaInHeader) {
+      totalCount = +(response.getResponseHeader(HEADERS_KEYS.TOTAL_COUNT));
+      values = jsonResponse;
+      if (!_.isArray(values)) {
+        throw new ArgumentNullException("response.jsonResponse." + config.valuesKey + " should be an array.", response);
+      }
+    } else {
+
+      totalCount = jsonResponse[config.totalCountKey] || jsonResponse.length;
+      values = jsonResponse[config.valuesKey];
+      if (!_.isArray(values)) {
+        throw new ArgumentNullException("response.jsonResponse should be an array.", response);
+      }
+    }
+
+    return {
+      totalCount: totalCount,
+      values: values
+    };
+
+  };
+
+  /**
+   * @param  {[type]} response [description]
+   * @return {[type]}          [description]
+   */
+  var parseAccessToken = function parseAccessToken(response) {
+    var accessToken = response.getResponseHeader(HEADERS_KEYS.ACCESS_TOKEN);
+    if (accessToken) {
+      httpHelper.setAccessToken(accessToken, true);
+    }
+  };
+
+  /**
+   * Polyfill for the string contains method.
+   * @param  {string} string  - The string to test.
+   * @param  {string} pattern - The pattern to identify.
+   * @return {boolean}         true or false.
+   */
+  var contains = function stringContains(string, pattern) {
+    if (!_.isString(string)) {
+      return false;
+    }
+    return string.indexOf(pattern) !== -1;
+  };
+
+  /**
+   * Parse HttpResponse.
+   * @param  {jqXHR} response - jQuery XmlHttpRequest.
+   * @return {object}         - The parse response.
+   */
+  var parseResponse = function parseResponse(response) {
+    var contentType = response.getResponseHeader(HEADERS_KEYS.CONTENT_TYPE);
+    parseAccessToken(response);
+    if (contains(contentType, CONTENT_TYPES.LIST_META)) {
+      return collectionParser(response, false);
+    } else if (contains(contentType, CONTENT_TYPES.LIST)) {
+      return collectionParser(response, true);
+    } else if (contains(contentType, CONTENT_TYPES.ENTITY_DESC)) {
+      return entityParser(response, contentType);
+    } else if (contains(contentType, CONTENT_TYPES.ENTITY)) {
+      return entityParser(response);
+    } else {
+      return response.responseJSON;
+    }
+  };
+  /**
+   * Container for the export.
+   * @type {Object}
+   */
+  var httpResponseParser = {
+    entity: entityParser,
+    collection: collectionParser,
+    parse: parseResponse,
+    configure: configure
+  };
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Core = NS.Core || {};
+    NS.Core.httpResponseParser = httpResponseParser;
+  } else {
+    module.exports = httpResponseParser;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+//Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
+/* global window, Promise*/
+(function(NS) {
+  "use strict";
+  //Filename: helpers/session_helper.js
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -559,7 +746,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = siteDescriptionHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/* global window, _*/
+/* global window, _, Backbone*/
 (function(NS) {
   "use strict";
   //Filename: helpers/routes_helper.js
@@ -579,12 +766,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       siteDescription = siteDescriptionHelper.getSite();
       regenerateRoutes();
       return siteDescription;
-    }return false;
+    }
+    return false;
   };
 
   //Regenerate the application routes.
   var regenerateRoutes = function regenerateRoutes() {
-    generateRoutes(siteDescription);
+    processElement(siteDescription);
   };
 
   //Process the name of 
@@ -704,69 +892,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                    .replace(splatParam, '([^?]*?)');
       return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
     };
-
-
-
-
-  //Generate the routes fromSiteDescription.
-  var generateRoutes = function generateRoutes(elementDesc, prefix) {
-    if (!elementDesc) {
-      console.warn('The siteDescription does not exists', elementDesc);
-      return;
-    }
-
-    return processElement(elementDesc, prefix);
-
-    var pfx = processName(prefix, elementDesc.name);
-
-    //process headers routes.
-    var headers = elementDesc.header;
-    for (var siteDescIdx in headers) {
-      var siteDesc = headers[siteDescIdx];
-      var prefixsiteDesc = processName(pfx, siteDesc.name);
-      //console.log('prefix', prefix, ' prefixsiteDesc', prefixsiteDesc);
-      if (siteDesc.header) {
-        generateRoutes(siteDesc, prefixsiteDesc);
-      } else {
-        addRouteForUser(siteDesc, prefixsiteDesc);
-      }
-    }
-    addRouteForUser(elementDesc, pfx);
-
-  };
-
-  //Add a route for a user.
-
-  var addRouteForUser = function addRouteForUser(element, prefix) {
-    //console.log('addRouteForUser', 'prefix', prefix);
-    if (!element) {
-      return;
-      //throw new ArgumentNullException("The element to add a route should not be undefined.", element);
-    }
-    if (prefix === undefined || prefix === null || prefix === "") {
-      prefix = "";
-      //throw new ArgumentNullException("The prefix to add a route should not be undefined.", prefix);
-    }
-    //Add the route only if the user has one of the required role.
-    if (element.roles !== undefined && element.url !== undefined)
-      if (userHelper.hasOneRole(element.roles)) {
-        var route = {
-          roles: element.roles,
-          name: prefix,
-          route: element.url
-        };
-        routes[element.url] = route;
-        siteStructure[prefix] = route;
-      }
-      //process the site not in the menus  
-    if (element.pages !== undefined && element.pages !== null) {
-      for (var rtIdx in element.pages) {
-        addRouteForUser(element.pages[rtIdx], prefix);
-      }
-    }
-
-  };
-
 
   //Get the siteDescription.
   var getSiteDescription = function getSiteDescription() {
@@ -1131,6 +1256,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return _results;
       };
 
+      Collection.prototype.unsetErrors = function(options) {
+        return this.forEach(function(mdl) {
+          return mdl.unsetErrors(options);
+        });
+      };
+
       Collection.prototype.jsonFromSaveJson = function(saveJSON) {
         var changes;
         changes = [];
@@ -1343,7 +1474,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       };
 
       Model.prototype.toSaveJSON = function() {
-        return Backbone.Model.prototype.toJSON.call(this);
+        var json;
+        json = Backbone.Model.prototype.toJSON.call(this);
+        return _.omit(json, 'isNew', 'metadatas', 'cid');
       };
 
       Model.prototype.isInCollection = function() {
@@ -2000,7 +2133,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 }).call(this);
 
-﻿/* global  _ , window, Promise */
+/* global  _ , window, Promise */
 (function(NS) {
     "use strict";
     //Filename: helpers/util_helper.js
@@ -2317,6 +2450,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
  * @module helpers/backbone_notifications
  * @description Global notifications mecanism around the whole application.
  * @see file helpers/backbone_notifications.js
+ * @author  pbesson
  */
 
 (function(NS) {
@@ -2440,7 +2574,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
           postRenderingHelper.callHelper({
             helperName: mdt.decorator, //Get the post rendering helper to call from the metdata, this helper must have been register before.
-            selector: $("input[" + nameAttribute + "],select[" + nameAttribute + "]", options.viewSelector), //Create a selector on each attribute in the view with its .
+            selector: $("input[" + nameAttribute + "],select[" + nameAttribute + "],div[" + nameAttribute + "]", options.viewSelector), //Create a selector on each attribute in the view with its .
             decoratorOptions: mdt.decoratorOptions //Inject decorator options define on the model.
           });
         }
@@ -2482,6 +2616,49 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     };
 
     /**
+     * List of all the global messages to look after.
+     * @type {Array}
+     */
+    var globalMessages = [{
+        name: "globalErrors",
+        type: "error"
+    }, {
+        name: "globalSuccess",
+        type: "success"
+    }, {
+        name: "globalWarnings",
+        type: "warning"
+    }, {
+        name: "globalInfos",
+        type: "error"
+    }, {
+        name: "globalErrorMessages",
+        type: "error"
+    }, {
+        name: "globalSuccessMessages",
+        type: "success"
+    }, {
+        name: "globalWarningMessages",
+        type: "warning"
+    }, {
+        name: "globalInfoMessages",
+        type: "error"
+    }, {
+        name: "errors",
+        type: "error"
+    }];
+
+    function configure(options) {
+        options = options || {};
+        if (_.isArray(options.globalMessages)) {
+            globalMessages = options.globalMessages;
+        }
+        if (_.isObject(options.errorTypes)) {
+            errorTypes = options.errorTypes;
+        }
+    }
+
+    /**
      * Treat the response json of an error.
      * @param  {object} responseJSON The json response from the server.
      * @param  {object} options The options containing the model. {model: Backbone.Model}
@@ -2489,9 +2666,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      */
     function treatEntityExceptions(responseJSON, options) {
         var errors = responseJSON.errors;
-        if (options.isDisplay || options.model) {
+        /*if (options.isDisplay || options.model) {
             displayErrors(errors, options);
-        }
+        }*/
         if (options.model) {
             setModelErrors(options.model, errors);
         }
@@ -2506,9 +2683,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      */
     function treatCollectionExceptions(responseJSON, options) {
         var errors = responseJSON.errors;
-        if (options.isDisplay || options.model) {
+        /* if (options.isDisplay || options.model) {
             displayErrors(errors, options);
-        }
+        }*/
         if (options.model) {
             setCollectionErrors(options.model, errors);
         }
@@ -2516,9 +2693,54 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
     }
 
+    function treatGlobalMessagesPerType(messages, type) {
+        var messagesGlobal = [];
+        messages.forEach(function convertErrorsIntoNotification(element) {
+            var options = {};
+            if (_.isObject(element)) {
+                options = formatParameters(element.parameters);
+                element = element.message;
+            }
+            messagesGlobal.push({
+                type: type,
+                message: i18n.t(element, options),
+                creationDate: Date.now()
+            });
+
+        });
+        BackboneNotification.addNotification(messagesGlobal);
+    }
+
     /**
-     * @description s.
+     * Treat the global errors.
+     * @param  {object} responseJSON - Treat the global errors.
+     * @param {object} options - Options for error handling.{isDisplay:[true/false], globalMessages: [{type: "error", name: "propertyName"}]}
+     * @return {}
      */
+    function treatGlobalErrors(responseJSON, options) {
+        options = options || {};
+        var isDisplay = options.isDisplay || true;
+        var allMessagesTypes = options.globalMessages || globalMessages;
+        if (responseJSON !== undefined) {
+            var messages = responseJSON;
+            //Looping through all messages types.
+            allMessagesTypes.forEach(function treatAllTypes(globalMessageConf) {
+                //Treat all the gloabe
+                var msgs = messages[globalMessageConf.name];
+                if (msgs !== undefined) {
+                    treatGlobalMessagesPerType(msgs, globalMessageConf.type);
+                }
+            });
+            if (isDisplay) {
+                BackboneNotification.renderNotifications();
+            }
+
+        }
+
+
+
+    }
+
     /**
      * Treat with all the custom exception
      * @param  {object} responseJSON - Response from the server.
@@ -2526,6 +2748,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * @return {object}              - The parsed error response.
      */
     function treatBadRequestExceptions(responseJSON, options) {
+
         if (responseJSON.type !== undefined) {
             switch (responseJSON.type) {
                 case errorTypes.entity:
@@ -2553,18 +2776,39 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         response = response || {};
         var responseErrors = response.responseJSON;
         if (responseErrors === undefined) {
-            responseErrors = response.responseText;
-        } else {
-            switch (responseErrors.statusCode) {
+            if (response.responseText !== undefined) {
+                try {
+                    //The first try is to parse the response in JSON. Maybe the return mime type is not correct.
+                    responseErrors = JSON.parse(response.responseText);
+                } catch (e) {
+                    //Construt an error with the text.
+                    responseErrors = {
+                        statusCode: response.status,
+                        globalErrorMessages: [response.responseText]
+                    };
+                }
+
+            }
+
+        }
+        responseErrors.statusCode = responseErrors.statusCode || response.status;
+        if (responseErrors.statusCode) {
+            treatGlobalErrors(responseErrors);
+            /*Deal with all the specific exceptions*/
+            switch (responseErrors.statusCode || response.status) {
                 case 400:
                     treatBadRequestExceptions(responseErrors, options);
                     break;
                 case 401:
                     treatBadRequestExceptions(responseErrors, options);
                     break;
+                case 422:
+                    treatBadRequestExceptions(responseErrors, options);
+                    break;
                 default:
                     break;
             }
+            return;
         }
 
 
@@ -2658,7 +2902,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * Set the *model* errors in the fieldErrors.
      * @param {Model} model    - A backbone model.
      * @param {object} errors  - An object which represents the errros. There should be the follwing structure : `{fieldErrors: {property: "Error Message."}}`.
-     * @param {object} options - Options defined when setting the errors to the model. 
+     * @param {object} options - Options defined when setting the errors to the model.
      */
     function setModelErrors(model, errors, options) {
         if (errors !== undefined && errors.fieldErrors !== undefined) {
@@ -2672,7 +2916,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * Set the *model* errors in the fieldErrors.
      * @param {Model} model    - A backbone model.
      * @param {object} errors  - An object which represents the errros. There should be the follwing structure : `{fieldErrors: {property: "Error Message."}}`.
-     * @param {object} options - Options defined when setting the errors to the model. 
+     * @param {object} options - Options defined when setting the errors to the model.
      */
     function setCollectionErrors(collection, errors, options) {
         collection.setErrors(errors, options);
@@ -2684,7 +2928,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * @return {object}            - The formated parameters.
      */
     function formatParameters(parameters) {
-        var options = {}, formatter, value;
+        var options = {},
+            formatter, value;
         for (var prop in parameters) {
             if (parameters.hasOwnProperty(prop)) {
                 if (parameters[prop].domain) {
@@ -2708,7 +2953,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         manageResponseErrors: manageResponseErrors,
         display: displayErrors,
         setModelErrors: setModelErrors,
-        setCollectionErrors: setCollectionErrors
+        setCollectionErrors: setCollectionErrors,
+        configure: configure,
+        treatGlobalErrors: treatGlobalErrors
     };
 
     if (isInBrowser) {
@@ -2796,7 +3043,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = referenceHelper;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window, $, Backbone*/
+/*global window, $, Backbone, _*/
 
 /**
  * @module helpers/form_helper
@@ -2811,11 +3058,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
     NS = NS || {};
     var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require("./post_rendering_helper");
-    
+
     /**
      * Helper to bond collections on list dom.
      * @param  {object} jQuery selector         - A selector which should contains the list of element which dom list element.
-     * @param  {Backbone.Collection} collection - The collection where the reconstructed elements will be injected. 
+     * @param  {Backbone.Collection} collection - The collection where the reconstructed elements will be injected.
      * @param  {object} options                 - {isSilent: boolean}
      * @return {undefined}
      */
@@ -2848,25 +3095,29 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * @param  {object} data          - An object withe the structure {inputs: jQuerySelector, options: jQuerySelector} w<here jQuery Selector which contains the dom element of a model. inputs for inputs, options for selects.
      * @param  {Backbone.Model} model - a Backbone.Model where the dom data will be injected to populate the fields.
      * @param  {object} options       - The default options are: {isSilent: true}
-     * @return {undefined}       
+     * @return {undefined}
      */
     var _formModelBinder = function formModelBinder(data, model, options) {
         options = options || {};
         options.isSilent = options.isSilent !== undefined ? options.isSilent : true;
+        var modelContainer = {};
         if (data.inputs !== null && data.inputs !== undefined) {
-            this.formInputModelBinder(data.inputs, model, options);
+            modelContainer = _.extend(modelContainer, this.formInputModelBinder(data.inputs, model, options));
         }
         if (data.options !== null && data.options !== undefined) {
-            this.formOptionModelBinder(data.options, model, options);
+            modelContainer = _.extend(modelContainer, this.formOptionModelBinder(data.options, model, options));
         }
+        model.set(modelContainer, {
+            silent: options.isSilent
+        });
     };
 
     // inputs must be a selector with option:selected inside and model a BackBone model.
     /**
-     * Bind the model. If the model has a decorator (ie) a jQuery plugin, the data-decorator is use in order to     
+     * Bind the model. If the model has a decorator (ie) a jQuery plugin, the data-decorator is use in order to
      * @param  {object} inputs           - Selector containing all the inputs.
-     * @param  {Backbone.Model} model    - The model on which there is . 
-     * @param  {object} options          - The default options are: {isSilent: true}.
+     * @param  {Backbone.Model} model    - The model on which there is .
+     * @param  {object} options          - The default options are: {isSilent: true, isForceModelBinding: false}.
      * @return {[type]}         [description]
      */
     var _formInputModelBinder = function formInputModelBinder(inputs, model, options) {
@@ -2893,7 +3144,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     helperName: decorator
                 });
 
-            }else if (input.tagName === "TEXTAREA") {
+            } else if (input.tagName === "TEXTAREA") {
                 currentvalue = input.value;
             } else { //See if an if on currentValue is nececessary.
                 switch (input.getAttribute('type')) {
@@ -2930,9 +3181,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 modelContainer[this.getAttribute('data-name')] = currentvalue;
             }
         });
-        model.set(modelContainer, {
-            silent: options.isSilent
-        });
+        if (options.isForceModelSet) {
+            model.set(modelContainer, {
+                silent: options.isSilent
+            });
+        }
+        return modelContainer;
     };
 
     var _parseRadioValue = function parseRadioValue(radioValue) {
@@ -2983,10 +3237,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
             modelContainer[attributeName] = selectedValue === "undefined" ? undefined : selectedValue;
         });
+        if (options.isForceModelSet) {
+            model.set(modelContainer, {
+                silent: options.isSilent
+            });
+        }
+        return modelContainer;
 
-        model.set(modelContainer, {
-            silent: options.isSilent
-        });
     };
 
     //#Generate a form from a model.
@@ -3486,6 +3743,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	NS = NS || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 	var odataHelper = isInBrowser ? NS.Helpers.odataHelper : require("./odata_helper");
+	var httpResponseParser = isInBrowser ? NS.Core.httpResponseParser : require('../core/http_response_parser');
 	var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
 	var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
 
@@ -3532,15 +3790,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			return this.fetch();
 		},
 		//Ovverride the save method on the model in order to Return a promise.
-		save: function saveModel() {
+		save: function saveModel(options) {
 			var model = this;
 			var method = this.isNew() ? 'create' : 'update';
 			return new Promise(
 				function(resolve, reject) {
-					Backbone.sync(method, model, {
-						success: resolve,
+					var opts = _.extend({
+						success: function(data, textStatus, jqXHR) {
+							resolve(httpResponseParser.parse(jqXHR));
+						},
 						error: reject
-					});
+					}, options);
+					Backbone.sync(method, model, opts);
 				}
 			);
 		},
@@ -3563,7 +3824,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			//console.log('promiseFetchModel', model);
 			return new Promise(function(resolve, reject) {
 				/*Don't use underscore but could have because bacckbone has a dependency on it.*/
-				options.success = resolve;
+				options.success = function(data, textStatus, jqXHR) {
+					resolve(httpResponseParser.parse(jqXHR));
+				};
 				options.error = reject;
 				Backbone.sync('read', model, options);
 			});
@@ -3608,9 +3871,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			var collection = this;
 			return new Promise(function(resolve, reject) {
 				/*Don't use underscore but could have because bacckbone has a dependency on it.*/
-				options.success = function(data, textStatus, request) {
-					console.info(request.getAllResponseHeaders());
-					resolve(data);
+				options.success = function(data, textStatus, jqXHR) {
+					resolve(httpResponseParser.parse(jqXHR));
 				};
 				options.error = reject;
 				Backbone.sync('read', collection, options);
@@ -3622,7 +3884,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			return new Promise(
 				function(resolve, reject) {
 					Backbone.sync(method, model, {
-						success: resolve,
+						success: function(data, textStatus, jqXHR) {
+							resolve(httpResponseParser.parse(jqXHR));
+						},
 						error: reject
 					});
 				}
@@ -3673,7 +3937,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	 * @return {PromiseModel}      - A backbone model promisified with the good url.
 	 */
 	var generateModel = function generateModel(url, json) {
-		if (json!== undefined && json !== null && !_.isObject(json)) {
+		if (json !== undefined && json !== null && !_.isObject(json)) {
 			throw new ArgumentInvalidException(json);
 		}
 		if (!_.isString(url)) {
@@ -3873,7 +4137,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   });
 
   Handlebars.registerHelper("t", function(i18n_key, options) {
-    var maxLength, opt, prefix, result, suffix;
+    var maxLength, opt, params, prefix, result, suffix;
     opt = options.hash || {};
     suffix = opt.suffix || "";
     prefix = opt.prefix || "";
@@ -3881,7 +4145,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     if (opt.keyInContext === true) {
       i18n_key = this[i18n_key];
     }
-    result = i18n.t("" + prefix + i18n_key + suffix);
+    params = opt.params != null ? opt.params.split(',') : void 0;
+    params = params != null ? _.pick.apply(this, params) : void 0;
+    result = i18n.t("" + prefix + i18n_key + suffix, params);
     if ((maxLength != null) && maxLength < result.length) {
       result = "" + (result.slice(0, +maxLength)) + "...";
     }
@@ -4043,7 +4309,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   })(this));
 
   Handlebars.registerHelper("input_for", function(property, options) {
-    var cidAttr, col, container, containerAttribs, containerCss, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
+    var cidAttr, col, container, containerAttribs, containerCss, dataFields, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
     options = options || {};
     html = void 0;
     translationRoot = void 0;
@@ -4057,6 +4323,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] || {};
     minimalHtml = opt.minimalHtml != null ? opt.minimalHtml : false;
     noGrid = opt.noGrid ? opt.noGrid : false;
+    dataFields = function(context) {
+      var fieldNames, subHTML;
+      subHTML = "";
+      if (opt.dataFields) {
+        fieldNames = opt.dataFields.split(',');
+        fieldNames.forEach(function(fieldName) {
+          if (context[fieldName]) {
+            return subHTML = subHTML + ("data-" + fieldName + "='" + context[fieldName] + "'");
+          }
+        });
+      }
+      return subHTML;
+    };
     isDisplayRequired = false;
     isRequired = (function(_this) {
       return function() {
@@ -4207,10 +4486,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       };
     })(this);
     if (minimalHtml) {
-      html = " <input id='" + property + "' " + (decorator()) + " class=''";
+      html = " <input id='" + property + "' " + (dataFields(this)) + " " + (decorator()) + " class=''";
       html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + cidAttr + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/>";
     } else {
-      html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " <input id='" + property + "' " + (decorator()) + " class='";
+      html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " <input id='" + property + "' " + (decorator()) + " " + (dataFields(this)) + " class='";
       if (dataType !== "checkbox") {
         html += "form-control ";
       }
@@ -4505,7 +4784,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   };
 
   Handlebars.registerHelper("button", function(text_key, options) {
-    var button, cssClass, cssId, dataAttributes, icon, isLoading, loading, opt, type;
+    var action, button, cssClass, cssId, dataAttributes, icon, isLoading, loading, opt, type;
     opt = options.hash || {};
     if (opt.role !== void 0 && !Fmk.Helpers.userHelper.hasRole(opt.role)) {
       return "";
@@ -4515,6 +4794,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     cssId = opt.id || guid();
     dataAttributes = opt.dataAttributes || "";
     type = opt.type || "button";
+    action = opt.action != null ? "data-action=" + action : "";
     loading = function() {
       if (isLoading || type === 'submit') {
         return "data-loading data-loading-text='" + (opt.loadingText || i18n.t('button.loading')) + "'";
@@ -4528,7 +4808,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return "";
       }
     };
-    button = "<button type='" + type + "' " + dataAttributes + " class='btn " + cssClass + "' id='" + cssId + "' " + (loading()) + ">" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>";
+    button = "<button type='" + type + "' " + action + "  " + dataAttributes + " class='btn " + cssClass + "' id='" + cssId + "' " + (loading()) + ">" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>";
     return new Handlebars.SafeString(button);
   });
 
@@ -4811,6 +5091,184 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     new Handlebars.SafeString(html)
    */
 
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
+   */
+
+  Handlebars.registerHelper('form', function(options) {
+    return "<form novalidate class='form-horizontal' role='form'>" + (options.fn(this)) + "</form>";
+  });
+
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
+   */
+
+  Handlebars.registerHelper('display', function(options) {
+    return "<form novalidate class='form-horizontal' role='form'>" + (options.fn(this)) + "</form>";
+  });
+
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#button_toolbar}} {{{button_cancel}} {{button_save}} {{/button_toolbar}}
+   */
+
+  Handlebars.registerHelper('btn_toolbar', function(options) {
+    return "<div class='btn-toolbar'><div class='btn-group'>" + (options.fn(this)) + "</div></div>";
+  });
+
+
+  /*
+    Helper pour uniformiser l'utilisation des panel.
+    Exemple: {{#panel}} {{{#form}} {{/form}} {{/panel}}
+    Exemple: {{#panel "titlekey"}} {{{#form}} {{/form}} {{/panel}}
+   */
+
+  Handlebars.registerHelper('panel', function(title, options) {
+    var cancelButton, editButton, html, opt, saveButton;
+    opt = (options || {}).hash || {};
+    if (_.isObject(title)) {
+      options = title;
+      title = void 0;
+    }
+    editButton = function() {
+      if (opt.edit) {
+        return Handlebars.helpers.button_edit.call(this, {
+          hash: {
+            icon: "pencil"
+          }
+        });
+      } else {
+        return "";
+      }
+    };
+    saveButton = function() {
+      if (opt.save) {
+        return Handlebars.helpers.button_save.call(this, void 0, {
+          hash: {
+            icon: "save"
+          }
+        });
+      } else {
+        return "";
+      }
+    };
+    cancelButton = function() {
+      if (opt.save) {
+        return Handlebars.helpers.button_cancel.call(this, {
+          hash: {
+            icon: "undo"
+          }
+        });
+      } else {
+        return "";
+      }
+    };
+    title = title == null ? "" : i18n.t(title);
+    html = "<div class='panel panel-default'> <div class='panel-heading'>" + title + " " + (editButton()) + " " + (saveButton()) + " " + (cancelButton()) + "</div> <div class='panel-body'>" + (options.fn(this)) + "</div> </div>";
+    return html;
+  });
+
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#page "page.title" panelTitle="page.panel.title"}} {{input_for "firstName"}} {{/page}}
+   */
+
+  Handlebars.registerHelper('page', function(title, options) {
+    var html, opt;
+    options = options || {};
+    opt = options.hash || {};
+    if (!_.isString(title)) {
+      console.error("noTitleInYourTemplate");
+    }
+    html = "<h1>" + (i18n.t(title)) + "</h1> <div class='page-content'> " + (options.fn(this)) + " </div>";
+    return html;
+  });
+
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#criteria}}{{#form}} {{input_for "firstName"}} {{/form}}{{/criteria}}
+   */
+
+  Handlebars.registerHelper('criteria', function(title, options) {
+    var html;
+    options = options || {};
+    if (_.isObject(title)) {
+      options = title;
+      title = void 0;
+    }
+    title = title == null ? "" : i18n.t(title);
+    html = "<div class='criteria'> <h2>" + title + "</h2> " + (options.fn(this)) + " </div>";
+    return html;
+  });
+
+  Handlebars.registerHelper("result", function(options) {
+    var cssClass, elementTagName, html, isTable, listTagName, opt, paginate, resultLabel, striped, tableHeaderActions;
+    options = options || {};
+    opt = options.hash || {};
+    isTable = opt.isTable != null ? opt.isTable : true;
+    resultLabel = opt.resultLabel ? i18n.t(opt.resultLabel) : void 0;
+    listTagName = isTable ? "table" : "ul";
+    elementTagName = isTable ? "tr" : "li";
+    striped = opt.striped != null ? opt.stripped : true;
+    cssClass = isTable ? "table table-condensed" : "list-group";
+    if (opt.cssClass != null) {
+      cssClass = "" + cssClass + " opt.cssClass";
+    }
+    if (striped) {
+      cssClass = cssClass + "  table-striped";
+    }
+    tableHeaderActions = (function(_this) {
+      return function() {
+        var showHeaderActions;
+        showHeaderActions = opt.showHeaderActions != null ? opt.showHeaderActions : true;
+        if (showHeaderActions) {
+          return "" + (Handlebars.helpers.tableHeaderAction.call(_this, {
+            hash: {
+              resultLabel: '',
+              exportUrl: _this.exportUrl,
+              resultLabel: resultLabel
+            }
+          })) + " <hr />";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    paginate = (function(_this) {
+      return function() {
+        var isPaginate;
+        isPaginate = opt.isPaginate != null ? opt.isPaginate : true;
+        if (isPaginate) {
+          return Handlebars.helpers.paginate.call(_this, {
+            hash: {
+              showResultNumber: false
+            }
+          });
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    html = " " + (tableHeaderActions()) + " <" + listTagName + " class='" + cssClass + "'> " + (options.fn(this)) + " </" + listTagName + "> " + (paginate()) + " <div id='lineSelectionContainer'></div>";
+    return new Handlebars.SafeString(html);
+  });
+
+  Handlebars.registerHelper("result_container", function(i18n_key, options) {
+    var html, opt, width;
+    options = options || {};
+    opt = options.hash || {};
+    width = opt.width || 12;
+    html = "<div id='results' class='" + (Handlebars.helpers.col.call(this, width)) + "}'></div>";
+    return new Handlebars.SafeString(html);
+  });
+
 }).call(this);
 
 /*global Backbone, _, window, Promise, $ */
@@ -4824,11 +5282,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     var RefHelper = isInBrowser ? NS.Helpers.referenceHelper : require('../helpers/reference_helper');
     var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
     var Model = isInBrowser ? NS.Models.Model : require("../models/model");
-    var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
+    var PaginatedCollection = isInBrowser ? NS.Models.PaginatedCollection : require("../models/paginatedCollection");
     var sessionHelper = isInBrowser ? NS.Helpers.sessionHelper : require('../helpers/session_helper');
     var templateSpinner = isInBrowser ? NS.templates.spinner : function() {
-            "Template spinner to define..."
-        };
+        return "Template spinner to define...";
+    };
     //View which is the default view for each view.
     //This view is able to deal with errors and to render the default json moodel.
     var CoreView = Backbone.View.extend({
@@ -4867,6 +5325,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.render = _.wrap(this.render, function(render, options) {
                 //If the view is ready perform the standard render.
                 if (_this.isReady()) {
+                    if (_this.opts.DEBUG) {
+                        _this.debug();
+                    }
                     render(options);
                     _this.afterRender();
                 } else {
@@ -4878,7 +5339,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
             //Listen to the reference list loading.
             this.listenTo(this.model, "references:loaded", this.render, this);
-            
+
             //Load all the references lists which are defined in referenceNames.
             var currentView = this;
             if (_.isArray(this.referenceNames) && this.referenceNames.length > 0) {
@@ -4891,12 +5352,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         res[currentView.referenceNames[i]] = results[i];
                         //The results are save into an object with a name for each reference list.
                     }
-                    if (UtilHelper.isBackboneCollection(currentView.model)) {
-                        _.extend(currentView.model, res); // Add the references as properties of the object without using set which erases the collection.
-                         // Reset the collection to trigger a render.
-                    } else {
-                        currentView.model.set(res, {silent: true}); //This trigger a render due to model change.
-                    }
+                    //Add the reference lists as model properties.
+                    _.extend(currentView.model, res);
                     currentView.model.trigger('references:loaded');
                     //Inform the view that we are ready to render well.
                 }).then(null, function(error) {
@@ -4916,8 +5373,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (this.model) {
                 return;
             } else if (this.opts.modelName) {
-                this.model = new Model();
-                this.model.modelName = this.opts.modelName;
+                //Création d'une collection et d'un model
+                var ModelCreated = Model.extend({
+                    modelName: this.opts.modelName
+                });
+                //Case of a collection.
+                if (this.opts.modelType !== undefined && this.opts.modelType === "collection") {
+                    var CollectionCreated = PaginatedCollection.extend({
+                        modelName: this.opts.modelName,
+                        model: ModelCreated
+                    });
+                    this.model = new CollectionCreated();
+                } else {
+                    //Case of a model.
+                    this.model = new ModelCreated();
+
+                }
             } else {
                 throw new ArgumentNullException("The view must have a model or a model name.", this);
             }
@@ -4966,6 +5437,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
             $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
         },
+        /**
+         * Debug the core View. Display whatever you need in the console on render.
+         * @return {undefined}
+         */
+        debug: function debugCoreView() {
+            console.log("--------------CORE VIEW-----------------");
+            console.log("View:     ", this);
+            console.log("Model:    ", this.model);
+            if (this.template) {
+                console.log("Template: ", this.template(this.getRenderData()));
+            }
+            console.log("----------------------------------------");
+        },
         //Render function  by default call the getRenderData and inject it into the view dom element.
         render: function renderCoreView() {
             //If the view is not ready.
@@ -4995,10 +5479,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         // Get the id of the criteria.
         getCriteriaId: function getCriteriaId() {
             var hash = window.location.hash;
-            if (this.model.modelName != undefined) {
+            if (this.model.modelName !== undefined) {
                 hash += this.model.modelName;
             }
-            if (this.opts.criteriaId!= undefined) {
+            if (this.opts.criteriaId !== undefined) {
                 hash += this.opts.criteriaId;
             }
             return hash;
@@ -5015,6 +5499,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         renderSpinner: function renderSpinner() {
             this.$el.html(this.templateSpinner(this.getRenderData()));
             return this;
+        },
+        /**
+         * Change the button state (loading, reset) ...
+         * @param  {string} selector - CSS selector for the button.
+         * @param  {string} state    - The new state you want for the button.
+         * @return {undefined}
+         */
+        changeButtonState: function changeButtonState(selector, state) {
+            $(selector, this.$el).button(state);
         }
     });
 
@@ -5031,21 +5524,20 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 // var CoreView = require('./views/core-view');
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
 //```
-﻿/*global window, Backbone, $, i18n, _*/
-(function (NS) {
+/*global window, Backbone, $, i18n, _*/
+(function(NS) {
     "use strict";
     //Filename: views/consult-edit-view.js
     NS = NS || {};
 
     //Dependencies.
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
     var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
     var urlHelper = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
     var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
     var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
@@ -5078,36 +5570,104 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         templateConsult: undefined,
 
         //Additional data to pass to the template.
-        additionalData: function () {
+        additionalData: function() {
             return undefined;
         },
-
-        //Default options for the view.
+        /**
+         * Default options of the view. These options can be overriden by using customOptions property of the view.
+         * In order to access this options, the view has a property called `this.opts`.
+         * @type {[type]}
+         */
         defaultOptions: _.extend({}, CoreView.prototype.defaultOptions, {
+            /**
+             * Does the view has to load the model from the service define in `getModelSvc`.
+             * @type {Boolean}
+             */
             isModelToLoad: true, //By default the model is loaded.
+            /**
+             * If true, there is  an edit mode in the view.
+             * @type {Boolean}
+             */
             isEditMode: true,
+            /**
+             * If there is an edit mode and this property is true, the view can start in edit mode. The templateEdit will be rendered.
+             * @type {Boolean}
+             */
+            isEdit: true,
+            /**
+             * If true, the view will navigate to the `generateNavigationUrl` url.
+             * @type {Boolean}
+             */
             isNavigationOnSave: true,
+            /**
+             * If true, the view will navigate to the `generateDeleteUrl` url.
+             * @type {Boolean}
+             */
             isNavigationOnDelete: true,
+            /**
+             * If true, the view will attempt to call the `saveModelSvc` in the `saveAction` when there is a submit.
+             * If you have a composite or a list view, maybe you want the parent view to deal with the save.
+             * @type {Boolean}
+             */
             isSaveOnServer: true,
+            /**
+             * When the view is a list view, this selector is use to identify the view of each line.
+             * It could be `ul li`.
+             * @type {String}
+             */
             collectionSelector: "tbody tr",
+            /**
+             * If there is no navigatio on save, and dhis parameter is true, the view attempt to reload the page (using Backbone not the naigator refresh).
+             * @type {Boolean}
+             */
             isForceReload: false,
+            /**
+             * This parameter is use in order to know if the view is ready to be displayed.
+             * If not, the spinner is render (see isReady function).
+             * @type {Boolean}
+             */
             isReadyModelData: true,
+            /**
+             * This parameter can be use in order to have a back to the list button.
+             * @type {string}
+             */
             listUrl: undefined,
+            /**
+             * If true, the view will listen to the `model:change` event.
+             * @type {Boolean}
+             */
             isListeningToModelChange: true,
-            formSelector: undefined, //In whitch selector you have to search the form datas (inputs, select,...).
+            /**
+             * If you need to specify a selector in which the input, select, textarea are searched.
+             * @type {string}
+             */
+            formSelector: undefined, //In whitch selector you have to search the form datas (inputs, select,...).,
+            /**
+             * Define if the type of model of the view is a model or a collection.
+             * @type {String}
+             */
+            modelType: "model"
         }),
 
-        //Initialize function
+        /**
+         * Initialize the consult edit view.
+         * @param  {object} options - All options you need to pass to the view.
+         * These will extend the defaultOptions and customOptions of the view.
+         * All options will be in the `opts` property of the view.
+         * @return {undefined}
+         */
         initialize: function initializeConsultEdit(options) {
             options = options || {};
+            //Call the parent initialize.
             CoreView.prototype.initialize.call(this, options);
+
             //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options. 
             this.isEdit = (this.opts.isEditMode && this.opts.isEdit) || false;
 
             //Transform the listUrl
             if (this.opts.listUrl) {
                 var currentView = this;
-                this.opts.listUrl = this.opts.listUrl.replace(/\:(\w+)/g, function (match) {
+                this.opts.listUrl = this.opts.listUrl.replace(/\:(\w+)/g, function(match) {
                     return currentView.opts[match.replace(":", "")];
                 });
             }
@@ -5118,12 +5678,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     this.opts.isModelToLoad = false;
                     this.loadGetNewModelData();
                 }
-
-                /*
-            else if (!isBackboneModel && this.model.isCreate) {
-               this.opts.isModelToLoad = false;
-            }
-            */
 
                 //render view when the model is loaded
                 if (this.opts.isListeningToModelChange) {
@@ -5139,21 +5693,47 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         // returns true if the view should be rendered in creation mode.
+        /**
+         * Function wich process the fact that the view is in create.
+         * @param  {object}  options [description]
+         * @return {Boolean}  - true if the view is in create mode.
+         */
         isCreateMode: function isCreateModeConsultEdit(options) {
             var isBackboneModel = utilHelper.isBackboneModel(this.model);
             return this.opts.isCreateMode || (isBackboneModel && this.opts.isModelToLoad && this.model.get('isNewModel'));
         },
+        /**
+         * Get the object to serve to the getModelSvc.
+         * @param  {string} id - Identifier of the model.
+         * @return {string | object}- The criteria to give to the load service.
+         */
+        getLoadCriteria: function getLoadCriteria(id) {
+            return id || this.model.get('id');
+        },
         //This function is use in order to retrieve the data from the api using a service.
+        /**
+         * Load the model from the gerModelSvc function which should be a Promise.
+         * @param  {string} id - model identifier.
+         * @return {undefined}
+         */
         loadModelData: function loadModelData(id) {
+            if (!this.getModelSvc) {
+                throw new ArgumentNullException('The getModelSvc should be a service which returns a promise, it is undefined here.', this);
+            }
             var view = this;
-            var idValue = id || this.model.get('id');
-            this.getModelSvc(idValue)
-                .then(function success(jsonModel) {
+            var loadCriteria = this.getLoadCriteria();
+            this.getModelSvc(loadCriteria)
+                .then(function successLoadModel(jsonModel) {
                     view.opts.isReadyModelData = true;
-                    view.model.set(jsonModel);
-                    //view.model.savePrevious();
-                }).then(null, function error(errorResponse) {
-                    ErrorHelper.manageResponseErrors(errorResponse, {
+                    if (jsonModel === undefined) {
+                        //manually trigger the change event in the case of empty object returned.
+                        view.model.trigger('change');
+                    } else {
+                        view.model.set(jsonModel); //change and change:property
+                    }
+
+                }, function errorLoadModel(errorResponse) {
+                    errorHelper.manageResponseErrors(errorResponse, {
                         model: view.model
                     });
                 });
@@ -5161,7 +5741,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         //This function is use in order to retrieve the data from the api using a service.
         loadGetNewModelData: function loadGetNewModelData() {
-            if (this.getNewModelSvc != undefined) {
+            if (this.getNewModelSvc !== undefined) {
                 var view = this;
                 this.getNewModelSvc()
                     .then(function success(jsonModel) {
@@ -5169,7 +5749,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         view.model.set(jsonModel);
                         //view.model.savePrevious();
                     }).then(null, function error(errorResponse) {
-                        ErrorHelper.manageResponseErrors(errorResponse, {
+                        errorHelper.manageResponseErrors(errorResponse, {
                             model: view.model
                         });
                     });
@@ -5178,21 +5758,42 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         //Events handle by the view with user interaction
         events: {
+            // Deals with the edit button click.
             "click button.btnEdit": "edit",
+            // Deals with the delete button.
             "click button.btnDelete": "deleteItem",
+            // Deals with the panel collapse event.
             "click .panel-heading": "toogleCollapse",
+            // Deals with the submit button.
             "click button[type='submit']": "save",
+            // Deals withe the candel button.
             "click button.btnCancel": "cancelEdition",
+            // Deals with the button back.
             "click button.btnBack": "back",
+            // Deals with the data-loading button event.
             "click button[data-loading]": "loadLoadingButton"
         },
 
-        //JSON data to attach to the template.
+        /**
+         * This function represents the data given to to template on the rendering.
+         * @return {object} The json to give to the template.
+         */
         getRenderData: function getRenderDataConsultEdit() {
-            if (this.opts.listUrl === undefined) {
-                return this.model.toJSON();
+
+            var jsonToRender = this.model.toJSON();
+
+            //Add the reference lists names to the json.
+            if (this.referenceNames) {
+                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
             }
-            return _.extend({}, this.model.toJSON(), { listUrl: this.opts.listUrl });
+            //If there is a listUrl it is added to the 
+            if (this.opts.listUrl) {
+                jsonToRender.listUrl = this.opts.listUrl;
+            }
+            //Add the additionalData to the rendering of the template.
+            _.extend(jsonToRender, this.additionalData());
+
+            return jsonToRender;
         },
 
         //genarate navigation url usefull if the edit mode is not on the same page.
@@ -5205,9 +5806,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (event) {
                 event.preventDefault();
             }
-            
+
             this.isEdit = !this.isEdit;
-            if(this.isEdit){
+            if (this.isEdit) {
                 backboneNotification.clearNotifications();
                 this.model.savePrevious();
             }
@@ -5225,11 +5826,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Get the json data to be save by the view.
         getDataToSave: function getDataToSaveDetailEdit() {
-            if (utilHelper.isBackboneModel(this.model)) {
-                return this.model.toJSON();
-            } else {
-                return this.model.toSaveJSON();
-            }
+            return this.model.toSaveJSON();
         },
         //Deal with the save event on the page.
         save: function saveConsultEdit(event) {
@@ -5251,7 +5848,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             ModelValidator.validateAll(currentView.model)
                 .then(function successValidation() {
                     //When the model is valid, unset errors.
-                    currentView.model.forEach(function (mdl) {
+                    currentView.model.forEach(function(mdl) {
                         mdl.unsetErrors();
                     }, currentView);
                     if (currentView.opts.isSaveOnServer) {
@@ -5267,17 +5864,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 });
         },
         resetSaveButton: function resetSaveButton() {
-            $('button[type="submit"]', this.$el).button('reset');
+            this.changeButtonState('button[type="submit"]', 'reset');
+            //$('button[type="submit"]', this.$el).button('reset');
         },
-        resetLoadingButton: function resetLoadingButton(){
+        resetLoadingButton: function resetLoadingButton() {
             $('button[data-loading]', this.$el).button('reset');
         },
-        loadLoadingButton: function loadLoadingButton(event){
-          $(event.target).closest('button[data-loading]').button('loading');
+        loadLoadingButton: function loadLoadingButton(event) {
+            $(event.target).closest('button[data-loading]').button('loading');
         },
-        bindToModel: function () {
+        /**
+         * Bind the html to the backbone model or collection..
+         * @return {[type]} [description]
+         */
+        bindToModel: function bindToModelConsultEdit() {
+            var formSelector = this.opts.formSelector || "";
             if (utilHelper.isBackboneModel(this.model)) {
-                var formSelector = this.opts.formSelector || "";
+                this.model.unsetErrors({
+                    silent: true
+                });
                 var inputSelector = formSelector + " " + "input, " + formSelector + " " + "textarea";
                 var selectSelector = formSelector + " " + "select";
                 form_helper.formModelBinder({
@@ -5285,7 +5890,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     options: $(selectSelector, this.$el)
                 }, this.model);
             } else if (utilHelper.isBackboneCollection(this.model)) {
-                var formSelector = this.opts.formSelector || "";
+                this.model.unsetErrors({
+                    silent: true
+                });
                 var collectionSelector = formSelector + " " + this.opts.collectionSelector;
                 form_helper.formCollectionBinder(
                     $(collectionSelector, this.$el),
@@ -5294,13 +5901,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     }
                 );
             }
-
-            
         },
         //Save method in case of a model.
         saveModel: function saveBackboneModel() {
             this.bindToModel();
-
             //Bind the this to the current view for the
             var currentView = this;
             //Todo: Add a method in util in order to know if an object is a collectio or a model.
@@ -5321,13 +5925,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 });
         },
         //Save action call the save Svc.
-        saveAction: function () {
+        saveAction: function saveActionConsultEdit() {
             var currentView = this;
             //Add a control on the property saveModelSvc.
-            if(!currentView.saveModelSvc){
-                throw new ArgumentNullException("The service use in order to save the model is not define in the wiew, try to define it: saveModelSvc");
+            if (!currentView.saveModelSvc) {
+                throw new ArgumentNullException("'The saveModeSvc should be a service which returns a promise, it is undefined here.");
             }
-            //Call the service in order to save the model.                   
+            //Call the service in order to save the model.
             return currentView.saveModelSvc(currentView.getDataToSave())
                 .then(function success(jsonModel) {
                     currentView.saveSuccess(jsonModel);
@@ -5338,8 +5942,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Actions on save error
         saveError: function saveErrorConsultEdit(errors) {
-
-            ErrorHelper.manageResponseErrors(errors, {
+            errorHelper.manageResponseErrors(errors, {
                 model: this.model
             });
         },
@@ -5381,7 +5984,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         //Contains all the business validation promises.
-        businessValidationPromises: function () {
+        businessValidationPromises: function() {
             //Return an array of  promises
             return [];
         },
@@ -5412,6 +6015,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             event.preventDefault();
             var view = this;
             //call delete service
+            if (!this.deleteModelSvc) {
+                throw new ArgumentNullException('The deleteModelSvc should be a service which returns a promise, it is undefined here.', this);
+            }
             this.deleteModelSvc(this.model)
                 .then(function success(successResponse) {
                     view.deleteSuccess(successResponse);
@@ -5444,7 +6050,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         // Actions after a delete error. 
         deleteError: function deleteConsultEditError(errorResponse) {
-            ErrorHelper.manageResponseErrors(errorResponse, {
+            errorHelper.manageResponseErrors(errorResponse, {
                 isDisplay: true
             });
             this.resetLoadingButton();
@@ -5536,8 +6142,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = CollectionPaginationView;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/*global  $, window, _, Promise*/
-(function (NS) {
+/*global  $, window, _, Promise*/
+(function(NS) {
     "use strict";
     // Filename: views/list-view.js
     NS = NS || {};
@@ -5623,7 +6229,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
 
         //Register many views by calling each time the registerViews.
-        registerViews: function (viewsConfigurations) {
+        registerViews: function(viewsConfigurations) {
             //If the view is not an array.
             if (!_.isArray(viewsConfigurations)) {
                 throw new ArgumentInvalidException("viewconfigurations must be an array.", viewsConfigurations);
@@ -5644,7 +6250,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 delete this[viewName];
 
                 //Delete oit from the configuration.
-                this.viewsConfiguration = _.reject(this.viewsConfiguration, function (viewConf) {
+                this.viewsConfiguration = _.reject(this.viewsConfiguration, function(viewConf) {
                     return viewConf.name === viewName;
                 });
             }
@@ -5661,7 +6267,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         // Get the data to give to the template.
         getRenderData: function getRenderDataCompositeView() {
-            return _.extend({}, { listUrl: this.opts.listUrl }, this.additionalData());
+            return _.extend({}, {
+                listUrl: this.opts.listUrl
+            }, this.additionalData());
         },
 
         //Render function of the coposite view.
@@ -5681,6 +6289,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //this.delegateEvents();
             return this;
         },
+        /**
+         * Toggle the main view and each sub view into the edit/consult mode.
+         * @return {[type]} [description]
+         */
         toggleEditMode: function toggleEditModeCompositeView() {
             ConsultEditView.prototype.toggleEditMode.apply(this);
             //Render each view inside the configuration.
@@ -5690,7 +6302,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 this[vConf.name].toggleEditMode();
             }
         },
-        bindToModel: function(){
+        /**
+         * Bind the form to the model [model or collection].
+         * @return {undefined}
+         */
+        bindToModel: function bindToModelCompositeView() {
             var compoView = this;
             for (var i = 0, l = compoView.viewsConfiguration.length; i < l; i++) {
                 var viewConf = compoView.viewsConfiguration[i];
@@ -5698,7 +6314,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
             this.model.set(this.buildJSONToSave());
         },
-        //Submit the compoosite view.
+        /**
+         * Save action on the composite view.
+         * @param  {event} - jQuery event of the action.
+         * @return {undefined}
+         */
         save: function saveCompositeView(event) {
             event.preventDefault();
             var compoView = this;
@@ -5712,13 +6332,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     promisesValidationContainer.push(
                         //A promise is created in order to be resolve by the promise.all.
                         //Otherwise, the promise returned by the validation is already resolve when the promise.all is treated.
-                        new Promise(function (resolve, failure) {
+                        new Promise(function(resolve, failure) {
                             ModelValidator.validate(compoView[vConf.name].model).then(
-                                function (success) {
+                                function(success) {
                                     resolve(success);
                                 },
-                                function (errors) {
-                                    errorHelper.setModelErrors(compoView[vConf.name].model, { fieldErrors: errors });
+                                function(errors) {
+                                    errorHelper.setModelErrors(compoView[vConf.name].model, {
+                                        fieldErrors: errors
+                                    });
                                     failure(errors);
                                 }
                             );
@@ -5733,12 +6355,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     //Push promises inside the container.
                     promisesValidationContainer.push(
                         //Same reason as for the model.
-                        new Promise(function (resolve, failure) {
+                        new Promise(function(resolve, failure) {
                             ModelValidator.validateAll(compoView[vConf.name].model).then(
-                                function (success) {
+                                function(success) {
                                     resolve(success);
                                 },
-                                function (errors) {
+                                function(errors) {
                                     errorHelper.setCollectionErrors(compoView[vConf.name].model, errors);
                                     failure(errors);
                                 }
@@ -5752,25 +6374,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 var viewConf = compoView.viewsConfiguration[i];
                 buildPromisesFromViewConfiguration(viewConf);
             }
-            var promisesContainer = _.union(promisesValidationContainer, compoView.businessValidationPromises())
+            var promisesContainer = _.union(promisesValidationContainer, compoView.businessValidationPromises());
             //Resolve all validation promise inside the page.
-            Promise.all(promisesContainer).then(function (success) {
-                compoView.saveAction();
-            }, function (error) {
-                //console.error(error);
-                compoView.resetSaveButton();
-            });
+            Promise.all(promisesContainer)
+                .then(function(success) {
+                    compoView.saveAction();
+                }, function(error) {
+                    //console.error(error);
+                    compoView.resetSaveButton();
+                });
         },
         //Method called when the validation is done and ok.
         saveAction: function saveActionCompositeView() {
             var currentView = this;
             this.saveModelSvc(this.buildJSONToSave()).then(
-            function successSaveCompostiteView(success) {
-                currentView.saveSuccess(success);
-            },
-            function errorSaveCompositeView(responseError) {
-                currentView.saveError(responseError);
-            }).then(this.resetSaveButton.bind(this));
+                function successSaveCompostiteView(success) {
+                    currentView.saveSuccess(success);
+                },
+                function errorSaveCompositeView(responseError) {
+                    currentView.saveError(responseError);
+                }).then(this.resetSaveButton.bind(this));
         },
         //Cancel the edition.
         cancelEdition: function cancelEditionCompositeView() {
@@ -5778,8 +6401,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
             if (this.isCreateMode()) {
                 ConsultEditView.prototype.cancelEdition.call(this);
-            }
-            else {
+            } else {
                 ConsultEditView.prototype.toggleEditMode.apply(this);
 
                 //Render each view inside the configuration.
@@ -5789,7 +6411,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     this[vConf.name].cancelEdition();
                 }
             }
-            
         },
         //After the loadin of the global model datas, dispatch it into the model and collections of each view.
         //todo: Test.
@@ -5804,7 +6425,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         //Build the json from differents models.
-        buildJSONToSave: function () {
+        buildJSONToSave: function() {
             var json = {};
             for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
                 var vConf = this.viewsConfiguration[i];
@@ -5825,225 +6446,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     } else {
         module.exports = CompositeView;
     }
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global window, Backbone, $*/
-"use strict";
-(function(NS) {
-	//Filename: views/detail-consult-view.js
-	NS = NS || {};
-	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
-	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
-	var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
-	var DetailConsultView = CoreView.extend({
-		tagName: 'div',
-		className: 'consultView',
-		getModel: undefined,
-		deleteModel: undefined,
-
-		initialize: function initializeConsult() {
-			console.warn('######## THIS VIEW  is deprecated.#####');
-			console.warn('######## Use consult-edit view.#####');
-			CoreView.prototype.initialize.call(this);
-			//render view when the model is loaded
-			this.model.on('change', this.render, this);
-			if (this.model.has('id')) {
-				var view = this;
-				this.getModel(this.model.get('id'))
-					.then(function success(jsonModel) {
-						view.model.set(jsonModel);
-					}).then(null, function error(errorResponse) {
-						//todo: call the error_helper.
-						console.log('Detail consult view initialize : ' + errorResponse);
-					});
-			}
-		},
-
-		events: {
-			"click button#btnEdit": "edit",
-			"click button#btnDelete": "deleteItem",
-			"click .panel-heading": "toogleCollapse"
-		},
-
-		//JSON data to attach to the template.
-		getRenderData: function getRenderDataConsult() {
-			throw new NotImplementedException('getRenderData');
-		},
-
-		//genarate navigation url.
-		generateEditUrl: function generateEditUrl() {
-			return this.model.modelName + "/edit/" + this.model.get('id');
-		},
-
-		edit: function editVm(event) {
-			event.preventDefault();
-			Backbone.history.navigate(this.generateEditUrl(), true);
-		},
-
-		deleteItem: function deleteConsult(event) {
-			event.preventDefault();
-			var view = this;
-			//call suppression service
-			this.deleteModel()
-				.then(function success(successResponse) {
-					view.deleteSuccess(successResponse);
-				}, function error(errorResponse) {
-					view.deleteError(errorResponse);
-				});
-		},
-
-		//Generate delete navigation url.
-		generateDeleteUrl: function generateDeleteUrl() {
-			return "/";
-		},
-
-		// Actions after a delete success.
-		deleteSuccess: function deleteConsultSuccess(response) {
-			//remove the view from the DOM
-			this.remove();
-			//navigate to next page
-			Backbone.history.navigate(this.generateDeleteUrl(), true);
-		},
-
-		// Actions after a delete error. 
-		deleteError: function deleteConsultError(errorResponse) {
-			ErrorHelper.manageResponseErrors(errorResponse, {
-				isDisplay: true
-			});
-		},
-
-		render: function renderVirtualMachine() {
-			var jsonModel = this.getRenderData();
-			this.$el.html(this.template(jsonModel));
-			return this;
-		},
-		afterRender: function postRenderDetailView() {
-			CoreView.prototype.afterRender.call(this);
-			$('.collapse', this.$el).collapse('show');
-		}
-	});
-
-
-	// Differenciating export for node or browser.
-	if (isInBrowser) {
-		NS.Views = NS.Views || {};
-		NS.Views.DetailConsultView = DetailConsultView;
-	} else {
-		module.exports = DetailConsultView;
-	}
-})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-/*global Backbone, $, i18n, window*/
-(function(NS) {
-	//Filename: views/detail-edit-view.js
-	NS = NS || {};
-	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-	var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
-	var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
-	var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
-	var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-	var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
-	var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
-
-	var DetailEditView = CoreView.extend({
-		tagName: 'div',
-		className: 'editView',
-		saveModel: undefined, //VmSvc.save
-		getModel: undefined, //VmSvc.get
-
-		initialize: function initializeEdit(options) {
-			console.warn('######## THIS VIEW  is deprecated.#####');
-			options = options || {};
-			CoreView.prototype.initialize.call(this, options);
-			this.model.on('change', this.render, this);
-			this.listenTo(this.model, 'validated:valid', this.modelValid);
-			this.listenTo(this.model, 'validated:invalid', this.modelInValid);
-			if (this.model.has('id')) {
-				var view = this;
-				this.getModel(this.model.get('id'))
-					.then(function success(jsonModel) {
-						view.model.set(jsonModel);
-					});
-			}
-		},
-
-		events: {
-			"click button[type='submit']": "save",
-			"click button#btnCancel": "cancelEdition"
-		},
-
-		//JSON data to attach to the template.
-		getRenderData: function getRenderDataEdit() {
-			throw new NotImplementedException('getRenderData');
-		},
-
-		//Get the json data to be save by the view.
-		getDataToSave: function getDataToSaveDetailEdit() {
-			return this.model.toJSON();
-		},
-		save: function saveEdit(event) {
-			event.preventDefault();
-			form_helper.formModelBinder({
-				inputs: $('input', this.$el)
-			}, this.model);
-
-			var currentView = this;
-			ModelValidator.validate(currentView.model)
-				.then(function() {
-					currentView.model.unsetErrors();
-					currentView.saveModel(currentView.getDataToSave())
-						.then(function success(jsonModel) {
-							currentView.saveSuccess(jsonModel);
-						}).then(null, function error(responseError) {
-							currentView.saveError(responseError);
-						});
-				}).then(null, function error(errors) {
-					currentView.model.setErrors(errors);
-				});
-		},
-
-		//Actions on save success.
-		saveSuccess: function saveSuccess(jsonModel) {
-			Backbone.Notification.addNotification({
-				type: 'success',
-				message: i18n.t('virtualMachine.save.' + (jsonModel.isCreate ? 'create' : 'update') + 'success')
-			});
-			var url = this.generateNavigationUrl();
-			Backbone.history.navigate(url, true);
-		},
-
-		//Actions on save error
-		saveError: function saveError(errors) {
-			ErrorHelper.manageResponseErrors(errors, {
-				model: this.model
-			});
-		},
-
-		generateNavigationUrl: function generateNavigationUrl() {
-			if (this.model.get('id') === null || this.model.get('id') === undefined) {
-				return "/";
-			}
-			return _url.generateUrl([this.model.modelName, this.model.get("id")], {});
-		},
-
-		cancelEdition: function cancelEdition() {
-			var url = this.generateNavigationUrl();
-			Backbone.Notification.clearNotifications();
-			Backbone.history.navigate(url, true);
-		},
-
-		render: function renderEdit() {
-			var jsonModel = this.getRenderData();
-			this.$el.html(this.template(jsonModel));
-			return this;
-		}
-	});
-
-	if (isInBrowser) {
-		NS.Views = NS.Views || {};
-		NS.Views.DetailEditView = DetailEditView;
-	} else {
-		module.exports = DetailEditView;
-	}
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /* global Backbone, window*/
 (function(NS) {
@@ -6248,36 +6650,69 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     module.exports = headerView;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/*global Backbone, i18n, $, window, _*/
+/*global Backbone, i18n, $, window, _*/
 (function (NS) {
     "use strict";
     // Filename: views/list-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+    //Dependencies.
     var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
-    var templatePagination = function () { }; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
+    var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
+    var templatePagination = function () { throw new  NotImplementedException('templatePagination');};
     var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require('./consult-edit-view');
     var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("../helpers/custom_exception").ArgumentInvalidException;
+    
+    /**
+     * View which represents a list.
+     * @module views/list-view
+     */
     var ListView = ConsultEditView.extend({
+        //Dom element initialization.
         tagName: 'div',
-        className: 'resultView',
+        //css class name in the view.
+        className: 'listView',
         resultsPagination: 'div#pagination',
         templatePagination: templatePagination,
         search: undefined,
-        //By default the search criteria is empty.
-        searchCriteria: {},
+        
         //Get the 
         getCriteria: function getCriteria() {
             return _.extend({}, this.searchCriteria, this.opts.searchCriteria);
         },
         //Default options of the list view.
         defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
+            /**
+             * Export url.
+             * @type {String}
+             */
             exportUrl: './Export/Index', //Change it if necessary.,
+            /**
+             * By default the "model" is concidered loaded, pass it as false if you want to load you model alone.
+             * This option is use in isReady function to display the spinner.
+             *  @type {Boolean}
+             */
             isReadyModelData: true,
-            isListeningToModelChange: false
+            /**
+             * True if you want your view to listen to the model changes.
+             * @type {Boolean}
+             */
+            isListeningToModelChange: false,
+            /**
+             * Type ot the model can be model or collection.
+             * @type {String}
+             */
+            modelType: "collection",
+            /**
+             * Options to deal with the pagination.
+             * @type {Object}
+             */
+            pagination: {
+                template: templatePagination,
+                selector: 'div#pagination'
+            }
         }),
         //Dervice to define in order to launch the export.
         exportSvc: undefined,
@@ -6322,6 +6757,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //Container for the views of each line in case it is usefull.
             this.lineViewsContainer = {};
             ConsultEditView.prototype.initialize.call(this, options);
+            //By default the search criteria is empty.
+            this.searchCriteria = this.opts.searchCriteria || this.searchCriteria;
             this.isSearchTriggered = options.isSearchTriggered || false;
             this.listenTo(this.model, "reset", this.render, this);
             // Listen to the model add event.
@@ -6369,21 +6806,38 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 });
             }
         },
+        /**
+         * Events handled by the view by default.
+         * @type {Object}
+         */
         events: {
+            //select an element in a list in the table case.
             'click tbody td[data-selection]': 'lineSelection',
+            //select an element in a list in the ul case.
             'click ul li [data-selection]': 'lineSelection',
+            //handle the pagination click.
             'click .pagination li': 'goToPage',
+            //Handle the sort-column click.
             'click a.sortColumn': 'sortCollection',
+            //Handle the collapse click on a panel headind.
             "click .panel-heading": "toogleCollapse",
+            //Handle the button-back click.
             'click #btnBack': 'navigateBack',
+            //Handle the change filter of the page event.
             "change .pageFilter": "changePageFilter",
             //Edition events
             "click button.btnEdit": "edit",
+            //Hanle the create button.
             "click button.btnCreate": "create",
+            //Handle the form submission for the save.
             "click button[type='submit']": "save",
+            //Click on the cancel button.
             "click button.btnCancel": "cancelEdition",
+            //Click on the export button.
             "click button.btnExport": 'export',
+            //Click on the back button.
             "click button.btnBack": "back",
+            //Click on a data-loading button.
             "click button[data-loading]": "loadLoadingButton"
         },
         changePageFilter: function changePageFilterListView(event) {
@@ -6526,7 +6980,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 exportUrl: this.opts.exportUrl + '/' + this.exportId
             }, _.pick(this.model, this.referenceNames, "modelName", "metadatas"), { isEdit: this.isEdit }, this.additionalData())));
 
-            //Conditionnal code for rendering a line foreachView
+            //Conditionnal code for rendering a View  foreach line
             if (this.viewForEachLineConfiguration.isActive) {
                 this.model.forEach(this.addOne, this);
             }
@@ -6561,6 +7015,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = ListView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+
 /*global   $, window,_*/
 (function (NS) {
     "use strict";
@@ -7015,7 +7470,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         module.exports = SearchView;
     }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-﻿/* global  _ , window, Promise,$, Backbone, i18n */
+/* global  _ , window, Promise,$, Backbone, i18n */
 /**
  * @module helpers/message_helper
  * @description Message helper to deal wit confirm, alert, ...
