@@ -50,3 +50,7 @@ You can look at the [focus-starter-kit](https://github.com/KleeGroup/focus-start
 - Promises with [Bluebird](https://github.com/petkaantonov/bluebird)
 
 ## [Contributors](https://github.com/KleeGroup/focus/graphs/contributors)
+
+## Todo
+- [] Change the way the view are build => Split them into files. common/ detail/ 
+- [] Split the view helpers.
