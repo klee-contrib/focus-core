@@ -6,13 +6,12 @@
 
     //Dependencies.
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
     var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
     var urlHelper = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
     var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
     var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
@@ -177,6 +176,14 @@
             var isBackboneModel = utilHelper.isBackboneModel(this.model);
             return this.opts.isCreateMode || (isBackboneModel && this.opts.isModelToLoad && this.model.get('isNewModel'));
         },
+        /**
+         * Get the object to serve to the getModelSvc.
+         * @param  {string} id - Identifier of the model.
+         * @return {string | object}- The criteria to give to the load service.
+         */
+        getLoadCriteria: function getLoadCriteria(id) {
+            return id || this.model.get('id');
+        },
         //This function is use in order to retrieve the data from the api using a service.
         /**
          * Load the model from the gerModelSvc function which should be a Promise.
@@ -184,23 +191,23 @@
          * @return {undefined}
          */
         loadModelData: function loadModelData(id) {
-            var view = this;
-            var idValue = id || this.model.get('id');
             if (!this.getModelSvc) {
                 throw new ArgumentNullException('The getModelSvc should be a service which returns a promise, it is undefined here.', this);
             }
-            this.getModelSvc(idValue)
-                .then(function success(jsonModel) {
+            var view = this;
+            var loadCriteria = this.getLoadCriteria();
+            this.getModelSvc(loadCriteria)
+                .then(function successLoadModel(jsonModel) {
                     view.opts.isReadyModelData = true;
                     if (jsonModel === undefined) {
                         //manually trigger the change event in the case of empty object returned.
                         view.model.trigger('change');
                     } else {
-                        view.model.set(jsonModel);//change and change:property
+                        view.model.set(jsonModel); //change and change:property
                     }
 
-                }).then(null, function error(errorResponse) {
-                    ErrorHelper.manageResponseErrors(errorResponse, {
+                }, function errorLoadModel(errorResponse) {
+                    errorHelper.manageResponseErrors(errorResponse, {
                         model: view.model
                     });
                 });
@@ -216,7 +223,7 @@
                         view.model.set(jsonModel);
                         //view.model.savePrevious();
                     }).then(null, function error(errorResponse) {
-                        ErrorHelper.manageResponseErrors(errorResponse, {
+                        errorHelper.manageResponseErrors(errorResponse, {
                             model: view.model
                         });
                     });
@@ -241,16 +248,25 @@
             "click button[data-loading]": "loadLoadingButton"
         },
 
-        //JSON data to attach to the template.
+        /**
+         * This function represents the data given to to template on the rendering.
+         * @return {object} The json to give to the template.
+         */
         getRenderData: function getRenderDataConsultEdit() {
+
             var jsonToRender = this.model.toJSON();
+
             //Add the reference lists names to the json.
-            if(this.referenceNames){
+            if (this.referenceNames) {
                 _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
             }
-            if (this.opts.listUrl){
+            //If there is a listUrl it is added to the 
+            if (this.opts.listUrl) {
                 jsonToRender.listUrl = this.opts.listUrl;
             }
+            //Add the additionalData to the rendering of the template.
+            _.extend(jsonToRender, this.additionalData());
+
             return jsonToRender;
         },
 
@@ -322,7 +338,8 @@
                 });
         },
         resetSaveButton: function resetSaveButton() {
-            $('button[type="submit"]', this.$el).button('reset');
+            this.changeButtonState('button[type="submit"]', 'reset');
+            //$('button[type="submit"]', this.$el).button('reset');
         },
         resetLoadingButton: function resetLoadingButton() {
             $('button[data-loading]', this.$el).button('reset');
@@ -330,6 +347,10 @@
         loadLoadingButton: function loadLoadingButton(event) {
             $(event.target).closest('button[data-loading]').button('loading');
         },
+        /**
+         * Bind the html to the backbone model or collection..
+         * @return {[type]} [description]
+         */
         bindToModel: function bindToModelConsultEdit() {
             var formSelector = this.opts.formSelector || "";
             if (utilHelper.isBackboneModel(this.model)) {
@@ -358,7 +379,6 @@
         //Save method in case of a model.
         saveModel: function saveBackboneModel() {
             this.bindToModel();
-
             //Bind the this to the current view for the
             var currentView = this;
             //Todo: Add a method in util in order to know if an object is a collectio or a model.
@@ -385,7 +405,7 @@
             if (!currentView.saveModelSvc) {
                 throw new ArgumentNullException("'The saveModeSvc should be a service which returns a promise, it is undefined here.");
             }
-            //Call the service in order to save the model.                   
+            //Call the service in order to save the model.
             return currentView.saveModelSvc(currentView.getDataToSave())
                 .then(function success(jsonModel) {
                     currentView.saveSuccess(jsonModel);
@@ -396,8 +416,7 @@
         },
         //Actions on save error
         saveError: function saveErrorConsultEdit(errors) {
-
-            ErrorHelper.manageResponseErrors(errors, {
+            errorHelper.manageResponseErrors(errors, {
                 model: this.model
             });
         },
@@ -505,7 +524,7 @@
 
         // Actions after a delete error. 
         deleteError: function deleteConsultEditError(errorResponse) {
-            ErrorHelper.manageResponseErrors(errorResponse, {
+            errorHelper.manageResponseErrors(errorResponse, {
                 isDisplay: true
             });
             this.resetLoadingButton();

@@ -10,7 +10,6 @@
     var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
     var Model = isInBrowser ? NS.Models.Model : require("../models/model");
     var PaginatedCollection = isInBrowser ? NS.Models.PaginatedCollection : require("../models/paginatedCollection");
-    var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
     var sessionHelper = isInBrowser ? NS.Helpers.sessionHelper : require('../helpers/session_helper');
     var templateSpinner = isInBrowser ? NS.templates.spinner : function() {
         return "Template spinner to define...";
@@ -53,6 +52,9 @@
             this.render = _.wrap(this.render, function(render, options) {
                 //If the view is ready perform the standard render.
                 if (_this.isReady()) {
+                    if (_this.opts.DEBUG) {
+                        _this.debug();
+                    }
                     render(options);
                     _this.afterRender();
                 } else {
@@ -162,6 +164,19 @@
             $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
             $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
         },
+        /**
+         * Debug the core View. Display whatever you need in the console on render.
+         * @return {undefined}
+         */
+        debug: function debugCoreView() {
+            console.log("--------------CORE VIEW-----------------");
+            console.log("View:     ", this);
+            console.log("Model:    ", this.model);
+            if (this.template) {
+                console.log("Template: ", this.template(this.getRenderData()));
+            }
+            console.log("----------------------------------------");
+        },
         //Render function  by default call the getRenderData and inject it into the view dom element.
         render: function renderCoreView() {
             //If the view is not ready.
@@ -211,6 +226,15 @@
         renderSpinner: function renderSpinner() {
             this.$el.html(this.templateSpinner(this.getRenderData()));
             return this;
+        },
+        /**
+         * Change the button state (loading, reset) ...
+         * @param  {string} selector - CSS selector for the button.
+         * @param  {string} state    - The new state you want for the button.
+         * @return {undefined}
+         */
+        changeButtonState: function changeButtonState(selector, state) {
+            $(selector, this.$el).button(state);
         }
     });
 

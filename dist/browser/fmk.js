@@ -1,5 +1,5 @@
-/* name: focus , version: 0.1.5 description: Simple framework for backbone applications.*/ 
- (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.5';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/* name: focus , version: 0.1.9 description: Klee group framework for SinglePageApplication.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.9';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 /*global window, _*/
 (function initialization(container) {
   var fmk = container.Fmk || {};
@@ -437,10 +437,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 //Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
-/* global window, Promise, Backbone, i18n*/
+/* global window, Promise*/
 (function(NS) {
   "use strict";
-  //Filename: helpers/router.js
+  //Filename: helpers/session_helper.js
   NS = NS || {};
   //Dependency gestion depending on the fact that we are in the browser or in node.
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -4146,7 +4146,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       i18n_key = this[i18n_key];
     }
     params = opt.params != null ? opt.params.split(',') : void 0;
-    console.log(opt.params, _.pick.apply(this, params));
     params = params != null ? _.pick.apply(this, params) : void 0;
     result = i18n.t("" + prefix + i18n_key + suffix, params);
     if ((maxLength != null) && maxLength < result.length) {
@@ -5284,7 +5283,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
     var Model = isInBrowser ? NS.Models.Model : require("../models/model");
     var PaginatedCollection = isInBrowser ? NS.Models.PaginatedCollection : require("../models/paginatedCollection");
-    var UtilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/util_helper');
     var sessionHelper = isInBrowser ? NS.Helpers.sessionHelper : require('../helpers/session_helper');
     var templateSpinner = isInBrowser ? NS.templates.spinner : function() {
         return "Template spinner to define...";
@@ -5327,6 +5325,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             this.render = _.wrap(this.render, function(render, options) {
                 //If the view is ready perform the standard render.
                 if (_this.isReady()) {
+                    if (_this.opts.DEBUG) {
+                        _this.debug();
+                    }
                     render(options);
                     _this.afterRender();
                 } else {
@@ -5436,6 +5437,19 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
             $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
         },
+        /**
+         * Debug the core View. Display whatever you need in the console on render.
+         * @return {undefined}
+         */
+        debug: function debugCoreView() {
+            console.log("--------------CORE VIEW-----------------");
+            console.log("View:     ", this);
+            console.log("Model:    ", this.model);
+            if (this.template) {
+                console.log("Template: ", this.template(this.getRenderData()));
+            }
+            console.log("----------------------------------------");
+        },
         //Render function  by default call the getRenderData and inject it into the view dom element.
         render: function renderCoreView() {
             //If the view is not ready.
@@ -5485,6 +5499,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         renderSpinner: function renderSpinner() {
             this.$el.html(this.templateSpinner(this.getRenderData()));
             return this;
+        },
+        /**
+         * Change the button state (loading, reset) ...
+         * @param  {string} selector - CSS selector for the button.
+         * @param  {string} state    - The new state you want for the button.
+         * @return {undefined}
+         */
+        changeButtonState: function changeButtonState(selector, state) {
+            $(selector, this.$el).button(state);
         }
     });
 
@@ -5509,13 +5532,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
     //Dependencies.
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    var ErrorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
+    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var CoreView = isInBrowser ? NS.Views.CoreView : require('./core-view');
     var form_helper = isInBrowser ? NS.Helpers.formHelper : require('../helpers/form_helper');
     var urlHelper = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     var ModelValidator = isInBrowser ? NS.Helpers.modelValidationPromise : require('../helpers/modelValidationPromise');
-    var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var backboneNotification = isInBrowser ? NS.Helpers.backboneNotification : require("../helpers/backbone_notification");
     var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
     var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("../helpers/custom_exception").ArgumentNullException;
@@ -5680,6 +5702,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             var isBackboneModel = utilHelper.isBackboneModel(this.model);
             return this.opts.isCreateMode || (isBackboneModel && this.opts.isModelToLoad && this.model.get('isNewModel'));
         },
+        /**
+         * Get the object to serve to the getModelSvc.
+         * @param  {string} id - Identifier of the model.
+         * @return {string | object}- The criteria to give to the load service.
+         */
+        getLoadCriteria: function getLoadCriteria(id) {
+            return id || this.model.get('id');
+        },
         //This function is use in order to retrieve the data from the api using a service.
         /**
          * Load the model from the gerModelSvc function which should be a Promise.
@@ -5687,23 +5717,23 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
          * @return {undefined}
          */
         loadModelData: function loadModelData(id) {
-            var view = this;
-            var idValue = id || this.model.get('id');
             if (!this.getModelSvc) {
                 throw new ArgumentNullException('The getModelSvc should be a service which returns a promise, it is undefined here.', this);
             }
-            this.getModelSvc(idValue)
-                .then(function success(jsonModel) {
+            var view = this;
+            var loadCriteria = this.getLoadCriteria();
+            this.getModelSvc(loadCriteria)
+                .then(function successLoadModel(jsonModel) {
                     view.opts.isReadyModelData = true;
                     if (jsonModel === undefined) {
                         //manually trigger the change event in the case of empty object returned.
                         view.model.trigger('change');
                     } else {
-                        view.model.set(jsonModel);//change and change:property
+                        view.model.set(jsonModel); //change and change:property
                     }
 
-                }).then(null, function error(errorResponse) {
-                    ErrorHelper.manageResponseErrors(errorResponse, {
+                }, function errorLoadModel(errorResponse) {
+                    errorHelper.manageResponseErrors(errorResponse, {
                         model: view.model
                     });
                 });
@@ -5719,7 +5749,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         view.model.set(jsonModel);
                         //view.model.savePrevious();
                     }).then(null, function error(errorResponse) {
-                        ErrorHelper.manageResponseErrors(errorResponse, {
+                        errorHelper.manageResponseErrors(errorResponse, {
                             model: view.model
                         });
                     });
@@ -5744,16 +5774,25 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             "click button[data-loading]": "loadLoadingButton"
         },
 
-        //JSON data to attach to the template.
+        /**
+         * This function represents the data given to to template on the rendering.
+         * @return {object} The json to give to the template.
+         */
         getRenderData: function getRenderDataConsultEdit() {
+
             var jsonToRender = this.model.toJSON();
+
             //Add the reference lists names to the json.
-            if(this.referenceNames){
+            if (this.referenceNames) {
                 _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
             }
-            if (this.opts.listUrl){
+            //If there is a listUrl it is added to the 
+            if (this.opts.listUrl) {
                 jsonToRender.listUrl = this.opts.listUrl;
             }
+            //Add the additionalData to the rendering of the template.
+            _.extend(jsonToRender, this.additionalData());
+
             return jsonToRender;
         },
 
@@ -5825,7 +5864,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 });
         },
         resetSaveButton: function resetSaveButton() {
-            $('button[type="submit"]', this.$el).button('reset');
+            this.changeButtonState('button[type="submit"]', 'reset');
+            //$('button[type="submit"]', this.$el).button('reset');
         },
         resetLoadingButton: function resetLoadingButton() {
             $('button[data-loading]', this.$el).button('reset');
@@ -5833,6 +5873,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         loadLoadingButton: function loadLoadingButton(event) {
             $(event.target).closest('button[data-loading]').button('loading');
         },
+        /**
+         * Bind the html to the backbone model or collection..
+         * @return {[type]} [description]
+         */
         bindToModel: function bindToModelConsultEdit() {
             var formSelector = this.opts.formSelector || "";
             if (utilHelper.isBackboneModel(this.model)) {
@@ -5861,7 +5905,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //Save method in case of a model.
         saveModel: function saveBackboneModel() {
             this.bindToModel();
-
             //Bind the this to the current view for the
             var currentView = this;
             //Todo: Add a method in util in order to know if an object is a collectio or a model.
@@ -5888,7 +5931,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (!currentView.saveModelSvc) {
                 throw new ArgumentNullException("'The saveModeSvc should be a service which returns a promise, it is undefined here.");
             }
-            //Call the service in order to save the model.                   
+            //Call the service in order to save the model.
             return currentView.saveModelSvc(currentView.getDataToSave())
                 .then(function success(jsonModel) {
                     currentView.saveSuccess(jsonModel);
@@ -5899,8 +5942,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //Actions on save error
         saveError: function saveErrorConsultEdit(errors) {
-
-            ErrorHelper.manageResponseErrors(errors, {
+            errorHelper.manageResponseErrors(errors, {
                 model: this.model
             });
         },
@@ -6008,7 +6050,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
         // Actions after a delete error. 
         deleteError: function deleteConsultEditError(errorResponse) {
-            ErrorHelper.manageResponseErrors(errorResponse, {
+            errorHelper.manageResponseErrors(errorResponse, {
                 isDisplay: true
             });
             this.resetLoadingButton();
@@ -6101,7 +6143,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 /*global  $, window, _, Promise*/
-(function (NS) {
+(function(NS) {
     "use strict";
     // Filename: views/list-view.js
     NS = NS || {};
@@ -6187,7 +6229,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
 
         //Register many views by calling each time the registerViews.
-        registerViews: function (viewsConfigurations) {
+        registerViews: function(viewsConfigurations) {
             //If the view is not an array.
             if (!_.isArray(viewsConfigurations)) {
                 throw new ArgumentInvalidException("viewconfigurations must be an array.", viewsConfigurations);
@@ -6208,7 +6250,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 delete this[viewName];
 
                 //Delete oit from the configuration.
-                this.viewsConfiguration = _.reject(this.viewsConfiguration, function (viewConf) {
+                this.viewsConfiguration = _.reject(this.viewsConfiguration, function(viewConf) {
                     return viewConf.name === viewName;
                 });
             }
@@ -6225,7 +6267,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         // Get the data to give to the template.
         getRenderData: function getRenderDataCompositeView() {
-            return _.extend({}, { listUrl: this.opts.listUrl }, this.additionalData());
+            return _.extend({}, {
+                listUrl: this.opts.listUrl
+            }, this.additionalData());
         },
 
         //Render function of the coposite view.
@@ -6245,6 +6289,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //this.delegateEvents();
             return this;
         },
+        /**
+         * Toggle the main view and each sub view into the edit/consult mode.
+         * @return {[type]} [description]
+         */
         toggleEditMode: function toggleEditModeCompositeView() {
             ConsultEditView.prototype.toggleEditMode.apply(this);
             //Render each view inside the configuration.
@@ -6254,7 +6302,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 this[vConf.name].toggleEditMode();
             }
         },
-        bindToModel: function(){
+        /**
+         * Bind the form to the model [model or collection].
+         * @return {undefined}
+         */
+        bindToModel: function bindToModelCompositeView() {
             var compoView = this;
             for (var i = 0, l = compoView.viewsConfiguration.length; i < l; i++) {
                 var viewConf = compoView.viewsConfiguration[i];
@@ -6262,7 +6314,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
             this.model.set(this.buildJSONToSave());
         },
-        //Submit the compoosite view.
+        /**
+         * Save action on the composite view.
+         * @param  {event} - jQuery event of the action.
+         * @return {undefined}
+         */
         save: function saveCompositeView(event) {
             event.preventDefault();
             var compoView = this;
@@ -6276,13 +6332,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     promisesValidationContainer.push(
                         //A promise is created in order to be resolve by the promise.all.
                         //Otherwise, the promise returned by the validation is already resolve when the promise.all is treated.
-                        new Promise(function (resolve, failure) {
+                        new Promise(function(resolve, failure) {
                             ModelValidator.validate(compoView[vConf.name].model).then(
-                                function (success) {
+                                function(success) {
                                     resolve(success);
                                 },
-                                function (errors) {
-                                    errorHelper.setModelErrors(compoView[vConf.name].model, { fieldErrors: errors });
+                                function(errors) {
+                                    errorHelper.setModelErrors(compoView[vConf.name].model, {
+                                        fieldErrors: errors
+                                    });
                                     failure(errors);
                                 }
                             );
@@ -6297,12 +6355,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     //Push promises inside the container.
                     promisesValidationContainer.push(
                         //Same reason as for the model.
-                        new Promise(function (resolve, failure) {
+                        new Promise(function(resolve, failure) {
                             ModelValidator.validateAll(compoView[vConf.name].model).then(
-                                function (success) {
+                                function(success) {
                                     resolve(success);
                                 },
-                                function (errors) {
+                                function(errors) {
                                     errorHelper.setCollectionErrors(compoView[vConf.name].model, errors);
                                     failure(errors);
                                 }
@@ -6316,25 +6374,26 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 var viewConf = compoView.viewsConfiguration[i];
                 buildPromisesFromViewConfiguration(viewConf);
             }
-            var promisesContainer = _.union(promisesValidationContainer, compoView.businessValidationPromises())
+            var promisesContainer = _.union(promisesValidationContainer, compoView.businessValidationPromises());
             //Resolve all validation promise inside the page.
-            Promise.all(promisesContainer).then(function (success) {
-                compoView.saveAction();
-            }, function (error) {
-                //console.error(error);
-                compoView.resetSaveButton();
-            });
+            Promise.all(promisesContainer)
+                .then(function(success) {
+                    compoView.saveAction();
+                }, function(error) {
+                    //console.error(error);
+                    compoView.resetSaveButton();
+                });
         },
         //Method called when the validation is done and ok.
         saveAction: function saveActionCompositeView() {
             var currentView = this;
             this.saveModelSvc(this.buildJSONToSave()).then(
-            function successSaveCompostiteView(success) {
-                currentView.saveSuccess(success);
-            },
-            function errorSaveCompositeView(responseError) {
-                currentView.saveError(responseError);
-            }).then(this.resetSaveButton.bind(this));
+                function successSaveCompostiteView(success) {
+                    currentView.saveSuccess(success);
+                },
+                function errorSaveCompositeView(responseError) {
+                    currentView.saveError(responseError);
+                }).then(this.resetSaveButton.bind(this));
         },
         //Cancel the edition.
         cancelEdition: function cancelEditionCompositeView() {
@@ -6342,8 +6401,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
             if (this.isCreateMode()) {
                 ConsultEditView.prototype.cancelEdition.call(this);
-            }
-            else {
+            } else {
                 ConsultEditView.prototype.toggleEditMode.apply(this);
 
                 //Render each view inside the configuration.
@@ -6353,7 +6411,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     this[vConf.name].cancelEdition();
                 }
             }
-            
         },
         //After the loadin of the global model datas, dispatch it into the model and collections of each view.
         //todo: Test.
@@ -6368,7 +6425,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             }
         },
         //Build the json from differents models.
-        buildJSONToSave: function () {
+        buildJSONToSave: function() {
             var json = {};
             for (var i = 0, l = this.viewsConfiguration.length; i < l; i++) {
                 var vConf = this.viewsConfiguration[i];
@@ -6599,31 +6656,63 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     // Filename: views/list-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
+    //Dependencies.
     var _url = isInBrowser ? NS.Helpers.urlHelper : require('../helpers/url_helper');
-    var templatePagination = function () { }; //Todo: call a handlebar herlper.//require('../templates/collection-pagination');
+    var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require("../helpers/custom_exception").NotImplementedException;
+    var templatePagination = function () { throw new  NotImplementedException('templatePagination');};
     var ConsultEditView = isInBrowser ? NS.Views.ConsultEditView : require('./consult-edit-view');
     var errorHelper = isInBrowser ? NS.Helpers.errorHelper : require('../helpers/error_helper');
     var utilHelper = isInBrowser ? NS.Helpers.utilHelper : require('../helpers/utilHelper');
     var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("../helpers/custom_exception").ArgumentInvalidException;
+    
+    /**
+     * View which represents a list.
+     * @module views/list-view
+     */
     var ListView = ConsultEditView.extend({
+        //Dom element initialization.
         tagName: 'div',
-        className: 'resultView',
+        //css class name in the view.
+        className: 'listView',
         resultsPagination: 'div#pagination',
         templatePagination: templatePagination,
         search: undefined,
-        //By default the search criteria is empty.
-        searchCriteria: {},
+        
         //Get the 
         getCriteria: function getCriteria() {
             return _.extend({}, this.searchCriteria, this.opts.searchCriteria);
         },
         //Default options of the list view.
         defaultOptions: _.extend({}, ConsultEditView.prototype.defaultOptions, {
+            /**
+             * Export url.
+             * @type {String}
+             */
             exportUrl: './Export/Index', //Change it if necessary.,
+            /**
+             * By default the "model" is concidered loaded, pass it as false if you want to load you model alone.
+             * This option is use in isReady function to display the spinner.
+             *  @type {Boolean}
+             */
             isReadyModelData: true,
+            /**
+             * True if you want your view to listen to the model changes.
+             * @type {Boolean}
+             */
             isListeningToModelChange: false,
-            modelType: "collection"
+            /**
+             * Type ot the model can be model or collection.
+             * @type {String}
+             */
+            modelType: "collection",
+            /**
+             * Options to deal with the pagination.
+             * @type {Object}
+             */
+            pagination: {
+                template: templatePagination,
+                selector: 'div#pagination'
+            }
         }),
         //Dervice to define in order to launch the export.
         exportSvc: undefined,
@@ -6668,6 +6757,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             //Container for the views of each line in case it is usefull.
             this.lineViewsContainer = {};
             ConsultEditView.prototype.initialize.call(this, options);
+            //By default the search criteria is empty.
+            this.searchCriteria = this.opts.searchCriteria || this.searchCriteria;
             this.isSearchTriggered = options.isSearchTriggered || false;
             this.listenTo(this.model, "reset", this.render, this);
             // Listen to the model add event.
@@ -6715,21 +6806,38 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 });
             }
         },
+        /**
+         * Events handled by the view by default.
+         * @type {Object}
+         */
         events: {
+            //select an element in a list in the table case.
             'click tbody td[data-selection]': 'lineSelection',
+            //select an element in a list in the ul case.
             'click ul li [data-selection]': 'lineSelection',
+            //handle the pagination click.
             'click .pagination li': 'goToPage',
+            //Handle the sort-column click.
             'click a.sortColumn': 'sortCollection',
+            //Handle the collapse click on a panel headind.
             "click .panel-heading": "toogleCollapse",
+            //Handle the button-back click.
             'click #btnBack': 'navigateBack',
+            //Handle the change filter of the page event.
             "change .pageFilter": "changePageFilter",
             //Edition events
             "click button.btnEdit": "edit",
+            //Hanle the create button.
             "click button.btnCreate": "create",
+            //Handle the form submission for the save.
             "click button[type='submit']": "save",
+            //Click on the cancel button.
             "click button.btnCancel": "cancelEdition",
+            //Click on the export button.
             "click button.btnExport": 'export',
+            //Click on the back button.
             "click button.btnBack": "back",
+            //Click on a data-loading button.
             "click button[data-loading]": "loadLoadingButton"
         },
         changePageFilter: function changePageFilterListView(event) {

@@ -16,7 +16,7 @@ Handlebars.registerHelper "t", (i18n_key, options) ->
   (i18n_key = this[i18n_key]) if opt.keyInContext is true
 
   params = if opt.params? then opt.params.split(',') else undefined
-  console.log(opt.params, _.pick.apply(@, params));
+  #console.log(opt.params, _.pick.apply(@, params));
   params = if params? then _.pick.apply(@, params) else undefined
   result = i18n.t("#{prefix}#{i18n_key}#{suffix}", params)
   if maxLength? and maxLength < result.length then result = "#{result.slice(0,+maxLength)}..."
