@@ -19,6 +19,9 @@
       @savePrevious()
       if(@isNew() and @defaultIfNew? )
         this.set(@defaultIfNew, { silent: true })
+    # Process all the models metadatas, save theminto the model.
+    processMetadatas: ->
+      this.metadats = metadaBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"))
     #Define a method in order to be able to quickly remove errors form the model.
     unsetErrors:(options) ->
       options = options or {}
