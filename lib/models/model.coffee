@@ -11,6 +11,7 @@
       options = options or {}
       super options
       @modelName = options.modelName if options.modelName?
+      @processMetadatas()
       if (this.has('id') and this.get('id') is 'new')
         this.unset('id', {silent: true})
         this.set('isNewModel', true, {silent: true})
@@ -21,7 +22,8 @@
         this.set(@defaultIfNew, { silent: true })
     # Process all the models metadatas, save theminto the model.
     processMetadatas: ->
-      this.metadats = metadaBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"))
+      this.metadatas = metadaBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"))
+      this.idAttribute = metadatas.idAttribute() # Set the id attribute depending ont the metadatas.
     #Define a method in order to be able to quickly remove errors form the model.
     unsetErrors:(options) ->
       options = options or {}
