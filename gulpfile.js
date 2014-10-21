@@ -29,6 +29,20 @@ gulp.task('lint', function() {
     .pipe(coffeelint.reporter());
 });
 
+/*********************
+Documentation generation using jsDoc
+***/
+// JS and coffee lint task
+gulp.task('jsdoc', function() {
+  var jsdoc = require('gulp-jsdoc');
+  var infos = require('./package.json');
+  var name = 'focus';
+  //Js linting.
+  gulp.src('./lib/*/*.js')
+    .pipe(jsdoc.parser(infos, name))
+    .pipe(jsdoc.generator('./jsDoc/'));
+});
+
 /**********************
   Building css files
 **********************/

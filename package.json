@@ -54,6 +54,7 @@
     "gulp-declare": "~0.3.0",
     "gulp-define-module": "~0.1.1",
     "gulp-if": "~1.2.4",
+    "gulp-jsdoc": "^0.1.4",
     "gulp-jshint": "~1.8.4",
     "gulp-util": "~3.0.1",
     "hapi": "^6.9.0",
