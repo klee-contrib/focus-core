@@ -1,6 +1,6 @@
 /*global Backbone, _, $, Promise, window*/
 "use strict";
-(function (NS) {
+(function(NS) {
     // Filename: views/search-view.js
     NS = NS || {};
     var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
@@ -40,29 +40,37 @@
             });
 
             //init results collection
+            if (!this.Results) {
+                throw new NotImplementedException('Your view should have a Reference to the result collection in the Results property', this);
+            }
+            if (!this.ResultsView) {
+                throw new NotImplementedException('Your view should have a Reference to the ResultsView in order to display the results', this);
+            }
             this.searchResults = new this.Results();
             //initialization of the result view 
             this.searchResultsView = new this.ResultsView({
                 model: this.searchResults,
                 criteria: this.model,
                 searchView: this,
-                isSearchTriggered : false
+                isSearchTriggered: false
             });
             //handle the clear criteria action
             this.listenTo(this.model, 'change', this.render);
-            this.listenTo(this.searchResultsView, 'results:fetchDemand', function () {
+            this.listenTo(this.searchResultsView, 'results:fetchDemand', function() {
                 this.runSearch(null, {
                     isFormBinded: false
                 });
             });
-            this.listenTo(this.searchResultsView, 'listview:lineSelected', function () {
+            this.listenTo(this.searchResultsView, 'listview:lineSelected', function() {
                 $('.collapse', this.$el).collapse('hide');
             });
             var currentView = this;
-            this.getSessionCriteria().then(function (crit) {
+            this.getSessionCriteria().then(function(crit) {
                 //Restore the criteria if save into the session.
                 if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
-                    currentView.model.set(crit.criteria, { silent: false });
+                    currentView.model.set(crit.criteria, {
+                        silent: false
+                    });
                     currentView.searchResults.setPageInfo(crit.pageInfo);
                     currentView.isSearchTriggered = true;
                 }
@@ -72,7 +80,7 @@
                         isFormBinded: false
                     });
                 }
-            }, function (error) {
+            }, function(error) {
                 errorHelper.manageResponseErrors(error);
             });
 
@@ -131,10 +139,15 @@
             });
         },
 
-        getCriteria: function () {
+        getCriteria: function() {
             return _.clone(_.omit(this.model.toJSON(), this.referenceNames));
         },
-
+        /**
+         * Run the search whent it is trigerred by the formaction or the session saved criteria.
+         * @param  {object} event   - jQuery event.
+         * @param  {object} options - Options for the running search.
+         * @return {undefined}
+         */
         runSearch: function runSearchSearchView(event, options) {
             var searchButton;
             var isEvent = event !== undefined && event !== null;
@@ -156,46 +169,49 @@
             this.searchResultsView.render();
             var currentView = this;
             ModelValidator
-				.validate(this.model)
-				.then(function (model) {
-				    currentView.model.unsetErrors({
-				        silent: false
-				    });
-				    var criteria = currentView.getCriteria();
-				    var pageInfo = currentView.searchResults.pageInfo();
+                .validate(this.model)
+                .then(function(model) {
+                    currentView.model.unsetErrors({
+                        silent: false
+                    });
+                    var criteria = currentView.getCriteria();
+                    var pageInfo = currentView.searchResults.pageInfo();
 
-				    if (isEvent) {
-				        pageInfo.currentPage = 1;
-				    }
-
-				    currentView.search(criteria, pageInfo)
-						.then(function success(jsonResponse) {
-						    //Save the criteria in session.
-						    currentView.searchResultsView.opts.isReadyResultsData = true;
-						    currentView.searchResultsView.isSearchTriggered = true;
-						    currentView.searchResults.setPageInfo(pageInfo);
-						    currentView.saveSessionCriteria({
-						        criteria: criteria,
-						        pageInfo: pageInfo
-						    }).then(function (s) {
-						        //console.log('criteria save in session', s);
-						        backboneNotification.clearNotifications();
-						        return currentView.searchSuccess(jsonResponse);
-						    });
-						}).then(null, function error(errorResponse) {
-						    currentView.searchResultsView.opts.isReadyResultsData = true;
-						    currentView.searchError(errorResponse);
-						}).then(function resetButton() {
-						    if (searchButton) {
-						        searchButton.button('reset');
-						    }
-						});
-				}).then(null, function error(errors) {
-				    currentView.model.setErrors(errors);
-				    if (searchButton) {
-				        searchButton.button('reset');
-				    }
-				});
+                    if (isEvent) {
+                        pageInfo.currentPage = 1;
+                    }
+                    if (!currentView.search) {
+                        throw new NotImplementedException('The search property of this view is not defined, the search cannot be launched.', this);
+                    }
+                    currentView
+                        .search(criteria, pageInfo)
+                        .then(function success(jsonResponse) {
+                            //Save the criteria in session.
+                            currentView.searchResultsView.opts.isReadyResultsData = true;
+                            currentView.searchResultsView.isSearchTriggered = true;
+                            currentView.searchResults.setPageInfo(pageInfo);
+                            currentView.saveSessionCriteria({
+                                criteria: criteria,
+                                pageInfo: pageInfo
+                            }).then(function(s) {
+                                //console.log('criteria save in session', s);
+                                backboneNotification.clearNotifications();
+                                return currentView.searchSuccess(jsonResponse);
+                            });
+                        }).then(null, function error(errorResponse) {
+                            currentView.searchResultsView.opts.isReadyResultsData = true;
+                            currentView.searchError(errorResponse);
+                        }).then(function resetButton() {
+                            if (searchButton) {
+                                searchButton.button('reset');
+                            }
+                        });
+                }).then(null, function error(errors) {
+                    currentView.model.setErrors(errors);
+                    if (searchButton) {
+                        searchButton.button('reset');
+                    }
+                });
 
             if (this.isReadOnly) {
                 this.model.set({
@@ -214,13 +230,17 @@
             }
             this.model.clear();
             for (field in unchanged) {
-                this.model.set(field, unchanged[field], { silent: true });
+                this.model.set(field, unchanged[field], {
+                    silent: true
+                });
             }
             this.saveSessionCriteria({}); // clear session criteria.
             this.initialize(); //Call initialize again in order to refresh the view with criteria lists.
         },
 
-        getUnchangedFields: function getUnchangedFields() { return [] },
+        getUnchangedFields: function getUnchangedFields() {
+            return []
+        },
 
         render: function renderSearch(options) {
             options = options || {};

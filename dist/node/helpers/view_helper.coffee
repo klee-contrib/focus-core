@@ -3,6 +3,7 @@
 # Get the domains definition as globals.
 metadaBuilder = Fmk.Helpers.metadataBuilder# require('./metadata_builder').metadataBuilder
 domains_definition = Fmk.Helpers.metadataBuilder.getDomains()
+logger = new Logger()
 
 Handlebars.registerHelper 'pick', (val, options) ->
   return options.hash[val]
@@ -39,7 +40,7 @@ Handlebars.registerHelper "display_for", (property, options) ->
   modelName = this.modelName or opt.modelName or {}
   container = _.extend(this, {modelName: modelName})
   metadata = if container.metadatas? and container.metadatas[property]? then container.metadatas[property] else {}#metadaBuilder.getMetadataForAttribute(container,property)
-  if not metadata.domain? then l.warn("There is no domain for your field named : #{property}", container)
+  if not metadata.domain? then logger.warn("There is no domain for your field named : #{property}", container)
   domain =  Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] or {}
   translationRoot = opt.translationRoot or undefined
   dataType = opt.dataType or domain.type or "text"
