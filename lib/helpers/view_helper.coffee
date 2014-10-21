@@ -3,7 +3,7 @@
 # Get the domains definition as globals.
 metadaBuilder = Fmk.Helpers.metadataBuilder# require('./metadata_builder').metadataBuilder
 domains_definition = Fmk.Helpers.metadataBuilder.getDomains()
-logger = window.l
+logger = new Logger()
 
 Handlebars.registerHelper 'pick', (val, options) ->
   return options.hash[val]
