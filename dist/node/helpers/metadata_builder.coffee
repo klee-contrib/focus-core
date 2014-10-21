@@ -83,6 +83,7 @@
           _.extend(overridenProperties, {decorator: mdlMetadata.decorator}) if mdlMetadata.decorator?
           _.extend(overridenProperties, {symbol: mdlMetadata.symbol}) if mdlMetadata.symbol?
           _.extend(overridenProperties, {decoratorOptions: mdlMetadata.decoratorOptions}) if mdlMetadata.decoratorOptions?
+          _.extend(overridenProperties, {idAttribute: mdlMetadata.idAttribute}) if mdlMetadata.idAttribute?
           # If at least one property has been defined.
           _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
         #Update the global metadatas<
@@ -121,6 +122,7 @@
         _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
       return metadata
     constructEntityMetaDatas: (model) ->
+      @metadatas = @metadatas || {} # If no metadatas have been defined.
       # TODO: pbn => Use a flatten function in order to flatten @metadatas and be ablt to access it without any problem.
       if model.modelName?
         mdName = model.modelName.split('.')

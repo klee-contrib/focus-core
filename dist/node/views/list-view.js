@@ -72,6 +72,7 @@
                     exportId: this.exportId,
                     exportColumnLabels: this.model.exportColumnLabels
                 })).then(function (success) {
+                    //Change this to a new form sumbit.
                     window.open($('a.btnExport', currentView.$el).attr('href'), '_blank');
                     //$('a.btnExport', this.$el).trigger('click');
                 }).then(null, function error(errorResponse) {

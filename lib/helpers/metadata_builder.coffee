@@ -122,6 +122,7 @@
         _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
       return metadata
     constructEntityMetaDatas: (model) ->
+      @metadatas = @metadatas || {} # If no metadatas have been defined.
       # TODO: pbn => Use a flatten function in order to flatten @metadatas and be ablt to access it without any problem.
       if model.modelName?
         mdName = model.modelName.split('.')

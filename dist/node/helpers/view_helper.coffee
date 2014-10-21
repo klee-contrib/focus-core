@@ -36,9 +36,10 @@ Handlebars.registerHelper "debug", (optionalValue) ->
 Handlebars.registerHelper "display_for", (property, options) ->
   options = options or {}
   opt = options.hash or {}
-  modelName = this.modelName or opt.modelName or undefined
+  modelName = this.modelName or opt.modelName or {}
   container = _.extend(this, {modelName: modelName})
-  metadata = metadaBuilder.getMetadataForAttribute(container,property)
+  metadata = if container.metadatas? and container.metadatas[property]? then container.metadatas[property] else {}#metadaBuilder.getMetadataForAttribute(container,property)
+  if not metadata.domain? then l.warn("There is no domain for your field named : #{property}", container)
   domain =  Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] or {}
   translationRoot = opt.translationRoot or undefined
   dataType = opt.dataType or domain.type or "text"

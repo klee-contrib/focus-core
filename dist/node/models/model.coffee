@@ -3,6 +3,7 @@
   # Filename: models/model.coffee
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
+  metadataBuilder = if isInBrowser then NS.Helpers.metadataBuilder else require("../helpers/metadata_builder")
   # Base class for all models. Define all transverses methods on the model.
   class Model extends Backbone.Model
     defaultIfNew: undefined
@@ -11,6 +12,7 @@
       options = options or {}
       super options
       @modelName = options.modelName if options.modelName?
+      @processMetadatas()
       if (this.has('id') and this.get('id') is 'new')
         this.unset('id', {silent: true})
         this.set('isNewModel', true, {silent: true})
@@ -19,6 +21,12 @@
       @savePrevious()
       if(@isNew() and @defaultIfNew? )
         this.set(@defaultIfNew, { silent: true })
+    # Process all the models metadatas, save theminto the model.
+    processMetadatas: ->
+      this.metadatas = metadataBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"))
+      # Change the idAttribute depending on the metadatas.
+      if this.metadatas? and this.metadatas.idAttribute?
+        this.idAttribute = metadatas.idAttribute # Set the id attribute depending ont the metadatas.
     #Define a method in order to be able to quickly remove errors form the model.
     unsetErrors:(options) ->
       options = options or {}

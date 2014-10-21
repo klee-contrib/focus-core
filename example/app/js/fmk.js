@@ -1097,6 +1097,274 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 (function() {
+  "use strict";
+  (function(NS) {
+    var ArgumentNullException, MetadataBuilder, isInBrowser, proxyValidationContainer;
+    NS = NS || {};
+    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
+    proxyValidationContainer = {};
+    MetadataBuilder = (function() {
+      function MetadataBuilder() {}
+
+      MetadataBuilder.prototype.initialize = function(options, cb) {
+        if (options == null) {
+          throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.');
+        }
+        if (options.domains == null) {
+          throw new ArgumentNullException('The metadata builder needs domains in options.');
+        }
+        if (options.metadatas == null) {
+          throw new ArgumentNullException('The metadata builder needs metadatas in options.');
+        }
+        this.domains = options.domains;
+        this.metadatas = options.metadatas;
+        this.isLog = options.isLog;
+        if (cb != null) {
+          return cb(this.domains, this.metadatas);
+        }
+      };
+
+      MetadataBuilder.prototype.getDomains = function() {
+        return _.clone(this.domains);
+      };
+
+      MetadataBuilder.prototype.getDomainsValidationAttrs = function(model) {
+        var attr, md, metadatas, valDomAttrs, validators;
+        if (model == null) {
+          return new ArgumentNullException('The model should exists and have a metadatas property.');
+        }
+        metadatas = this.getMetadatas(model);
+        valDomAttrs = {};
+        for (attr in metadatas) {
+          md = metadatas[attr] || {};
+          if (((md.isValidationOff != null) && md.isValidationOff === false) || (md.isValidationOff == null)) {
+
+            /*_.extend(metadata, md.metadata) if md.metadata?
+            (metadata.domain = md.domain) if md.domain?
+            (metadata.required = md.required) if md.required?
+             */
+            validators = [];
+            if (md.required === true) {
+              validators.push({
+                "type": "required",
+                "value": true
+              });
+            }
+            if ((md.domain != null) && (this.domains[md.domain] != null)) {
+              validators = _.union(validators, this.domains[md.domain].validation);
+            }
+            valDomAttrs[attr] = validators;
+          }
+        }
+        return valDomAttrs;
+      };
+
+      MetadataBuilder.prototype.getMetadatas = function(model) {
+        var entityAttrMetadata, entityMetadatas, mdlMetadata, mdlMetadataAttr, metadata, metadatas, metadatasAttrs, overridenProperties, _i, _len;
+        if (model == null) {
+          throw new ArgumentNullException("In order to get metadatas , you must provide a model.");
+        }
+        entityMetadatas = this.constructEntityMetaDatas(model);
+        metadatas = _.clone(entityMetadatas);
+        metadatasAttrs = _.keys(metadatas);
+        if (model.metadatas != null) {
+          metadatasAttrs = _.union(metadatasAttrs, _.keys(model.metadatas));
+        }
+        for (_i = 0, _len = metadatasAttrs.length; _i < _len; _i++) {
+          mdlMetadataAttr = metadatasAttrs[_i];
+          entityAttrMetadata = entityMetadatas[mdlMetadataAttr];
+          mdlMetadata = (model.metadatas != null) && (model.metadatas[mdlMetadataAttr] != null) ? model.metadatas[mdlMetadataAttr] : void 0;
+          metadata = {};
+          _.extend(metadata, entityAttrMetadata);
+          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+          if (mdlMetadata != null) {
+            if (mdlMetadata.metadata != null) {
+              _.extend(metadata, mdlMetadata.metadata);
+            }
+            _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+            overridenProperties = {};
+            if (mdlMetadata.domain != null) {
+              _.extend(overridenProperties, {
+                domain: mdlMetadata.domain
+              });
+              _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
+            }
+            if (mdlMetadata.required != null) {
+              _.extend(overridenProperties, {
+                required: mdlMetadata.required
+              });
+            }
+            if (mdlMetadata.label != null) {
+              _.extend(overridenProperties, {
+                label: mdlMetadata.label
+              });
+            }
+            if (mdlMetadata.isValidationOff != null) {
+              _.extend(overridenProperties, {
+                isValidationOff: mdlMetadata.isValidationOff
+              });
+            }
+            if (mdlMetadata.style != null) {
+              _.extend(overridenProperties, {
+                style: mdlMetadata.style
+              });
+            }
+            if (mdlMetadata.decorator != null) {
+              _.extend(overridenProperties, {
+                decorator: mdlMetadata.decorator
+              });
+            }
+            if (mdlMetadata.symbol != null) {
+              _.extend(overridenProperties, {
+                symbol: mdlMetadata.symbol
+              });
+            }
+            if (mdlMetadata.decoratorOptions != null) {
+              _.extend(overridenProperties, {
+                decoratorOptions: mdlMetadata.decoratorOptions
+              });
+            }
+            if (mdlMetadata.idAttribute != null) {
+              _.extend(overridenProperties, {
+                idAttribute: mdlMetadata.idAttribute
+              });
+            }
+            if (!_.isEmpty(overridenProperties)) {
+              _.extend(metadata, overridenProperties);
+            }
+          }
+          metadatas[mdlMetadataAttr] = metadata;
+        }
+        return metadatas;
+      };
+
+      MetadataBuilder.prototype.getMetadataForAttribute = function(model, attribute) {
+        var entityAttrMetadata, mdlMetadata, metadata, overridenProperties;
+        if (model == null) {
+          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide a model.");
+        }
+        if (attribute == null) {
+          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide an attribute.");
+        }
+        entityAttrMetadata = this.constructEntityMetaDatas(model)[attribute];
+        mdlMetadata = (model.metadatas != null) && (model.metadatas[attribute] != null) ? model.metadatas[attribute] : void 0;
+        metadata = {};
+        _.extend(metadata, entityAttrMetadata);
+        _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+        if (mdlMetadata != null) {
+          if (mdlMetadata.metadata != null) {
+            _.extend(metadata, mdlMetadata.metadata);
+          }
+          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
+          overridenProperties = {};
+          if (mdlMetadata.domain != null) {
+            _.extend(overridenProperties, {
+              domain: mdlMetadata.domain
+            });
+            _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
+          }
+          if (mdlMetadata.required != null) {
+            _.extend(overridenProperties, {
+              required: mdlMetadata.required
+            });
+          }
+          if (mdlMetadata.label != null) {
+            _.extend(overridenProperties, {
+              label: mdlMetadata.label
+            });
+          }
+          if (mdlMetadata.isValidationOff != null) {
+            _.extend(overridenProperties, {
+              isValidationOff: mdlMetadata.isValidationOff
+            });
+          }
+          if (mdlMetadata.style != null) {
+            _.extend(overridenProperties, {
+              style: mdlMetadata.style
+            });
+          }
+          if (mdlMetadata.decorator != null) {
+            _.extend(overridenProperties, {
+              decorator: mdlMetadata.decorator
+            });
+          }
+          if (mdlMetadata.symbol != null) {
+            _.extend(overridenProperties, {
+              symbol: mdlMetadata.symbol
+            });
+          }
+          if (mdlMetadata.decoratorOptions != null) {
+            _.extend(overridenProperties, {
+              decoratorOptions: mdlMetadata.decoratorOptions
+            });
+          }
+          if (!_.isEmpty(overridenProperties)) {
+            _.extend(metadata, overridenProperties);
+          }
+        }
+        return metadata;
+      };
+
+      MetadataBuilder.prototype.constructEntityMetaDatas = function(model) {
+        var mdName;
+        this.metadatas = this.metadatas || {};
+        if (model.modelName != null) {
+          mdName = model.modelName.split('.');
+          if (mdName.length === 1) {
+            if (this.metadatas[model.modelName] != null) {
+              return this.metadatas[model.modelName];
+            } else {
+              if (this.isLog) {
+                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              }
+              return {};
+            }
+          } else {
+            if ((this.metadatas[mdName[0]] != null) && (this.metadatas[mdName[0]][mdName[1]] != null)) {
+              return this.metadatas[mdName[0]][mdName[1]];
+            } else {
+              if (this.isLog) {
+                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
+              }
+              return {};
+            }
+          }
+        } else {
+          throw new ArgumentNullException('The model should have a model name in order to build its metadatas');
+        }
+      };
+
+      MetadataBuilder.prototype.proxyDomainValidationAttrs = function(model) {
+        return getDomainsValidationAttrs(model);
+        if ((model.modelName != null) && (proxyValidationContainer[model.modelName] != null)) {
+          return proxyValidationContainer[model.modelName];
+        }
+        if (model.modelName != null) {
+          return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model);
+        } else {
+          return getDomainsValidationAttrs(model);
+        }
+      };
+
+      return MetadataBuilder;
+
+    })();
+    if (isInBrowser) {
+      NS.Helpers = NS.Helpers || {};
+      NS.Helpers.MetadataBuilder = MetadataBuilder;
+      return NS.Helpers.metadataBuilder = new MetadataBuilder();
+    } else {
+      return module.exports = {
+        MetadataBuilder: MetadataBuilder,
+        metadataBuilder: new MetadataBuilder()
+      };
+    }
+  })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+
+}).call(this);
+
+(function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1407,9 +1675,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   (function(NS) {
     "use strict";
-    var Model, isInBrowser;
+    var Model, isInBrowser, metadataBuilder;
     NS = NS || {};
     isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require("../helpers/metadata_builder");
     Model = (function(_super) {
       __extends(Model, _super);
 
@@ -1425,6 +1694,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         if (options.modelName != null) {
           this.modelName = options.modelName;
         }
+        this.processMetadatas();
         if (this.has('id') && this.get('id') === 'new') {
           this.unset('id', {
             silent: true
@@ -1442,6 +1712,13 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           return this.set(this.defaultIfNew, {
             silent: true
           });
+        }
+      };
+
+      Model.prototype.processMetadatas = function() {
+        this.metadatas = metadataBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"));
+        if ((this.metadatas != null) && (this.metadatas.idAttribute != null)) {
+          return this.idAttribute = metadatas.idAttribute;
         }
       };
 
@@ -1871,268 +2148,6 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   }
 
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-(function() {
-  "use strict";
-  (function(NS) {
-    var ArgumentNullException, MetadataBuilder, isInBrowser, proxyValidationContainer;
-    NS = NS || {};
-    isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
-    ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
-    proxyValidationContainer = {};
-    MetadataBuilder = (function() {
-      function MetadataBuilder() {}
-
-      MetadataBuilder.prototype.initialize = function(options, cb) {
-        if (options == null) {
-          throw new ArgumentNullException('The metadata builder needs options with domains and metadatas.');
-        }
-        if (options.domains == null) {
-          throw new ArgumentNullException('The metadata builder needs domains in options.');
-        }
-        if (options.metadatas == null) {
-          throw new ArgumentNullException('The metadata builder needs metadatas in options.');
-        }
-        this.domains = options.domains;
-        this.metadatas = options.metadatas;
-        this.isLog = options.isLog;
-        if (cb != null) {
-          return cb(this.domains, this.metadatas);
-        }
-      };
-
-      MetadataBuilder.prototype.getDomains = function() {
-        return _.clone(this.domains);
-      };
-
-      MetadataBuilder.prototype.getDomainsValidationAttrs = function(model) {
-        var attr, md, metadatas, valDomAttrs, validators;
-        if (model == null) {
-          return new ArgumentNullException('The model should exists and have a metadatas property.');
-        }
-        metadatas = this.getMetadatas(model);
-        valDomAttrs = {};
-        for (attr in metadatas) {
-          md = metadatas[attr] || {};
-          if (((md.isValidationOff != null) && md.isValidationOff === false) || (md.isValidationOff == null)) {
-
-            /*_.extend(metadata, md.metadata) if md.metadata?
-            (metadata.domain = md.domain) if md.domain?
-            (metadata.required = md.required) if md.required?
-             */
-            validators = [];
-            if (md.required === true) {
-              validators.push({
-                "type": "required",
-                "value": true
-              });
-            }
-            if ((md.domain != null) && (this.domains[md.domain] != null)) {
-              validators = _.union(validators, this.domains[md.domain].validation);
-            }
-            valDomAttrs[attr] = validators;
-          }
-        }
-        return valDomAttrs;
-      };
-
-      MetadataBuilder.prototype.getMetadatas = function(model) {
-        var entityAttrMetadata, entityMetadatas, mdlMetadata, mdlMetadataAttr, metadata, metadatas, metadatasAttrs, overridenProperties, _i, _len;
-        if (model == null) {
-          throw new ArgumentNullException("In order to get metadatas , you must provide a model.");
-        }
-        entityMetadatas = this.constructEntityMetaDatas(model);
-        metadatas = _.clone(entityMetadatas);
-        metadatasAttrs = _.keys(metadatas);
-        if (model.metadatas != null) {
-          metadatasAttrs = _.union(metadatasAttrs, _.keys(model.metadatas));
-        }
-        for (_i = 0, _len = metadatasAttrs.length; _i < _len; _i++) {
-          mdlMetadataAttr = metadatasAttrs[_i];
-          entityAttrMetadata = entityMetadatas[mdlMetadataAttr];
-          mdlMetadata = (model.metadatas != null) && (model.metadatas[mdlMetadataAttr] != null) ? model.metadatas[mdlMetadataAttr] : void 0;
-          metadata = {};
-          _.extend(metadata, entityAttrMetadata);
-          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-          if (mdlMetadata != null) {
-            if (mdlMetadata.metadata != null) {
-              _.extend(metadata, mdlMetadata.metadata);
-            }
-            _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-            overridenProperties = {};
-            if (mdlMetadata.domain != null) {
-              _.extend(overridenProperties, {
-                domain: mdlMetadata.domain
-              });
-              _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
-            }
-            if (mdlMetadata.required != null) {
-              _.extend(overridenProperties, {
-                required: mdlMetadata.required
-              });
-            }
-            if (mdlMetadata.label != null) {
-              _.extend(overridenProperties, {
-                label: mdlMetadata.label
-              });
-            }
-            if (mdlMetadata.isValidationOff != null) {
-              _.extend(overridenProperties, {
-                isValidationOff: mdlMetadata.isValidationOff
-              });
-            }
-            if (mdlMetadata.style != null) {
-              _.extend(overridenProperties, {
-                style: mdlMetadata.style
-              });
-            }
-            if (mdlMetadata.decorator != null) {
-              _.extend(overridenProperties, {
-                decorator: mdlMetadata.decorator
-              });
-            }
-            if (mdlMetadata.symbol != null) {
-              _.extend(overridenProperties, {
-                symbol: mdlMetadata.symbol
-              });
-            }
-            if (mdlMetadata.decoratorOptions != null) {
-              _.extend(overridenProperties, {
-                decoratorOptions: mdlMetadata.decoratorOptions
-              });
-            }
-            if (!_.isEmpty(overridenProperties)) {
-              _.extend(metadata, overridenProperties);
-            }
-          }
-          metadatas[mdlMetadataAttr] = metadata;
-        }
-        return metadatas;
-      };
-
-      MetadataBuilder.prototype.getMetadataForAttribute = function(model, attribute) {
-        var entityAttrMetadata, mdlMetadata, metadata, overridenProperties;
-        if (model == null) {
-          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide a model.");
-        }
-        if (attribute == null) {
-          throw new ArgumentNullException("In order to get metadatas for an attribute of a model , you must provide an attribute.");
-        }
-        entityAttrMetadata = this.constructEntityMetaDatas(model)[attribute];
-        mdlMetadata = (model.metadatas != null) && (model.metadatas[attribute] != null) ? model.metadatas[attribute] : void 0;
-        metadata = {};
-        _.extend(metadata, entityAttrMetadata);
-        _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-        if (mdlMetadata != null) {
-          if (mdlMetadata.metadata != null) {
-            _.extend(metadata, mdlMetadata.metadata);
-          }
-          _.extend(metadata, _.omit(this.domains[metadata.domain], 'validation'));
-          overridenProperties = {};
-          if (mdlMetadata.domain != null) {
-            _.extend(overridenProperties, {
-              domain: mdlMetadata.domain
-            });
-            _.extend(overridenProperties, _.omit(this.domains[mdlMetadata.domain], 'validation'));
-          }
-          if (mdlMetadata.required != null) {
-            _.extend(overridenProperties, {
-              required: mdlMetadata.required
-            });
-          }
-          if (mdlMetadata.label != null) {
-            _.extend(overridenProperties, {
-              label: mdlMetadata.label
-            });
-          }
-          if (mdlMetadata.isValidationOff != null) {
-            _.extend(overridenProperties, {
-              isValidationOff: mdlMetadata.isValidationOff
-            });
-          }
-          if (mdlMetadata.style != null) {
-            _.extend(overridenProperties, {
-              style: mdlMetadata.style
-            });
-          }
-          if (mdlMetadata.decorator != null) {
-            _.extend(overridenProperties, {
-              decorator: mdlMetadata.decorator
-            });
-          }
-          if (mdlMetadata.symbol != null) {
-            _.extend(overridenProperties, {
-              symbol: mdlMetadata.symbol
-            });
-          }
-          if (mdlMetadata.decoratorOptions != null) {
-            _.extend(overridenProperties, {
-              decoratorOptions: mdlMetadata.decoratorOptions
-            });
-          }
-          if (!_.isEmpty(overridenProperties)) {
-            _.extend(metadata, overridenProperties);
-          }
-        }
-        return metadata;
-      };
-
-      MetadataBuilder.prototype.constructEntityMetaDatas = function(model) {
-        var mdName;
-        if (model.modelName != null) {
-          mdName = model.modelName.split('.');
-          if (mdName.length === 1) {
-            if (this.metadatas[model.modelName] != null) {
-              return this.metadatas[model.modelName];
-            } else {
-              if (this.isLog) {
-                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
-              }
-              return {};
-            }
-          } else {
-            if ((this.metadatas[mdName[0]] != null) && (this.metadatas[mdName[0]][mdName[1]] != null)) {
-              return this.metadatas[mdName[0]][mdName[1]];
-            } else {
-              if (this.isLog) {
-                console.warn("The metadatas does not have properties for model '" + model.modelName + "'.");
-              }
-              return {};
-            }
-          }
-        } else {
-          throw new ArgumentNullException('The model should have a model name in order to build its metadatas');
-        }
-      };
-
-      MetadataBuilder.prototype.proxyDomainValidationAttrs = function(model) {
-        return getDomainsValidationAttrs(model);
-        if ((model.modelName != null) && (proxyValidationContainer[model.modelName] != null)) {
-          return proxyValidationContainer[model.modelName];
-        }
-        if (model.modelName != null) {
-          return proxyValidationContainer[model.modelName] = getDomainsValidationAttrs(model);
-        } else {
-          return getDomainsValidationAttrs(model);
-        }
-      };
-
-      return MetadataBuilder;
-
-    })();
-    if (isInBrowser) {
-      NS.Helpers = NS.Helpers || {};
-      NS.Helpers.MetadataBuilder = MetadataBuilder;
-      return NS.Helpers.metadataBuilder = new MetadataBuilder();
-    } else {
-      return module.exports = {
-        MetadataBuilder: MetadataBuilder,
-        metadataBuilder: new MetadataBuilder()
-      };
-    }
-  })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
-
-}).call(this);
-
 /* global  _ , window, Promise */
 (function(NS) {
     "use strict";
@@ -2772,6 +2787,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
      * @return {object}          - The parsed error response.
      */
     function manageResponseErrors(response, options) {
+        if(!response){
+            console.warn('You are not dealing with any response');
+            return false;
+        }
+        //Rethrow the error if it is one.
+        if(_.isObject(response) && response instanceof Error){
+            throw response;
+        }
+        //Parse the response.
         options = options || {};
         response = response || {};
         var responseErrors = response.responseJSON;
@@ -4172,11 +4196,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     var col, container, containerAttribs, containerCss, dataType, domain, html, htmlId, inputSize, label, labelSize, labelSizeValue, linkClose, linkOpen, linkTo, metadata, modelName, noGrid, noHtml, opt, propertyValue, translationKey, translationRoot;
     options = options || {};
     opt = options.hash || {};
-    modelName = this.modelName || opt.modelName || void 0;
+    modelName = this.modelName || opt.modelName || {};
     container = _.extend(this, {
       modelName: modelName
     });
-    metadata = metadaBuilder.getMetadataForAttribute(container, property);
+    metadata = (container.metadatas != null) && (container.metadatas[property] != null) ? container.metadatas[property] : {};
+    if (metadata.domain == null) {
+      l.warn("There is no domain for your field named : " + property, container);
+    }
     domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] || {};
     translationRoot = opt.translationRoot || void 0;
     dataType = opt.dataType || domain.type || "text";
@@ -6724,6 +6751,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                     exportId: this.exportId,
                     exportColumnLabels: this.model.exportColumnLabels
                 })).then(function (success) {
+                    //Change this to a new form sumbit.
                     window.open($('a.btnExport', currentView.$el).attr('href'), '_blank');
                     //$('a.btnExport', this.$el).trigger('click');
                 }).then(null, function error(errorResponse) {
