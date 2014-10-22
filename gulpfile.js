@@ -37,24 +37,38 @@ gulp.task('eslint', function() {
   //gulp eslint 2>lint/lintErrors.txt
   var eslint = require('gulp-eslint');
   var options = {
-       "globals":{
-        "jQuery": false,
-        "$": true,
-        "require": true,
-        "Backbone": true,
-        "Fmk": true,
-        "_": true,
-        "Promise": true
+    "globals": {
+      "jQuery": false,
+      "$": true,
+      "require": true,
+      "Backbone": true,
+      "Fmk": true,
+      "_": true,
+      "Promise": true,
+      "module": true
+    },
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    rules: {
+      "valid-jsdoc": [2, {
+        "prefer": {
+          "return": "returns"
+        },
+        "requireParamDescription": true
+      }],
+      "quotes": [0]
     }
   };
-  var format;
+  var format = "compact"; //"compact", "checkstyle", "jslint-xml", "junit" and "tap".
   gulp
     .src('./lib/*/*.js')
     .pipe(eslint(options))
-    //.pipe(eslint.format(undefined, process.stdout))
-    //.pipe(eslint.failOnError())
-     .pipe(eslint.formatEach(format, process.stderr))
-     //.on('error', gutil.log);
+  //.pipe(eslint.format(undefined, process.stdout))
+  //.pipe(eslint.failOnError())
+  .pipe(eslint.formatEach(format, process.stderr));
+  //.on('error', gutil.log);
 });
 
 
