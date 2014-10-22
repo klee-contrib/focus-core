@@ -1,6 +1,6 @@
 /*global describe, it*/
 require('../initialize-globals').load();
-var Model = require('../../lib/models/model');
+var Model = require('../../lib/models/model').extend({modelName: "Pierre"});
 describe('default model', function() {
   var model = new Model({firstName: "Pierre", lastName: "Besson"});
   describe('#setErrors', function() {

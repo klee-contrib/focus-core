@@ -86,14 +86,15 @@ describe('# MetadataBuilder', function() {
 	});
 	describe("##getMetadatas", function() {
 		it('shoud return empty object when a false model model name and no metadatas', function() {
-			var model = new Mdl();
-			model.modelName = "nothing"
+			var ModelTest = Mdl.extend({modelName: "nothing"});
+			var model = new ModelTest();
 			var mdlMetadatas = metadataBuilder.getMetadatas(model);
+			console.dir("modelMetadatas", mdlMetadatas);
 			mdlMetadatas.should.be.deep.equal({});
 		});
-		it('should return the metadatas content when only the right modle name is set', function() {
-			var model = new Mdl();
-			model.modelName = 'coreModel';
+		it('should return the metadatas content when only the right model name is set', function() {
+			var ModelTest = Mdl.extend({modelName: "coreModel"});
+			var model = new ModelTest();
 			var mdlMetadatas = metadataBuilder.getMetadatas(model);
 			//console.log('metadatas', mdlMetadatas);
 			mdlMetadatas.should.have.property('id').not.undefined;
@@ -101,7 +102,7 @@ describe('# MetadataBuilder', function() {
 			mdlMetadatas.should.have.property('age').not.undefined;
 			//console.log('mdts', mdlMetadatas);
 		});
-		it('should return the metadatas content when only the right modle name is set', function() {
+		it('should return the metadatas content when only the right model name is set and override with the model metadatas', function() {
 			var model = new Model();
 			var mdlMetadatas = metadataBuilder.getMetadatas(model);
 			//console.log('metadatas', mdlMetadatas);
