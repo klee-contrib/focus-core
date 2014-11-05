@@ -67,7 +67,7 @@
              * If there is an edit mode and this property is true, the view can start in edit mode. The templateEdit will be rendered.
              * @type {Boolean}
              */
-            isEdit: true,
+            isEdit: false,
             /**
              * If true, the view will navigate to the `generateNavigationUrl` url.
              * @type {Boolean}
@@ -533,6 +533,9 @@
         render: function renderConsultEditView() {
             //todo: see if a getRenderData different from each mode is necessary or it coul be deal inside the getRenderDatatFunction if needed.
             var templateName = this.isEdit ? 'templateEdit' : 'templateConsult';
+            if(!this[templateName] || !_.isFunction(this[templateName])){
+                throw new ArgumentNullException('The template for ' + templateName + 'is not defined.');
+            }
             if (this.opts.isElementRedefinition) {
                 this.setElement(this[templateName](this.getRenderData()));
             } else {

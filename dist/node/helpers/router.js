@@ -25,6 +25,7 @@
   };
   //Extend the backbone router.
   var Router = Backbone.Router.extend({
+    noRoleRoute: 'home',
     route: function(route, name, callback) {
       var router = this;
       if (!callback){
@@ -36,12 +37,12 @@
       var f = function() {
           //console.log('route before', route);
         //Treat the home case.
-        if(route === ""){route = "home";}
+        if(route === ""){route = router.noRoleRoute;}
         var n = siteDescriptionBuilder.findRouteName(route);
         var rt = siteDescriptionBuilder.getRoute(n);
         //If the route does not exists, or the user does not have any right on the route display an error.
         if((rt === undefined && route!== '') || !userHelper.hasOneRole(rt.roles)){
-          backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')}, true);
+          backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')});
           return Backbone.history.navigate('', true);
         }else {
           //Rendre all the notifications in the stack.

@@ -115,7 +115,11 @@
         },
         //get the JSON to attach to the template
         getRenderData: function getRenderDataSearch() {
-            return this.model.toJSON();
+            var jsonToRender = this.model.toJSON();
+            if (this.referenceNames) {
+                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
+            }
+            return jsonToRender;
         },
 
         editCriteria: function editCriteria() {

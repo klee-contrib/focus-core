@@ -3,7 +3,7 @@
   # Filename: models/model.coffee
   NS = NS or {}
   isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
-  metadataBuilder = if isInBrowser then NS.Helpers.metadataBuilder else require("../helpers/metadata_builder")
+  metadataBuilder = if isInBrowser then NS.Helpers.metadataBuilder else require("../helpers/metadata_builder").metadataBuilder
   # Base class for all models. Define all transverses methods on the model.
   class Model extends Backbone.Model
     defaultIfNew: undefined

@@ -140,6 +140,15 @@
                 var currentView = this;
                 //Call the service and inject the result into the model.
                 this.search(criteria, this.model.pageInfo()).then(function success(jsonResponse) {
+                    if(!_.isObject(jsonResponse)){
+                        throw new ArgumentInvalidException("The list view load response should be an object.");
+                    }
+                    if(!_.isArray(jsonResponse.values)){
+                        throw new ArgumentInvalidException("The list view load response  values should be an array.");
+                    }
+                    if(!_.isNumber(jsonResponse.totalRecords)){
+                        throw new ArgumentInvalidException("The list view load response  totalrecords should be a number.");
+                    }
                     currentView.opts.isReadyModelData = true;
                     currentView.model.setTotalRecords(jsonResponse.totalRecords);
                     currentView.model.reset(jsonResponse.values);
