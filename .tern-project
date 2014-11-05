@@ -1,0 +1,18 @@
+{
+  "libs": [
+    "browser",
+    "jquery",
+    "underscore"
+  ],
+  "loadEagerly": [
+    "./vendor/fmk.js",
+    "./bower_components/bluebird/js/browser/bluebird.js",
+    "./bower_components/backbone/backbone.js"
+  ],
+  "plugins": {
+    "requirejs": {
+      "baseURL": "./",
+      "paths": {}
+    }
+  }
+}

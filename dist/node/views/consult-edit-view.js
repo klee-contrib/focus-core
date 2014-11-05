@@ -257,8 +257,8 @@
             var jsonToRender = this.model.toJSON();
 
             //Add the reference lists names to the json.
-            if (this.referenceNames) {
-                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
+            if (this.model.references) {
+                jsonToRender.references = this.model.references;
             }
             //If there is a listUrl it is added to the 
             if (this.opts.listUrl) {

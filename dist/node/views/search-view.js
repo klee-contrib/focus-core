@@ -116,9 +116,9 @@
         //get the JSON to attach to the template
         getRenderData: function getRenderDataSearch() {
             var jsonToRender = this.model.toJSON();
-            if (this.referenceNames) {
-                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
-            }
+            if (this.model.references) {
+                jsonToRender.references = this.model.references;
+           }
             return jsonToRender;
         },
 
@@ -142,9 +142,12 @@
                 model: this.model
             });
         },
-
+        /**
+         * Get the criteria from the view.
+         * @return {object} A clone of the json model.
+         */
         getCriteria: function() {
-            return _.clone(_.omit(this.model.toJSON(), this.referenceNames));
+            return _.clone(this.model.toJSON());
         },
         /**
          * Run the search whent it is trigerred by the formaction or the session saved criteria.

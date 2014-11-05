@@ -278,8 +278,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
    * @type {Object}
    */
   var config = {
-    totalCountKey: "odata.count",
-    valuesKey: "values"
+    //Parameters to parse the response
+    totalCountKey: "totalRecords",
+    valuesKey: "values",
+    //parameters to expose the data
+    parseResponse: {
+      totalCountKey: "totalRecords",
+      valuesKey: "values"
+    }
   };
 
   /**
@@ -308,9 +314,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
    * @type {Object}
    */
   var CONTENT_TYPES = {
-    LIST: "application/json+list",
-    LIST_META: "application/json+list+meta",
-    ENTITY_DESC: "applicatin/json+",
+    LIST: "json+list",
+    LIST_META: "json+list+meta",
+    ENTITY_DESC: "json+entity",
     ENTITY: "application/json"
   };
 
@@ -366,12 +372,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         throw new ArgumentNullException("response.jsonResponse should be an array.", response);
       }
     }
-
-    return {
-      totalCount: totalCount,
-      values: values
-    };
-
+    //Result list to be publish
+    var listResult = {};
+    listResult[config.parseResponse.totalCountKey] = totalCount;
+    listResult[config.parseResponse.valuesKey] = values;
+    return listResult;
   };
 
   /**
@@ -5383,7 +5388,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         //The results are save into an object with a name for each reference list.
                     }
                     //Add the reference lists as model properties.
-                    _.extend(currentView.model, res);
+                    currentView.model.references =  res; //Add all the references into the
                     currentView.model.trigger('references:loaded');
                     //Inform the view that we are ready to render well.
                 }).then(null, function(error) {
@@ -5813,8 +5818,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             var jsonToRender = this.model.toJSON();
 
             //Add the reference lists names to the json.
-            if (this.referenceNames) {
-                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
+            if (this.model.references) {
+                jsonToRender.references = this.model.references;
             }
             //If there is a listUrl it is added to the 
             if (this.opts.listUrl) {
@@ -6973,8 +6978,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
             if (this.isEdit) {
                 opt.isEdit = this.isEdit;
             }
-            //Copy the references to the child.
-            model.set(_.pick(this.model, this.referenceNames), { silent: true });
+             if (this.model.references) {
+                //Copy the references to the child only if the collection has references.
+                model.references = this.model.references;
+            }
             //
             var lineView = new this.viewForEachLineConfiguration.LineView(_.extend({
                 model: model
@@ -7020,7 +7027,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 isViewForLine: this.viewForEachLineConfiguration.isActive
             }, {
                 exportUrl: this.opts.exportUrl + '/' + this.exportId
-            }, _.pick(this.model, this.referenceNames, "modelName", "metadatas"), { isEdit: this.isEdit }, this.additionalData())));
+            }, _.pick(this.model, "references", "modelName", "metadatas"), { isEdit: this.isEdit }, this.additionalData())));
 
             //Conditionnal code for rendering a View  foreach line
             if (this.viewForEachLineConfiguration.isActive) {
@@ -7373,9 +7380,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         //get the JSON to attach to the template
         getRenderData: function getRenderDataSearch() {
             var jsonToRender = this.model.toJSON();
-            if (this.referenceNames) {
-                _.extend(jsonToRender, _.pick(this.model, this.referenceNames));
-            }
+            if (this.model.references) {
+                jsonToRender.references = this.model.references;
+           }
             return jsonToRender;
         },
 
@@ -7399,9 +7406,12 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 model: this.model
             });
         },
-
+        /**
+         * Get the criteria from the view.
+         * @return {object} A clone of the json model.
+         */
         getCriteria: function() {
-            return _.clone(_.omit(this.model.toJSON(), this.referenceNames));
+            return _.clone(this.model.toJSON());
         },
         /**
          * Run the search whent it is trigerred by the formaction or the session saved criteria.

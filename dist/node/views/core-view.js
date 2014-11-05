@@ -80,7 +80,7 @@
                         //The results are save into an object with a name for each reference list.
                     }
                     //Add the reference lists as model properties.
-                    _.extend(currentView.model, res);
+                    currentView.model.references =  res; //Add all the references into the
                     currentView.model.trigger('references:loaded');
                     //Inform the view that we are ready to render well.
                 }).then(null, function(error) {
