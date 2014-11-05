@@ -1,4 +1,4 @@
 {
-  "glob": ["lib/**/*.coffee", "README.md"],
+  "glob": ["lib/**/*.coffee","lib/views/*.js","README.md"],
   "github": true
 }
