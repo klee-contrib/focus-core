@@ -1,5 +1,5 @@
-/* name: focus , version: 0.1.17 description: Klee group framework for SinglePageApplication.*/ 
- (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.17';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/* name: focus , version: 0.1.18 description: Klee group framework for SinglePageApplication.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.18';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 /*global window, _*/
 (function initialization(container) {
   var fmk = container.Fmk || {};
@@ -5392,7 +5392,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                         //The results are save into an object with a name for each reference list.
                     }
                     //Add the reference lists as model properties.
-                    currentView.model.references =  res; //Add all the references into the
+                    currentView.model.references = res; //Add all the references into the
                     currentView.model.trigger('references:loaded');
                     //Inform the view that we are ready to render well.
                 }).then(null, function(error) {
@@ -5464,7 +5464,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         },
         //This method is use in order to inject json data to the template. By default, the this.model.toJSON() is called.
         getRenderData: function getCoreViewRenderData() {
-            return this.model.toJSON();
+            var jsonToRender = this.model.toJSON();
+            if (this.model.references) {
+                _.extend(jsonToRender, this.model.references);
+            }
+            return jsonToRender;
         },
         showCollapse: function showCollapseCoreView() {
             $('.collapse', this.$el).collapse('show');
@@ -5823,7 +5827,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
             //Add the reference lists names to the json.
             if (this.model.references) {
-                jsonToRender.references = this.model.references;
+                _.extend(jsonToRender,this.model.references);
             }
             //If there is a listUrl it is added to the 
             if (this.opts.listUrl) {
@@ -7385,7 +7389,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         getRenderData: function getRenderDataSearch() {
             var jsonToRender = this.model.toJSON();
             if (this.model.references) {
-                jsonToRender.references = this.model.references;
+                _.extend(jsonToRender,this.model.references);
            }
             return jsonToRender;
         },

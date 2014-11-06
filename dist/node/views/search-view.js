@@ -117,7 +117,7 @@
         getRenderData: function getRenderDataSearch() {
             var jsonToRender = this.model.toJSON();
             if (this.model.references) {
-                jsonToRender.references = this.model.references;
+                _.extend(jsonToRender,this.model.references);
            }
             return jsonToRender;
         },
