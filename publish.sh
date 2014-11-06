@@ -1,6 +1,6 @@
 #!/bin/bash
-gulp build
 npm version patch
+gulp build
 git add package.json
 git add -f dist
 git add -f example
