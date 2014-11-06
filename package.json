@@ -1,6 +1,6 @@
 {
   "name": "focus",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Klee group framework for SinglePageApplication.",
   "main": "dist/node/index.js",
   "directories": {
