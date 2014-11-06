@@ -337,7 +337,7 @@
                 isViewForLine: this.viewForEachLineConfiguration.isActive
             }, {
                 exportUrl: this.opts.exportUrl + '/' + this.exportId
-            }, _.pick(this.model, "references", "modelName", "metadatas"), { isEdit: this.isEdit }, this.additionalData())));
+            }, _.pick(this.model, "modelName", "metadatas"), this.model.references ,{ isEdit: this.isEdit }, this.additionalData())));
 
             //Conditionnal code for rendering a View  foreach line
             if (this.viewForEachLineConfiguration.isActive) {

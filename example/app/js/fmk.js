@@ -1,5 +1,5 @@
-/* name: focus , version: 0.1.19 description: Klee group framework for SinglePageApplication.*/ 
- (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.19';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/* name: focus , version: 0.1.21 description: Klee group framework for SinglePageApplication.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.21';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 /*global window, _*/
 (function initialization(container) {
   var fmk = container.Fmk || {};
@@ -7035,7 +7035,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
                 isViewForLine: this.viewForEachLineConfiguration.isActive
             }, {
                 exportUrl: this.opts.exportUrl + '/' + this.exportId
-            }, _.pick(this.model, "references", "modelName", "metadatas"), { isEdit: this.isEdit }, this.additionalData())));
+            }, _.pick(this.model, "modelName", "metadatas"), this.model.references ,{ isEdit: this.isEdit }, this.additionalData())));
 
             //Conditionnal code for rendering a View  foreach line
             if (this.viewForEachLineConfiguration.isActive) {
