@@ -1,3 +1,4 @@
+#!/bin/bash
 gulp build
 git add -f dist
 git add -f example
