@@ -24,6 +24,10 @@
 
   //Regenerate the application routes.
   var regenerateRoutes = function regenerateRoutes() {
+    //Clean all previous registered routes.
+    routes = {};
+    siteStructure = {};
+    //Process the new routes.
     processElement(siteDescription);
   };
 

@@ -1,5 +1,5 @@
-/* name: focus , version: 0.1.16 description: Klee group framework for SinglePageApplication.*/ 
- (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.16';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
+/* name: focus , version: 0.1.17 description: Klee group framework for SinglePageApplication.*/ 
+ (function initialization(container) {var fmk = container.Fmk || {};fmk.name = 'focus';fmk.version = '0.1.17';container.Fmk = fmk;})(typeof module === 'undefined' && typeof window !== 'undefined' ? window : exports);
 /*global window, _*/
 (function initialization(container) {
   var fmk = container.Fmk || {};
@@ -777,6 +777,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   //Regenerate the application routes.
   var regenerateRoutes = function regenerateRoutes() {
+    //Clean all previous registered routes.
+    routes = {};
+    siteStructure = {};
+    //Process the new routes.
     processElement(siteDescription);
   };
 
