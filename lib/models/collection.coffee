@@ -34,9 +34,15 @@
       }
       # Call add model foreach model.
       models.forEach(@addModel, @)
-
+    ###
+      Process the collection metdatas.
+    ###
+    processMetadatas: ->
+      this.metadatas = metadataBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"))
+      # Change the idAttribute depending on the metadatas.
     initialize: (options)->
       options = options or {}
+
       # Changes inside the collection.
       @changes = {
         # The newly created models.
@@ -46,6 +52,7 @@
         # The deleted models.
         deletes: {}
       }
+      @processMetadatas()
       # Bind models events on order to track changes.
       @on('add',(model)=> @addModel(model))
       @on('remove', (model)=> @deleteModel(model))
