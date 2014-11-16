@@ -35,5 +35,29 @@ describe('default model', function() {
       jsonModel.should.have.property('firstName', 'Pierre');
       jsonModel.should.have.property('lastName', 'Besson');
     });
+    it('It should expose only the real model propertuies. And an id field with the read id.', function() {
+      var Mdl = Model.extend({idAttribute: "_id", metadatas: {_id: {domain: "DO_KEY"}}});
+      var model = new Mdl({_id: 123,firstName: "Pierre", lastName: "Besson"});
+      var jsonModel = model.toJSON();
+      //console.log(jsonModel);
+      jsonModel.should.have.property('id', 123);
+      jsonModel.should.have.property('_id', 123);
+      jsonModel.should.have.property('firstName', 'Pierre');
+      jsonModel.should.have.property('lastName', 'Besson');
+      jsonModel.should.have.property('metadatas');
+    });
+  });
+  describe('#toSaveJSON', function() {
+    it('It should expose only the real model propertuies. And an id field with the read id.', function() {
+      var Mdl = Model.extend({idAttribute: "_id", metadatas: {_id: {domain: "DO_KEY"}}});
+      var model = new Mdl({_id: 123,firstName: "Pierre", lastName: "Besson"});
+      var jsonModel = model.toSaveJSON();
+      //console.log(jsonModel);
+      jsonModel.should.have.property('id', 123);
+      jsonModel.should.have.property('_id', 123);
+      jsonModel.should.have.property('firstName', 'Pierre');
+      jsonModel.should.have.property('lastName', 'Besson');
+      jsonModel.should.not.have.property('metadatas');
+    });
   });
 });

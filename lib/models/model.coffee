@@ -40,14 +40,16 @@
     toJSON: ->
       jsonModel = super()
       jsonModel.cid = @cid
+      if @idAttribute? and @id?
+        jsonModel.id = @id
       jsonModel.metadatas =  @metadatas
       jsonModel.modelName =  @modelName or @get('modelName')
       return jsonModel
       
     # Return a json to Save.
     toSaveJSON: ->
-      json = Backbone.Model.prototype.toJSON.call(@)
-      return _.omit(json, 'isNew', 'metadatas', 'cid')
+      json = @toJSON()
+      return _.omit(json, 'isNew', 'metadatas', 'cid', 'modelName')
     # Return true if the model is inside a collection.
     isInCollection: ->
       return @collection?
