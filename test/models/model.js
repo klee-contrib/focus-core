@@ -60,4 +60,20 @@ describe('default model', function() {
       jsonModel.should.not.have.property('metadatas');
     });
   });
+  describe('#getId', function() {
+    it('It should get the Id when there is no idAttribute', function() {
+      var Mdl = Model;
+      var model = new Mdl({_id: 123});
+      (model.getId() === undefined).should.be.true;
+      var m = new Mdl({id: 123});
+      m.getId().should.be.equal(123);
+    });
+    it('It should get the Id from idAttribute when there is an idAttribute', function() {
+      var Mdl = Model.extend({idAttribute: "_id"});
+      var model = new Mdl({_id: 123});
+      model.getId().should.be.equal(123);
+      var m = new Mdl({id: 123});
+      (m.getId() === undefined).should.be.true;
+    });
+  });
 });

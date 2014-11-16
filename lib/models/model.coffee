@@ -21,6 +21,13 @@
       @savePrevious()
       if(@isNew() and @defaultIfNew? )
         this.set(@defaultIfNew, { silent: true })
+    ###
+      Method to get the identifier of the model givent its idAttribute.
+    ###
+    getId: ->
+      if @idAttribute?
+        return @get(@idAttribute)
+      return @get('id')
     # Process all the models metadatas, save theminto the model.
     processMetadatas: ->
       this.metadatas = metadataBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"))
