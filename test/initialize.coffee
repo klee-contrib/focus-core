@@ -8,6 +8,7 @@ tests = [
   './lib/site_description_builder'
   './lib/site_description_helper'
   './lib/util_helper'
+  './core/list_metadata_parser'
 ]
 
 for test in tests
