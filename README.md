@@ -8,6 +8,7 @@ Fmk for spa application.
 
 ## What's inside
 See our [wiki](https://github.com/KleeGroup/focus/wiki)
+See our [documentation](https://kleegroup.github.io/focus-docs)
 
 
 ## How to build the lib
