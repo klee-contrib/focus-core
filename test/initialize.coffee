@@ -9,6 +9,7 @@ tests = [
   './lib/site_description_helper'
   './lib/util_helper'
   './core/list_metadata_parser'
+  './util/paramify'
 ]
 
 for test in tests
