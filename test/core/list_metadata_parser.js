@@ -9,12 +9,22 @@ describe('# list_metadata_parser', function() {
         sortFieldName: "colA",
         sortDesc: true
       };
-      var param = listMetadataParser.createMetadataOptions(meta);
-      param.should.be.a.string;
-      for(m in meta){
-       param.indexOf(m).should.not.be.equal(-1);        
+
+      var ajaxOptions = listMetadataParser.load({
+        criteria: {
+          name: "pierre",
+          age: 27
+        },
+        metadata: meta
+      }, {
+        url: "http://test.com"
+      });
+
+      console.log("ajaxOptions", ajaxOptions);
+      ajaxOptions.url.should.be.a.string;
+      for (var m in meta) {
+        ajaxOptions.url.indexOf(m).should.not.be.equal(-1);
       }
-    
     });
   });
 });
