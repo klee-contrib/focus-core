@@ -13,5 +13,6 @@
   "esnext": true,
   "loopfunc": true,
   "devel": true,
-  "node": true
+  "node": true,
+  "mocha": true
 }
