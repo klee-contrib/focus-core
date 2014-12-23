@@ -111,6 +111,7 @@ gulp.task('browser-build', ['infos', 'templates'], function() {
     './lib/helpers/custom_exception.coffee',
     './lib/helpers/http_helper.js',
     './lib/core/http_response_parser.js',
+    './lib/core/list_metadata_parser.js',
     './lib/helpers/session_helper.js',
     './lib/helpers/user_helper.js',
     './lib/helpers/site_description_helper.js',
