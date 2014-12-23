@@ -74,7 +74,8 @@
       //Validate the model only of there is the attribute on the model.
       var valRes = validators.validate({
         name: attr,
-        value: model.get(attr)
+        value: model.get(attr),
+        modelName: model.modelName,
       }, validatorsOfDomain[attr]);
 
       //If there is no error dont set any errors. 
@@ -123,13 +124,15 @@
     NS.Helpers.modelValidationPromise = {
       validate: validate,
       initialize: initialize,
-      validateAll: validateAll
+      validateAll: validateAll,
+      validateNoPromise:validateNoPromise
     };
   } else {
     module.exports = {
       validate: validate,
       validateAll: validateAll,
-      initialize: initialize
+      initialize: initialize,
+      validateNoPromise: validateNoPromise
     };
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);

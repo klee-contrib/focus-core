@@ -11,6 +11,7 @@
     initialize: function initialize(options) {
       this.Helpers.metadataBuilder.initialize(options);
       this.Helpers.modelValidationPromise.initialize(options);
+      this.Core.listMetadataParser.configure(options.listOptions);
       //this.Helpers.messageHelper.initialize();
     }
   });
@@ -315,7 +316,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
    */
   var CONTENT_TYPES = {
     LIST: "json+list",
-    LIST_META: "json+list+meta",
+    LIST_META: "json+list:",
     ENTITY_DESC: "json+entity",
     ENTITY: "application/json"
   };
@@ -356,7 +357,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var collectionParser = function collectionParser(response, isMetaInHeader) {
 
     var totalCount, values;
-    var jsonResponse = response.responseJSON;
+    var jsonResponse = response.responseJSON || JSON.parse(response.responseText);
 
     if (isMetaInHeader) {
       totalCount = +(response.getResponseHeader(HEADERS_KEYS.TOTAL_COUNT));
@@ -410,9 +411,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
    */
   var parseResponse = function parseResponse(response) {
     var contentType = response.getResponseHeader(HEADERS_KEYS.CONTENT_TYPE);
-    parseAccessToken(response);
+    //parseAccessToken(response);
     if (contains(contentType, CONTENT_TYPES.LIST_META)) {
-      return collectionParser(response, false);
+      return collectionParser(response, true);
     } else if (contains(contentType, CONTENT_TYPES.LIST)) {
       return collectionParser(response, true);
     } else if (contains(contentType, CONTENT_TYPES.ENTITY_DESC)) {
@@ -439,6 +440,157 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     NS.Core.httpResponseParser = httpResponseParser;
   } else {
     module.exports = httpResponseParser;
+  }
+})(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
+/*global _, window*/
+(function(NS) {
+  "use strict";
+  NS = NS || {};
+
+  //Dependencies.
+  //Dependency gestion depending on the fact that we are in the browser or in node.
+  var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+  /*global _*/
+  //Dependencies.
+  var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+  var PARAM_SEPARATOR = '?';
+  //var paramify = require('../util/paramify');
+  var paramify = function(obj) {
+    return Object.keys(obj).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
+    }).join('&');
+  };
+
+  /**
+   * Default config.
+   * @type {Object}
+   */
+  var config = {
+    paramsMethod: "GET",
+    method: "POST",
+    top: "top",
+    skip: "skip",
+    sortFieldName: "sortFieldName",
+    sortDesc: "sortDesc",
+    contentType: "application/json",
+    crossDomain: true,
+    dataType: "json",
+    processData: false
+  };
+
+  /**
+   * Extend the list options.
+   * @param  {object} conf - The new configutation.
+   * @return {undefined}
+   */
+  function configureListOptions(conf) {
+    if (!_.isObject(conf)) {
+      throw new ArgumentInvalidException('The configuration should be an objet.');
+    }
+    _.extend(config, conf);
+  }
+
+  /**
+   * Take the pageInfos from the form and creates the metdata to send to the server.
+   * @param  {object} pageInfos -  Informations coming form the form.
+   * @return {object} The parsed metadata.
+   */
+  function convertPageInfosToMetadatas(pageInfos) {
+    var metadata = {};
+    if (pageInfos.perPage) {
+      metadata[config.top] = pageInfos.perPage;
+    }
+    if (pageInfos.currentPage) {
+      metadata[config.skip] = (pageInfos.currentPage - 1) * pageInfos.perPage;
+
+    }
+    if (pageInfos.sortField) {
+      if (pageInfos.sortField.field) {
+        metadata[config.sortFieldName] = pageInfos.sortField.field;
+      }
+      if (pageInfos.sortField.order) {
+        metadata[config.sortDesc] = pageInfos.sortField.order !== "asc";
+
+      }
+    }
+
+    return metadata;
+  }
+
+  /**
+   * Creates an ajax request for the list.
+   * @param  {object} data    - The data to save.
+   * @param  {object} options - The options for the ajax request
+   * @return {Promise}
+   */
+  function createAjaxRequest(data, options) {
+      options = options || {};
+      options.type = options.method || config.method;
+      if (!_.isString(options.url)) {
+        throw new ArgumentInvalidException('The url should be a string');
+      }
+      if (!_.isObject(data)) {
+        throw new ArgumentInvalidException('The data should be an objet.');
+      }
+      if (options !== undefined && !_.isObject(options)) {
+        throw new ArgumentInvalidException('The options should be an objet.');
+      }
+      //List without metadata is still a possibility.
+      if (data.pageInfo !== undefined && !_.isObject(data.pageInfo)) {
+        throw new ArgumentInvalidException('The pageInfo should be an objet.');
+      }
+      if (!_.isObject(data.criteria)) {
+        throw new ArgumentInvalidException('The criteria should be an object');
+      }
+
+      options.data = JSON.stringify(data.criteria); //decodeURIComponent(paramify(data.criteria));
+
+      if (data.pageInfo) {
+        var metadata = createListMetadatasOptions(data.pageInfo);
+        if (_.isString(metadata)) {
+          var cleanUrl = options.url.slice(-1) === "/" ? options.url.slice(0, -1) : options.url;
+          options.url = cleanUrl + PARAM_SEPARATOR + metadata;
+        } else {
+          _.extend(options.data, {}, metadata);
+        }
+      }
+      return options;
+
+    }
+    /**
+     * Create the options
+     * @param  {object} metadatas - Search metadats.
+     * @return {object}
+     */
+  function createListMetadatasOptions(pageInfo) {
+      var metadata = convertPageInfosToMetadatas(pageInfo);
+      if (config.paramsMethod === "GET") {
+        return paramify(metadata);
+      }
+      return {
+        metadata: metadata
+      };
+    }
+    /**
+     * @module /core/listMetadataParser
+     * @type {Object}
+     */
+  var listMetadataParser = {
+
+    configure: configureListOptions,
+
+    load: createAjaxRequest,
+
+    createMetadataOptions: createAjaxRequest
+  };
+
+
+  // Differenciating export for node or browser.
+  if (isInBrowser) {
+    NS.Core = NS.Core || {};
+    NS.Core.listMetadataParser = listMetadataParser;
+  } else {
+    module.exports = listMetadataParser;
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
 //Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
@@ -1054,7 +1206,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 		} else if (isValid === false) {
 
 			//Add the name of the property.
-			return getErrorLalel(validator.type, property.name, validator.options); //"The property " + property.name + " is invalid.";
+			return getErrorLalel(validator.type, property.modelName + '.' + property.name, validator.options); //"The property " + property.name + " is invalid.";
 		}
 	};
 
@@ -1064,10 +1216,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 			throw new DependencyException("Dependency not resolved: i18n.js");
 		}
 		var translationKey = options.translationKey ? options.translationKey : "domain.validation." + type;
-		return i18n.translate(translationKey, {
-			fieldName: fieldName,
-			options: options
-		});
+		var opts = _.extend({fieldName: i18n.t(fieldName)}, options);
+		return i18n.translate(translationKey, opts);
 		/*var message = (function() {
 		switch (type) {
 			case "required":
@@ -1379,9 +1529,10 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   (function(NS) {
     "use strict";
-    var Collection, isInBrowser;
+    var Collection, isInBrowser, metadataBuilder;
     NS = NS || {};
     isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
+    metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require("../helpers/metadata_builder").metadataBuilder;
     Collection = (function(_super) {
       __extends(Collection, _super);
 
@@ -1425,6 +1576,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         return models.forEach(this.addModel, this);
       };
 
+
+      /*
+        Process the collection metdatas.
+       */
+
+      Collection.prototype.processMetadatas = function() {
+        return this.metadatas = metadataBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"));
+      };
+
       Collection.prototype.initialize = function(options) {
         options = options || {};
         this.changes = {
@@ -1432,6 +1592,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
           updates: {},
           deletes: {}
         };
+        this.processMetadatas();
         this.on('add', (function(_this) {
           return function(model) {
             return _this.addModel(model);
@@ -1724,6 +1885,18 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         }
       };
 
+
+      /*
+        Method to get the identifier of the model givent its idAttribute.
+       */
+
+      Model.prototype.getId = function() {
+        if (this.idAttribute != null) {
+          return this.get(this.idAttribute);
+        }
+        return this.get('id');
+      };
+
       Model.prototype.processMetadatas = function() {
         this.metadatas = metadataBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"));
         if ((this.metadatas != null) && (this.metadatas.idAttribute != null)) {
@@ -1754,6 +1927,9 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         var jsonModel;
         jsonModel = Model.__super__.toJSON.call(this);
         jsonModel.cid = this.cid;
+        if ((this.idAttribute != null) && (this.id != null)) {
+          jsonModel.id = this.id;
+        }
         jsonModel.metadatas = this.metadatas;
         jsonModel.modelName = this.modelName || this.get('modelName');
         return jsonModel;
@@ -1761,8 +1937,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
       Model.prototype.toSaveJSON = function() {
         var json;
-        json = Backbone.Model.prototype.toJSON.call(this);
-        return _.omit(json, 'isNew', 'metadatas', 'cid');
+        json = this.toJSON();
+        return _.omit(json, 'isNew', 'metadatas', 'cid', 'modelName');
       };
 
       Model.prototype.isInCollection = function() {
@@ -3337,13 +3513,14 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
         throw new ArgumentNullException("The route callback seems to be undefined, please check your router file for your route: ", name);
       }
       var f = function() {
+        var _route = route;
           //console.log('route before', route);
         //Treat the home case.
-        if(route === ""){route = router.noRoleRoute;}
-        var n = siteDescriptionBuilder.findRouteName(route);
+        if(_route === ""){_route = router.noRoleRoute;}
+        var n = siteDescriptionBuilder.findRouteName(_route);
         var rt = siteDescriptionBuilder.getRoute(n);
         //If the route does not exists, or the user does not have any right on the route display an error.
-        if((rt === undefined && route!== '') || !userHelper.hasOneRole(rt.roles)){
+        if((rt === undefined && _route!== '') || !userHelper.hasOneRole(rt.roles)){
           backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')});
           return Backbone.history.navigate('', true);
         }else {
@@ -3778,10 +3955,56 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 	var odataHelper = isInBrowser ? NS.Helpers.odataHelper : require("./odata_helper");
 	var httpResponseParser = isInBrowser ? NS.Core.httpResponseParser : require('../core/http_response_parser');
+	var listMetadataParser = isInBrowser ? NS.Core.listMetadataParser : require('../core/list_metadata_parser');
 	var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
 	var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+	var ajax = isInBrowser ? NS.Helpers.utilHelper.promiseAjax : require('./utilHelper').promiseAjax;
 
+	function createCORSRequest(method, url) {
+		var xhr = new XMLHttpRequest();
+		if ("withCredentials" in xhr) {
+			// XHR for Chrome/Firefox/Opera/Safari.
+			xhr.open(method, url, true);
+		} else if (typeof XDomainRequest != "undefined") {
+			// XDomainRequest for IE.
+			xhr = new XDomainRequest();
+			xhr.open(method, url);
+		} else {
+			// CORS not supported.
+			xhr = null;
+		}
+		return xhr;
+	};
 
+	var fetch = function(obj) {
+		var request = createCORSRequest(obj.type, obj.url);
+		if (!request) {
+			throw new Error('You cannot perform ajax request on other domains.');
+		}
+		return new Promise(function(success, failure) {
+			request.onerror = function(error) {
+				failure(error);
+			};
+			request.onload = function() {
+				var status = request.status;
+				if (status !== 200) {
+					var err = JSON.parse(request.response);
+					err.statusCode = status;
+					failure(err);
+				}
+				var contentType = request.getResponseHeader('content-type');
+				var data;
+				if (contentType && contentType.indexOf("application/json") !== -1) {
+					data = httpResponseParser.parse(request);
+				} else {
+					data = request.responseText;
+				}
+				success(data);
+			};
+			request.send(obj.data);
+		});
+
+	};
 
 	// Backbone model with **promise** CRUD method instead of its own methods.
 	var PromiseModel = Backbone.Model.extend({
@@ -3870,6 +4093,41 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
 	// Backbone collection with **promise** CRUD method instead of its own methods.
 	var PromiseCollection = Backbone.Collection.extend({
+		search: function searchPromiseCollection(params, options) {
+			options = options || {};
+			params = params || {};
+			if (!_.isObject(params)) {
+				throw new ArgumentNullException('searchPromiseCollection: params should be an object, check your service');
+			}
+			if (!_.isObject(params.pagesInfos)) {
+				throw new ArgumentInvalidException('searchPromiseCollection: params should have a pagesInfos property, check your service', params);
+			}
+			//Clean the shared collection.
+			this.reset(null, {
+				silent: true
+			});
+			//If the url wants to be changed it can be done.
+			if (options.url) {
+				this.url = options.url;
+			} else {
+				options.url = this.url;
+			}
+			params.pageInfo = params.pagesInfos;
+			delete params.pagesInfos;
+			options = listMetadataParser.createMetadataOptions(params, options);
+			return new Promise(function(resolve, reject) {
+				options.success = function(data, textStatus, jqXHR) {
+					resolve(httpResponseParser.parse(jqXHR));
+				};
+				options.error = function(err) {
+					reject(err);
+				};
+				fetch(options);
+				//$.ajax(options);
+			});
+
+
+		},
 		/**
 		 * Fetch the collection datas, clean the share collection and parse.
 		 * @param  {object} this object should have the following structure: {criteria: {key: "val"}, pagesInfos: {}}.
@@ -3909,7 +4167,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 					resolve(httpResponseParser.parse(jqXHR));
 				};
 				options.error = reject;
-				Backbone.sync('read', collection, options);
+				var action = options.method === "POST" ? "create" : "read";
+				Backbone.sync(action, collection, options);
 			});
 		},
 		save: function saveCollection() {
@@ -4100,7 +4359,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
       //Validate the model only of there is the attribute on the model.
       var valRes = validators.validate({
         name: attr,
-        value: model.get(attr)
+        value: model.get(attr),
+        modelName: model.modelName,
       }, validatorsOfDomain[attr]);
 
       //If there is no error dont set any errors. 
@@ -4149,13 +4409,15 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
     NS.Helpers.modelValidationPromise = {
       validate: validate,
       initialize: initialize,
-      validateAll: validateAll
+      validateAll: validateAll,
+      validateNoPromise:validateNoPromise
     };
   } else {
     module.exports = {
       validate: validate,
       validateAll: validateAll,
-      initialize: initialize
+      initialize: initialize,
+      validateNoPromise: validateNoPromise
     };
   }
 })(typeof module === 'undefined' && typeof window !== 'undefined' ? window.Fmk : module.exports);
@@ -5751,7 +6013,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
          * @return {string | object}- The criteria to give to the load service.
          */
         getLoadCriteria: function getLoadCriteria(id) {
-            return id || this.model.get('id');
+            return id || this.model.getId();
         },
         //This function is use in order to retrieve the data from the api using a service.
         /**

@@ -35,13 +35,14 @@
         throw new ArgumentNullException("The route callback seems to be undefined, please check your router file for your route: ", name);
       }
       var f = function() {
+        var _route = route;
           //console.log('route before', route);
         //Treat the home case.
-        if(route === ""){route = router.noRoleRoute;}
-        var n = siteDescriptionBuilder.findRouteName(route);
+        if(_route === ""){_route = router.noRoleRoute;}
+        var n = siteDescriptionBuilder.findRouteName(_route);
         var rt = siteDescriptionBuilder.getRoute(n);
         //If the route does not exists, or the user does not have any right on the route display an error.
-        if((rt === undefined && route!== '') || !userHelper.hasOneRole(rt.roles)){
+        if((rt === undefined && _route!== '') || !userHelper.hasOneRole(rt.roles)){
           backboneNotification.addNotification({type: "error", message: i18n.t('application.noRights')});
           return Backbone.history.navigate('', true);
         }else {

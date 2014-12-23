@@ -21,6 +21,13 @@
       @savePrevious()
       if(@isNew() and @defaultIfNew? )
         this.set(@defaultIfNew, { silent: true })
+    ###
+      Method to get the identifier of the model givent its idAttribute.
+    ###
+    getId: ->
+      if @idAttribute?
+        return @get(@idAttribute)
+      return @get('id')
     # Process all the models metadatas, save theminto the model.
     processMetadatas: ->
       this.metadatas = metadataBuilder.getMetadatas(_.pick(this, "modelName", "metadatas"))
@@ -40,14 +47,16 @@
     toJSON: ->
       jsonModel = super()
       jsonModel.cid = @cid
+      if @idAttribute? and @id?
+        jsonModel.id = @id
       jsonModel.metadatas =  @metadatas
       jsonModel.modelName =  @modelName or @get('modelName')
       return jsonModel
       
     # Return a json to Save.
     toSaveJSON: ->
-      json = Backbone.Model.prototype.toJSON.call(@)
-      return _.omit(json, 'isNew', 'metadatas', 'cid')
+      json = @toJSON()
+      return _.omit(json, 'isNew', 'metadatas', 'cid', 'modelName')
     # Return true if the model is inside a collection.
     isInCollection: ->
       return @collection?

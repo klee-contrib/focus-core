@@ -6,10 +6,56 @@
 	var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
 	var odataHelper = isInBrowser ? NS.Helpers.odataHelper : require("./odata_helper");
 	var httpResponseParser = isInBrowser ? NS.Core.httpResponseParser : require('../core/http_response_parser');
+	var listMetadataParser = isInBrowser ? NS.Core.listMetadataParser : require('../core/list_metadata_parser');
 	var ArgumentNullException = isInBrowser ? NS.Helpers.Exceptions.ArgumentNullException : require("./custom_exception").ArgumentNullException;
 	var ArgumentInvalidException = isInBrowser ? NS.Helpers.Exceptions.ArgumentInvalidException : require("./custom_exception").ArgumentInvalidException;
+	var ajax = isInBrowser ? NS.Helpers.utilHelper.promiseAjax : require('./utilHelper').promiseAjax;
 
+	function createCORSRequest(method, url) {
+		var xhr = new XMLHttpRequest();
+		if ("withCredentials" in xhr) {
+			// XHR for Chrome/Firefox/Opera/Safari.
+			xhr.open(method, url, true);
+		} else if (typeof XDomainRequest != "undefined") {
+			// XDomainRequest for IE.
+			xhr = new XDomainRequest();
+			xhr.open(method, url);
+		} else {
+			// CORS not supported.
+			xhr = null;
+		}
+		return xhr;
+	};
 
+	var fetch = function(obj) {
+		var request = createCORSRequest(obj.type, obj.url);
+		if (!request) {
+			throw new Error('You cannot perform ajax request on other domains.');
+		}
+		return new Promise(function(success, failure) {
+			request.onerror = function(error) {
+				failure(error);
+			};
+			request.onload = function() {
+				var status = request.status;
+				if (status !== 200) {
+					var err = JSON.parse(request.response);
+					err.statusCode = status;
+					failure(err);
+				}
+				var contentType = request.getResponseHeader('content-type');
+				var data;
+				if (contentType && contentType.indexOf("application/json") !== -1) {
+					data = httpResponseParser.parse(request);
+				} else {
+					data = request.responseText;
+				}
+				success(data);
+			};
+			request.send(obj.data);
+		});
+
+	};
 
 	// Backbone model with **promise** CRUD method instead of its own methods.
 	var PromiseModel = Backbone.Model.extend({
@@ -98,6 +144,41 @@
 
 	// Backbone collection with **promise** CRUD method instead of its own methods.
 	var PromiseCollection = Backbone.Collection.extend({
+		search: function searchPromiseCollection(params, options) {
+			options = options || {};
+			params = params || {};
+			if (!_.isObject(params)) {
+				throw new ArgumentNullException('searchPromiseCollection: params should be an object, check your service');
+			}
+			if (!_.isObject(params.pagesInfos)) {
+				throw new ArgumentInvalidException('searchPromiseCollection: params should have a pagesInfos property, check your service', params);
+			}
+			//Clean the shared collection.
+			this.reset(null, {
+				silent: true
+			});
+			//If the url wants to be changed it can be done.
+			if (options.url) {
+				this.url = options.url;
+			} else {
+				options.url = this.url;
+			}
+			params.pageInfo = params.pagesInfos;
+			delete params.pagesInfos;
+			options = listMetadataParser.createMetadataOptions(params, options);
+			return new Promise(function(resolve, reject) {
+				options.success = function(data, textStatus, jqXHR) {
+					resolve(httpResponseParser.parse(jqXHR));
+				};
+				options.error = function(err) {
+					reject(err);
+				};
+				fetch(options);
+				//$.ajax(options);
+			});
+
+
+		},
 		/**
 		 * Fetch the collection datas, clean the share collection and parse.
 		 * @param  {object} this object should have the following structure: {criteria: {key: "val"}, pagesInfos: {}}.
@@ -137,7 +218,8 @@
 					resolve(httpResponseParser.parse(jqXHR));
 				};
 				options.error = reject;
-				Backbone.sync('read', collection, options);
+				var action = options.method === "POST" ? "create" : "read";
+				Backbone.sync(action, collection, options);
 			});
 		},
 		save: function saveCollection() {
