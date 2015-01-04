@@ -2,7 +2,7 @@ require('../initialize-globals').load();
 var listMetadataParser = require('../../lib/core/list_metadata_parser');
 describe('# list_metadata_parser', function() {
   describe("##createListMetadatasOptions", function() {
-    it('GET', function() {
+    it.skip('GET', function() {
       var meta = {
         top: 10,
         skip: 23,
