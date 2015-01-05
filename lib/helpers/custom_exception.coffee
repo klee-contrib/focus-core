@@ -1,10 +1,6 @@
 #global $, _
-((NS) ->
   "use strict"
-
   # Filename: helpers/error_helper.js */
-  NS = NS or {}
-  isInBrowser = typeof module is 'undefined' and typeof window isnt 'undefined'
   # Exception class
   ###
    * Creates a new CustomException.
@@ -42,9 +38,4 @@
     ArgumentInvalidException: ArgumentInvalidException
     DependencyException: DependencyException
   }
-  if isInBrowser
-    NS.Helpers = NS.Helpers or {}
-    NS.Helpers.Exceptions = mod
-  else
-    module.exports = mod
-)(if typeof module is 'undefined' and typeof window isnt 'undefined' then window.Fmk else module.exports)
+  module.exports = mod
