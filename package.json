@@ -24,9 +24,16 @@
   ],
   "author": "Pierre Besson <pierre.besson@kleegroup.com>",
   "readmeFilename": "README.md",
+  "documentation": "http://kleegroup.github.io/focus-docs/",
   "bin": {
     "mocha": "/node_modules/mocha/bin/mocha",
     "_mocha": "/node_modules/mocha/bin/_mocha"
+  },
+  "browserify": {
+    "transform": [
+      "coffeeify",
+      "browserify-handlebars"
+    ]
   },
   "dependencies": {
     "backbone": "~1.1.2",
@@ -44,7 +51,9 @@
     "sinon-chai": "~2.5.0",
     "underscore": "~1.7.0",
     "browserify-handlebars": "~1.0.0",
-    "browserify": "~8.0.3"
+    "browserify": "~8.0.3",
+    "vinyl-source-stream": "~1.0.0",
+    "coffeeify": "~1.0.0"
   },
   "devDependencies": {
     "eslint": "^0.8.2",
