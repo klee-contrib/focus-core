@@ -42,7 +42,9 @@
     "javascript-brunch": "~1.7.1",
     "sinon": "~1.10.3",
     "sinon-chai": "~2.5.0",
-    "underscore": "~1.7.0"
+    "underscore": "~1.7.0",
+    "browserify-handlebars": "~1.0.0",
+    "browserify": "~8.0.3"
   },
   "devDependencies": {
     "eslint": "^0.8.2",
