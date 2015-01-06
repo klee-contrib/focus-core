@@ -1,8 +1,8 @@
 # Put your handlebars.js helpers here.
 # Globals variables.
 # Get the domains definition as globals.
-metadaBuilder = Fmk.Helpers.metadataBuilder# require('./metadata_builder').metadataBuilder
-domains_definition = Fmk.Helpers.metadataBuilder.getDomains()
+
+metadataBuilder = require('./metadata_builder').metadataBuilder;
 logger = new Logger()
 
 Handlebars.registerHelper 'pick', (val, options) ->
@@ -41,7 +41,7 @@ Handlebars.registerHelper "display_for", (property, options) ->
   container = _.extend(this, {modelName: modelName})
   metadata = if container.metadatas? and container.metadatas[property]? then container.metadatas[property] else {}#metadaBuilder.getMetadataForAttribute(container,property)
   if not metadata.domain? then logger.warn("There is no domain for your field named : #{property}", container)
-  domain =  Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] or {}
+  domain =  metadataBuilder.getDomains()[metadata.domain] or {}
   translationRoot = opt.translationRoot or undefined
   dataType = opt.dataType or domain.type or "text"
   (dataType = "checkbox") if dataType is "boolean"
@@ -136,9 +136,9 @@ Handlebars.registerHelper "input_for", (property, options) ->
   opt = options.hash or {}
   modelName = this.modelName or opt.modelName or undefined
   container = _.extend(this, {modelName: modelName})
-  metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(container,property)
+  metadata = metadataBuilder.getMetadataForAttribute(container,property)
   #console.log "metadata",metadata
-  domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] or {}
+  domain =  metadataBuilder.getDomains()[metadata.domain] or {}
   #console.log "domain", domain
   minimalHtml = if opt.minimalHtml? then opt.minimalHtml else false
   noGrid = if opt.noGrid then opt.noGrid else false
@@ -287,9 +287,9 @@ Handlebars.registerHelper "radio_for", (property, options) ->
   dataType = undefined
   #Read all the options if they exists
   opt = options.hash or {}
-  metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this,property)
+  metadata = metadataBuilder.getMetadataForAttribute(this,property)
   #console.log "metadata",metadata
-  domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] or {}
+  domain = metadataBuilder.getDomains()[metadata.domain] or {}
   #possible values for the radio group
   possibleValues = [] ;
   isDisplayRequired = false
@@ -403,8 +403,8 @@ Handlebars.registerHelper "options_selected", (property, options) ->
   selected = this[property] or opt.selected or undefined
   if(opt.addDefault)
     list =[{id: undefined, label: ''}].concat(list)
-  metadata = Fmk.Helpers.metadataBuilder.getMetadataForAttribute(this,property)
-  domain = Fmk.Helpers.metadataBuilder.getDomains()[metadata.domain] or {}
+  metadata = metadataBuilder.getMetadataForAttribute(this,property)
+  domain = metadataBuilder.getDomains()[metadata.domain] or {}
   #console.log "domain", domain
   isRequired = ()=>
     isDisplayRequired = false
@@ -731,7 +731,7 @@ Handlebars.registerHelper "introspect", (property, options) ->
   helperName = if isDisplay then "display_for" else "input_for"
   modelName = this.modelName or property or opt.modelName or undefined
   container = _.extend(this, {modelName: modelName})
-  metadatas = Fmk.Helpers.metadataBuilder.getMetadatas(container) or {}
+  metadatas = metadataBuilder.getMetadatas(container) or {}
   html = ""
   for prop of metadatas
     #if container[prop]?
