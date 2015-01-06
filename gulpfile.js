@@ -100,6 +100,19 @@ gulp.task('css-build', function() {
   Building js files
 **********************/
 
+gulp.task('browserify', function(){
+  var browserify = require('browserify');
+  var source = require('vinyl-source-stream');
+  return browserify(({entries: ['./lib/browser.js'], extensions: ['.coffee', '.hbs']}))
+    .bundle()
+    //Pass desired output filename to vinyl-source-stream
+    .pipe(source('focus.js'))
+     .pipe(gulp.dest('./dist/browser/'))
+    .pipe(gulp.dest('./example/app/js/'))
+    //Current project destination.
+    //.pipe(gulp.dest('../SPA-skeleton/vendor'));
+    .pipe(gulp.dest(buildConf.spaDirectory));
+});
 
 //Build all the javascripts file.
 gulp.task('browser-build', ['infos', 'templates'], function() {
