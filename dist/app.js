@@ -2005,7 +2005,7 @@ require.register("lib/helpers/post_rendering_builder", function(exports, require
   NS = NS || {};
   var isInBrowser = typeof module === 'undefined' && typeof window !== 'undefined';
   var metadataBuilder = isInBrowser ? NS.Helpers.metadataBuilder : require('./metadata_builder').metadataBuilder;
-  var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require('./post_rendering_helper').metadataBuilder;
+  var postRenderingHelper = isInBrowser ? NS.Helpers.postRenderingHelper : require('./post_rendering_helper');
   //Options must contain a model and a viewSelecrot property.
   var postRenderingBuilder = function(options) {
     //When there is no model inide the view, do nothing.
