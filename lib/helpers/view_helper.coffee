@@ -1,7 +1,7 @@
 # Put your handlebars.js helpers here.
 # Globals variables.
 # Get the domains definition as globals.
-
+Handlebars = require("hbsfy/runtime");
 metadataBuilder = require('./metadata_builder').metadataBuilder;
 logger = if Logger? then new Logger() else console
 
