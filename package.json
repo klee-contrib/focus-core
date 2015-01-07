@@ -32,7 +32,20 @@
   "browserify": {
     "transform": [
       "coffeeify",
-      "browserify-handlebars"
+      [
+        "hbsfy",
+        {
+          "extensions": [
+            "hbs"
+          ],
+          "precompilerOptions": {
+            "knownHelpersOnly": true,
+            "knownHelpers": {
+              "t": true
+            }
+          }
+        }
+      ]
     ]
   },
   "dependencies": {
@@ -53,7 +66,8 @@
     "browserify-handlebars": "~1.0.0",
     "browserify": "~8.0.3",
     "vinyl-source-stream": "~1.0.0",
-    "coffeeify": "~1.0.0"
+    "coffeeify": "~1.0.0",
+    "hbsfy": "~2.2.1"
   },
   "devDependencies": {
     "eslint": "^0.8.2",

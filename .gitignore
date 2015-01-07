@@ -10,7 +10,6 @@ bin
 obj
 doc
 docs
-dist
 pids
 logs
 results
