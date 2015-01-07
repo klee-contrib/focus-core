@@ -3511,7 +3511,9 @@ var validators = {
 
 module.exports = validators;
 },{"./custom_exception":7}],30:[function(require,module,exports){
-var S4, guid, logger, metadataBuilder;
+var Handlebars, S4, guid, logger, metadataBuilder;
+
+Handlebars = require("hbsfy/runtime");
 
 metadataBuilder = require('./metadata_builder').metadataBuilder;
 
@@ -4659,7 +4661,7 @@ Handlebars.registerHelper("result_container", function(i18n_key, options) {
 
 
 
-},{"../config":2,"./metadata_builder":15}],31:[function(require,module,exports){
+},{"../config":2,"./metadata_builder":15,"hbsfy/runtime":68}],31:[function(require,module,exports){
 var infos = require('../package.json');
 require('./helpers/view_helper');
 module.exports = {
