@@ -1004,7 +1004,7 @@ var _formInputModelBinder = function formInputModelBinder(inputs, model, options
                     }
                     break;
                 default:
-                    currentvalue = input.value === "" ? undefined : input.value;
+                    currentvalue = input.value === "" ? null : input.value;
             }
 
         }
@@ -1073,9 +1073,9 @@ var _formOptionModelBinder = function formOptionModelBinder(optionsSets, model, 
             });
         } else {
             if (this.hasAttribute('multiple')) {
-                selectedValue = $(this).val() || []; // TODO : RGE si select2, il faut utiliser $(this).select2('val')
+                selectedValue = $(this).val() || [];
             } else {
-                selectedValue = this.value;
+                selectedValue = this.value === "" ? undefined : this.value;
             }
 
         }
@@ -4673,7 +4673,7 @@ module.exports = {
   util: require('./util'),
   initialize: require('./initialize')
 };
-},{"../package.json":68,"./core":4,"./helpers":12,"./helpers/view_helper":30,"./initialize":32,"./models":36,"./util":47,"./views":55}],32:[function(require,module,exports){
+},{"../package.json":69,"./core":4,"./helpers":12,"./helpers/view_helper":30,"./initialize":32,"./models":36,"./util":47,"./views":55}],32:[function(require,module,exports){
 /**
  * Focus initialization function.
  * @param options - options to initialize.
@@ -5294,7 +5294,9 @@ var PaginatedCollection = Collection.extend({
 // Differenciating export for node or browser.
 module.exports = PaginatedCollection;
 },{"../helpers/custom_exception":7,"./collection":33}],41:[function(require,module,exports){
-var templater = require("handlebars/runtime")["default"].template;module.exports = templater(function (Handlebars,depth0,helpers,partials,data) {
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
@@ -5302,39 +5304,34 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   return "<div class=\"navbar-static-top header\">\r\n  \r\n</div>\r\n<div>\r\n  <i class=\"fa fa-spinner fa-spin hidden\" id='ajaxIndicator'></i>\r\n</div>";
   });
-},{"handlebars/runtime":67}],42:[function(require,module,exports){
-var templater = require("handlebars/runtime")["default"].template;module.exports = templater(function (Handlebars,depth0,helpers,partials,data) {
+
+},{"hbsfy/runtime":68}],42:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this, helperMissing=helpers.helperMissing;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = "", stack1, helper, options;
-  buffer += "\r\n             <li id='";
-  if (helper = helpers.cssId) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.cssId); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
-    + "' class=\"";
-  if (helper = helpers.cssClass) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.cssClass); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
+  var buffer = "", stack1;
+  buffer += "\r\n             <li id='"
+    + escapeExpression(((stack1 = (depth0 && depth0.cssId)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' class=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.cssClass)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + " ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.isActive), {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\" ";
-  if (helper = helpers.dataAttributes) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.dataAttributes); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
-    + " >\r\n                <a href=\"";
-  if (helper = helpers.route) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.route); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
+  buffer += "\" "
+    + escapeExpression(((stack1 = (depth0 && depth0.dataAttributes)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + " >\r\n                <a href=\""
+    + escapeExpression(((stack1 = (depth0 && depth0.route)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
-    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{
+    + escapeExpression(helpers.t.call(depth0, (depth0 && depth0.name), {hash:{
     'prefix': ("header."),
     'suffix': (".title")
-  },data:data},helper ? helper.call(depth0, (depth0 && depth0.name), options) : helperMissing.call(depth0, "t", (depth0 && depth0.name), options)))
+  },data:data}))
     + "</a>\r\n             </li>\r\n          ";
   return buffer;
   }
@@ -5350,67 +5347,73 @@ function program2(depth0,data) {
   buffer += "\r\n    </ul>\r\n  </div>\r\n</div>";
   return buffer;
   });
-},{"handlebars/runtime":67}],43:[function(require,module,exports){
-var templater = require("handlebars/runtime")["default"].template;module.exports = templater(function (Handlebars,depth0,helpers,partials,data) {
+
+},{"hbsfy/runtime":68}],43:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", helper, options, helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression;
+  var buffer = "", escapeExpression=this.escapeExpression;
 
 
   buffer += "<!-- Modal -->\r\n<div class=\"modal fade\" data-modal  datatabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\r\n  <div class=\"modal-dialog\">\r\n    <div class=\"modal-content\">\r\n      <div class=\"modal-header\">\r\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\r\n        <h4 class=\"modal-title\" id=\"myModalLabel\">"
-    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{
+    + escapeExpression(helpers.t.call(depth0, "title", {hash:{
     'keyInContext': (true)
-  },data:data},helper ? helper.call(depth0, "title", options) : helperMissing.call(depth0, "t", "title", options)))
+  },data:data}))
     + "</h4>\r\n      </div>\r\n      <div class=\"modal-body\" data-modal-content>\r\n      \r\n      </div>\r\n      <div class=\"modal-footer\">\r\n        <button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">"
-    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "button.modalClose", options) : helperMissing.call(depth0, "t", "button.modalClose", options)))
+    + escapeExpression(helpers.t.call(depth0, "button.modalClose", {hash:{},data:data}))
     + "</button>\r\n        <button type=\"button\" class=\"btn btn-primary\" data-close=\"modal\">"
-    + escapeExpression((helper = helpers.t || (depth0 && depth0.t),options={hash:{},data:data},helper ? helper.call(depth0, "button.modalSave", options) : helperMissing.call(depth0, "t", "button.modalSave", options)))
+    + escapeExpression(helpers.t.call(depth0, "button.modalSave", {hash:{},data:data}))
     + "</button>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</div>";
   return buffer;
   });
-},{"handlebars/runtime":67}],44:[function(require,module,exports){
-var templater = require("handlebars/runtime")["default"].template;module.exports = templater(function (Handlebars,depth0,helpers,partials,data) {
+
+},{"hbsfy/runtime":68}],44:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, helper, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class=\"noResults\">";
-  if (helper = helpers.message) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.message); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
+  buffer += "<div class=\"noResults\">"
+    + escapeExpression(((stack1 = (depth0 && depth0.message)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</div>";
   return buffer;
   });
-},{"handlebars/runtime":67}],45:[function(require,module,exports){
-var templater = require("handlebars/runtime")["default"].template;module.exports = templater(function (Handlebars,depth0,helpers,partials,data) {
+
+},{"hbsfy/runtime":68}],45:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, helper, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = "", stack1, helper;
-  buffer += "\r\n    <strong>";
-  if (helper = helpers.message) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.message); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
+  var buffer = "", stack1;
+  buffer += "\r\n    <strong>"
+    + escapeExpression(((stack1 = (depth0 && depth0.message)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</strong><br />\r\n  ";
   return buffer;
   }
 
-  buffer += "<div class='alert alert-";
-  if (helper = helpers.cssMessageType) { stack1 = helper.call(depth0, {hash:{},data:data}); }
-  else { helper = (depth0 && depth0.cssMessageType); stack1 = typeof helper === functionType ? helper.call(depth0, {hash:{},data:data}) : helper; }
-  buffer += escapeExpression(stack1)
+  buffer += "<div class='alert alert-"
+    + escapeExpression(((stack1 = (depth0 && depth0.cssMessageType)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "'>\r\n  <button type='button' class='close' data-dismiss='alert'>&times;</button>\r\n  ";
   stack1 = helpers.each.call(depth0, (depth0 && depth0.messages), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\r\n</div>";
   return buffer;
   });
-},{"handlebars/runtime":67}],46:[function(require,module,exports){
-var templater = require("handlebars/runtime")["default"].template;module.exports = templater(function (Handlebars,depth0,helpers,partials,data) {
+
+},{"hbsfy/runtime":68}],46:[function(require,module,exports){
+// hbsfy compiled Handlebars template
+var HandlebarsCompiler = require('hbsfy/runtime');
+module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
 helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
@@ -5418,7 +5421,8 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 
   return "<div class='spinner-container'>\r\n       <div class='spinner'>\r\n          <div class=\"three-quarters\">\r\n            ...\r\n          </div>\r\n       </div>\r\n   </div>";
   });
-},{"handlebars/runtime":67}],47:[function(require,module,exports){
+
+},{"hbsfy/runtime":68}],47:[function(require,module,exports){
 module.exports = {
   paramify: require('./paramify')
 };
@@ -8142,6 +8146,9 @@ exports.isEmpty = isEmpty;
 module.exports = require('./dist/cjs/handlebars.runtime');
 
 },{"./dist/cjs/handlebars.runtime":61}],68:[function(require,module,exports){
+module.exports = require("handlebars/runtime")["default"];
+
+},{"handlebars/runtime":67}],69:[function(require,module,exports){
 module.exports={
   "name": "focus",
   "version": "0.3.0",
@@ -8176,7 +8183,20 @@ module.exports={
   "browserify": {
     "transform": [
       "coffeeify",
-      "browserify-handlebars"
+      [
+        "hbsfy",
+        {
+          "extensions": [
+            "hbs"
+          ],
+          "precompilerOptions": {
+            "knownHelpersOnly": true,
+            "knownHelpers": {
+              "t": true
+            }
+          }
+        }
+      ]
     ]
   },
   "dependencies": {
@@ -8197,7 +8217,8 @@ module.exports={
     "browserify-handlebars": "~1.0.0",
     "browserify": "~8.0.3",
     "vinyl-source-stream": "~1.0.0",
-    "coffeeify": "~1.0.0"
+    "coffeeify": "~1.0.0",
+    "hbsfy": "~2.2.1"
   },
   "devDependencies": {
     "eslint": "^0.8.2",
