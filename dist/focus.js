@@ -3511,1159 +3511,1118 @@ var validators = {
 
 module.exports = validators;
 },{"./custom_exception":7}],30:[function(require,module,exports){
-var Handlebars, S4, guid, logger, metadataBuilder;
-
-Handlebars = require("hbsfy/runtime");
-
-metadataBuilder = require('./metadata_builder').metadataBuilder;
-
-logger = typeof Logger !== "undefined" && Logger !== null ? new Logger() : console;
-
-Handlebars.registerHelper('pick', function(val, options) {
-  return options.hash[val];
-});
-
-Handlebars.registerHelper("t", function(i18n_key, options) {
-  var maxLength, opt, params, prefix, result, suffix;
-  opt = options.hash || {};
-  suffix = opt.suffix || "";
-  prefix = opt.prefix || "";
-  maxLength = opt.max;
-  if (opt.keyInContext === true) {
-    i18n_key = this[i18n_key];
-  }
-  params = opt.params != null ? opt.params.split(',') : void 0;
-  params = params != null ? _.pick.apply(this, params) : void 0;
-  result = i18n.t("" + prefix + i18n_key + suffix, params);
-  if ((maxLength != null) && maxLength < result.length) {
-    result = "" + (result.slice(0, +maxLength)) + "...";
-  }
-  return new Handlebars.SafeString(result);
-});
-
-Handlebars.registerHelper("debug", function(optionalValue) {
-  console.log("Current Context");
-  console.log("====================");
-  console.log(this);
-  if (optionalValue) {
-    console.log("Value");
+module.exports = function(Handlebars) {
+  var S4, guid, logger, metadataBuilder;
+  metadataBuilder = require('./metadata_builder').metadataBuilder;
+  logger = typeof Logger !== "undefined" && Logger !== null ? new Logger() : console;
+  Handlebars.registerHelper('pick', function(val, options) {
+    return options.hash[val];
+  });
+  Handlebars.registerHelper("t", function(i18n_key, options) {
+    var maxLength, opt, params, prefix, result, suffix;
+    opt = options.hash || {};
+    suffix = opt.suffix || "";
+    prefix = opt.prefix || "";
+    maxLength = opt.max;
+    if (opt.keyInContext === true) {
+      i18n_key = this[i18n_key];
+    }
+    params = opt.params != null ? opt.params.split(',') : void 0;
+    params = params != null ? _.pick.apply(this, params) : void 0;
+    result = i18n.t("" + prefix + i18n_key + suffix, params);
+    if ((maxLength != null) && maxLength < result.length) {
+      result = "" + (result.slice(0, +maxLength)) + "...";
+    }
+    return new Handlebars.SafeString(result);
+  });
+  Handlebars.registerHelper("debug", function(optionalValue) {
+    console.log("Current Context");
     console.log("====================");
-    return console.log(optionalValue);
-  }
-});
-
-
-/*------------------------------------------- FORM FOR THE INPUTS ------------------------------------------- */
-
-Handlebars.registerHelper("display_for", function(property, options) {
-  var col, container, containerAttribs, containerCss, dataType, domain, html, htmlId, inputSize, label, labelSize, labelSizeValue, linkClose, linkOpen, linkTo, metadata, modelName, noGrid, noHtml, opt, propertyValue, translationKey, translationRoot;
-  options = options || {};
-  opt = options.hash || {};
-  modelName = this.modelName || opt.modelName || {};
-  container = _.extend(this, {
-    modelName: modelName
+    console.log(this);
+    if (optionalValue) {
+      console.log("Value");
+      console.log("====================");
+      return console.log(optionalValue);
+    }
   });
-  metadata = (container.metadatas != null) && (container.metadatas[property] != null) ? container.metadatas[property] : {};
-  if (metadata.domain == null) {
-    logger.warn("There is no domain for your field named : " + property, container);
-  }
-  domain = metadataBuilder.getDomains()[metadata.domain] || {};
-  translationRoot = opt.translationRoot || void 0;
-  dataType = opt.dataType || domain.type || "text";
-  if (dataType === "boolean") {
-    dataType = "checkbox";
-  }
-  containerAttribs = opt.containerAttribs || "";
-  containerCss = opt.containerCss || "";
-  labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
-  labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
-  col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
-  noHtml = opt.noHtml != null ? opt.noHtml : false;
-  noGrid = opt.noGrid != null ? opt.noGrid : false;
-  htmlId = opt.htmlId != null ? "id='" + opt.htmlId + "'" : "";
-  linkTo = opt.linkTo != null ? opt.linkTo : "";
-  linkOpen = (function(_this) {
-    return function() {
-      if (linkTo) {
-        return "<a href='" + linkTo + "' data-bypass>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  linkClose = (function(_this) {
-    return function() {
-      if (linkTo) {
-        return "</a>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  inputSize = (function(_this) {
-    return function() {
-      var inputSizeValue;
-      if (noGrid || opt.containerCss) {
-        return inputSize = "";
-      } else {
-        inputSizeValue = 12 - labelSizeValue;
-        return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
-      }
-    };
-  })(this);
-  translationKey = (function(_this) {
-    return function() {
-      var translation;
-      translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
-      if (translationRoot != null) {
-        translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
-      }
-      if (translation === "") {
-        return "";
-      } else {
-        return i18n.t(translation);
-      }
-    };
-  })(this);
-  label = (function(_this) {
-    return function() {
-      if (opt.isNoLabel != null) {
-        return "";
-      } else if (noHtml) {
-        return "" + (translationKey());
-      } else {
-        return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
-      }
-    };
-  })(this);
-  propertyValue = (function(_this) {
-    return function() {
-      var key, metadataClass, propValue, value;
-      metadataClass = metadata.style != null ? metadata.style : "";
-      if (_this[property] != null) {
-        propValue = _this[property];
-        if (opt.listKey != null) {
-          key = _this[property];
-          value = _.findWhere(_this[opt.listKey], {
-            code: _this[property]
-          });
-          if (value == null) {
+
+  /*------------------------------------------- FORM FOR THE INPUTS ------------------------------------------- */
+  Handlebars.registerHelper("display_for", function(property, options) {
+    var col, container, containerAttribs, containerCss, dataType, domain, html, htmlId, inputSize, label, labelSize, labelSizeValue, linkClose, linkOpen, linkTo, metadata, modelName, noGrid, noHtml, opt, propertyValue, translationKey, translationRoot;
+    options = options || {};
+    opt = options.hash || {};
+    modelName = this.modelName || opt.modelName || {};
+    container = _.extend(this, {
+      modelName: modelName
+    });
+    metadata = (container.metadatas != null) && (container.metadatas[property] != null) ? container.metadatas[property] : {};
+    if (metadata.domain == null) {
+      logger.warn("There is no domain for your field named : " + property, container);
+    }
+    domain = metadataBuilder.getDomains()[metadata.domain] || {};
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
+    }
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    noHtml = opt.noHtml != null ? opt.noHtml : false;
+    noGrid = opt.noGrid != null ? opt.noGrid : false;
+    htmlId = opt.htmlId != null ? "id='" + opt.htmlId + "'" : "";
+    linkTo = opt.linkTo != null ? opt.linkTo : "";
+    linkOpen = (function(_this) {
+      return function() {
+        if (linkTo) {
+          return "<a href='" + linkTo + "' data-bypass>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    linkClose = (function(_this) {
+      return function() {
+        if (linkTo) {
+          return "</a>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (noGrid || opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else if (noHtml) {
+          return "" + (translationKey());
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    propertyValue = (function(_this) {
+      return function() {
+        var key, metadataClass, propValue, value;
+        metadataClass = metadata.style != null ? metadata.style : "";
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if (opt.listKey != null) {
+            key = _this[property];
             value = _.findWhere(_this[opt.listKey], {
-              id: _this[property]
+              code: _this[property]
             });
+            if (value == null) {
+              value = _.findWhere(_this[opt.listKey], {
+                id: _this[property]
+              });
+            }
+            if (value != null) {
+              propValue = opt.labelProperty ? value[opt.labelProperty] : value.label;
+            } else {
+              propValue = void 0;
+            }
           }
-          if (value != null) {
-            propValue = opt.labelProperty ? value[opt.labelProperty] : value.label;
+          if (noHtml) {
+            return "" + (_.escape(propValue));
+          }
+          if ((metadata.format != null) && (metadata.format.value != null)) {
+            propValue = metadata.format.value(propValue, metadata.format.options);
+          }
+          if (metadata.symbol != null) {
+            propValue = propValue + " " + i18n.t(metadata.symbol);
+          }
+          if (dataType === "checkbox") {
+            propValue = _this[property] ? i18n.t("search.labels.true") : i18n.t("search.labels.false");
+          }
+          if (dataType === "date" && _this[property] !== "") {
+            return "<div " + htmlId + " class='" + metadataClass + "'>" + propValue + "</div>";
           } else {
-            propValue = void 0;
+            return "<div " + htmlId + " class='" + metadataClass + "'>" + (linkOpen()) + (_.escape(propValue)) + (linkClose()) + "</div>";
           }
         }
-        if (noHtml) {
-          return "" + (_.escape(propValue));
-        }
-        if ((metadata.format != null) && (metadata.format.value != null)) {
-          propValue = metadata.format.value(propValue, metadata.format.options);
-        }
-        if (metadata.symbol != null) {
-          propValue = propValue + " " + i18n.t(metadata.symbol);
-        }
-        if (dataType === "checkbox") {
-          propValue = _this[property] ? i18n.t("search.labels.true") : i18n.t("search.labels.false");
-        }
-        if (dataType === "date" && _this[property] !== "") {
-          return "<div " + htmlId + " class='" + metadataClass + "'>" + propValue + "</div>";
-        } else {
-          return "<div " + htmlId + " class='" + metadataClass + "'>" + (linkOpen()) + (_.escape(propValue)) + (linkClose()) + "</div>";
-        }
-      }
-      return "";
-    };
-  })(this);
-  if (noHtml) {
-    return new Handlebars.SafeString("" + (label()) + " " + (propertyValue()));
-  }
-  html = "<div class='form-group " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='form-control-static'>" + (propertyValue()) + "</div> </div> </div> ";
-  return new Handlebars.SafeString(html);
-});
-
-Handlebars.registerHelper("returns_if_contains", (function(_this) {
-  return function(property, options) {
-    var opt, value;
-    opt = options.hash || {};
-    value = opt.value;
-    if (_.contains(property, value)) {
-      return opt["return"];
+        return "";
+      };
+    })(this);
+    if (noHtml) {
+      return new Handlebars.SafeString("" + (label()) + " " + (propertyValue()));
     }
-    return '';
-  };
-})(this));
-
-Handlebars.registerHelper("input_for", function(property, options) {
-  var cidAttr, col, container, containerAttribs, containerCss, dataFields, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
-  options = options || {};
-  html = void 0;
-  translationRoot = void 0;
-  dataType = void 0;
-  opt = options.hash || {};
-  modelName = this.modelName || opt.modelName || void 0;
-  container = _.extend(this, {
-    modelName: modelName
+    html = "<div class='form-group " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='form-control-static'>" + (propertyValue()) + "</div> </div> </div> ";
+    return new Handlebars.SafeString(html);
   });
-  metadata = metadataBuilder.getMetadataForAttribute(container, property);
-  domain = metadataBuilder.getDomains()[metadata.domain] || {};
-  minimalHtml = opt.minimalHtml != null ? opt.minimalHtml : false;
-  noGrid = opt.noGrid ? opt.noGrid : false;
-  dataFields = function(context) {
-    var fieldNames, subHTML;
-    subHTML = "";
-    if (opt.dataFields) {
-      fieldNames = opt.dataFields.split(',');
-      fieldNames.forEach(function(fieldName) {
-        if (context[fieldName]) {
-          return subHTML = subHTML + ("data-" + fieldName + "='" + context[fieldName] + "'");
+  Handlebars.registerHelper("returns_if_contains", (function(_this) {
+    return function(property, options) {
+      var opt, value;
+      opt = options.hash || {};
+      value = opt.value;
+      if (_.contains(property, value)) {
+        return opt["return"];
+      }
+      return '';
+    };
+  })(this));
+  Handlebars.registerHelper("input_for", function(property, options) {
+    var cidAttr, col, container, containerAttribs, containerCss, dataFields, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
+    options = options || {};
+    html = void 0;
+    translationRoot = void 0;
+    dataType = void 0;
+    opt = options.hash || {};
+    modelName = this.modelName || opt.modelName || void 0;
+    container = _.extend(this, {
+      modelName: modelName
+    });
+    metadata = metadataBuilder.getMetadataForAttribute(container, property);
+    domain = metadataBuilder.getDomains()[metadata.domain] || {};
+    minimalHtml = opt.minimalHtml != null ? opt.minimalHtml : false;
+    noGrid = opt.noGrid ? opt.noGrid : false;
+    dataFields = function(context) {
+      var fieldNames, subHTML;
+      subHTML = "";
+      if (opt.dataFields) {
+        fieldNames = opt.dataFields.split(',');
+        fieldNames.forEach(function(fieldName) {
+          if (context[fieldName]) {
+            return subHTML = subHTML + ("data-" + fieldName + "='" + context[fieldName] + "'");
+          }
+        });
+      }
+      return subHTML;
+    };
+    isDisplayRequired = false;
+    isRequired = (function(_this) {
+      return function() {
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
         }
-      });
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    symbol = (function(_this) {
+      return function() {
+        var isSymbol;
+        isSymbol = false;
+        if (opt.symbol != null) {
+          isSymbol = opt.symbol;
+        } else if (metadata.symbol != null) {
+          isSymbol = metadata.symbol;
+        }
+        if (isSymbol) {
+          return "<span class='input-group-addon'>" + isSymbol + "</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    if (dataType === "boolean") {
+      dataType = "checkbox";
     }
-    return subHTML;
-  };
-  isDisplayRequired = false;
-  isRequired = (function(_this) {
-    return function() {
-      isDisplayRequired = false;
-      if (opt.isRequired != null) {
-        isDisplayRequired = opt.isRequired;
-      } else if (metadata.required != null) {
-        isDisplayRequired = metadata.required;
-      }
-      if (isDisplayRequired) {
-        return "<span class='input-group-addon'>*</span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  symbol = (function(_this) {
-    return function() {
-      var isSymbol;
-      isSymbol = false;
-      if (opt.symbol != null) {
-        isSymbol = opt.symbol;
-      } else if (metadata.symbol != null) {
-        isSymbol = metadata.symbol;
-      }
-      if (isSymbol) {
-        return "<span class='input-group-addon'>" + isSymbol + "</span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  translationRoot = opt.translationRoot || void 0;
-  dataType = opt.dataType || domain.type || "text";
-  if (dataType === "boolean") {
-    dataType = "checkbox";
-  }
-  readonly = opt.readonly || false;
-  readonly = readonly ? "readonly" : "";
-  disabled = opt.disabled || false;
-  disabled = disabled ? "disabled" : "";
-  inputAttributes = this[opt.inputAttributes] || opt.inputAttributes || "";
-  cidAttr = (opt.cidSelection = true) ? "cid='" + this.cid + "'" : "";
-  containerAttribs = opt.containerAttribs || "";
-  containerCss = opt.containerCss || "";
-  labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
-  labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
-  col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
-  inputSize = (function(_this) {
-    return function() {
-      var inputSizeValue;
-      if (noGrid || opt.containerCss) {
-        return inputSize = "";
-      } else {
-        inputSizeValue = 12 - labelSizeValue;
-        return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
-      }
-    };
-  })(this);
-  isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true || ((opt.symbol || metadata.symbol) != null);
-  propertyValue = (function(_this) {
-    return function() {
-      var propValue;
-      if (_this[property] != null) {
-        propValue = _this[property];
-        if ((metadata.format != null) && (metadata.format.value != null)) {
-          propValue = metadata.format.value(propValue, metadata.format.options);
+    readonly = opt.readonly || false;
+    readonly = readonly ? "readonly" : "";
+    disabled = opt.disabled || false;
+    disabled = disabled ? "disabled" : "";
+    inputAttributes = this[opt.inputAttributes] || opt.inputAttributes || "";
+    cidAttr = (opt.cidSelection = true) ? "cid='" + this.cid + "'" : "";
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (noGrid || opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
         }
-        if (dataType === "checkbox") {
-          if (propValue) {
-            return 'checked';
+      };
+    })(this);
+    isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true || ((opt.symbol || metadata.symbol) != null);
+    propertyValue = (function(_this) {
+      return function() {
+        var propValue;
+        if (_this[property] != null) {
+          propValue = _this[property];
+          if ((metadata.format != null) && (metadata.format.value != null)) {
+            propValue = metadata.format.value(propValue, metadata.format.options);
+          }
+          if (dataType === "checkbox") {
+            if (propValue) {
+              return 'checked';
+            }
+          }
+          if (dataType === "date" && propValue !== "") {
+            return "value='" + propValue + "'";
+          }
+          if (dataType === "number") {
+            return "value='" + numeral(propValue).value() + "'";
+          } else {
+            return "value='" + (_.escape(propValue)) + "'";
           }
         }
-        if (dataType === "date" && propValue !== "") {
-          return "value='" + propValue + "'";
+        return "";
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
         }
-        if (dataType === "number") {
-          return "value='" + numeral(propValue).value() + "'";
+        if (translation === "") {
+          return "";
         } else {
-          return "value='" + (_.escape(propValue)) + "'";
+          return i18n.t(translation);
         }
-      }
-      return "";
-    };
-  })(this);
-  translationKey = (function(_this) {
-    return function() {
-      var translation;
-      translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
-      if (translationRoot != null) {
-        translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
-      }
-      if (translation === "") {
-        return "";
-      } else {
-        return i18n.t(translation);
-      }
-    };
-  })(this);
-  icon = (function(_this) {
-    return function() {
-      if (opt.icon != null) {
-        return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + "  fa-fw'></i> </span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  label = (function(_this) {
-    return function() {
-      if (opt.isNoLabel != null) {
-        return "";
-      } else {
-        return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
-      }
-    };
-  })(this);
-  placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
-  decorator = (function(_this) {
-    return function() {
-      if (metadata.decorator != null) {
-        return "data-decorator='" + metadata.decorator + "'";
-      } else {
-        return '';
-      }
-    };
-  })(this);
-  error = "";
-  if ((this.errors != null) && (this.errors[property] != null)) {
-    error = "has-error";
-  }
-  errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
-  errorSize = (function(_this) {
-    return function() {
-      var errorLength, offsetError;
-      errorLength = 12 - labelSizeValue;
-      offsetError = labelSizeValue;
-      return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
-    };
-  })(this);
-  errors = (function(_this) {
-    return function() {
-      if (error === "has-error") {
-        return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  if (minimalHtml) {
-    html = " <input id='" + property + "' " + (dataFields(this)) + " " + (decorator()) + " class=''";
-    html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + cidAttr + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/>";
-  } else {
-    html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " <input id='" + property + "' " + (decorator()) + " " + (dataFields(this)) + " class='";
-    if (dataType !== "checkbox") {
-      html += "form-control ";
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + "  fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
+        } else {
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
+        }
+      };
+    })(this);
+    placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
+    decorator = (function(_this) {
+      return function() {
+        if (metadata.decorator != null) {
+          return "data-decorator='" + metadata.decorator + "'";
+        } else {
+          return '';
+        }
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
     }
-    html += "input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/> " + (symbol());
-    if (dataType !== "checkbox") {
-      html += "              " + (isRequired());
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
+    errorSize = (function(_this) {
+      return function() {
+        var errorLength, offsetError;
+        errorLength = 12 - labelSizeValue;
+        offsetError = labelSizeValue;
+        return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
+      };
+    })(this);
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    if (minimalHtml) {
+      html = " <input id='" + property + "' " + (dataFields(this)) + " " + (decorator()) + " class=''";
+      html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + cidAttr + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/>";
     } else {
-      html += "              ";
+      html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " <input id='" + property + "' " + (decorator()) + " " + (dataFields(this)) + " class='";
+      if (dataType !== "checkbox") {
+        html += "form-control ";
+      }
+      html += "input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/> " + (symbol());
+      if (dataType !== "checkbox") {
+        html += "              " + (isRequired());
+      } else {
+        html += "              ";
+      }
+      html += "               </div> </div> " + (errors()) + " </div>";
     }
-    html += "               </div> </div> " + (errors()) + " </div>";
-  }
-  return new Handlebars.SafeString(html);
-});
-
-Handlebars.registerHelper("radio_for", function(property, options) {
-  var checked, col, containerAttribs, containerCss, dataType, defaultValue, disabled, domain, error, errorSize, errorValue, errors, generateRadioButton, html, inputAttributes, inputSize, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, opt, placeholder, possibleValues, radioSize, radioSizeValue, radios, readonly, translationKey, translationRoot, value, _i, _len;
-  options = options || {};
-  html = void 0;
-  translationRoot = void 0;
-  dataType = void 0;
-  opt = options.hash || {};
-  metadata = metadataBuilder.getMetadataForAttribute(this, property);
-  domain = metadataBuilder.getDomains()[metadata.domain] || {};
-  possibleValues = [];
-  isDisplayRequired = false;
-  isRequired = (function(_this) {
-    return function() {
-      isDisplayRequired = false;
-      if (opt.isRequired != null) {
-        isDisplayRequired = opt.isRequired;
-      } else if (metadata.required != null) {
-        isDisplayRequired = metadata.required;
-      }
-      if (isDisplayRequired) {
-        return "";
-      } else {
-        return generateRadioButton(i18n.t('search.labels.all'), "null", defaultValue === "");
-      }
-    };
-  })(this);
-  translationRoot = opt.translationRoot || void 0;
-  dataType = opt.dataType || domain.type || "text";
-  switch (dataType) {
-    case "boolean":
-      possibleValues = [true, false];
-      break;
-    default:
-      return "Type " + dataType + " not supported by helper radio_for";
-  }
-  defaultValue = opt.defaultValue !== void 0 ? opt.defaultValue : "";
-  readonly = opt.readonly || false;
-  readonly = readonly ? "readonly" : "";
-  disabled = opt.disabled || false;
-  disabled = disabled ? "disabled" : "";
-  inputAttributes = opt.inputAttributes || "";
-  containerAttribs = opt.containerAttribs || "";
-  containerCss = opt.containerCss || "";
-  labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 3;
-  labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
-  col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
-  radioSizeValue = opt.radioSize || 4;
-  radioSize = "col-sm-" + radioSizeValue + " col-md-" + radioSizeValue + " col-lg-" + radioSizeValue;
-  inputSize = (function(_this) {
-    return function() {
-      var inputSizeValue;
-      inputSizeValue = 12 - labelSizeValue;
-      return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
-    };
-  })(this);
-  label = (function(_this) {
-    return function() {
-      if (opt.isNoLabel != null) {
-        return "";
-      } else {
-        return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
-      }
-    };
-  })(this);
-  translationKey = (function(_this) {
-    return function() {
-      var translation;
-      translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
-      if (translationRoot != null) {
-        translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
-      }
-      if (translation === "") {
-        return "";
-      } else {
-        return i18n.t(translation);
-      }
-    };
-  })(this);
-  placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
-  checked = (function(_this) {
-    return function(value, isDefault) {
-      var isChecked;
-      isChecked = _this[property] === value || ((_this[property] == null) && isDefault) || false;
-      if (isChecked) {
-        return "checked='checked'";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  generateRadioButton = (function(_this) {
-    return function(label, value, isDefault) {
-      return "<div class='" + radioSize + "'> <div class='input-group'> <span class='input-group-addon'> <input id='" + (property + value) + "' name='" + property + "' data-name='" + property + "' type=radio value='" + value + "' " + (checked(value, isDefault)) + " " + inputAttributes + " " + placeholder + " " + readonly + " " + disabled + "/> </span> <label for='" + (property + value) + "' class='form-control'> " + label + " </label> </div> </div>";
-    };
-  })(this);
-  error = "";
-  if ((this.errors != null) && (this.errors[property] != null)) {
-    error = "has-error";
-  }
-  errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
-  errorSize = (function(_this) {
-    return function() {
-      var errorLength, offsetError;
-      errorLength = 12 - labelSizeValue;
-      offsetError = labelSizeValue;
-      return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
-    };
-  })(this);
-  radios = isRequired();
-  for (_i = 0, _len = possibleValues.length; _i < _len; _i++) {
-    value = possibleValues[_i];
-    radios += generateRadioButton(i18n.t('search.labels.' + value), value, value === defaultValue);
-  }
-  errors = (function(_this) {
-    return function() {
-      if (error === "has-error") {
-        return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> " + radios + " </div> " + (errors()) + " </div>";
-  return new Handlebars.SafeString(html);
-});
-
-Handlebars.registerHelper("options_selected", function(property, options) {
-  var addOption, col, cssClass, dataMapping, domain, elt, emptyOption, error, errorValue, errors, html, icon, inputSize, isAddOnInput, isAtLine, isRequired, jsonGiven, label, labelSize, labelSizeValue, list, metadata, multiple, opt, optMapping, optName, optToTriggerListKey, optToTriggerName, readonly, selected, translationKey, translationRoot, _i, _len;
-  options = options || {};
-  opt = options.hash || {};
-  cssClass = opt.cssClass != null ? opt.cssClass : "";
-  optName = opt.optName != null ? "data-name='" + opt.optName + "'" : "";
-  optToTriggerName = opt.optToTriggerName != null ? "data-opttotrigger-name='" + opt.optToTriggerName + "'" : "";
-  optToTriggerListKey = opt.optToTriggerListKey != null ? "data-opttotrigger-listkey='" + opt.optToTriggerListKey + "'" : "";
-  optMapping = opt.optMapping != null ? this[opt.optMapping] : null;
-  dataMapping = optMapping != null ? "data-mapping=" + optMapping : "";
-  list = this[opt.listKey] || [];
-  selected = this[property] || opt.selected || void 0;
-  if (opt.addDefault) {
-    list = [
-      {
-        id: void 0,
-        label: ''
-      }
-    ].concat(list);
-  }
-  metadata = metadataBuilder.getMetadataForAttribute(this, property);
-  domain = metadataBuilder.getDomains()[metadata.domain] || {};
-  isRequired = (function(_this) {
-    return function() {
-      var isDisplayRequired;
-      isDisplayRequired = false;
-      if (opt.isRequired != null) {
-        isDisplayRequired = opt.isRequired;
-      } else if (metadata.required != null) {
-        isDisplayRequired = metadata.required;
-      }
-      if (isDisplayRequired) {
-        return "<span class='input-group-addon'>*</span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  translationRoot = opt.translationRoot || void 0;
-  isAtLine = opt.isAtLine || false;
-  readonly = opt.readonly || false;
-  readonly = readonly ? "disabled" : "";
-  labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
-  labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
-  col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
-  inputSize = (function(_this) {
-    return function() {
-      var inputSizeValue;
-      if (opt.containerCss) {
-        return inputSize = "";
-      } else {
+    return new Handlebars.SafeString(html);
+  });
+  Handlebars.registerHelper("radio_for", function(property, options) {
+    var checked, col, containerAttribs, containerCss, dataType, defaultValue, disabled, domain, error, errorSize, errorValue, errors, generateRadioButton, html, inputAttributes, inputSize, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, opt, placeholder, possibleValues, radioSize, radioSizeValue, radios, readonly, translationKey, translationRoot, value, _i, _len;
+    options = options || {};
+    html = void 0;
+    translationRoot = void 0;
+    dataType = void 0;
+    opt = options.hash || {};
+    metadata = metadataBuilder.getMetadataForAttribute(this, property);
+    domain = metadataBuilder.getDomains()[metadata.domain] || {};
+    possibleValues = [];
+    isDisplayRequired = false;
+    isRequired = (function(_this) {
+      return function() {
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "";
+        } else {
+          return generateRadioButton(i18n.t('search.labels.all'), "null", defaultValue === "");
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    dataType = opt.dataType || domain.type || "text";
+    switch (dataType) {
+      case "boolean":
+        possibleValues = [true, false];
+        break;
+      default:
+        return "Type " + dataType + " not supported by helper radio_for";
+    }
+    defaultValue = opt.defaultValue !== void 0 ? opt.defaultValue : "";
+    readonly = opt.readonly || false;
+    readonly = readonly ? "readonly" : "";
+    disabled = opt.disabled || false;
+    disabled = disabled ? "disabled" : "";
+    inputAttributes = opt.inputAttributes || "";
+    containerAttribs = opt.containerAttribs || "";
+    containerCss = opt.containerCss || "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 3;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    radioSizeValue = opt.radioSize || 4;
+    radioSize = "col-sm-" + radioSizeValue + " col-md-" + radioSizeValue + " col-lg-" + radioSizeValue;
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
         inputSizeValue = 12 - labelSizeValue;
         return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
-      }
-    };
-  })(this);
-  translationKey = (function(_this) {
-    return function() {
-      var translation;
-      translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
-      if (translationRoot != null) {
-        translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
-      }
-      if (translation === "") {
-        return "";
-      } else {
-        return i18n.t(translation);
-      }
-    };
-  })(this);
-  icon = (function(_this) {
-    return function() {
-      if (opt.icon != null) {
-        return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + " fa-fw'></i> </span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true;
-  label = (function(_this) {
-    return function() {
-      if (opt.isNoLabel == null) {
-        if (isAtLine) {
-          return "<div class='row'><label class='control-label for='" + property + "'> " + (translationKey()) + " </label></div>";
+      };
+    })(this);
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel != null) {
+          return "";
         } else {
-          return "<label class='control-label " + labelSize + "' for='" + property + "'> " + (translationKey()) + " </label>";
+          return "<label class='control-label " + labelSize + "' for='" + property + "'>" + (translationKey()) + "</label>";
         }
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  error = "";
-  if ((this.errors != null) && (this.errors[property] != null)) {
-    error = "has-error";
-  }
-  errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
-  errors = (function(_this) {
-    return function() {
-      if (error === "has-error") {
-        return "<span class='" + error + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
-      } else {
-        return "";
-      }
-    };
-  })(this);
-  jsonGiven = this;
-  addOption = function(elt) {
-    var id, isSelected, prop;
-    id = elt.id || elt.code;
-    prop = opt.labelProperty ? elt[opt.labelProperty] : elt.label;
-    isSelected = (selected != null) && (id != null) && ((!_.isArray(selected) && id.toString() === selected.toString()) || (_.isArray(selected) && selected.indexOf(id.toString()) > -1)) ? "selected" : "";
-    html += "<option value= '" + id + "'  " + isSelected + ">" + prop + "</option>";
-    return void 0;
-  };
-  multiple = opt.isMultiple ? "multiple style='width:'resolve';'" : "";
-  emptyOption = function() {
-    var isRequiredWithValue;
-    isRequiredWithValue = (selected != null) && (isRequired() !== "");
-    if ((opt.isEmpty === true) || ((opt.isMultiple === true) || (isRequiredWithValue === true)) && (!opt.isNotEmpty)) {
-      return "";
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    placeholder = ((opt.placeholder == null) && opt.isNoLabel) || opt.placeholder ? "placeholder='" + (translationKey()) + "'" : "";
+    checked = (function(_this) {
+      return function(value, isDefault) {
+        var isChecked;
+        isChecked = _this[property] === value || ((_this[property] == null) && isDefault) || false;
+        if (isChecked) {
+          return "checked='checked'";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    generateRadioButton = (function(_this) {
+      return function(label, value, isDefault) {
+        return "<div class='" + radioSize + "'> <div class='input-group'> <span class='input-group-addon'> <input id='" + (property + value) + "' name='" + property + "' data-name='" + property + "' type=radio value='" + value + "' " + (checked(value, isDefault)) + " " + inputAttributes + " " + placeholder + " " + readonly + " " + disabled + "/> </span> <label for='" + (property + value) + "' class='form-control'> " + label + " </label> </div> </div>";
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
     }
-    return "<option></option>";
-  };
-  html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='controls " + (inputSize()) + "'> <div class='input-group '> " + (icon()) + " <select id='" + property + "' data-name='" + property + "' " + multiple + " " + readonly + " " + optName + " " + optToTriggerName + " " + optToTriggerListKey + " " + dataMapping + " class='form-control input-sm " + cssClass + "'>" + (emptyOption());
-  for (_i = 0, _len = list.length; _i < _len; _i++) {
-    elt = list[_i];
-    addOption(elt);
-  }
-  html += "</select>" + (isRequired()) + " </div> " + (errors()) + " </div> </div>";
-  return new Handlebars.SafeString(html);
-});
-
-Handlebars.registerHelper("dateFormat", function(_date, options) {
-  var format, formatedDate, opt;
-  formatedDate = '';
-  if (_date) {
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
+    errorSize = (function(_this) {
+      return function() {
+        var errorLength, offsetError;
+        errorLength = 12 - labelSizeValue;
+        offsetError = labelSizeValue;
+        return "col-sm-" + errorLength + " col-md-" + errorLength + " col-lg-" + errorLength + " col-sm-offset-" + offsetError + " col-md-offset-" + offsetError + " col-lg-offset-" + offsetError;
+      };
+    })(this);
+    radios = isRequired();
+    for (_i = 0, _len = possibleValues.length; _i < _len; _i++) {
+      value = possibleValues[_i];
+      radios += generateRadioButton(i18n.t('search.labels.' + value), value, value === defaultValue);
+    }
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " " + (errorSize()) + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> " + radios + " </div> " + (errors()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+  Handlebars.registerHelper("options_selected", function(property, options) {
+    var addOption, col, cssClass, dataMapping, domain, elt, emptyOption, error, errorValue, errors, html, icon, inputSize, isAddOnInput, isAtLine, isRequired, jsonGiven, label, labelSize, labelSizeValue, list, metadata, multiple, opt, optMapping, optName, optToTriggerListKey, optToTriggerName, readonly, selected, translationKey, translationRoot, _i, _len;
+    options = options || {};
     opt = options.hash || {};
-    format = opt.format || require('../config').dateFormat;
-    formatedDate = moment(_date).format(format);
-  }
-  return new Handlebars.SafeString(formatedDate);
-});
-
-S4 = function() {
-  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-};
-
-guid = function() {
-  return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
-};
-
-Handlebars.registerHelper("button", function(text_key, options) {
-  var action, button, cssClass, cssId, dataAttributes, icon, isLoading, loading, opt, type;
-  opt = options.hash || {};
-  if (opt.role !== void 0 && !Fmk.Helpers.userHelper.hasRole(opt.role)) {
-    return "";
-  }
-  isLoading = opt.isLoading;
-  cssClass = opt["class"] || "";
-  cssId = opt.id || guid();
-  dataAttributes = opt.dataAttributes || "";
-  type = opt.type || "button";
-  action = opt.action != null ? "data-action=" + action : "";
-  loading = function() {
-    if (isLoading || type === 'submit') {
-      return "data-loading data-loading-text='" + (opt.loadingText || i18n.t('button.loading')) + "'";
+    cssClass = opt.cssClass != null ? opt.cssClass : "";
+    optName = opt.optName != null ? "data-name='" + opt.optName + "'" : "";
+    optToTriggerName = opt.optToTriggerName != null ? "data-opttotrigger-name='" + opt.optToTriggerName + "'" : "";
+    optToTriggerListKey = opt.optToTriggerListKey != null ? "data-opttotrigger-listkey='" + opt.optToTriggerListKey + "'" : "";
+    optMapping = opt.optMapping != null ? this[opt.optMapping] : null;
+    dataMapping = optMapping != null ? "data-mapping=" + optMapping : "";
+    list = this[opt.listKey] || [];
+    selected = this[property] || opt.selected || void 0;
+    if (opt.addDefault) {
+      list = [
+        {
+          id: void 0,
+          label: ''
+        }
+      ].concat(list);
     }
-    return "";
+    metadata = metadataBuilder.getMetadataForAttribute(this, property);
+    domain = metadataBuilder.getDomains()[metadata.domain] || {};
+    isRequired = (function(_this) {
+      return function() {
+        var isDisplayRequired;
+        isDisplayRequired = false;
+        if (opt.isRequired != null) {
+          isDisplayRequired = opt.isRequired;
+        } else if (metadata.required != null) {
+          isDisplayRequired = metadata.required;
+        }
+        if (isDisplayRequired) {
+          return "<span class='input-group-addon'>*</span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    translationRoot = opt.translationRoot || void 0;
+    isAtLine = opt.isAtLine || false;
+    readonly = opt.readonly || false;
+    readonly = readonly ? "disabled" : "";
+    labelSizeValue = opt.isNoLabel ? 0 : opt.labelSize ? opt.labelSize : 4;
+    labelSize = "col-sm-" + labelSizeValue + " col-md-" + labelSizeValue + " col-lg-" + labelSizeValue;
+    col = opt.col != null ? Handlebars.helpers.col.call(this, opt.col) : "";
+    inputSize = (function(_this) {
+      return function() {
+        var inputSizeValue;
+        if (opt.containerCss) {
+          return inputSize = "";
+        } else {
+          inputSizeValue = 12 - labelSizeValue;
+          return inputSize = opt.inputSize || ("col-sm-" + inputSizeValue + " col-md-" + inputSizeValue + " col-lg-" + inputSizeValue);
+        }
+      };
+    })(this);
+    translationKey = (function(_this) {
+      return function() {
+        var translation;
+        translation = opt.translationKey || metadata.label || (_this['modelName'] != null ? "" + _this['modelName'] + "." + property : void 0) || "";
+        if (translationRoot != null) {
+          translation = ((translationRoot != null) && typeof translationRoot === "string" ? translationRoot + "." : "") + property;
+        }
+        if (translation === "") {
+          return "";
+        } else {
+          return i18n.t(translation);
+        }
+      };
+    })(this);
+    icon = (function(_this) {
+      return function() {
+        if (opt.icon != null) {
+          return "<span class='input-group-addon'><i class='fa fa-" + opt.icon + " fa-fw'></i> </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    isAddOnInput = true || (opt.icon != null) || (opt.isRequired || metadata.required) === true;
+    label = (function(_this) {
+      return function() {
+        if (opt.isNoLabel == null) {
+          if (isAtLine) {
+            return "<div class='row'><label class='control-label for='" + property + "'> " + (translationKey()) + " </label></div>";
+          } else {
+            return "<label class='control-label " + labelSize + "' for='" + property + "'> " + (translationKey()) + " </label>";
+          }
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    error = "";
+    if ((this.errors != null) && (this.errors[property] != null)) {
+      error = "has-error";
+    }
+    errorValue = (this.errors != null) && (this.errors[property] != null) ? i18n.t(this.errors[property]) : "";
+    errors = (function(_this) {
+      return function() {
+        if (error === "has-error") {
+          return "<span class='" + error + " help-inline pull-left' style='color:#b94a48'> " + errorValue + " </span>";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    jsonGiven = this;
+    addOption = function(elt) {
+      var id, isSelected, prop;
+      id = elt.id || elt.code;
+      prop = opt.labelProperty ? elt[opt.labelProperty] : elt.label;
+      isSelected = (selected != null) && (id != null) && ((!_.isArray(selected) && id.toString() === selected.toString()) || (_.isArray(selected) && selected.indexOf(id.toString()) > -1)) ? "selected" : "";
+      html += "<option value= '" + id + "'  " + isSelected + ">" + prop + "</option>";
+      return void 0;
+    };
+    multiple = opt.isMultiple ? "multiple style='width:'resolve';'" : "";
+    emptyOption = function() {
+      var isRequiredWithValue;
+      isRequiredWithValue = (selected != null) && (isRequired() !== "");
+      if ((opt.isEmpty === true) || ((opt.isMultiple === true) || (isRequiredWithValue === true)) && (!opt.isNotEmpty)) {
+        return "";
+      }
+      return "<option></option>";
+    };
+    html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='controls " + (inputSize()) + "'> <div class='input-group '> " + (icon()) + " <select id='" + property + "' data-name='" + property + "' " + multiple + " " + readonly + " " + optName + " " + optToTriggerName + " " + optToTriggerListKey + " " + dataMapping + " class='form-control input-sm " + cssClass + "'>" + (emptyOption());
+    for (_i = 0, _len = list.length; _i < _len; _i++) {
+      elt = list[_i];
+      addOption(elt);
+    }
+    html += "</select>" + (isRequired()) + " </div> " + (errors()) + " </div> </div>";
+    return new Handlebars.SafeString(html);
+  });
+  Handlebars.registerHelper("dateFormat", function(_date, options) {
+    var format, formatedDate, opt;
+    formatedDate = '';
+    if (_date) {
+      opt = options.hash || {};
+      format = opt.format || require('../config').dateFormat;
+      formatedDate = moment(_date).format(format);
+    }
+    return new Handlebars.SafeString(formatedDate);
+  });
+  S4 = function() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
   };
-  icon = function() {
-    if (opt.icon != null) {
-      return "<i class='fa fa-fw fa-" + opt.icon + "'></i>";
-    } else {
+  guid = function() {
+    return S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4();
+  };
+  Handlebars.registerHelper("button", function(text_key, options) {
+    var action, button, cssClass, cssId, dataAttributes, icon, isLoading, loading, opt, type;
+    opt = options.hash || {};
+    if (opt.role !== void 0 && !Fmk.Helpers.userHelper.hasRole(opt.role)) {
       return "";
     }
-  };
-  button = "<button type='" + type + "' " + action + "  " + dataAttributes + " class='btn " + cssClass + "' id='" + cssId + "' " + (loading()) + ">" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>";
-  return new Handlebars.SafeString(button);
-});
-
-Handlebars.registerHelper("paginate", function(property, options) {
-  var currentPage, endPage, firstPage, firstPagePrint, generateLeftArrow, generatePageFilter, generatePageNumber, generatePagination, generateRigthArrow, generateTotal, html, lastPagePrint, nbPagePrint, nbPrint, perPage, totalRecords;
-  options = options || {};
-  options = options.hash || {};
-  if (this.collection == null) {
-    return "";
-  }
-  if ((this.collection != null) && this.collection.length === 0) {
-    return "";
-  }
-  currentPage = this.currentPage;
-  firstPage = this.firstPage || 1;
-  endPage = this.totalPages || 0;
-  nbPrint = 4;
-  firstPagePrint = Math.max(firstPage, currentPage - nbPrint);
-  lastPagePrint = Math.min(endPage, currentPage + nbPrint);
-  nbPagePrint = lastPagePrint - firstPagePrint;
-  if (nbPagePrint < nbPrint * 2) {
-    if (endPage - lastPagePrint > nbPrint) {
-      lastPagePrint += nbPrint * 2 - nbPagePrint;
-    } else {
-      firstPagePrint -= nbPrint * 2 - nbPagePrint;
-    }
-  }
-  firstPagePrint = Math.max(firstPagePrint, 1);
-  perPage = this.perPage || 10;
-  totalRecords = this.totalRecords;
-  generateLeftArrow = function() {
-    var className;
-    className = currentPage === firstPage ? "disabled" : "";
-    return "<li class='" + className + "'><a href='#' data-bypass data-page='" + firstPage + "'>&laquo;</a></li>";
-  };
-  generatePageNumber = function() {
-    var html, i, _i;
-    html = "";
-    for (i = _i = firstPagePrint; firstPagePrint <= lastPagePrint ? _i <= lastPagePrint : _i >= lastPagePrint; i = firstPagePrint <= lastPagePrint ? ++_i : --_i) {
-      html += "<li class='" + (i === currentPage ? 'active' : '') + "'><a href='#' data-bypass data-page='" + i + "'>" + i + "</a></li>";
-    }
-    return html;
-  };
-  generateRigthArrow = function() {
-    var className;
-    className = currentPage === endPage ? "disabled" : "";
-    return "<li class='" + className + "'><a href='#' data-bypass  data-page='" + endPage + "'>&raquo;</a></li>";
-  };
-  generatePagination = function() {
-    if (totalRecords <= perPage) {
+    isLoading = opt.isLoading;
+    cssClass = opt["class"] || "";
+    cssId = opt.id || guid();
+    dataAttributes = opt.dataAttributes || "";
+    type = opt.type || "button";
+    action = opt.action != null ? "data-action=" + action : "";
+    loading = function() {
+      if (isLoading || type === 'submit') {
+        return "data-loading data-loading-text='" + (opt.loadingText || i18n.t('button.loading')) + "'";
+      }
+      return "";
+    };
+    icon = function() {
+      if (opt.icon != null) {
+        return "<i class='fa fa-fw fa-" + opt.icon + "'></i>";
+      } else {
+        return "";
+      }
+    };
+    button = "<button type='" + type + "' " + action + "  " + dataAttributes + " class='btn " + cssClass + "' id='" + cssId + "' " + (loading()) + ">" + (icon()) + " " + (text_key !== '' ? i18n.t(text_key) : '') + "</button>";
+    return new Handlebars.SafeString(button);
+  });
+  Handlebars.registerHelper("paginate", function(property, options) {
+    var currentPage, endPage, firstPage, firstPagePrint, generateLeftArrow, generatePageFilter, generatePageNumber, generatePagination, generateRigthArrow, generateTotal, html, lastPagePrint, nbPagePrint, nbPrint, perPage, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    if (this.collection == null) {
       return "";
     }
-    return "" + (generateLeftArrow()) + (generatePageNumber()) + (generateRigthArrow());
-  };
-  generatePageFilter = function() {
-    var generateOptions, pageString;
-    pageString = i18n.t("application.pages");
-    generateOptions = function() {
+    if ((this.collection != null) && this.collection.length === 0) {
+      return "";
+    }
+    currentPage = this.currentPage;
+    firstPage = this.firstPage || 1;
+    endPage = this.totalPages || 0;
+    nbPrint = 4;
+    firstPagePrint = Math.max(firstPage, currentPage - nbPrint);
+    lastPagePrint = Math.min(endPage, currentPage + nbPrint);
+    nbPagePrint = lastPagePrint - firstPagePrint;
+    if (nbPagePrint < nbPrint * 2) {
+      if (endPage - lastPagePrint > nbPrint) {
+        lastPagePrint += nbPrint * 2 - nbPagePrint;
+      } else {
+        firstPagePrint -= nbPrint * 2 - nbPagePrint;
+      }
+    }
+    firstPagePrint = Math.max(firstPagePrint, 1);
+    perPage = this.perPage || 10;
+    totalRecords = this.totalRecords;
+    generateLeftArrow = function() {
+      var className;
+      className = currentPage === firstPage ? "disabled" : "";
+      return "<li class='" + className + "'><a href='#' data-bypass data-page='" + firstPage + "'>&laquo;</a></li>";
+    };
+    generatePageNumber = function() {
       var html, i, _i;
       html = "";
-      for (i = _i = 1; _i <= 4; i = ++_i) {
-        html += "<option value='" + (5 * i) + "' " + (5 * i === perPage ? 'selected' : void 0) + ">" + (5 * i) + " " + pageString + "</option>";
+      for (i = _i = firstPagePrint; firstPagePrint <= lastPagePrint ? _i <= lastPagePrint : _i >= lastPagePrint; i = firstPagePrint <= lastPagePrint ? ++_i : --_i) {
+        html += "<li class='" + (i === currentPage ? 'active' : '') + "'><a href='#' data-bypass data-page='" + i + "'>" + i + "</a></li>";
       }
       return html;
     };
-    return "<select class='form-control pageFilter'> " + (generateOptions()) + " </select>";
-  };
-  generateTotal = function() {
-    var resultString;
-    resultString = i18n.t('search.result');
-    if (options.showResultNumber) {
-      return "<div class='badgeResult'>" + resultString + " <span class='badge'>" + totalRecords + "</span></div>";
-    } else {
-      return "";
-    }
-  };
-  html = "<div class='col-md-8'> <ul class='pagination'>" + (generatePagination()) + "</ul> </div> <div class='col-md-2 pagination'> " + (generateTotal()) + " </div> <div class='col-md-2 pagination'> " + (generatePageFilter()) + " </div>";
-  return new Handlebars.SafeString(html);
-});
-
-Handlebars.registerHelper("tableHeaderAction", function(options) {
-  var exportButton, generateTotal, html, resultString, totalRecords;
-  options = options || {};
-  options = options.hash || {};
-  totalRecords = this.totalRecords || 0;
-  resultString = i18n.t(options.resultLabel || 'search.result');
-  exportButton = function() {
-    if ((options.exportUrl != null) && totalRecords > 0) {
-      return "<div class='pull-right export'> <button   data-bypass class='btn btnExport'><i class='fa fa-table'></i>" + (i18n.t('search.export')) + "</button> <a href='" + options.exportUrl + "' data-bypass class='btn hidden btnExport'><i class='fa fa-table'></i> " + (i18n.t('search.export')) + "</a> </div>";
-    }
-    return "";
-  };
-  generateTotal = function() {
-    return "<span class='badge'>" + totalRecords + "</span> " + resultString;
-  };
-  html = "<div class='tableAction'> <div class='pull-left'> " + (generateTotal()) + " </div> " + (exportButton()) + " </div>";
-  return new Handlebars.SafeString(html);
-});
-
-Handlebars.registerHelper("sortColumn", function(property, options) {
-  var generateSortPosition, order, sortField, translationKey;
-  options = options.hash || {};
-  sortField = this.sortField;
-  order = this.order || "asc";
-  translationKey = options.translationKey || void 0;
-  generateSortPosition = function() {
-    var icon;
-    icon = "fa fa-sort";
-    if (property === sortField) {
-      icon += "-" + order;
-    }
-    return "<i class='" + icon + "' data-name='" + property + "'></i>";
-  };
-  if (this.isEdit) {
-    return new Handlebars.SafeString("<span class='sortColumn'>" + (i18n.t(translationKey)) + "</span>");
-  }
-  return new Handlebars.SafeString("<a class='sortColumn'  href='#' data-name='" + property + "' data-bypass>" + (i18n.t(translationKey)) + " " + (this.isEdit ? '' : generateSortPosition()) + "</a>");
-});
-
-Handlebars.registerHelper("statusIcon", function(property, options) {
-  var icon;
-  if (typeof (this[property] === "boolean")) {
-    if (this[property]) {
-      icon = "fa fa-check";
-    } else {
-      icon = "fa fa-exclamation";
-    }
-  } else {
-    switch (this[property]) {
-      case 0:
-        icon = "fa fa-ban";
-        break;
-      case 1:
-        icon = "fa fa-exclamation";
-        break;
-      case 2:
-        icon = "fa fa-clock-o";
-        break;
-      case 3:
-        icon = "fa fa-check";
-        break;
-      default:
-        icon = "";
-    }
-  }
-  return new Handlebars.SafeString("<i class='" + icon + "'><i>");
-});
-
-Handlebars.registerHelper("progress", function(property, options) {
-  var addElements;
-  addElements = function(elements) {
-    var html, sum;
-    html = "";
-    sum = 0;
-    elements.forEach(function(elt) {
-      if (!_.isEmpty(elt)) {
-        return sum += elt.value;
+    generateRigthArrow = function() {
+      var className;
+      className = currentPage === endPage ? "disabled" : "";
+      return "<li class='" + className + "'><a href='#' data-bypass  data-page='" + endPage + "'>&raquo;</a></li>";
+    };
+    generatePagination = function() {
+      if (totalRecords <= perPage) {
+        return "";
       }
-    });
-    elements.forEach(function(elt) {
-      if (!_.isEmpty(elt)) {
-        return html += "<div class='progress-bar progress-bar-" + elt.type + "' style='width: " + (Math.floor(elt.value * 100 / sum)) + "%'> " + elt.label + " </div>";
-      }
-    });
-    return html;
-  };
-  return new Handlebars.SafeString("<div class='progress'>" + (addElements(this[property])) + "</div>");
-});
-
-
-/* Example:
-  {{#hasOneRole "ROLE1,ROLE2"}}
-    <div>HTML code</div>
-  {{/hasOneRole}}
- */
-
-Handlebars.registerHelper("hasOneRole", function(property, options) {
-  var roles;
-  if (_.isString(property)) {
-    roles = property.split(',');
-    if (Fmk.Helpers.userHelper.hasOneRole(roles)) {
-      return options.fn(this);
-    }
-  }
-});
-
-
-/* Example:
-  {{#hasRole "ROLE_NON_EXISTANT"}}
-    <div>HTML code</div>
-  {{/hasRole}}
- */
-
-Handlebars.registerHelper("hasRole", function(property, options) {
-  if (_.isString(property) && Fmk.Helpers.userHelper.hasRole(property)) {
-    return options.fn(this);
-  }
-});
-
-
-/* Example
-  {{col "6"}}
- */
-
-Handlebars.registerHelper("col", function(property) {
-  return "col-xs-" + property + " col-sm-" + property + " col-md-" + property + " col-lg-" + property;
-});
-
-
-/* Example
-    {{each collectionProperty}}
-    {{each collectionProperty parentKeys="prop1,prop2"}}
-
-    {{each object}}
-        {{this.key}} : {{this.value}}
-    {{/each}}
- */
-
-Handlebars.registerHelper("each", function(context, options) {
-  var ctx, elem, opt, parentProperties, ret, _i, _len, _ref;
-  options = options || {};
-  opt = options.hash || {};
-  ret = "";
-  parentProperties = void 0;
-  if (opt.parentKeys != null) {
-    parentProperties = _.pick(this, opt.parentKeys.split(','));
-  }
-  context = context || [];
-  if (_.isArray(context)) {
-    _ref = context || [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      elem = _ref[_i];
-      ctx = _.extend(elem, parentProperties);
-      ret = ret + options.fn(ctx);
-    }
-  } else if (_.isObject(context)) {
-    for (elem in context || {}) {
-      ctx = {
-        key: elem,
-        value: _.extend(context[elem], parentProperties)
+      return "" + (generateLeftArrow()) + (generatePageNumber()) + (generateRigthArrow());
+    };
+    generatePageFilter = function() {
+      var generateOptions, pageString;
+      pageString = i18n.t("application.pages");
+      generateOptions = function() {
+        var html, i, _i;
+        html = "";
+        for (i = _i = 1; _i <= 4; i = ++_i) {
+          html += "<option value='" + (5 * i) + "' " + (5 * i === perPage ? 'selected' : void 0) + ">" + (5 * i) + " " + pageString + "</option>";
+        }
+        return html;
       };
-      ret = ret + options.fn(ctx);
-    }
-  }
-  return ret;
-});
-
-Handlebars.registerHelper("introspect", function(property, options) {
-  var container, helperName, html, isDisplay, metadatas, modelName, opt, prop;
-  options = options || {};
-  opt = options.hash || {};
-  isDisplay = opt.isDisplay != null ? opt.isDisplay : true;
-  helperName = isDisplay ? "display_for" : "input_for";
-  modelName = this.modelName || property || opt.modelName || void 0;
-  container = _.extend(this, {
-    modelName: modelName
-  });
-  metadatas = metadataBuilder.getMetadatas(container) || {};
-  html = "";
-  for (prop in metadatas) {
-    html = html + Handlebars.helpers[helperName].call(container, prop, {
-      hash: {
-        col: 12
-      }
-    });
-  }
-  return new Handlebars.SafeString(html);
-});
-
-
-/*Handlebars.registerHelper "currency",(property, options) ->  
-  currencySymbol = ''
-  value = ''
-  if (+this[property])? or +this[property] is 0
-    value = +this[property]
-  if typeof value is 'number'
-    value = numeral(value).format(require('./configuration').getConfiguration().format.currency) if value isnt ''#value.toFixed('2') 
-    new Lawnchair({name: 'products'}, $.noop).get('currency', (curr)-> currencySymbol = curr.currencySymbol)
-  html = "<div class='currency'><div class='right'>#{value} #{currencySymbol}</div></div>"
-  new Handlebars.SafeString(html)
- */
-
-
-/*
-  Helper pour uniformiser l'utilisation des formulaires.
-  Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
- */
-
-Handlebars.registerHelper('form', function(options) {
-  return "<form novalidate class='form-horizontal' role='form'>" + (options.fn(this)) + "</form>";
-});
-
-
-/*
-  Helper pour uniformiser l'utilisation des formulaires.
-  Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
- */
-
-Handlebars.registerHelper('display', function(options) {
-  return "<form novalidate class='form-horizontal' role='form'>" + (options.fn(this)) + "</form>";
-});
-
-
-/*
-  Helper pour uniformiser l'utilisation des formulaires.
-  Exemple: {{#button_toolbar}} {{{button_cancel}} {{button_save}} {{/button_toolbar}}
- */
-
-Handlebars.registerHelper('btn_toolbar', function(options) {
-  return "<div class='btn-toolbar'><div class='btn-group'>" + (options.fn(this)) + "</div></div>";
-});
-
-
-/*
-  Helper pour uniformiser l'utilisation des panel.
-  Exemple: {{#panel}} {{{#form}} {{/form}} {{/panel}}
-  Exemple: {{#panel "titlekey"}} {{{#form}} {{/form}} {{/panel}}
- */
-
-Handlebars.registerHelper('panel', function(title, options) {
-  var cancelButton, editButton, html, opt, saveButton;
-  opt = (options || {}).hash || {};
-  if (_.isObject(title)) {
-    options = title;
-    title = void 0;
-  }
-  editButton = function() {
-    if (opt.edit) {
-      return Handlebars.helpers.button_edit.call(this, {
-        hash: {
-          icon: "pencil"
-        }
-      });
-    } else {
-      return "";
-    }
-  };
-  saveButton = function() {
-    if (opt.save) {
-      return Handlebars.helpers.button_save.call(this, void 0, {
-        hash: {
-          icon: "save"
-        }
-      });
-    } else {
-      return "";
-    }
-  };
-  cancelButton = function() {
-    if (opt.save) {
-      return Handlebars.helpers.button_cancel.call(this, {
-        hash: {
-          icon: "undo"
-        }
-      });
-    } else {
-      return "";
-    }
-  };
-  title = title == null ? "" : i18n.t(title);
-  html = "<div class='panel panel-default'> <div class='panel-heading'>" + title + " " + (editButton()) + " " + (saveButton()) + " " + (cancelButton()) + "</div> <div class='panel-body'>" + (options.fn(this)) + "</div> </div>";
-  return html;
-});
-
-
-/*
-  Helper pour uniformiser l'utilisation des formulaires.
-  Exemple: {{#page "page.title" panelTitle="page.panel.title"}} {{input_for "firstName"}} {{/page}}
- */
-
-Handlebars.registerHelper('page', function(title, options) {
-  var html, opt;
-  options = options || {};
-  opt = options.hash || {};
-  if (!_.isString(title)) {
-    console.error("noTitleInYourTemplate");
-  }
-  html = "<h1>" + (i18n.t(title)) + "</h1> <div class='page-content'> " + (options.fn(this)) + " </div>";
-  return html;
-});
-
-
-/*
-  Helper pour uniformiser l'utilisation des formulaires.
-  Exemple: {{#criteria}}{{#form}} {{input_for "firstName"}} {{/form}}{{/criteria}}
- */
-
-Handlebars.registerHelper('criteria', function(title, options) {
-  var html;
-  options = options || {};
-  if (_.isObject(title)) {
-    options = title;
-    title = void 0;
-  }
-  title = title == null ? "" : i18n.t(title);
-  html = "<div class='criteria'> <h2>" + title + "</h2> " + (options.fn(this)) + " </div>";
-  return html;
-});
-
-Handlebars.registerHelper("result", function(options) {
-  var cssClass, elementTagName, html, isTable, listTagName, opt, paginate, resultLabel, striped, tableHeaderActions;
-  options = options || {};
-  opt = options.hash || {};
-  isTable = opt.isTable != null ? opt.isTable : true;
-  resultLabel = opt.resultLabel ? i18n.t(opt.resultLabel) : void 0;
-  listTagName = isTable ? "table" : "ul";
-  elementTagName = isTable ? "tr" : "li";
-  striped = opt.striped != null ? opt.stripped : true;
-  cssClass = isTable ? "table table-condensed" : "list-group";
-  if (opt.cssClass != null) {
-    cssClass = "" + cssClass + " opt.cssClass";
-  }
-  if (striped) {
-    cssClass = cssClass + "  table-striped";
-  }
-  tableHeaderActions = (function(_this) {
-    return function() {
-      var showHeaderActions;
-      showHeaderActions = opt.showHeaderActions != null ? opt.showHeaderActions : true;
-      if (showHeaderActions) {
-        return "" + (Handlebars.helpers.tableHeaderAction.call(_this, {
-          hash: {
-            resultLabel: '',
-            exportUrl: _this.exportUrl,
-            resultLabel: resultLabel
-          }
-        })) + " <hr />";
+      return "<select class='form-control pageFilter'> " + (generateOptions()) + " </select>";
+    };
+    generateTotal = function() {
+      var resultString;
+      resultString = i18n.t('search.result');
+      if (options.showResultNumber) {
+        return "<div class='badgeResult'>" + resultString + " <span class='badge'>" + totalRecords + "</span></div>";
       } else {
         return "";
       }
     };
-  })(this);
-  paginate = (function(_this) {
-    return function() {
-      var isPaginate;
-      isPaginate = opt.isPaginate != null ? opt.isPaginate : true;
-      if (isPaginate) {
-        return Handlebars.helpers.paginate.call(_this, {
+    html = "<div class='col-md-8'> <ul class='pagination'>" + (generatePagination()) + "</ul> </div> <div class='col-md-2 pagination'> " + (generateTotal()) + " </div> <div class='col-md-2 pagination'> " + (generatePageFilter()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+  Handlebars.registerHelper("tableHeaderAction", function(options) {
+    var exportButton, generateTotal, html, resultString, totalRecords;
+    options = options || {};
+    options = options.hash || {};
+    totalRecords = this.totalRecords || 0;
+    resultString = i18n.t(options.resultLabel || 'search.result');
+    exportButton = function() {
+      if ((options.exportUrl != null) && totalRecords > 0) {
+        return "<div class='pull-right export'> <button   data-bypass class='btn btnExport'><i class='fa fa-table'></i>" + (i18n.t('search.export')) + "</button> <a href='" + options.exportUrl + "' data-bypass class='btn hidden btnExport'><i class='fa fa-table'></i> " + (i18n.t('search.export')) + "</a> </div>";
+      }
+      return "";
+    };
+    generateTotal = function() {
+      return "<span class='badge'>" + totalRecords + "</span> " + resultString;
+    };
+    html = "<div class='tableAction'> <div class='pull-left'> " + (generateTotal()) + " </div> " + (exportButton()) + " </div>";
+    return new Handlebars.SafeString(html);
+  });
+  Handlebars.registerHelper("sortColumn", function(property, options) {
+    var generateSortPosition, order, sortField, translationKey;
+    options = options.hash || {};
+    sortField = this.sortField;
+    order = this.order || "asc";
+    translationKey = options.translationKey || void 0;
+    generateSortPosition = function() {
+      var icon;
+      icon = "fa fa-sort";
+      if (property === sortField) {
+        icon += "-" + order;
+      }
+      return "<i class='" + icon + "' data-name='" + property + "'></i>";
+    };
+    if (this.isEdit) {
+      return new Handlebars.SafeString("<span class='sortColumn'>" + (i18n.t(translationKey)) + "</span>");
+    }
+    return new Handlebars.SafeString("<a class='sortColumn'  href='#' data-name='" + property + "' data-bypass>" + (i18n.t(translationKey)) + " " + (this.isEdit ? '' : generateSortPosition()) + "</a>");
+  });
+  Handlebars.registerHelper("statusIcon", function(property, options) {
+    var icon;
+    if (typeof (this[property] === "boolean")) {
+      if (this[property]) {
+        icon = "fa fa-check";
+      } else {
+        icon = "fa fa-exclamation";
+      }
+    } else {
+      switch (this[property]) {
+        case 0:
+          icon = "fa fa-ban";
+          break;
+        case 1:
+          icon = "fa fa-exclamation";
+          break;
+        case 2:
+          icon = "fa fa-clock-o";
+          break;
+        case 3:
+          icon = "fa fa-check";
+          break;
+        default:
+          icon = "";
+      }
+    }
+    return new Handlebars.SafeString("<i class='" + icon + "'><i>");
+  });
+  Handlebars.registerHelper("progress", function(property, options) {
+    var addElements;
+    addElements = function(elements) {
+      var html, sum;
+      html = "";
+      sum = 0;
+      elements.forEach(function(elt) {
+        if (!_.isEmpty(elt)) {
+          return sum += elt.value;
+        }
+      });
+      elements.forEach(function(elt) {
+        if (!_.isEmpty(elt)) {
+          return html += "<div class='progress-bar progress-bar-" + elt.type + "' style='width: " + (Math.floor(elt.value * 100 / sum)) + "%'> " + elt.label + " </div>";
+        }
+      });
+      return html;
+    };
+    return new Handlebars.SafeString("<div class='progress'>" + (addElements(this[property])) + "</div>");
+  });
+
+  /* Example:
+    {{#hasOneRole "ROLE1,ROLE2"}}
+      <div>HTML code</div>
+    {{/hasOneRole}}
+   */
+  Handlebars.registerHelper("hasOneRole", function(property, options) {
+    var roles;
+    if (_.isString(property)) {
+      roles = property.split(',');
+      if (Fmk.Helpers.userHelper.hasOneRole(roles)) {
+        return options.fn(this);
+      }
+    }
+  });
+
+  /* Example:
+    {{#hasRole "ROLE_NON_EXISTANT"}}
+      <div>HTML code</div>
+    {{/hasRole}}
+   */
+  Handlebars.registerHelper("hasRole", function(property, options) {
+    if (_.isString(property) && Fmk.Helpers.userHelper.hasRole(property)) {
+      return options.fn(this);
+    }
+  });
+
+  /* Example
+    {{col "6"}}
+   */
+  Handlebars.registerHelper("col", function(property) {
+    return "col-xs-" + property + " col-sm-" + property + " col-md-" + property + " col-lg-" + property;
+  });
+
+  /* Example
+      {{each collectionProperty}}
+      {{each collectionProperty parentKeys="prop1,prop2"}}
+  
+      {{each object}}
+          {{this.key}} : {{this.value}}
+      {{/each}}
+   */
+  Handlebars.registerHelper("each", function(context, options) {
+    var ctx, elem, opt, parentProperties, ret, _i, _len, _ref;
+    options = options || {};
+    opt = options.hash || {};
+    ret = "";
+    parentProperties = void 0;
+    if (opt.parentKeys != null) {
+      parentProperties = _.pick(this, opt.parentKeys.split(','));
+    }
+    context = context || [];
+    if (_.isArray(context)) {
+      _ref = context || [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        elem = _ref[_i];
+        ctx = _.extend(elem, parentProperties);
+        ret = ret + options.fn(ctx);
+      }
+    } else if (_.isObject(context)) {
+      for (elem in context || {}) {
+        ctx = {
+          key: elem,
+          value: _.extend(context[elem], parentProperties)
+        };
+        ret = ret + options.fn(ctx);
+      }
+    }
+    return ret;
+  });
+  Handlebars.registerHelper("introspect", function(property, options) {
+    var container, helperName, html, isDisplay, metadatas, modelName, opt, prop;
+    options = options || {};
+    opt = options.hash || {};
+    isDisplay = opt.isDisplay != null ? opt.isDisplay : true;
+    helperName = isDisplay ? "display_for" : "input_for";
+    modelName = this.modelName || property || opt.modelName || void 0;
+    container = _.extend(this, {
+      modelName: modelName
+    });
+    metadatas = metadataBuilder.getMetadatas(container) || {};
+    html = "";
+    for (prop in metadatas) {
+      html = html + Handlebars.helpers[helperName].call(container, prop, {
+        hash: {
+          col: 12
+        }
+      });
+    }
+    return new Handlebars.SafeString(html);
+  });
+
+  /*Handlebars.registerHelper "currency",(property, options) ->
+    currencySymbol = ''
+    value = ''
+    if (+this[property])? or +this[property] is 0
+      value = +this[property]
+    if typeof value is 'number'
+      value = numeral(value).format(require('./configuration').getConfiguration().format.currency) if value isnt ''#value.toFixed('2')
+      new Lawnchair({name: 'products'}, $.noop).get('currency', (curr)-> currencySymbol = curr.currencySymbol)
+    html = "<div class='currency'><div class='right'>#{value} #{currencySymbol}</div></div>"
+    new Handlebars.SafeString(html)
+   */
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
+   */
+  Handlebars.registerHelper('form', function(options) {
+    return "<form novalidate class='form-horizontal' role='form'>" + (options.fn(this)) + "</form>";
+  });
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#form}} {{input_for "firstName"}} {{/form}}
+   */
+  Handlebars.registerHelper('display', function(options) {
+    return "<form novalidate class='form-horizontal' role='form'>" + (options.fn(this)) + "</form>";
+  });
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#button_toolbar}} {{{button_cancel}} {{button_save}} {{/button_toolbar}}
+   */
+  Handlebars.registerHelper('btn_toolbar', function(options) {
+    return "<div class='btn-toolbar'><div class='btn-group'>" + (options.fn(this)) + "</div></div>";
+  });
+
+  /*
+    Helper pour uniformiser l'utilisation des panel.
+    Exemple: {{#panel}} {{{#form}} {{/form}} {{/panel}}
+    Exemple: {{#panel "titlekey"}} {{{#form}} {{/form}} {{/panel}}
+   */
+  Handlebars.registerHelper('panel', function(title, options) {
+    var cancelButton, editButton, html, opt, saveButton;
+    opt = (options || {}).hash || {};
+    if (_.isObject(title)) {
+      options = title;
+      title = void 0;
+    }
+    editButton = function() {
+      if (opt.edit) {
+        return Handlebars.helpers.button_edit.call(this, {
           hash: {
-            showResultNumber: false
+            icon: "pencil"
           }
         });
       } else {
         return "";
       }
     };
-  })(this);
-  html = " " + (tableHeaderActions()) + " <" + listTagName + " class='" + cssClass + "'> " + (options.fn(this)) + " </" + listTagName + "> " + (paginate()) + " <div id='lineSelectionContainer'></div>";
-  return new Handlebars.SafeString(html);
-});
+    saveButton = function() {
+      if (opt.save) {
+        return Handlebars.helpers.button_save.call(this, void 0, {
+          hash: {
+            icon: "save"
+          }
+        });
+      } else {
+        return "";
+      }
+    };
+    cancelButton = function() {
+      if (opt.save) {
+        return Handlebars.helpers.button_cancel.call(this, {
+          hash: {
+            icon: "undo"
+          }
+        });
+      } else {
+        return "";
+      }
+    };
+    title = title == null ? "" : i18n.t(title);
+    html = "<div class='panel panel-default'> <div class='panel-heading'>" + title + " " + (editButton()) + " " + (saveButton()) + " " + (cancelButton()) + "</div> <div class='panel-body'>" + (options.fn(this)) + "</div> </div>";
+    return html;
+  });
 
-Handlebars.registerHelper("result_container", function(i18n_key, options) {
-  var html, opt, width;
-  options = options || {};
-  opt = options.hash || {};
-  width = opt.width || 12;
-  html = "<div id='results' class='" + (Handlebars.helpers.col.call(this, width)) + "}'></div>";
-  return new Handlebars.SafeString(html);
-});
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#page "page.title" panelTitle="page.panel.title"}} {{input_for "firstName"}} {{/page}}
+   */
+  Handlebars.registerHelper('page', function(title, options) {
+    var html, opt;
+    options = options || {};
+    opt = options.hash || {};
+    if (!_.isString(title)) {
+      console.error("noTitleInYourTemplate");
+    }
+    html = "<h1>" + (i18n.t(title)) + "</h1> <div class='page-content'> " + (options.fn(this)) + " </div>";
+    return html;
+  });
+
+  /*
+    Helper pour uniformiser l'utilisation des formulaires.
+    Exemple: {{#criteria}}{{#form}} {{input_for "firstName"}} {{/form}}{{/criteria}}
+   */
+  Handlebars.registerHelper('criteria', function(title, options) {
+    var html;
+    options = options || {};
+    if (_.isObject(title)) {
+      options = title;
+      title = void 0;
+    }
+    title = title == null ? "" : i18n.t(title);
+    html = "<div class='criteria'> <h2>" + title + "</h2> " + (options.fn(this)) + " </div>";
+    return html;
+  });
+  Handlebars.registerHelper("result", function(options) {
+    var cssClass, elementTagName, html, isTable, listTagName, opt, paginate, resultLabel, striped, tableHeaderActions;
+    options = options || {};
+    opt = options.hash || {};
+    isTable = opt.isTable != null ? opt.isTable : true;
+    resultLabel = opt.resultLabel ? i18n.t(opt.resultLabel) : void 0;
+    listTagName = isTable ? "table" : "ul";
+    elementTagName = isTable ? "tr" : "li";
+    striped = opt.striped != null ? opt.stripped : true;
+    cssClass = isTable ? "table table-condensed" : "list-group";
+    if (opt.cssClass != null) {
+      cssClass = "" + cssClass + " opt.cssClass";
+    }
+    if (striped) {
+      cssClass = cssClass + "  table-striped";
+    }
+    tableHeaderActions = (function(_this) {
+      return function() {
+        var showHeaderActions;
+        showHeaderActions = opt.showHeaderActions != null ? opt.showHeaderActions : true;
+        if (showHeaderActions) {
+          return "" + (Handlebars.helpers.tableHeaderAction.call(_this, {
+            hash: {
+              resultLabel: '',
+              exportUrl: _this.exportUrl,
+              resultLabel: resultLabel
+            }
+          })) + " <hr />";
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    paginate = (function(_this) {
+      return function() {
+        var isPaginate;
+        isPaginate = opt.isPaginate != null ? opt.isPaginate : true;
+        if (isPaginate) {
+          return Handlebars.helpers.paginate.call(_this, {
+            hash: {
+              showResultNumber: false
+            }
+          });
+        } else {
+          return "";
+        }
+      };
+    })(this);
+    html = " " + (tableHeaderActions()) + " <" + listTagName + " class='" + cssClass + "'> " + (options.fn(this)) + " </" + listTagName + "> " + (paginate()) + " <div id='lineSelectionContainer'></div>";
+    return new Handlebars.SafeString(html);
+  });
+  return Handlebars.registerHelper("result_container", function(i18n_key, options) {
+    var html, opt, width;
+    options = options || {};
+    opt = options.hash || {};
+    width = opt.width || 12;
+    html = "<div id='results' class='" + (Handlebars.helpers.col.call(this, width)) + "}'></div>";
+    return new Handlebars.SafeString(html);
+  });
+};
 
 
 
-},{"../config":2,"./metadata_builder":15,"hbsfy/runtime":68}],31:[function(require,module,exports){
+},{"../config":2,"./metadata_builder":15}],31:[function(require,module,exports){
 var infos = require('../package.json');
-require('./helpers/view_helper');
+//Register handlebars helpers
+var hbsHelpers = require('./helpers/view_helper');
+hbsHelpers(require("hbsfy/runtime"));
+
 module.exports = {
   VERSION: infos.version,
   AUTHOR: infos.author,
@@ -4673,9 +4632,10 @@ module.exports = {
   Views: require('./views'),
   Helpers: require('./helpers'),
   util: require('./util'),
-  initialize: require('./initialize')
+  initialize: require('./initialize'),
+  registerTemplateHelpers: hbsHelpers
 };
-},{"../package.json":69,"./core":4,"./helpers":12,"./helpers/view_helper":30,"./initialize":32,"./models":36,"./util":47,"./views":55}],32:[function(require,module,exports){
+},{"../package.json":69,"./core":4,"./helpers":12,"./helpers/view_helper":30,"./initialize":32,"./models":36,"./util":47,"./views":55,"hbsfy/runtime":68}],32:[function(require,module,exports){
 /**
  * Focus initialization function.
  * @param options - options to initialize.
