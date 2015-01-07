@@ -2941,6 +2941,13 @@ var checkParams = function checkParams(paramsArray) {
   }
   return true;
 };
+/**
+ * @description Get th site structure processed with the user roles.
+ * @returns {object}
+ */
+function getUserSiteStructure(){
+  return require("./site_description_builder").getSiteStructure();
+}
 
 var siteDescriptionHelper = {
   defineSite: defineSite,
@@ -2952,11 +2959,12 @@ var siteDescriptionHelper = {
   checkParams: checkParams,
   isProcessed: function isProcessed() {
     return isProcess;
-  }
+  },
+  getUserSiteStructure: getUserSiteStructure
 };
 
 module.exports = siteDescriptionHelper;
-},{"./custom_exception":7}],26:[function(require,module,exports){
+},{"./custom_exception":7,"./site_description_builder":24}],26:[function(require,module,exports){
 /* global $, _ */
 "use strict";
 //Filename: helpers/url_helper.js
@@ -3355,7 +3363,7 @@ var regex = {
 
 //Function to test an email.
 function emailValidation(emailToValidate, options) {
-  options = options || options;
+  options = options || {};
   return regex.email.test(emailToValidate);
 }
 //Function to validate a date.
@@ -3500,7 +3508,7 @@ var S4, guid, logger, metadataBuilder;
 
 metadataBuilder = require('./metadata_builder').metadataBuilder;
 
-logger = new Logger();
+logger = typeof Logger !== "undefined" && Logger !== null ? new Logger() : console;
 
 Handlebars.registerHelper('pick', function(val, options) {
   return options.hash[val];
@@ -6520,22 +6528,24 @@ module.exports = ConsultEditView;
                 toogle: true
             });
         },
-        //Get the criteria from the session storage if exists.
-        getSessionCriteria: function getCriteria() {
-            return sessionHelper.getItem(this.getCriteriaId());
-        },
-        //Save the criteria in the session storage.
-        saveSessionCriteria: function saveSessionCriteria(criteria) {
-            return sessionHelper.saveItem(this.getCriteriaId(), criteria);
+
+        //Access from/to session storage
+        session:{
+            save : function saveItem(item){
+                return sessionHelper.saveItem(this.getSessionKey(), item);
+            },
+            get : function getItem(){
+                return sessionHelper.getItem(this.getSessionKey());
+            },
+            delete : function deleteItem(){
+                return sessionHelper.removeItem(this.getSessionKey());
+            }
         },
         // Get the id of the criteria.
-        getCriteriaId: function getCriteriaId() {
+        getSessionKey: function getSessionKey() {
             var hash = window.location.hash;
             if (this.model.modelName !== undefined) {
                 hash += this.model.modelName;
-            }
-            if (this.opts.criteriaId !== undefined) {
-                hash += this.opts.criteriaId;
             }
             return hash;
         },
@@ -6772,7 +6782,7 @@ module.exports = {
 };
 
 },{"./collection-pagination-view":49,"./composite-view":50,"./consult-edit-view":51,"./core-view":52,"./header-items-view":53,"./header-view":54,"./list-view":56,"./modal-view":57,"./notifications-view":58,"./search-results-view":59,"./search-view":60}],56:[function(require,module,exports){
-/*global Backbone,  $,  _*/
+/*global Backbone,  $,  _, window*/
 "use strict";
 // Filename: views/list-view.js
 //Dependencies.
@@ -6880,14 +6890,13 @@ var ListView = ConsultEditView.extend({
     ConsultEditView.prototype.initialize.call(this, options);
     //By default the search criteria is empty.
     this.searchCriteria = this.opts.searchCriteria || this.searchCriteria;
-    this.isSearchTriggered = options.isSearchTriggered || false;
     this.listenTo(this.model, "reset", this.render, this);
     // Listen to the model add event.
     this.listenTo(this.model, "add", this.addOne, this);
     var currentView = this;
     if (this.opts.isModelToLoad) {
       this.opts.isReadyModelData = false;
-      this.getSessionCriteria().then(function (crit) {
+      this.session.get().then(function (crit) {
         //Restore the criteria if save into the session.
         if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
           currentView.model.setPageInfo(crit.pageInfo);
@@ -7126,7 +7135,7 @@ var ListView = ConsultEditView.extend({
     }
   },
   saveCriteria: function (criteria, pageInfo) {
-    this.saveSessionCriteria({
+    this.session.save({
       criteria: criteria,
       pageInfo: pageInfo
     });
@@ -7322,6 +7331,12 @@ var SearchResultsView = ListView.extend({
     isReadyResultsData: true
   }),
 
+  initialize: function initializeListView(options) {
+    options = options || {};
+    ListView.prototype.initialize.call(this, options);
+    this.isSearchTriggered = options.isSearchTriggered || false;
+  },
+
   // Get the criteria used to get the results.
   getCriteria: function getCriteriaResultsView() {
     var criteria = this.opts.searchView.getCriteria();
@@ -7368,7 +7383,7 @@ var SearchResultsView = ListView.extend({
   },
 
   saveCriteria: function saveSearchCriteria(criteria, pageInfo) {
-    this.saveSessionCriteria({criteria: criteria, pageInfo: pageInfo}).then(function (s) {
+    this.session.save({criteria: criteria, pageInfo: pageInfo}).then(function (s) {
       console.log('criteria save in session', s);
     });
   }
@@ -7388,7 +7403,8 @@ var CoreView = require('./core-view');
 var errorHelper = require('../helpers/error_helper');
 var backboneNotification = require("../helpers/backbone_notification");
 
-var SearchView = CoreView.extend({
+var SearchView;
+SearchView = CoreView.extend({
   tagName: 'div',
   className: 'searchView',
   ResultsView: undefined,
@@ -7441,7 +7457,7 @@ var SearchView = CoreView.extend({
       $('.collapse', this.$el).collapse('hide');
     });
     var currentView = this;
-    this.getSessionCriteria().then(function (crit) {
+    this.session.get().then(function (crit) {
       //Restore the criteria if save into the session.
       if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
         currentView.model.set(crit.criteria, {
@@ -7466,15 +7482,14 @@ var SearchView = CoreView.extend({
     this.delegateEvents();
   },
 
-  defaultEvents: {
+  events: {
     "submit form": 'runSearch', // Launch the search.
     "click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
     "click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
     "click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
     "click .panel-heading": "toogleCollapse",
-    "click button.btnCreate": "create",
+    "click button.btnCreate": "create"
   },
-  events: this.defaultEvents,
 
   refreshSearchOnInputChangeEvents: {
     "change [data-refresh]  input:not([noRefresh])": "runSearch",
@@ -7552,49 +7567,49 @@ var SearchView = CoreView.extend({
     this.searchResultsView.render();
     var currentView = this;
     ModelValidator
-      .validate(this.model)
-      .then(function (model) {
-        currentView.model.unsetErrors({
-          silent: false
-        });
-        var criteria = currentView.getCriteria();
-        var pageInfo = currentView.searchResults.pageInfo();
-
-        if (isEvent) {
-          pageInfo.currentPage = 1;
-        }
-        if (!currentView.search) {
-          throw new NotImplementedException('The search property of this view is not defined, the search cannot be launched.', this);
-        }
-        currentView
-          .search(criteria, pageInfo)
-          .then(function success(jsonResponse) {
-            //Save the criteria in session.
-            currentView.searchResultsView.opts.isReadyResultsData = true;
-            currentView.searchResultsView.isSearchTriggered = true;
-            currentView.searchResults.setPageInfo(pageInfo);
-            currentView.saveSessionCriteria({
-              criteria: criteria,
-              pageInfo: pageInfo
-            }).then(function (s) {
-              //console.log('criteria save in session', s);
-              backboneNotification.clearNotifications();
-              return currentView.searchSuccess(jsonResponse);
-            });
-          }).then(null, function error(errorResponse) {
-            currentView.searchResultsView.opts.isReadyResultsData = true;
-            currentView.searchError(errorResponse);
-          }).then(function resetButton() {
-            if (searchButton) {
-              searchButton.button('reset');
-            }
+        .validate(this.model)
+        .then(function(model) {
+          currentView.model.unsetErrors({
+            silent: false
           });
-      }).then(null, function error(errors) {
-        currentView.model.setErrors(errors);
-        if (searchButton) {
-          searchButton.button('reset');
-        }
-      });
+          var criteria = currentView.getCriteria();
+          var pageInfo = currentView.searchResults.pageInfo();
+
+          if (isEvent) {
+            pageInfo.currentPage = 1;
+          }
+          if (!currentView.search) {
+            throw new NotImplementedException('The search property of this view is not defined, the search cannot be launched.', this);
+          }
+          currentView
+              .search(criteria, pageInfo)
+              .then(function success(jsonResponse) {
+                //Save the criteria in session.
+                currentView.searchResultsView.opts.isReadyResultsData = true;
+                currentView.searchResultsView.isSearchTriggered = true;
+                currentView.searchResults.setPageInfo(pageInfo);
+                currentView.session.save({
+                  criteria: criteria,
+                  pageInfo: pageInfo
+                }).then(function (s) {
+                  //console.log('criteria save in session', s);
+                  backboneNotification.clearNotifications();
+                  return currentView.searchSuccess(jsonResponse);
+                });
+              }).then(null, function error(errorResponse) {
+                currentView.searchResultsView.opts.isReadyResultsData = true;
+                currentView.searchError(errorResponse);
+              }).then(function resetButton() {
+                if (searchButton) {
+                  searchButton.button('reset');
+                }
+              });
+        }).then(null, function error(errors) {
+          currentView.model.setErrors(errors);
+          if (searchButton) {
+            searchButton.button('reset');
+          }
+        });
 
     if (this.isReadOnly) {
       this.model.set({
@@ -7605,24 +7620,24 @@ var SearchView = CoreView.extend({
 
   clearSearchCriteria: function clearSearchCriteria(event) {
     event.preventDefault();
-    //Backbone.Notification.clearNotifications();
-    var unchanged = {};
-    var vals = this.getUnchangedFields();
-    for (var i in vals) {
-      unchanged[vals[i]] = this.model.get(vals[i]);
-    }
     this.model.clear();
-    for (field in unchanged) {
-      this.model.set(field, unchanged[field], {
-        silent: true
-      });
-    }
-    this.saveSessionCriteria({}); // clear session criteria.
-    this.initialize(); //Call initialize again in order to refresh the view with criteria lists.
+    var currentView = this;
+    this.session.get().then(function (item) {
+      if (item !== null) {
+        currentView.session.delete(); // clear session criteria.
+      }
+      currentView.searchResultsView.isSearchTriggered = false;
+      currentView.searchResults.reset();
+    });
   },
 
-  getUnchangedFields: function getUnchangedFields() {
-    return []
+  // Get the id of the criteria.
+  getSessionKey: function getSessionKey() {
+    var hash = CoreView.prototype.getSessionKey.call(this);
+    if (this.opts.criteriaId !== undefined) {
+      hash += this.opts.criteriaId;
+    }
+    return hash;
   },
 
   render: function renderSearch(options) {
@@ -7639,16 +7654,6 @@ var SearchView = CoreView.extend({
     $('.collapse', this.$el).collapse('show');
   }
 });
-
-/*ModelValidator.validate(this.model)
- .catch (currentView.model.setErrors)
- .then(function(model) {
- currentView.model.unsetErrors();
- currentView.search(currentView.model.toJSON())
- //.then(currentView.searchSuccess.bind(currentView))
- .then(currentView.searchResults.reset.bind(currentView.searchResults))
- .catch (currentView.searchError.bind(currentView))
- });*/
 
 module.exports = SearchView;
 },{"../helpers/backbone_notification":6,"../helpers/custom_exception":7,"../helpers/error_helper":8,"../helpers/form_helper":9,"../helpers/model_validation_promise":16,"./core-view":52}],61:[function(require,module,exports){
@@ -8131,7 +8136,7 @@ module.exports={
   "name": "focus",
   "version": "0.3.0",
   "description": "Klee group framework for SinglePageApplication.",
-  "main": "dist/node/index.js",
+  "main": "lib/index.js",
   "directories": {
     "test": "test"
   },
