@@ -8129,7 +8129,7 @@ module.exports = require('./dist/cjs/handlebars.runtime');
 },{"./dist/cjs/handlebars.runtime":61}],68:[function(require,module,exports){
 module.exports={
   "name": "focus",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Klee group framework for SinglePageApplication.",
   "main": "dist/node/index.js",
   "directories": {
@@ -8200,7 +8200,8 @@ module.exports={
     "gulp-util": "~3.0.1",
     "hapi": "^6.9.0",
     "jshint-stylish": "~1.0.0",
-    "mocha": "~1.21.4"
+    "mocha": "~1.21.4",
+    "browser-sync": "~1.8.3"
   }
 }
 
