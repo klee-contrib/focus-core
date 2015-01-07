@@ -3,7 +3,7 @@
 # Get the domains definition as globals.
 
 metadataBuilder = require('./metadata_builder').metadataBuilder;
-logger = new Logger()
+logger = if Logger? then new Logger() else console
 
 Handlebars.registerHelper 'pick', (val, options) ->
   return options.hash[val]
