@@ -1,12 +1,83 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*global window*/
 window.Focus = require('./index');
-},{"./index":31}],2:[function(require,module,exports){
+},{"./index":33}],2:[function(require,module,exports){
 
 
 
 
 },{}],3:[function(require,module,exports){
+/*global XMLHttpRequest, XDomainRequest*/
+var ArgumentInvalidException = require('../helpers/custom_exception').ArgumentInvalidException;
+/**
+ * Create a cors http request.
+ * @param method Type of method yopu want to reach.
+ * @param url Url to reach.
+ * @returns {XMLHttpRequest}
+ */
+module.exports = function createCORSRequest(method, url) {
+  if(typeof method !== "string"){
+    throw new ArgumentInvalidException('The method should be a string in GET/POST/PUT/DELETE', method);
+  }
+  if(typeof url !== "string"){
+    throw new ArgumentInvalidException('The url should be a string', url);
+  }
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+    // XHR for Chrome/Firefox/Opera/Safari.
+    xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+    // XDomainRequest for IE.
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+  } else {
+    // CORS not supported.
+    xhr = null;
+  }
+  return xhr;
+}
+},{"../helpers/custom_exception":9}],4:[function(require,module,exports){
+var createCORSRequest = require('./cors');
+var httpResponseParser = require('./http_response_parser');
+/**
+ * @module core/fetch
+ * @type {Promise}
+ */
+module.exports =  function fetch(obj, options) {
+  options = options || {};
+  options.parser = options.parser || httpResponseParser.parse;
+  var request = createCORSRequest(obj.type, obj.url);
+  if (!request) {
+    throw new Error('You cannot perform ajax request on other domains.');
+  }
+  return new Promise(function (success, failure) {
+    //Request error handler
+    request.onerror = function (error) {
+      failure(error);
+    };
+    //Request success handler
+    request.onload = function () {
+      var status = request.status;
+      if (status !== 200) {
+        var err = JSON.parse(request.response);
+        err.statusCode = status;
+        failure(err);
+      }
+      var contentType = request.getResponseHeader('content-type');
+      var data;
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = options.parser(request);
+      } else {
+        data = request.responseText;
+      }
+      success(data);
+    };
+    //Execute the request.
+    request.send(obj.data);
+  });
+
+};
+},{"./cors":3,"./http_response_parser":5}],5:[function(require,module,exports){
 /*global _*/
 
 /**
@@ -190,12 +261,12 @@ var httpResponseParser = {
   configure: configure
 };
 module.exports = httpResponseParser;
-},{"../helpers/custom_exception":7}],4:[function(require,module,exports){
+},{"../helpers/custom_exception":9}],6:[function(require,module,exports){
 module.exports = {
   listMetadataParser: require('./list_metadata_parser'),
   httpResponseParser: require('./http_response_parser')
 };
-},{"./http_response_parser":3,"./list_metadata_parser":5}],5:[function(require,module,exports){
+},{"./http_response_parser":5,"./list_metadata_parser":7}],7:[function(require,module,exports){
 /*global _*/
 //Dependencies.
 var ArgumentInvalidException = require("../helpers/custom_exception").ArgumentInvalidException;
@@ -327,7 +398,7 @@ var listMetadataParser = {
 
 module.exports = listMetadataParser;
 
-},{"../helpers/custom_exception":7,"../util/paramify":48}],6:[function(require,module,exports){
+},{"../helpers/custom_exception":9,"../util/paramify":50}],8:[function(require,module,exports){
 /*global $,window*/
 
 /**
@@ -417,7 +488,7 @@ module.exports = listMetadataParser;
     }
   };
   module.exports = backboneNotification;
-},{"../models/notifications":39,"../views/notifications-view":58}],7:[function(require,module,exports){
+},{"../models/notifications":41,"../views/notifications-view":60}],9:[function(require,module,exports){
 "use strict";
 
 /*
@@ -508,7 +579,7 @@ module.exports = mod;
 
 
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /*global _, i18n*/
 
 /**
@@ -883,7 +954,7 @@ var errorHelper = {
     treatGlobalErrors: treatGlobalErrors
 };
 module.exports = errorHelper;
-},{"./backbone_notification":6,"./metadata_builder":15,"./util_helper":28}],9:[function(require,module,exports){
+},{"./backbone_notification":8,"./metadata_builder":17,"./util_helper":30}],11:[function(require,module,exports){
 /*global window, $, Backbone, _*/
 
 /**
@@ -1103,7 +1174,7 @@ var formHelper = {
     formCollectionBinder: _formCollectionBinder
 };
 module.exports = formHelper;
-},{"./post_rendering_helper":19}],10:[function(require,module,exports){
+},{"./post_rendering_helper":21}],12:[function(require,module,exports){
 "use strict";
 var format, formaters;
 
@@ -1148,7 +1219,7 @@ module.exports = formaters;
 
 
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 
 // Filename: helpers/metadata_builder.coffee
@@ -1207,7 +1278,7 @@ var headerHelper = {
 
 };
 module.exports = headerHelper;
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * @module helpers
  * @type object
@@ -1238,7 +1309,7 @@ module.exports = {
     utilHelper: require('./util_helper'),
     validators: require('./validators')
 };
-},{"./backbone_notification":6,"./custom_exception":7,"./error_helper":8,"./form_helper":9,"./formatter_helper":10,"./header_helper":11,"./language_helper":13,"./message_helper":14,"./metadata_builder":15,"./model_validation_promise":16,"./odata_helper":17,"./post_rendering_builder":18,"./post_rendering_helper":19,"./promisify_helper":20,"./reference_helper":21,"./router":22,"./session_helper":23,"./site_description_builder":24,"./site_description_helper":25,"./url_helper":26,"./user_helper":27,"./util_helper":28,"./validators":29}],13:[function(require,module,exports){
+},{"./backbone_notification":8,"./custom_exception":9,"./error_helper":10,"./form_helper":11,"./formatter_helper":12,"./header_helper":13,"./language_helper":15,"./message_helper":16,"./metadata_builder":17,"./model_validation_promise":18,"./odata_helper":19,"./post_rendering_builder":20,"./post_rendering_helper":21,"./promisify_helper":22,"./reference_helper":23,"./router":24,"./session_helper":25,"./site_description_builder":26,"./site_description_helper":27,"./url_helper":28,"./user_helper":29,"./util_helper":30,"./validators":31}],15:[function(require,module,exports){
 "use strict";
 var ArgumentInvalidException, ArgumentNullException, NS, defineLanguage, defineLanguages, getCultures, getLanguage, isInBrowser, languagesOptions, mod;
 
@@ -1313,7 +1384,7 @@ module.exports = mod;
 
 
 
-},{"./custom_exception":7}],14:[function(require,module,exports){
+},{"./custom_exception":9}],16:[function(require,module,exports){
 /* global  _ , window, Promise,$, Backbone, i18n */
 
 /**
@@ -1399,7 +1470,7 @@ var messageHelper = {
     initialize: initialize
 };
 module.exports = messageHelper;
-},{"../views/modal-view":57}],15:[function(require,module,exports){
+},{"../views/modal-view":59}],17:[function(require,module,exports){
 "use strict";
 var ArgumentNullException, MetadataBuilder, proxyValidationContainer;
 
@@ -1661,7 +1732,7 @@ module.exports = {
 
 
 
-},{"./custom_exception":7}],16:[function(require,module,exports){
+},{"./custom_exception":9}],18:[function(require,module,exports){
 /*global Promise, _, window, Backbone*/
 //Filename: helpers/model_validation_promise.js
 
@@ -1790,7 +1861,7 @@ module.exports = {
   initialize: initialize,
   validateNoPromise: validateNoPromise
 };
-},{"./custom_exception":7,"./metadata_builder":15,"./validators":29}],17:[function(require,module,exports){
+},{"./custom_exception":9,"./metadata_builder":17,"./validators":31}],19:[function(require,module,exports){
 /*global _, $, i18n*/
 "use strict";
 
@@ -2002,7 +2073,7 @@ var odataHelper = {
     configure: configure
 };
 module.exports = odataHelper;
-},{"./util_helper":28}],18:[function(require,module,exports){
+},{"./util_helper":30}],20:[function(require,module,exports){
 /* global $ */
 "use strict";
 //Filename: post_rendering_builder.js
@@ -2035,7 +2106,7 @@ var postRenderingBuilder = function(options) {
   }
 };
 module.exports = postRenderingBuilder;
-},{"./metadata_builder":15,"./post_rendering_helper":19}],19:[function(require,module,exports){
+},{"./metadata_builder":17,"./post_rendering_helper":21}],21:[function(require,module,exports){
 /*global _,  $*/
 "use strict";
 var ArgumentInvalidException = require("./custom_exception").ArgumentInvalidException;
@@ -2123,7 +2194,7 @@ var mdl = {
   callParser: callParser
 };
 module.exports = mdl;
-},{"./custom_exception":7}],20:[function(require,module,exports){
+},{"./custom_exception":9}],22:[function(require,module,exports){
 /* global Backbone, Promise, _*/
 
 "use strict";
@@ -2133,52 +2204,7 @@ var httpResponseParser = require('../core/http_response_parser');
 var listMetadataParser = require('../core/list_metadata_parser');
 var ArgumentNullException = require("./custom_exception").ArgumentNullException;
 var ArgumentInvalidException = require("./custom_exception").ArgumentInvalidException;
-
-function createCORSRequest(method, url) {
-  var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr) {
-    // XHR for Chrome/Firefox/Opera/Safari.
-    xhr.open(method, url, true);
-  } else if (typeof XDomainRequest != "undefined") {
-    // XDomainRequest for IE.
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
-  } else {
-    // CORS not supported.
-    xhr = null;
-  }
-  return xhr;
-}
-
-var fetch = function (obj) {
-  var request = createCORSRequest(obj.type, obj.url);
-  if (!request) {
-    throw new Error('You cannot perform ajax request on other domains.');
-  }
-  return new Promise(function (success, failure) {
-    request.onerror = function (error) {
-      failure(error);
-    };
-    request.onload = function () {
-      var status = request.status;
-      if (status !== 200) {
-        var err = JSON.parse(request.response);
-        err.statusCode = status;
-        failure(err);
-      }
-      var contentType = request.getResponseHeader('content-type');
-      var data;
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        data = httpResponseParser.parse(request);
-      } else {
-        data = request.responseText;
-      }
-      success(data);
-    };
-    request.send(obj.data);
-  });
-
-};
+var fetch = require('../core/fetch');
 
 // Backbone model with **promise** CRUD method instead of its own methods.
 var PromiseModel = Backbone.Model.extend({
@@ -2288,17 +2314,8 @@ var PromiseCollection = Backbone.Collection.extend({
     }
     params.pageInfo = params.pagesInfos;
     delete params.pagesInfos;
-    options = listMetadataParser.createMetadataOptions(params, options);
-    return new Promise(function (resolve, reject) {
-      options.success = function (data, textStatus, jqXHR) {
-        resolve(httpResponseParser.parse(jqXHR));
-      };
-      options.error = function (err) {
-        reject(err);
-      };
-      fetch(options);
-      //$.ajax(options);
-    });
+    var requestParams = listMetadataParser.createMetadataOptions(params, options);
+    return fetch(requestParams);
 
 
   },
@@ -2450,7 +2467,7 @@ var promisifyHelper = {
 };
 module.exports = promisifyHelper;
 
-},{"../core/http_response_parser":3,"../core/list_metadata_parser":5,"./custom_exception":7,"./odata_helper":17}],21:[function(require,module,exports){
+},{"../core/fetch":4,"../core/http_response_parser":5,"../core/list_metadata_parser":7,"./custom_exception":9,"./odata_helper":19}],23:[function(require,module,exports){
 /*global Promise,  _*/
 "use strict";
 
@@ -2520,7 +2537,7 @@ module.exports = promisifyHelper;
   };
 
   module.exports = referenceHelper;
-},{"./util_helper":28}],22:[function(require,module,exports){
+},{"./util_helper":30}],24:[function(require,module,exports){
 /* global  Promise, Backbone, i18n*/
   "use strict";
   //Filename: helpers/router.js
@@ -2577,7 +2594,7 @@ module.exports = promisifyHelper;
     }
   });
 module.exports = Router;
-},{"./backbone_notification":6,"./custom_exception":7,"./site_description_builder":24,"./user_helper":27}],23:[function(require,module,exports){
+},{"./backbone_notification":8,"./custom_exception":9,"./site_description_builder":26,"./user_helper":29}],25:[function(require,module,exports){
 //Session helper. Min browser: IE8, FF 3.5, Safari 4, Chrome 4, Opera 10.5. See [CanIUSE](http://caniuse.com/#feat=namevalue-storage)
 /* global window, Promise*/
 "use strict";
@@ -2691,7 +2708,7 @@ var sessionHelper = {
 };
 
 module.exports = sessionHelper;
-},{"./custom_exception":7}],24:[function(require,module,exports){
+},{"./custom_exception":9}],26:[function(require,module,exports){
 /* global  _, Backbone*/
   "use strict";
   //Filename: helpers/routes_helper.js
@@ -2870,7 +2887,7 @@ module.exports = sessionHelper;
   };
 
   module.exports = siteDescriptionBuilder;
-},{"./custom_exception":7,"./site_description_helper":25,"./user_helper":27}],25:[function(require,module,exports){
+},{"./custom_exception":9,"./site_description_helper":27,"./user_helper":29}],27:[function(require,module,exports){
 /* global  _*/
 "use strict";
 //Filename: helpers/routes_helper.js
@@ -2971,7 +2988,7 @@ var siteDescriptionHelper = {
 };
 
 module.exports = siteDescriptionHelper;
-},{"./custom_exception":7,"./site_description_builder":24}],26:[function(require,module,exports){
+},{"./custom_exception":9,"./site_description_builder":26}],28:[function(require,module,exports){
 /* global $, _ */
 "use strict";
 //Filename: helpers/url_helper.js
@@ -3030,7 +3047,7 @@ urlHelper.parseParam = function parseParam(params) {
 };
 
 module.exports = urlHelper;
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*global i18n, _, window*/
 
 "use strict";
@@ -3117,7 +3134,7 @@ var userHelper = {
   changeCultureInfos: changeCultureInfos
 };
 module.exports = userHelper;
-},{"./custom_exception":7,"./session_helper":23}],28:[function(require,module,exports){
+},{"./custom_exception":9,"./session_helper":25}],30:[function(require,module,exports){
 /* global  _ , $, Promise */
 
 "use strict";
@@ -3356,7 +3373,7 @@ var utilHelper = {
   sortObject: sortObject
 };
 module.exports = utilHelper;
-},{"./custom_exception":7}],29:[function(require,module,exports){
+},{"./custom_exception":9}],31:[function(require,module,exports){
 /*global i18n, _, moment*/
 "use strict";
 //Filename: helpers/validators.js
@@ -3510,7 +3527,7 @@ var validators = {
 };
 
 module.exports = validators;
-},{"./custom_exception":7}],30:[function(require,module,exports){
+},{"./custom_exception":9}],32:[function(require,module,exports){
 module.exports = function(Handlebars) {
   var S4, guid, logger, metadataBuilder;
   metadataBuilder = require('./metadata_builder').metadataBuilder;
@@ -4617,11 +4634,11 @@ module.exports = function(Handlebars) {
 
 
 
-},{"../config":2,"./metadata_builder":15}],31:[function(require,module,exports){
+},{"../config":2,"./metadata_builder":17}],33:[function(require,module,exports){
 var infos = require('../package.json');
 //Register handlebars helpers
-var hbsHelpers = require('./helpers/view_helper');
-hbsHelpers(require("hbsfy/runtime"));
+var registerTemplateHelpers = require('./helpers/view_helper');
+registerTemplateHelpers(require("hbsfy/runtime"));
 
 module.exports = {
   VERSION: infos.version,
@@ -4633,9 +4650,9 @@ module.exports = {
   Helpers: require('./helpers'),
   util: require('./util'),
   initialize: require('./initialize'),
-  registerTemplateHelpers: hbsHelpers
+  registerTemplateHelpers: registerTemplateHelpers
 };
-},{"../package.json":69,"./core":4,"./helpers":12,"./helpers/view_helper":30,"./initialize":32,"./models":36,"./util":47,"./views":55,"hbsfy/runtime":68}],32:[function(require,module,exports){
+},{"../package.json":71,"./core":6,"./helpers":14,"./helpers/view_helper":32,"./initialize":34,"./models":38,"./util":49,"./views":57,"hbsfy/runtime":70}],34:[function(require,module,exports){
 /**
  * Focus initialization function.
  * @param options - options to initialize.
@@ -4645,7 +4662,7 @@ module.exports = function initializeFocus(options) {
   require('./helpers/metadata_builder.coffee').metadataBuilder.initialize(options);
   require('./helpers/model_validation_promise').initialize(options);
 }
-},{"./core/list_metadata_parser":5,"./helpers/metadata_builder.coffee":15,"./helpers/model_validation_promise":16}],33:[function(require,module,exports){
+},{"./core/list_metadata_parser":7,"./helpers/metadata_builder.coffee":17,"./helpers/model_validation_promise":18}],35:[function(require,module,exports){
 "use strict";
 var Collection, metadataBuilder,
   __hasProp = {}.hasOwnProperty,
@@ -4840,7 +4857,7 @@ module.exports = Collection;
 
 
 
-},{"../helpers/metadata_builder":15}],34:[function(require,module,exports){
+},{"../helpers/metadata_builder":17}],36:[function(require,module,exports){
 /*global Backbone*/
 
 "use strict";
@@ -4871,7 +4888,7 @@ var HeaderItem = Backbone.Model.extend({
 
 
 module.exports = HeaderItem;
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /*global Backbone,  _*/
 
 "use strict";
@@ -4944,7 +4961,7 @@ var HeaderItems = Backbone.Collection.extend({
 
 
 module.exports = HeaderItems;
-},{"./header-item":34}],36:[function(require,module,exports){
+},{"./header-item":36}],38:[function(require,module,exports){
 module.exports = {
   Collection: require('./collection.coffee'),
   HeaderItem: require('./header-item'),
@@ -4954,7 +4971,7 @@ module.exports = {
   Notifications: require('./notifications'),
   PaginatedCollection: require('./paginatedCollection')
 };
-},{"./collection.coffee":33,"./header-item":34,"./header-items":35,"./model":37,"./notification":38,"./notifications":39,"./paginatedCollection":40}],37:[function(require,module,exports){
+},{"./collection.coffee":35,"./header-item":36,"./header-items":37,"./model":39,"./notification":40,"./notifications":41,"./paginatedCollection":42}],39:[function(require,module,exports){
 "use strict";
 var Model, metadataBuilder,
   __hasProp = {}.hasOwnProperty,
@@ -5083,7 +5100,7 @@ module.exports = Model;
 
 
 
-},{"../helpers/metadata_builder":15}],38:[function(require,module,exports){
+},{"../helpers/metadata_builder":17}],40:[function(require,module,exports){
 /*global Backbone,  module*/
 "use strict";
 
@@ -5115,7 +5132,7 @@ var Notification = Backbone.Model.extend({
 });
 
 module.exports = Notification;
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 /*global _, Backbone*/
 "use strict";
 
@@ -5150,7 +5167,7 @@ var Notifications = Backbone.Collection.extend({
   }
 });
 module.exports = Notifications;
-},{"./notification":38}],40:[function(require,module,exports){
+},{"./notification":40}],42:[function(require,module,exports){
 "use strict";
 // Filename: models/paginatedCollection.js
 
@@ -5255,7 +5272,7 @@ var PaginatedCollection = Collection.extend({
 });
 // Differenciating export for node or browser.
 module.exports = PaginatedCollection;
-},{"../helpers/custom_exception":7,"./collection":33}],41:[function(require,module,exports){
+},{"../helpers/custom_exception":9,"./collection":35}],43:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -5267,7 +5284,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return "<div class=\"navbar-static-top header\">\r\n  \r\n</div>\r\n<div>\r\n  <i class=\"fa fa-spinner fa-spin hidden\" id='ajaxIndicator'></i>\r\n</div>";
   });
 
-},{"hbsfy/runtime":68}],42:[function(require,module,exports){
+},{"hbsfy/runtime":70}],44:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -5310,7 +5327,7 @@ function program2(depth0,data) {
   return buffer;
   });
 
-},{"hbsfy/runtime":68}],43:[function(require,module,exports){
+},{"hbsfy/runtime":70}],45:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -5331,7 +5348,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return buffer;
   });
 
-},{"hbsfy/runtime":68}],44:[function(require,module,exports){
+},{"hbsfy/runtime":70}],46:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -5346,7 +5363,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return buffer;
   });
 
-},{"hbsfy/runtime":68}],45:[function(require,module,exports){
+},{"hbsfy/runtime":70}],47:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -5372,7 +5389,7 @@ function program1(depth0,data) {
   return buffer;
   });
 
-},{"hbsfy/runtime":68}],46:[function(require,module,exports){
+},{"hbsfy/runtime":70}],48:[function(require,module,exports){
 // hbsfy compiled Handlebars template
 var HandlebarsCompiler = require('hbsfy/runtime');
 module.exports = HandlebarsCompiler.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -5384,11 +5401,11 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   return "<div class='spinner-container'>\r\n       <div class='spinner'>\r\n          <div class=\"three-quarters\">\r\n            ...\r\n          </div>\r\n       </div>\r\n   </div>";
   });
 
-},{"hbsfy/runtime":68}],47:[function(require,module,exports){
+},{"hbsfy/runtime":70}],49:[function(require,module,exports){
 module.exports = {
   paramify: require('./paramify')
 };
-},{"./paramify":48}],48:[function(require,module,exports){
+},{"./paramify":50}],50:[function(require,module,exports){
 /**
  * Takes an object and convert it into a string in order to build a url param.
  * @param  {object} obj - Object to paramify.
@@ -5400,7 +5417,7 @@ module.exports =  function(obj) {
     return encodeURIComponent(k) + '=' + encodeURIComponent(obj[k]);
   }).join('&');
 };
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 /*global Backbone*/
 //var template = require("../template/collection-pagination");
 //Filename: views/collection-pagination-view.js
@@ -5430,7 +5447,7 @@ var CollectionPaginationView = Backbone.View.extend({
 });
 
 module.exports = CollectionPaginationView;
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 /*global  $, _, Promise*/
 "use strict";
 // Filename: views/list-view.js
@@ -5727,7 +5744,7 @@ var CompositeView = ConsultEditView.extend({
   }
 });
 module.exports = CompositeView;
-},{"../helpers/custom_exception":7,"../helpers/error_helper":8,"../helpers/form_helper":9,"../helpers/model_validation_promise":16,"../helpers/util_helper":28,"./consult-edit-view":51}],51:[function(require,module,exports){
+},{"../helpers/custom_exception":9,"../helpers/error_helper":10,"../helpers/form_helper":11,"../helpers/model_validation_promise":18,"../helpers/util_helper":30,"./consult-edit-view":53}],53:[function(require,module,exports){
 /*global  Backbone, $, i18n, _*/
 "use strict";
 //Filename: views/consult-edit-view.js
@@ -6301,7 +6318,7 @@ var ConsultEditView = CoreView.extend({
 
 
 module.exports = ConsultEditView;
-},{"../helpers/backbone_notification":6,"../helpers/custom_exception":7,"../helpers/error_helper":8,"../helpers/form_helper":9,"../helpers/model_validation_promise":16,"../helpers/url_helper":26,"../helpers/util_helper":28,"./core-view":52}],52:[function(require,module,exports){
+},{"../helpers/backbone_notification":8,"../helpers/custom_exception":9,"../helpers/error_helper":10,"../helpers/form_helper":11,"../helpers/model_validation_promise":18,"../helpers/url_helper":28,"../helpers/util_helper":30,"./core-view":54}],54:[function(require,module,exports){
 /*global Backbone, _, window, Promise, $ */
 "use strict";
     //Filename: views/core-view.js
@@ -6550,7 +6567,7 @@ module.exports = ConsultEditView;
 // var CoreView = require('./views/core-view');
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
 //```
-},{"../helpers/custom_exception":7,"../helpers/error_helper":8,"../helpers/post_rendering_builder":18,"../helpers/reference_helper":21,"../helpers/session_helper":23,"../models/model":37,"../models/paginatedCollection":40,"../templates/hbs/spinner.hbs":46}],53:[function(require,module,exports){
+},{"../helpers/custom_exception":9,"../helpers/error_helper":10,"../helpers/post_rendering_builder":20,"../helpers/reference_helper":23,"../helpers/session_helper":25,"../models/model":39,"../models/paginatedCollection":42,"../templates/hbs/spinner.hbs":48}],55:[function(require,module,exports){
 /* global Backbone, $*/
 "use strict";
 //Filename: views/header-items-view.js
@@ -6606,7 +6623,7 @@ var headerItemsView = Backbone.View.extend({
 
 
 module.exports = headerItemsView;
-},{"../templates/hbs/headerItems.hbs":42}],54:[function(require,module,exports){
+},{"../templates/hbs/headerItems.hbs":44}],56:[function(require,module,exports){
 /* global Backbone,  _, $*/
 
   "use strict";
@@ -6737,7 +6754,7 @@ module.exports = headerItemsView;
   });
 
   module.exports = headerView;
-},{"../helpers/site_description_helper":25,"../helpers/util_helper":28,"../models/header-items":35,"../templates/hbs/header.hbs":41,"./header-items-view":53}],55:[function(require,module,exports){
+},{"../helpers/site_description_helper":27,"../helpers/util_helper":30,"../models/header-items":37,"../templates/hbs/header.hbs":43,"./header-items-view":55}],57:[function(require,module,exports){
 module.exports = {
   CollectionPaginationView: require('./collection-pagination-view'),
   CompositeView: require('./composite-view'),
@@ -6752,7 +6769,7 @@ module.exports = {
   SearchView: require('./search-view')
 };
 
-},{"./collection-pagination-view":49,"./composite-view":50,"./consult-edit-view":51,"./core-view":52,"./header-items-view":53,"./header-view":54,"./list-view":56,"./modal-view":57,"./notifications-view":58,"./search-results-view":59,"./search-view":60}],56:[function(require,module,exports){
+},{"./collection-pagination-view":51,"./composite-view":52,"./consult-edit-view":53,"./core-view":54,"./header-items-view":55,"./header-view":56,"./list-view":58,"./modal-view":59,"./notifications-view":60,"./search-results-view":61,"./search-view":62}],58:[function(require,module,exports){
 /*global Backbone,  $,  _*/
 "use strict";
 // Filename: views/list-view.js
@@ -7122,7 +7139,7 @@ var ListView = ConsultEditView.extend({
 });
 module.exports = ListView;
 
-},{"../helpers/custom_exception":7,"../helpers/error_helper":8,"../helpers/url_helper":26,"../helpers/util_helper":28,"./consult-edit-view":51}],57:[function(require,module,exports){
+},{"../helpers/custom_exception":9,"../helpers/error_helper":10,"../helpers/url_helper":28,"../helpers/util_helper":30,"./consult-edit-view":53}],59:[function(require,module,exports){
 /*global   $, _*/
 "use strict";
 // Filename: views/modal-view.js
@@ -7232,7 +7249,7 @@ var ModalView = ConsultEditView.extend({
 });
 // Differenciating export for node or browser.
 module.exports = ModalView;
-},{"../helpers/util_helper":28,"../templates/hbs/modalSkeleton.hbs":43,"./consult-edit-view":51}],58:[function(require,module,exports){
+},{"../helpers/util_helper":30,"../templates/hbs/modalSkeleton.hbs":45,"./consult-edit-view":53}],60:[function(require,module,exports){
 /*global Backbone*/
 "use strict";
 
@@ -7284,7 +7301,7 @@ module.exports = ModalView;
 		}
 	});
 	module.exports = NotificationsView;
-},{"../templates/hbs/notifications.hbs":45}],59:[function(require,module,exports){
+},{"../templates/hbs/notifications.hbs":47}],61:[function(require,module,exports){
 /*global  i18n, _*/
 "use strict";
 // Filename: views/search-results-view.js
@@ -7356,7 +7373,7 @@ var SearchResultsView = ListView.extend({
 });
 
 module.exports = SearchResultsView;
-},{"../templates/hbs/noResults.hbs":44,"./list-view":56}],60:[function(require,module,exports){
+},{"../templates/hbs/noResults.hbs":46,"./list-view":58}],62:[function(require,module,exports){
 /*global  _, $*/
 "use strict";
 
@@ -7632,7 +7649,7 @@ var SearchView = CoreView.extend({
  });*/
 
 module.exports = SearchView;
-},{"../helpers/backbone_notification":6,"../helpers/custom_exception":7,"../helpers/error_helper":8,"../helpers/form_helper":9,"../helpers/model_validation_promise":16,"./core-view":52}],61:[function(require,module,exports){
+},{"../helpers/backbone_notification":8,"../helpers/custom_exception":9,"../helpers/error_helper":10,"../helpers/form_helper":11,"../helpers/model_validation_promise":18,"./core-view":54}],63:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
 var base = require("./handlebars/base");
@@ -7665,7 +7682,7 @@ var Handlebars = create();
 Handlebars.create = create;
 
 exports["default"] = Handlebars;
-},{"./handlebars/base":62,"./handlebars/exception":63,"./handlebars/runtime":64,"./handlebars/safe-string":65,"./handlebars/utils":66}],62:[function(require,module,exports){
+},{"./handlebars/base":64,"./handlebars/exception":65,"./handlebars/runtime":66,"./handlebars/safe-string":67,"./handlebars/utils":68}],64:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -7846,7 +7863,7 @@ exports.log = log;var createFrame = function(object) {
   return obj;
 };
 exports.createFrame = createFrame;
-},{"./exception":63,"./utils":66}],63:[function(require,module,exports){
+},{"./exception":65,"./utils":68}],65:[function(require,module,exports){
 "use strict";
 
 var errorProps = ['description', 'fileName', 'lineNumber', 'message', 'name', 'number', 'stack'];
@@ -7875,7 +7892,7 @@ function Exception(message, node) {
 Exception.prototype = new Error();
 
 exports["default"] = Exception;
-},{}],64:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 "use strict";
 var Utils = require("./utils");
 var Exception = require("./exception")["default"];
@@ -8013,7 +8030,7 @@ exports.program = program;function invokePartial(partial, name, context, helpers
 exports.invokePartial = invokePartial;function noop() { return ""; }
 
 exports.noop = noop;
-},{"./base":62,"./exception":63,"./utils":66}],65:[function(require,module,exports){
+},{"./base":64,"./exception":65,"./utils":68}],67:[function(require,module,exports){
 "use strict";
 // Build out our basic SafeString type
 function SafeString(string) {
@@ -8025,7 +8042,7 @@ SafeString.prototype.toString = function() {
 };
 
 exports["default"] = SafeString;
-},{}],66:[function(require,module,exports){
+},{}],68:[function(require,module,exports){
 "use strict";
 /*jshint -W004 */
 var SafeString = require("./safe-string")["default"];
@@ -8102,15 +8119,15 @@ exports.escapeExpression = escapeExpression;function isEmpty(value) {
 }
 
 exports.isEmpty = isEmpty;
-},{"./safe-string":65}],67:[function(require,module,exports){
+},{"./safe-string":67}],69:[function(require,module,exports){
 // Create a simple path alias to allow browserify to resolve
 // the runtime on a supported path.
 module.exports = require('./dist/cjs/handlebars.runtime');
 
-},{"./dist/cjs/handlebars.runtime":61}],68:[function(require,module,exports){
+},{"./dist/cjs/handlebars.runtime":63}],70:[function(require,module,exports){
 module.exports = require("handlebars/runtime")["default"];
 
-},{"handlebars/runtime":67}],69:[function(require,module,exports){
+},{"handlebars/runtime":69}],71:[function(require,module,exports){
 module.exports={
   "name": "focus",
   "version": "0.3.0",
