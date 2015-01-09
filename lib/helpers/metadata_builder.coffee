@@ -80,6 +80,7 @@ class MetadataBuilder
         _.extend(overridenProperties, {symbol: mdlMetadata.symbol}) if mdlMetadata.symbol?
         _.extend(overridenProperties, {decoratorOptions: mdlMetadata.decoratorOptions}) if mdlMetadata.decoratorOptions?
         _.extend(overridenProperties, {idAttribute: mdlMetadata.idAttribute}) if mdlMetadata.idAttribute?
+        _.extend(overridenProperties, {idAttribute: mdlMetadata.binder}) if mdlMetadata.binder?
         # If at least one property has been defined.
         _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
       #Update the global metadatas<
@@ -114,6 +115,7 @@ class MetadataBuilder
       _.extend(overridenProperties, {decorator: mdlMetadata.decorator}) if mdlMetadata.decorator?
       _.extend(overridenProperties, {symbol: mdlMetadata.symbol}) if mdlMetadata.symbol?
       _.extend(overridenProperties, {decoratorOptions: mdlMetadata.decoratorOptions}) if mdlMetadata.decoratorOptions?
+      _.extend(overridenProperties, {idAttribute: mdlMetadata.binder}) if mdlMetadata.binder?
       # If at least one property has been defined.
       _.extend(metadata, overridenProperties) if not _.isEmpty(overridenProperties)
     return metadata
