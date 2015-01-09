@@ -5455,7 +5455,6 @@ module.exports = CollectionPaginationView;
 //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
 var ConsultEditView = require('./consult-edit-view');
 var errorHelper = require('../helpers/error_helper');
-var formHelper = require('../helpers/form_helper');
 var utilHelper = require('../helpers/util_helper');
 var ArgumentNullException = require("../helpers/custom_exception").ArgumentNullException;
 var ArgumentInvalidException = require("../helpers/custom_exception").ArgumentInvalidException;
@@ -5475,7 +5474,8 @@ var CompositeView = ConsultEditView.extend({
     isForceReload: true,
     isNavigationOnSave: false,
     isModelToLoad: false,
-    isListeningToModelChange: false
+    isListeningToModelChange: false,
+    isGlobalLoading: false
   }),
 
   //Service to save a model wether it is a model or a collection.
@@ -5489,9 +5489,40 @@ var CompositeView = ConsultEditView.extend({
     options = options || {};
     ConsultEditView.prototype.initialize.call(this, options);
     this.viewsConfiguration = [];
-    //Call efor each view you want to register the register view method.
+    //register all views of the composite
+    this.initViews();
 
+    //manage global loading on the composite : must be executed after registering all views
+    if(this.opts.isGlobalLoading){
+      //re dispatch on save
+      this.opts.isForceReload = false;
+      if (this.model.getId() !== undefined && this.model.getId() !== null) {
+        var view = this;
+        this.getModelSvc(this.model.getId()).then(
+            function (infoData) {
+              view.dispatchModels(view,infoData);
+            }, function error(err) {
+              console.error(err);
+            }
+        );
+      }
+    }
   },
+
+  initViews : function initViews(){
+  },
+
+  /**
+   * Dispatch models into each views of the composite.
+   * @param context execution context
+   * @param data data to dispatch
+   */
+  dispatchModels: function dispatchModels(context,data){
+    _.each(context.viewsConfiguration, function (viewConfig) {
+      context[viewConfig.name].model.set(data[viewConfig.modelProperty]);
+    }, this);
+  },
+
   //Method to call in order to register a new view inside the composite view.
   //Be carefull, a view must be inside the composite view before being registered.
   // Example: this.registerView({ selector: "div#zone1", name: "contactView", type: "model", modelProperty: "property"});
@@ -5544,7 +5575,6 @@ var CompositeView = ConsultEditView.extend({
 
   //Remove the view inside the viewsconfiguration by its name.
   removeView: function removeView(viewName) {
-
     if (viewName !== undefined && viewName !== null && utilHelper.isBackboneView(this[viewName])) {
       //Remove the view from both the dom.
       this[viewName].remove();
@@ -5561,7 +5591,7 @@ var CompositeView = ConsultEditView.extend({
 
   //Events handle by the view.
   events: {
-    "click .panel-heading": "toogleCollapse",
+    "click .panel-heading": "toggleCollapse",
     //Edition events
     "click button.btnEdit": "toggleEditMode",
     "click button[type='submit']": "save",
@@ -5699,6 +5729,17 @@ var CompositeView = ConsultEditView.extend({
         currentView.saveError(responseError);
       }).then(this.resetSaveButton.bind(this));
   },
+
+  //Method called when the save action is on success
+  saveSuccess: function saveSuccessConsultEdit(jsonModel) {
+    if(this.opts.isGlobalLoading){
+      this.dispatchModels(this,jsonModel);
+      this.toggleEditMode();
+    }else{
+      ConsultEditView.prototype.saveSuccess.call(this, jsonModel);
+    }
+  },
+
   //Cancel the edition.
   cancelEdition: function cancelEditionCompositeView() {
     // cancelEdit on composite = ToggleEdit on compositeView only + cancelEdit on each child view.
@@ -5744,7 +5785,7 @@ var CompositeView = ConsultEditView.extend({
   }
 });
 module.exports = CompositeView;
-},{"../helpers/custom_exception":9,"../helpers/error_helper":10,"../helpers/form_helper":11,"../helpers/model_validation_promise":18,"../helpers/util_helper":30,"./consult-edit-view":53}],53:[function(require,module,exports){
+},{"../helpers/custom_exception":9,"../helpers/error_helper":10,"../helpers/model_validation_promise":18,"../helpers/util_helper":30,"./consult-edit-view":53}],53:[function(require,module,exports){
 /*global  Backbone, $, i18n, _*/
 "use strict";
 //Filename: views/consult-edit-view.js
@@ -5982,7 +6023,7 @@ var ConsultEditView = CoreView.extend({
     // Deals with the delete button.
     "click button.btnDelete": "deleteItem",
     // Deals with the panel collapse event.
-    "click .panel-heading": "toogleCollapse",
+    "click .panel-heading": "toggleCollapse",
     // Deals with the submit button.
     "click button[type='submit']": "save",
     // Deals withe the candel button.
@@ -6021,7 +6062,7 @@ var ConsultEditView = CoreView.extend({
   },
 
   //Change the edit mode.
-  toggleEditMode: function toogleEditMode(event) {
+  toggleEditMode: function toggleEditMode(event) {
     if (event) {
       event.preventDefault();
     }
@@ -6501,7 +6542,7 @@ module.exports = ConsultEditView;
         hideCollapse: function hideCollapseCoreView() {
             $('.collapse', this.$el).collapse('hide');
         },
-        toogleCollapse: function toogleCollapseCoreView(event) {
+        toggleCollapse: function toggleCollapseCoreView(event) {
             $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
             $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
         },
@@ -6954,7 +6995,7 @@ var ListView = ConsultEditView.extend({
     //Handle the sort-column click.
     'click a.sortColumn': 'sortCollection',
     //Handle the collapse click on a panel headind.
-    "click .panel-heading": "toogleCollapse",
+    "click .panel-heading": "toggleCollapse",
     //Handle the button-back click.
     'click #btnBack': 'navigateBack',
     //Handle the change filter of the page event.
@@ -7482,7 +7523,7 @@ SearchView = CoreView.extend({
     "click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
     "click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
     "click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
-    "click .panel-heading": "toogleCollapse",
+    "click .panel-heading": "toggleCollapse",
     "click button.btnCreate": "create"
   },
 
