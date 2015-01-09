@@ -239,6 +239,11 @@ module.exports =(Handlebars) ->
         return "data-decorator='#{metadata.decorator}'"
       else
         return ''
+    binder = ()=>
+      if metadata.binder? and metadata.binder.name?
+        return "data-binder='#{metadata.binder.name}'"
+      else
+        return ''
 
     #Initialize the errors variables => Is there an error, if yes what is the message.
     error = ""
@@ -257,7 +262,7 @@ module.exports =(Handlebars) ->
     #     <input type="text" class="form-control" id="exampleInputEmail" placeholder="Enter email">
     #   </div>
     if minimalHtml
-        html = " <input id='#{property}' #{dataFields(@)} #{decorator()} class=''"
+        html = " <input id='#{property}' #{dataFields(@)} #{decorator()} #{binder()} class=''"
         html += "data-name='#{property}' type='#{dataType}' #{inputAttributes} #{cidAttr} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>"
     else
         html = "
@@ -266,7 +271,7 @@ module.exports =(Handlebars) ->
                   <div class='#{inputSize()} #{containerCss}' #{containerAttribs}>
                       <div class='#{if isAddOnInput then 'input-group' else ""}'>
                      #{icon()}
-                    <input id='#{property}' #{decorator()} #{dataFields(@)} class='"
+                    <input id='#{property}' #{decorator()} #{binder()} #{dataFields(@)} class='"
         if(dataType != "checkbox") then html +="form-control "
         html += "input-sm' data-name='#{property}' type='#{dataType}' #{inputAttributes} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>
                     #{symbol()}"
@@ -450,6 +455,16 @@ module.exports =(Handlebars) ->
         else
           "<label class='control-label #{labelSize}' for='#{property}'> #{translationKey()} </label>"
       else ""
+    decorator = ()=>
+      if metadata.decorator?
+        return "data-decorator='#{metadata.decorator}'"
+      else
+        return ''
+    binder = ()=>
+      if metadata.binder? and metadata.binder.name?
+        return "data-binder='#{metadata.binder.name}'"
+      else
+        return ''
     #Initialize the errors variables => Is there an error, if yes what is the message.
     error = ""
     error = "has-error" if @errors? and @errors[property]?
@@ -481,7 +496,7 @@ module.exports =(Handlebars) ->
               <div class='controls #{inputSize()}'>
                 <div class='input-group '>
                   #{icon()}
-                  <select id='#{property}' data-name='#{property}' #{multiple} #{readonly} #{optName} #{optToTriggerName} #{optToTriggerListKey} #{dataMapping} class='form-control input-sm #{cssClass}'>#{emptyOption()}"
+                  <select id='#{property}' #{decorator()} #{binder()} data-name='#{property}' #{multiple} #{readonly} #{optName} #{optToTriggerName} #{optToTriggerListKey} #{dataMapping} class='form-control input-sm #{cssClass}'>#{emptyOption()}"
     #add options foreach options in the list
     addOption(elt) for elt in list
     html +=      "</select>#{isRequired()}
