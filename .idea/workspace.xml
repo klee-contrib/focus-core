@@ -6,12 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4731a32c-cb77-44d1-a6be-dc93313b02bd" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/views/composite-view.js" afterPath="$PROJECT_DIR$/lib/views/composite-view.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/views/consult-edit-view.js" afterPath="$PROJECT_DIR$/lib/views/consult-edit-view.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/views/core-view.js" afterPath="$PROJECT_DIR$/lib/views/core-view.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/focus.js" afterPath="$PROJECT_DIR$/dist/focus.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/example/app/js/focus.js" afterPath="$PROJECT_DIR$/example/app/js/focus.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/views/list-view.js" afterPath="$PROJECT_DIR$/lib/views/list-view.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/views/search-view.js" afterPath="$PROJECT_DIR$/lib/views/search-view.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="focus.iws" />
@@ -49,42 +45,14 @@
       <file leaf-file-name="focus.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/example/app/js/focus.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="111056" max-vertical-offset="140624">
-              <caret line="6544" column="8" selection-start-line="6544" selection-start-column="8" selection-end-line="6544" selection-end-column="8" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="111090" max-vertical-offset="140641">
+              <caret line="6546" column="8" selection-start-line="6546" selection-start-column="8" selection-end-line="6546" selection-end-column="8" />
               <folding>
-                <marker date="1420812683504" expanded="true" signature="198242:200014" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="198529:198637" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="198900:198928" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="199265:199395" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="199483:199599" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="199646:199714" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="199805:199895" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="200071:200380" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="200173:200280" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="200660:200879" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="200816:200827" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="201015:201199" placeholder="{&quot;click .panel-heading&quot;: &quot;toogleCollapse&quot;...}" />
-                <marker date="1420812683504" expanded="true" signature="201382:201496" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="201352:201452" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="201789:201957" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="202206:202226" placeholder="/** Toggle the main view and each sub view into the edit/consult mode. ...*/" />
-                <marker date="1420812683504" expanded="true" signature="202333:202570" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="202428:202566" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="202613:202667" placeholder="/** Bind the form to the model [model or collection]. ...*/" />
-                <marker date="1420812683504" expanded="true" signature="202817:202847" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="202946:203113" placeholder="/** Save action on the composite view. ...*/" />
-                <marker date="1420812683504" expanded="true" signature="203587:205002" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="203583:204282" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="203814:204125" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="203851:204045" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="203979:204000" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="204288:204971" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="204573:204886" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="204614:204778" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="205357:205427" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="205446:205537" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="205782:205811" placeholder="{...}" />
-                <marker date="1420812683504" expanded="true" signature="205868:205895" placeholder="{...}" />
+                <marker date="1421081291973" expanded="true" signature="942:295531" placeholder="{...}" />
+                <marker date="1421081291973" expanded="true" signature="194701:207984" placeholder="[...]" />
+                <marker date="1421081291973" expanded="true" signature="194734:207826" placeholder="{...}" />
+                <marker date="1421081291973" expanded="true" signature="195518:207596" placeholder="{&quot;tagName&quot;: 'div'...}" />
+                <marker date="1421081291973" expanded="true" signature="200673:200926" placeholder="{&quot;click .panel-heading&quot;: &quot;toggleCollapse&quot;...}" />
               </folding>
             </state>
           </provider>
@@ -93,7 +61,7 @@
       <file leaf-file-name="model.coffee" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/models/model.coffee">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1309">
+            <state vertical-scroll-proportion="0.0" vertical-offset="391" max-vertical-offset="1309">
               <caret line="23" column="7" selection-start-line="23" selection-start-column="2" selection-end-line="23" selection-end-column="7" />
               <folding />
             </state>
@@ -110,31 +78,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="consult-edit-view.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/views/consult-edit-view.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.413793" vertical-offset="3843" max-vertical-offset="9826">
-              <caret line="237" column="32" selection-start-line="237" selection-start-column="32" selection-end-line="237" selection-end-column="32" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="list-view.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/views/list-view.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2813" max-vertical-offset="6341">
-              <caret line="177" column="32" selection-start-line="177" selection-start-column="32" selection-end-line="177" selection-end-column="32" />
+            <state vertical-scroll-proportion="-13.75862" vertical-offset="5381" max-vertical-offset="6341">
+              <caret line="340" column="53" selection-start-line="340" selection-start-column="53" selection-end-line="340" selection-end-column="53" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="composite-view.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="consult-edit-view.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/lib/views/consult-edit-view.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.3475298" vertical-offset="1581" max-vertical-offset="9826">
+              <caret line="105" column="11" selection-start-line="105" selection-start-column="4" selection-end-line="105" selection-end-column="11" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="composite-view.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/views/composite-view.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="2.2486584" vertical-offset="1123" max-vertical-offset="5814">
-              <caret line="140" column="0" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="4726" max-vertical-offset="5831">
+              <caret line="136" column="28" selection-start-line="136" selection-start-column="28" selection-end-line="136" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -202,11 +170,11 @@
         <option value="$PROJECT_DIR$/lib/helpers/view_helper.coffee" />
         <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/lib/views/search-results-view.js" />
-        <option value="$PROJECT_DIR$/lib/views/composite-view.js" />
-        <option value="$PROJECT_DIR$/lib/views/consult-edit-view.js" />
         <option value="$PROJECT_DIR$/lib/views/list-view.js" />
         <option value="$PROJECT_DIR$/lib/views/search-view.js" />
         <option value="$PROJECT_DIR$/lib/views/core-view.js" />
+        <option value="$PROJECT_DIR$/lib/views/consult-edit-view.js" />
+        <option value="$PROJECT_DIR$/lib/views/composite-view.js" />
       </list>
     </option>
   </component>
@@ -258,10 +226,10 @@
     </gulpfiles>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
+    <option name="x" value="1672" />
     <option name="y" value="-8" />
     <option name="width" value="1696" />
-    <option name="height" value="1026" />
+    <option name="height" value="1066" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -326,20 +294,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="focus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="focus" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
@@ -355,7 +309,7 @@
     <property name="js.buildTools.gulp.node_interpreter" value="C:\Program Files\nodejs\node.exe" />
     <property name="js.buildTools.gulp.gulp_package_dir" value="C:\Users\oboitel\AppData\Roaming\npm\node_modules\gulp" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../DGAC_Stitch/Main/Stitch-spa/spa" />
     <property name="FullScreen" value="false" />
   </component>
   <component name="RunManager" selected="Gulp.js.default">
@@ -383,14 +337,10 @@
       <ConfigurationWrapper RunnerId="Js.BuildTools.Gulp" />
       <method />
     </configuration>
-    <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-      <method />
-    </configuration>
     <configuration default="true" type="DartUnitRunConfigurationType" factoryName="DartUnit">
       <method />
     </configuration>
-    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" config-file="">
-      <envs />
+    <configuration default="true" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
       <method />
     </configuration>
     <configuration default="true" type="JSTestDriver:ConfigurationType" factoryName="JsTestDriver">
@@ -398,6 +348,10 @@
       <setting name="settingsFile" value="" />
       <setting name="serverType" value="INTERNAL" />
       <setting name="preferredDebugBrowser" value="Chrome" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerKarma" factoryName="Karma" config-file="">
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
@@ -445,30 +399,30 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1696" height="1026" extended-state="7" />
-    <editor active="true" />
+    <frame x="1672" y="-8" width="1696" height="1066" extended-state="6" />
+    <editor active="false" />
     <layout>
+      <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20714286" sideWeight="0.45186335" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3278867" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Gulp" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20714286" sideWeight="0.2353896" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32776618" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20714286" sideWeight="0.7646104" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32897604" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20714286" sideWeight="0.54813665" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26096034" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="REST Client" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4597701" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -823,42 +777,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/example/app/js/focus.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="111056" max-vertical-offset="140624">
-          <caret line="6544" column="8" selection-start-line="6544" selection-start-column="8" selection-end-line="6544" selection-end-column="8" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="111090" max-vertical-offset="140641">
+          <caret line="6546" column="8" selection-start-line="6546" selection-start-column="8" selection-end-line="6546" selection-end-column="8" />
           <folding>
-            <marker date="1420812683504" expanded="true" signature="198242:200014" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="198529:198637" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="198900:198928" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="199265:199395" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="199483:199599" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="199646:199714" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="199805:199895" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="200071:200380" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="200173:200280" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="200660:200879" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="200816:200827" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="201015:201199" placeholder="{&quot;click .panel-heading&quot;: &quot;toogleCollapse&quot;...}" />
-            <marker date="1420812683504" expanded="true" signature="201382:201496" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="201352:201452" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="201789:201957" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="202206:202226" placeholder="/** Toggle the main view and each sub view into the edit/consult mode. ...*/" />
-            <marker date="1420812683504" expanded="true" signature="202333:202570" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="202428:202566" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="202613:202667" placeholder="/** Bind the form to the model [model or collection]. ...*/" />
-            <marker date="1420812683504" expanded="true" signature="202817:202847" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="202946:203113" placeholder="/** Save action on the composite view. ...*/" />
-            <marker date="1420812683504" expanded="true" signature="203587:205002" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="203583:204282" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="203814:204125" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="203851:204045" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="203979:204000" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="204288:204971" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="204573:204886" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="204614:204778" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="205357:205427" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="205446:205537" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="205782:205811" placeholder="{...}" />
-            <marker date="1420812683504" expanded="true" signature="205868:205895" placeholder="{...}" />
+            <marker date="1421081291973" expanded="true" signature="942:295531" placeholder="{...}" />
+            <marker date="1421081291973" expanded="true" signature="194701:207984" placeholder="[...]" />
+            <marker date="1421081291973" expanded="true" signature="194734:207826" placeholder="{...}" />
+            <marker date="1421081291973" expanded="true" signature="195518:207596" placeholder="{&quot;tagName&quot;: 'div'...}" />
+            <marker date="1421081291973" expanded="true" signature="200673:200926" placeholder="{&quot;click .panel-heading&quot;: &quot;toggleCollapse&quot;...}" />
           </folding>
         </state>
       </provider>
@@ -871,26 +797,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/views/consult-edit-view.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.413793" vertical-offset="3843" max-vertical-offset="9826">
-          <caret line="237" column="32" selection-start-line="237" selection-start-column="32" selection-end-line="237" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/views/list-view.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2813" max-vertical-offset="6341">
-          <caret line="177" column="32" selection-start-line="177" selection-start-column="32" selection-end-line="177" selection-end-column="32" />
+        <state vertical-scroll-proportion="-13.75862" vertical-offset="5381" max-vertical-offset="6341">
+          <caret line="340" column="53" selection-start-line="340" selection-start-column="53" selection-end-line="340" selection-end-column="53" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/views/composite-view.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="2.2486584" vertical-offset="1123" max-vertical-offset="5814">
-          <caret line="140" column="0" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="4726" max-vertical-offset="5831">
+          <caret line="136" column="28" selection-start-line="136" selection-start-column="28" selection-end-line="136" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/views/consult-edit-view.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3475298" vertical-offset="1581" max-vertical-offset="9826">
+          <caret line="105" column="11" selection-start-line="105" selection-start-column="4" selection-end-line="105" selection-end-column="11" />
           <folding />
         </state>
       </provider>

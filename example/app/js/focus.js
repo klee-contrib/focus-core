@@ -5596,7 +5596,8 @@ var CompositeView = ConsultEditView.extend({
     "click button.btnEdit": "toggleEditMode",
     "click button[type='submit']": "save",
     "click button.btnCancel": "cancelEdition",
-    "click button[data-loading]": "loadLoadingButton"
+    "click button[data-loading]": "loadLoadingButton",
+    "click button.btnDelete": "deleteItem"
   },
   // Get the data to give to the template.
   getRenderData: function getRenderDataCompositeView() {
