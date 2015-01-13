@@ -5888,11 +5888,7 @@ var ConsultEditView = CoreView.extend({
      * @type {Boolean}
      */
     isReadyModelData: true,
-    /**
-     * This parameter can be use in order to have a back to the list button.
-     * @type {string}
-     */
-    listUrl: undefined,
+
     /**
      * If true, the view will listen to the `model:change` event.
      * @type {Boolean}
