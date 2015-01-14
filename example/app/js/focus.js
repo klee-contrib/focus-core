@@ -5732,7 +5732,7 @@ var CompositeView = ConsultEditView.extend({
   },
 
   //Method called when the save action is on success
-  saveSuccess: function saveSuccessConsultEdit(jsonModel) {
+  saveSuccess: function saveSuccessComposite(jsonModel) {
     if(this.opts.isGlobalLoading){
       this.dispatchModels(this,jsonModel);
       this.toggleEditMode();
@@ -6374,7 +6374,7 @@ module.exports = ConsultEditView;
     //View which is the default view for each view.
     //This view is able to deal with errors and to render the default json moodel.
     var CoreView = Backbone.View.extend({
-        toogleIsHidden: function(options) {
+        toggleIsHidden: function(options) {
             this.isHidden = !this.isHidden;
             this.render(options);
         },
@@ -6400,7 +6400,7 @@ module.exports = ConsultEditView;
             //Then each view will have access to options in any methods.
             this.opts = _.extend({}, this.defaultOptions, this.customOptions, options);
 
-            this.on('toogleIsHidden', this.toogleIsHidden);
+            this.on('toggleIsHidden', this.toggleIsHidden);
             this.initializeModel();
 
             /*Register after renger.*/
@@ -6571,7 +6571,7 @@ module.exports = ConsultEditView;
                 viewSelector: this.$el
             });
             $('.collapse', this.$el).collapse({
-                toogle: true
+                toggle: true
             });
         },
         // Get the id of the criteria.
@@ -7401,7 +7401,7 @@ var SearchResultsView = ListView.extend({
       }));
     }
   },
-  toggleEditMode: function toogleEditModeSRV(event) {
+  toggleEditMode: function toggleEditModeSRV(event) {
     if (event) {
       event.preventDefault();
     }
@@ -7519,7 +7519,7 @@ SearchView = CoreView.extend({
     "submit form": 'runSearch', // Launch the search.
     "click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
     "click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
-    "click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
+    "click button.toggleCriteria": 'toggleMoreCriteria', // Deal with the more / less criteria.
     "click .panel-heading": "toggleCollapse",
     "click button.btnCreate": "create"
   },
@@ -7530,7 +7530,7 @@ SearchView = CoreView.extend({
   },
 
   //Change the fact that the view is in the mode mode or less criteria.
-  toogleMoreCriteria: function toogleMoreCriteria() {
+  toggleMoreCriteria: function toggleMoreCriteria() {
     this.isMoreCriteria = !this.isMoreCriteria;
     form_helper.formModelBinder({
       inputs: $('input', this.$el)
