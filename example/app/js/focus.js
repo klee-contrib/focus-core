@@ -490,11 +490,16 @@ module.exports = listMetadataParser;
   module.exports = backboneNotification;
 },{"../models/notifications":42,"../views/notifications-view":61}],9:[function(require,module,exports){
 /*global _*/
+
 var ArgumentInvalidException = require('./custom_exception').ArgumentInvalidException;
 var ArgumentNullException = require('./custom_exception').ArgumentNullException;
 //Singleton container for all the binders.
 var binders = {};
 
+/**
+ * Function use to register a binder.
+ * @param {object} binder - The binder to register.
+ */
 function registerBinder(binder){
   if(_.isNull(binder) || !_.isObject(binder)){
     throw new ArgumentInvalidException("Binder to register should be an object and not null", binder);
@@ -507,7 +512,12 @@ function registerBinder(binder){
   }
   binders[binder.name] =  binder;
 }
-
+/**
+ * Function used to call a registered binder.
+ * @param {object} binderConf -  The configuration of the binder to call.
+ * @param {object} value - The value to bind.
+ * @returns {object} - The binder function call result.
+ */
 function callBinder(binderConf, value){
   if(_.isNull(binderConf) || !_.isObject(binderConf)){
     throw new ArgumentInvalidException("Binder to register should be an object and not null", binderConf);
@@ -523,10 +533,10 @@ function callBinder(binderConf, value){
   if(_.isNull(binder)){
     throw new ArgumentNullException("The binder you are trying to call is not registered, call the registerBinder function", name);
   }
-  if(_.isFunction(binder.fn)){
+  if(!_.isFunction(binder.fn)){
     throw new ArgumentInvalidException('binder fn should be a function', binder.fn);
   }
-  binder.fn(value, binder.options);
+  return binder.fn(value, binder.options);
 }
 
 /**
@@ -534,6 +544,10 @@ function callBinder(binderConf, value){
  * The input parsed value from the form can be transform.
  * The process is html ->parse ->binder(parse)-> {}.
  * @type {{registerBinder: *, callBinder: *}}
+ */
+
+/**
+ * @module focus/helpers/binderHelper
  */
 module.exports = {
   registerBinder: registerBinder,
@@ -5548,7 +5562,6 @@ module.exports = CollectionPaginationView;
 //var NotImplementedException = isInBrowser ? NS.Helpers.Exceptions.NotImplementedException : require('../helpers/custom_exception').NotImplementedException;
 var ConsultEditView = require('./consult-edit-view');
 var errorHelper = require('../helpers/error_helper');
-var formHelper = require('../helpers/form_helper');
 var utilHelper = require('../helpers/util_helper');
 var ArgumentNullException = require("../helpers/custom_exception").ArgumentNullException;
 var ArgumentInvalidException = require("../helpers/custom_exception").ArgumentInvalidException;
@@ -5568,7 +5581,8 @@ var CompositeView = ConsultEditView.extend({
     isForceReload: true,
     isNavigationOnSave: false,
     isModelToLoad: false,
-    isListeningToModelChange: false
+    isListeningToModelChange: false,
+    isGlobalLoading: false
   }),
 
   //Service to save a model wether it is a model or a collection.
@@ -5582,9 +5596,43 @@ var CompositeView = ConsultEditView.extend({
     options = options || {};
     ConsultEditView.prototype.initialize.call(this, options);
     this.viewsConfiguration = [];
-    //Call efor each view you want to register the register view method.
+    //register all views of the composite
+    this.initViews();
 
+    //manage global loading on the composite : must be executed after registering all views
+    if(this.opts.isGlobalLoading){
+      //re dispatch on save
+      this.opts.isForceReload = false;
+      if (this.model.getId() !== undefined && this.model.getId() !== null) {
+        var view = this;
+        this.getModelSvc(this.model.getId()).then(
+            function (infoData) {
+              view.dispatchModels(view,infoData);
+            }, function error(err) {
+              console.error(err);
+            }
+        );
+      }
+    }
   },
+
+  /**
+   * Register all the views to add in the composite. must be overloaded.
+   */
+  initViews : function initViews(){
+  },
+
+  /**
+   * Dispatch models into each views of the composite.
+   * @param context execution context
+   * @param data data to dispatch
+   */
+  dispatchModels: function dispatchModels(context,data){
+    _.each(context.viewsConfiguration, function (viewConfig) {
+      context[viewConfig.name].model.set(data[viewConfig.modelProperty]);
+    }, this);
+  },
+
   //Method to call in order to register a new view inside the composite view.
   //Be carefull, a view must be inside the composite view before being registered.
   // Example: this.registerView({ selector: "div#zone1", name: "contactView", type: "model", modelProperty: "property"});
@@ -5637,7 +5685,6 @@ var CompositeView = ConsultEditView.extend({
 
   //Remove the view inside the viewsconfiguration by its name.
   removeView: function removeView(viewName) {
-
     if (viewName !== undefined && viewName !== null && utilHelper.isBackboneView(this[viewName])) {
       //Remove the view from both the dom.
       this[viewName].remove();
@@ -5654,12 +5701,13 @@ var CompositeView = ConsultEditView.extend({
 
   //Events handle by the view.
   events: {
-    "click .panel-heading": "toogleCollapse",
+    "click .panel-heading": "toggleCollapse",
     //Edition events
     "click button.btnEdit": "toggleEditMode",
     "click button[type='submit']": "save",
     "click button.btnCancel": "cancelEdition",
-    "click button[data-loading]": "loadLoadingButton"
+    "click button[data-loading]": "loadLoadingButton",
+    "click button.btnDelete": "deleteItem"
   },
   // Get the data to give to the template.
   getRenderData: function getRenderDataCompositeView() {
@@ -5792,6 +5840,17 @@ var CompositeView = ConsultEditView.extend({
         currentView.saveError(responseError);
       }).then(this.resetSaveButton.bind(this));
   },
+
+  //Method called when the save action is on success
+  saveSuccess: function saveSuccessComposite(jsonModel) {
+    if(this.opts.isGlobalLoading){
+      this.dispatchModels(this,jsonModel);
+      this.toggleEditMode();
+    }else{
+      ConsultEditView.prototype.saveSuccess.call(this, jsonModel);
+    }
+  },
+
   //Cancel the edition.
   cancelEdition: function cancelEditionCompositeView() {
     // cancelEdit on composite = ToggleEdit on compositeView only + cancelEdit on each child view.
@@ -5837,11 +5896,14 @@ var CompositeView = ConsultEditView.extend({
   }
 });
 module.exports = CompositeView;
-},{"../helpers/custom_exception":10,"../helpers/error_helper":11,"../helpers/form_helper":12,"../helpers/model_validation_promise":19,"../helpers/util_helper":31,"./consult-edit-view":54}],54:[function(require,module,exports){
+},{"../helpers/custom_exception":10,"../helpers/error_helper":11,"../helpers/model_validation_promise":19,"../helpers/util_helper":31,"./consult-edit-view":54}],54:[function(require,module,exports){
 /*global  Backbone, $, i18n, _*/
 "use strict";
 //Filename: views/consult-edit-view.js
 
+/**
+ * @module fmk/views/ConsultEditView
+ */
 
 //Dependencies.
 var errorHelper = require('../helpers/error_helper');
@@ -5854,112 +5916,128 @@ var backboneNotification = require("../helpers/backbone_notification");
 var NotImplementedException = require("../helpers/custom_exception").NotImplementedException;
 var ArgumentNullException = require("../helpers/custom_exception").ArgumentNullException;
 
-//Backbone view which can be use in order to create consultation view and edition view.
+/**
+ * Backbone view which can be use in order to create consultation view and edition view.
+ * @class
+ * @alias module:fmk/views/ConsultEditView
+ * @augments module:fmk/views/CoreView
+ */
 var ConsultEditView = CoreView.extend({
 
-  //The default tag for this view is a div.
+  // The default tag for this view is a div.
   tagName: 'div',
 
-  //The default class for this view.
+  // The default class for this view.
   className: 'consultEditView',
 
   // Service to initialize the model
   getNewModelSvc: undefined,
 
-  //Service to get the model.
+  // Service to get the model.
   getModelSvc: undefined,
 
-  //Service to delete the model.
+  // Service to delete the model.
   deleteModelSvc: undefined,
 
-  //Service to save a model wether it is a model or a collection.
+  // Service to save a model wether it is a model or a collection.
   saveModelSvc: undefined,
 
-  //Template for the edit mode.
+  // Template for the edit mode.
   templateEdit: undefined,
 
-  //Template for the consultation mode.
+  // Template for the consultation mode.
   templateConsult: undefined,
 
-  //Additional data to pass to the template.
+  // Additional data to pass to the template.
   additionalData: function () {
     return undefined;
   },
   /**
    * Default options of the view. These options can be overriden by using customOptions property of the view.
    * In order to access this options, the view has a property called `this.opts`.
-   * @type {[type]}
+   * @enum
    */
-  defaultOptions: _.extend({}, CoreView.prototype.defaultOptions, {
-    /**
-     * Does the view has to load the model from the service define in `getModelSvc`.
-     * @type {Boolean}
-     */
-    isModelToLoad: true, //By default the model is loaded.
-    /**
-     * If true, there is  an edit mode in the view.
-     * @type {Boolean}
-     */
-    isEditMode: true,
-    /**
-     * If there is an edit mode and this property is true, the view can start in edit mode. The templateEdit will be rendered.
-     * @type {Boolean}
-     */
-    isEdit: false,
-    /**
-     * If true, the view will navigate to the `generateNavigationUrl` url.
-     * @type {Boolean}
-     */
-    isNavigationOnSave: true,
-    /**
-     * If true, the view will navigate to the `generateDeleteUrl` url.
-     * @type {Boolean}
-     */
-    isNavigationOnDelete: true,
-    /**
-     * If true, the view will attempt to call the `saveModelSvc` in the `saveAction` when there is a submit.
-     * If you have a composite or a list view, maybe you want the parent view to deal with the save.
-     * @type {Boolean}
-     */
-    isSaveOnServer: true,
+  defaultOptions: {
     /**
      * When the view is a list view, this selector is use to identify the view of each line.
      * It could be `ul li`.
-     * @type {String}
+     * (type {String}, default value: "tbody tr")
      */
     collectionSelector: "tbody tr",
     /**
-     * If there is no navigatio on save, and dhis parameter is true, the view attempt to reload the page (using Backbone not the naigator refresh).
-     * @type {Boolean}
+     * If you need to specify a selector in which the input, select, textarea are searched.
+     * (type {string}, no default value)
+     */
+    formSelector: undefined,
+    /**
+     * If there is an edit mode and this property is true, the view can start in edit mode. The templateEdit will be rendered.
+     * (type {Boolean}, default value: false)
+     */
+    isEdit: false,
+    /**
+     * If true, there is  an edit mode in the view.
+     * (type {Boolean}, default value: true)
+     */
+    isEditMode: true,
+    /**
+     * This options is use in order to not have a tag container generated by Backbone around the view.
+     * (inherited from fmk.views.CoreView, type {boolean], default value : false)
+     */
+    isElementRedefinition: CoreView.prototype.defaultOptions.isElementRedefinition,
+    /**
+     * If there is no navigation on save, and this parameter is true, the view attempt to reload the page (using Backbone not the navigator refresh).
+     * (type {Boolean}, default value: false)
      */
     isForceReload: false,
     /**
-     * This parameter is use in order to know if the view is ready to be displayed.
-     * If not, the spinner is render (see isReady function).
-     * @type {Boolean}
-     */
-    isReadyModelData: true,
-    /**
-     * This parameter can be use in order to have a back to the list button.
-     * @type {string}
-     */
-    listUrl: undefined,
-    /**
      * If true, the view will listen to the `model:change` event.
-     * @type {Boolean}
+     * (type {Boolean}, default value: true)
      */
     isListeningToModelChange: true,
     /**
-     * If you need to specify a selector in which the input, select, textarea are searched.
-     * @type {string}
+     * Does the view has to load the model from the service define in `getModelSvc`.
+     * (type {Boolean}, default value: true)
      */
-    formSelector: undefined, //In whitch selector you have to search the form datas (inputs, select,...).,
+    isModelToLoad: true,
+    /**
+     * If true, the view will navigate to the `generateDeleteUrl` url.
+     * (type {Boolean}, default value: true)
+     */
+    isNavigationOnDelete: true,
+    /**
+     * If true, the view will navigate to the `generateNavigationUrl` url.
+     * (type {Boolean}, default value: true)
+     */
+    isNavigationOnSave: true,
+    /**
+     * This parameter is use in order to know if the view is ready to be displayed.
+     * If not, the spinner is render (see isReady function).
+     * (type {Boolean}, default value: true)
+     */
+    isReadyModelData: true,
+
+    /**
+     * Indicate if references values are ready.
+     * (inherited from fmk.views.CoreView, type {boolean], default value : true)
+     */
+    isReadyReferences: CoreView.prototype.defaultOptions.isReadyReferences,
+    /**
+     * If true, the view will attempt to call the `saveModelSvc` in the `saveAction` when there is a submit.
+     * If you have a composite or a list view, maybe you want the parent view to deal with the save.
+     * (type {Boolean}, default value: true)
+     */
+    isSaveOnServer: true,
     /**
      * Define if the type of model of the view is a model or a collection.
-     * @type {String}
+     * (type {String}, default value: model)
      */
-    modelType: "model"
-  }),
+    modelType: "model",
+    /**
+     * Activate debug information.
+     * (inherited from fmk.views.CoreView, type {boolean], default value : false)
+     */
+    DEBUG: CoreView.prototype.defaultOptions.DEBUG
+  },
 
   /**
    * Initialize the consult edit view.
@@ -5967,16 +6045,17 @@ var ConsultEditView = CoreView.extend({
    * These will extend the defaultOptions and customOptions of the view.
    * All options will be in the `opts` property of the view.
    * @return {undefined}
+   * @override
    */
-  initialize: function initializeConsultEdit(options) {
+  initialize: function initializeConsultEditView(options) {
     options = options || {};
-    //Call the parent initialize.
+    // Call the parent initialize.
     CoreView.prototype.initialize.call(this, options);
 
-    //By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options.
+    // By default the view is in consultationmode and if edit mode is active and isEdit has been activated in th options.
     this.isEdit = (this.opts.isEditMode && this.opts.isEdit) || false;
 
-    //Transform the listUrl
+    // Transform the listUrl
     if (this.opts.listUrl) {
       var currentView = this;
       this.opts.listUrl = this.opts.listUrl.replace(/\:(\w+)/g, function (match) {
@@ -5991,7 +6070,7 @@ var ConsultEditView = CoreView.extend({
         this.loadGetNewModelData();
       }
 
-      //render view when the model is loaded
+      // Render view when the model is loaded
       if (this.opts.isListeningToModelChange) {
         this.model.on('change', this.render, this);
       }
@@ -5999,18 +6078,18 @@ var ConsultEditView = CoreView.extend({
       // In order to be loaded a model has to have an id and the options must be activated.
       if (this.opts.isModelToLoad && utilHelper.isBackboneModel(this.model)) {
         this.opts.isReadyModelData = false;
-        //Try to load the model from a service which have to return a promise.
+        // Try to load the model from a service which have to return a promise.
         this.loadModelData();
       }
     }
   },
-  // returns true if the view should be rendered in creation mode.
   /**
-   * Function wich process the fact that the view is in create.
+   * Function which process the fact that the view is in create.
    * @param  {object}  options [description]
    * @return {Boolean}  - true if the view is in create mode.
+   * @virtual
    */
-  isCreateMode: function isCreateModeConsultEdit(options) {
+  isCreateMode: function isCreateModeConsultEditView(options) {
     var isBackboneModel = utilHelper.isBackboneModel(this.model);
     return this.opts.isCreateMode || (isBackboneModel && this.opts.isModelToLoad && this.model.get('isNewModel'));
   },
@@ -6018,17 +6097,19 @@ var ConsultEditView = CoreView.extend({
    * Get the object to serve to the getModelSvc.
    * @param  {string} id - Identifier of the model.
    * @return {string | object}- The criteria to give to the load service.
+   * @virtual
    */
-  getLoadCriteria: function getLoadCriteria(id) {
+  getLoadCriteria: function getLoadCriteriaConsultEditView(id) {
     return id || this.model.getId();
   },
-  //This function is use in order to retrieve the data from the api using a service.
   /**
    * Load the model from the gerModelSvc function which should be a Promise.
+   * This function is use in order to retrieve the data from the api using a service.
    * @param  {string} id - model identifier.
    * @return {undefined}
+   * @virtual
    */
-  loadModelData: function loadModelData(id) {
+  loadModelData: function loadModelDataConsultEditView(id) {
     if (!this.getModelSvc) {
       throw new ArgumentNullException('The getModelSvc should be a service which returns a promise, it is undefined here.', this);
     }
@@ -6038,7 +6119,7 @@ var ConsultEditView = CoreView.extend({
       .then(function successLoadModel(jsonModel) {
         view.opts.isReadyModelData = true;
         if (jsonModel === undefined) {
-          //manually trigger the change event in the case of empty object returned.
+          // Manually trigger the change event in the case of empty object returned.
           view.model.trigger('change');
         } else {
           view.model.set(jsonModel); //change and change:property
@@ -6050,9 +6131,11 @@ var ConsultEditView = CoreView.extend({
         });
       });
   },
-
-  //This function is use in order to retrieve the data from the api using a service.
-  loadGetNewModelData: function loadGetNewModelData() {
+  /**
+   * This function is use in order to retrieve the data from the api using a service.
+   * @virtual
+   */
+  loadGetNewModelData: function loadGetNewModelDataConsultEditView() {
     if (this.getNewModelSvc !== undefined) {
       var view = this;
       this.getNewModelSvc()
@@ -6075,10 +6158,10 @@ var ConsultEditView = CoreView.extend({
     // Deals with the delete button.
     "click button.btnDelete": "deleteItem",
     // Deals with the panel collapse event.
-    "click .panel-heading": "toogleCollapse",
+    "click .panel-heading": "toggleCollapse",
     // Deals with the submit button.
     "click button[type='submit']": "save",
-    // Deals withe the candel button.
+    // Deals withe the cancel button.
     "click button.btnCancel": "cancelEdition",
     // Deals with the button back.
     "click button.btnBack": "back",
@@ -6089,32 +6172,39 @@ var ConsultEditView = CoreView.extend({
   /**
    * This function represents the data given to to template on the rendering.
    * @return {object} The json to give to the template.
+   * @virtual
    */
-  getRenderData: function getRenderDataConsultEdit() {
+  getRenderData: function getRenderDataConsultEditView() {
 
     var jsonToRender = this.model.toJSON();
 
-    //Add the reference lists names to the json.
+    // Add the reference lists names to the json.
     if (this.model.references) {
       _.extend(jsonToRender, this.model.references);
     }
-    //If there is a listUrl it is added to the
+    // If there is a listUrl it is added to the
     if (this.opts.listUrl) {
       jsonToRender.listUrl = this.opts.listUrl;
     }
-    //Add the additionalData to the rendering of the template.
+    // Add the additionalData to the rendering of the template.
     _.extend(jsonToRender, this.additionalData());
 
     return jsonToRender;
   },
-
-  //genarate navigation url usefull if the edit mode is not on the same page.
-  generateEditUrl: function generateEditUrl() {
+  /**
+   * Generate navigation url useful if the edit mode is not on the same page.
+   * @returns {string}
+   * @virtual
+   */
+  generateEditUrl: function generateEditUrlConsultEditView() {
     return this.model.modelName + "/edit/" + this.model.get('id');
   },
-
-  //Change the edit mode.
-  toggleEditMode: function toogleEditMode(event) {
+  /**
+   * Change the edit mode.
+   * @param event
+   * @virtual
+   */
+  toggleEditMode: function toggleEditModeConsultEditView(event) {
     if (event) {
       event.preventDefault();
     }
@@ -6126,8 +6216,11 @@ var ConsultEditView = CoreView.extend({
     }
     this.render();
   },
-
-  //Deal with the edit button click wether there is an edit mode or not.
+  /**
+   * Deal with the edit button click whenever there is an edit mode or not.
+   * @param event
+   * @virtual
+   */
   edit: function editConsultEditView(event) {
     event.preventDefault();
     if (this.opts.isEditMode) {
@@ -6136,30 +6229,39 @@ var ConsultEditView = CoreView.extend({
       Backbone.history.navigate(this.generateEditUrl(), true);
     }
   },
-  //Get the json data to be save by the view.
-  getDataToSave: function getDataToSaveDetailEdit() {
+  /**
+   * Get the json data to be save by the view.
+   * @returns {string}
+   */
+  getDataToSave: function getDataToSaveConsultEditView() {
     return this.model.toSaveJSON();
   },
-  //Deal with the save event on the page.
-  save: function saveConsultEdit(event) {
+  /**
+   * Deal with the save event on the page.
+   * @param event
+   * @virtual
+   */
+  save: function saveConsultEditView(event) {
     event.preventDefault();
-    //Call a different method depending on the fact that the model is a collection or a model.
+    // Call a different method depending on the fact that the model is a collection or a model.
     if (utilHelper.isBackboneModel(this.model)) {
       this.saveModel();
     } else if (utilHelper.isBackboneCollection(this.model)) {
       this.saveCollection();
     }
-
   },
-  //Save a backbone collection.
-  saveCollection: function saveBackboneCollection() {
-    //Call the form helper in order to rebuild the collection from the form.
+  /**
+   * Save a backbone collection.
+   * @virtual
+   */
+  saveCollection: function saveCollectionConsultEditView() {
+    // Call the form helper in order to rebuild the collection from the form.
     this.bindToModel();
-    //Bind the this to the current view for the
+    // Bind the this to the current view for the
     var currentView = this;
     ModelValidator.validateAll(currentView.model)
       .then(function successValidation() {
-        //When the model is valid, unset errors.
+        // When the model is valid, unset errors.
         currentView.model.forEach(function (mdl) {
           mdl.unsetErrors();
         }, currentView);
@@ -6175,21 +6277,35 @@ var ConsultEditView = CoreView.extend({
         currentView.resetSaveButton();
       });
   },
-  resetSaveButton: function resetSaveButton() {
+  /**
+   * Reset save button.
+   * @virtual
+   */
+  resetSaveButton: function resetSaveButtonConsultEditView() {
     this.changeButtonState('button[type="submit"]', 'reset');
     //$('button[type="submit"]', this.$el).button('reset');
   },
-  resetLoadingButton: function resetLoadingButton() {
+  /**
+   * Reset loading button.
+   * @virtual
+   */
+  resetLoadingButton: function resetLoadingButtonConsultEditView() {
     $('button[data-loading]', this.$el).button('reset');
   },
-  loadLoadingButton: function loadLoadingButton(event) {
+  /**
+   * Load loading button.
+   * @param event
+   * @virtual
+   */
+  loadLoadingButton: function loadLoadingButtonConsultEditView(event) {
     $(event.target).closest('button[data-loading]').button('loading');
   },
   /**
    * Bind the html to the backbone model or collection..
-   * @return {[type]} [description]
+   * @return {undefined}
+   * @virtual
    */
-  bindToModel: function bindToModelConsultEdit() {
+  bindToModel: function bindToModelConsultEditView() {
     var formSelector = this.opts.formSelector || "";
     if (utilHelper.isBackboneModel(this.model)) {
       this.model.unsetErrors({
@@ -6214,16 +6330,19 @@ var ConsultEditView = CoreView.extend({
       );
     }
   },
-  //Save method in case of a model.
-  saveModel: function saveBackboneModel() {
+  /**
+   * Save method in case of a model.
+   * @virtual
+   */
+  saveModel: function saveModelConsultEditView() {
     this.bindToModel();
-    //Bind the this to the current view for the
+    // Bind the this to the current view for the
     var currentView = this;
-    //Todo: Add a method in util in order to know if an object is a collectio or a model.
-    //Add it into the initialize too.
+    //Todo: Add a method in util in order to know if an object is a collection or a model.
+    // Add it into the initialize too.
     ModelValidator.validate(currentView.model)
       .then(function successValidation() {
-        //When the model is valid, unset errors.
+        // When the model is valid, unset errors.
         currentView.model.unsetErrors();
         if (currentView.opts.isSaveOnServer) {
           currentView.saveAction();
@@ -6236,14 +6355,17 @@ var ConsultEditView = CoreView.extend({
         currentView.resetSaveButton();
       });
   },
-  //Save action call the save Svc.
-  saveAction: function saveActionConsultEdit() {
+  /**
+   * Save action call the save Svc.
+   * @returns {*}
+   */
+  saveAction: function saveActionConsultEditView() {
     var currentView = this;
-    //Add a control on the property saveModelSvc.
+    // Add a control on the property saveModelSvc.
     if (!currentView.saveModelSvc) {
       throw new ArgumentNullException("'The saveModeSvc should be a service which returns a promise, it is undefined here.");
     }
-    //Call the service in order to save the model.
+    // Call the service in order to save the model.
     return currentView.saveModelSvc(currentView.getDataToSave())
       .then(function success(jsonModel) {
         currentView.saveSuccess(jsonModel);
@@ -6252,16 +6374,24 @@ var ConsultEditView = CoreView.extend({
       })
       .then(currentView.resetSaveButton.bind(currentView));
   },
-  //Actions on save error
-  saveError: function saveErrorConsultEdit(errors) {
+  /**
+   * Actions on save error.
+   * @param errors
+   * @virtual
+   */
+  saveError: function saveErrorConsultEditView(errors) {
     errorHelper.manageResponseErrors(errors, {
       model: this.model
     });
   },
-  //Actions on save success.
-  saveSuccess: function saveSuccessConsultEdit(jsonModel) {
+  /**
+   * Actions on save success.
+   * @param jsonModel
+   * @virtual
+   */
+  saveSuccess: function saveSuccessConsultEditView(jsonModel) {
     this.opts.isNewModel = false;
-    //Add a notification which will be displayed wether by the router or by the same view.
+    // Add a notification which will be displayed whenever by the router or by the same view.
     backboneNotification.addNotification({
       type: 'success',
       message: i18n.t('save.' + (jsonModel && jsonModel.id ? 'create' : 'update') + 'success')
@@ -6277,9 +6407,9 @@ var ConsultEditView = CoreView.extend({
           Backbone.history.loadUrl(thisUrl);
         }
       } else if (jsonModel instanceof Object) {
-        //Render the success notification.
+        // Render the success notification.
         backboneNotification.renderNotifications();
-        //Reset the model or the collection.
+        // Reset the model or the collection.
         this.model[utilHelper.isBackboneModel(this.model) ? 'set' : 'reset'](jsonModel, {
           silent: false
         });
@@ -6288,19 +6418,24 @@ var ConsultEditView = CoreView.extend({
         Backbone.history.navigate(Backbone.history.fragment.replace('new', jsonModel), true);
       } else {
         backboneNotification.renderNotifications();
-        //Reload the model from the service.
+        // Reload the model from the service.
         this.loadModelData();
         this.toggleEditMode();
       }
-
     }
   },
-  //Contains all the business validation promises.
-  businessValidationPromises: function () {
-    //Return an array of  promises
+  /**
+   * Contains all the business validation promises.
+   * @returns {Array}
+   * @virtual
+   */
+  businessValidationPromises: function businessValidationPromisesConsultEditView() {
+    // Return an array of  promises
     return [];
   },
-  //Cancel the edition.
+  /**
+   * Cancel the edition.
+   */
   cancelEdition: function cancelEditionConsultEditView() {
     backboneNotification.clearNotifications();
     if (this.model.isNew()) {
@@ -6310,23 +6445,34 @@ var ConsultEditView = CoreView.extend({
       this.toggleEditMode();
     }
   },
-  //Url to generate when you want to reload the page, if the option isForceReload is activated.
+  /**
+   * Url to generate when you want to reload the page, if the option isForceReload is activated.
+   * @param param
+   * @abstract
+   */
   generateReloadUrl: function generateReloadUrl(param) {
     throw new NotImplementedException('generateReloadUrl', this);
   },
-  //Url for the newt page after success if the option isNavigateOnSave is activated.
-  generateNavigationUrl: function generateNavigationUrl() {
+  /**
+   * Url for the newt page after success if the option isNavigateOnSave is activated.
+   * @returns {string}
+   * @virtual
+   */
+  generateNavigationUrl: function generateNavigationUrlConsyltEditView() {
     if (this.model.get('id') === null || this.model.get('id') === undefined) {
       return "/";
     }
     return urlHelper.generateUrl([this.model.modelName, this.model.get("id")], {});
   },
-
-  //Code to delete an item.
-  deleteItem: function deleteConsult(event) {
+  /**
+   * Code to delete an item.
+   * @param event
+   * @virtual
+   */
+  deleteItem: function deleteItemConsultEditView(event) {
     event.preventDefault();
     var view = this;
-    //call delete service
+    // Call delete service
     if (!this.deleteModelSvc) {
       throw new ArgumentNullException('The deleteModelSvc should be a service which returns a promise, it is undefined here.', this);
     }
@@ -6337,15 +6483,21 @@ var ConsultEditView = CoreView.extend({
         view.deleteError(errorResponse);
       });
   },
-
-  //Generate delete navigation url.
-  generateDeleteUrl: function generateDeleteUrl() {
+  /**
+   * Generate delete navigation url.
+   * @returns {ConsultEditView.defaultOptions|listUrl|*|string|XML|ConsultEditView.opts.listUrl}
+   * @virtual
+   */
+  generateDeleteUrl: function generateDeleteUrlConsultEditView() {
     return this.opts.listUrl;
   },
-
-  // Actions after a delete success.
-  deleteSuccess: function deleteConsultEditSuccess(response) {
-    //remove the view from the DOM
+  /**
+   * Actions after a delete success.
+   * @param response
+   * @virtual
+   */
+  deleteSuccess: function deleteSuccessConsultEditView(response) {
+    // Remove the view from the DOM
     if (this.model.isInCollection()) {
       this.model.collection.remove(this.model);
     } else {
@@ -6354,21 +6506,27 @@ var ConsultEditView = CoreView.extend({
     this.remove();
     this.resetLoadingButton();
     if (this.opts.isNavigationOnDelete) {
-      //navigate to next page
+      // Navigate to next page
       Backbone.history.navigate(this.generateDeleteUrl(), true);
     }
-
   },
-
-  // Actions after a delete error.
-  deleteError: function deleteConsultEditError(errorResponse) {
+  /**
+   * Actions after a delete error.
+   * @param errorResponse
+   * @virtual
+   */
+  deleteError: function deleteErrorConsultEditView(errorResponse) {
     errorHelper.manageResponseErrors(errorResponse, {
       isDisplay: true
     });
     this.resetLoadingButton();
   },
-  //Render function.
-  render: function renderConsultEditView() {
+  /**
+   * Render function.
+   * @param options
+   * @returns {ConsultEditView}
+   */
+  render: function renderConsultEditView(options) {
     //todo: see if a getRenderData different from each mode is necessary or it coul be deal inside the getRenderDatatFunction if needed.
     var templateName = this.isEdit ? 'templateEdit' : 'templateConsult';
     if (!this[templateName] || !_.isFunction(this[templateName])) {
@@ -6388,15 +6546,22 @@ var ConsultEditView = CoreView.extend({
 
     return this;
   },
-  //Inform if the view is ready to be displayed.
+  /**
+   * Inform if the view is ready to be displayed.
+   * @returns {boolean}
+   * @override
+   */
   isReady: function isReadyConsultEditView() {
     return this.opts.isReadyModelData === true && CoreView.prototype.isReady.call(this) === true;
   },
-  //Function which is called after the render, usally necessary for jQuery plugins.
-  afterRender: function postRenderDetailView() {
+  /**
+   * Function which is called after the render, usually necessary for jQuery plugins.
+   * @override
+   */
+  afterRender: function postRenderDetailConsultEditView() {
     CoreView.prototype.afterRender.call(this);
     $('.collapse', this.$el).collapse('show');
-    //Button loading:
+    // Button loading:
     $('button[data-loading]').button();
 
     var errorField = $('input', 'div.form-group.has-error', this.$el)[0];
@@ -6414,255 +6579,331 @@ module.exports = ConsultEditView;
 },{"../helpers/backbone_notification":8,"../helpers/custom_exception":10,"../helpers/error_helper":11,"../helpers/form_helper":12,"../helpers/model_validation_promise":19,"../helpers/url_helper":29,"../helpers/util_helper":31,"./core-view":55}],55:[function(require,module,exports){
 /*global Backbone, _, window, Promise, $ */
 "use strict";
-    //Filename: views/core-view.js
+//Filename: views/core-view.js
+/**
+ * @module fmk/views/CoreView
+ */
 
-    var postRenderingBuilder = require('../helpers/post_rendering_builder');
-    var ErrorHelper = require('../helpers/error_helper');
-    var RefHelper = require('../helpers/reference_helper');
-    var ArgumentNullException = require("../helpers/custom_exception").ArgumentNullException;
-    var Model = require("../models/model");
-    var PaginatedCollection = require("../models/paginatedCollection");
-    var sessionHelper = require('../helpers/session_helper');
+var postRenderingBuilder = require('../helpers/post_rendering_builder');
+var ErrorHelper = require('../helpers/error_helper');
+var RefHelper = require('../helpers/reference_helper');
+var ArgumentNullException = require("../helpers/custom_exception").ArgumentNullException;
+var Model = require("../models/model");
+var PaginatedCollection = require("../models/paginatedCollection");
+var sessionHelper = require('../helpers/session_helper');
 
-    var templateSpinner = require('../templates/hbs/spinner.hbs');
+var templateSpinner = require('../templates/hbs/spinner.hbs');
 
-    //View which is the default view for each view.
-    //This view is able to deal with errors and to render the default json moodel.
-    var CoreView = Backbone.View.extend({
-        toogleIsHidden: function(options) {
-            this.isHidden = !this.isHidden;
-            this.render(options);
-        },
-        //Reference lists names.
-        //These _names_, must have been registered inside the the application to be used.
-        referenceNames: undefined,
+/**
+ * View which is the default view for each view.
+ * This view is able to deal with errors and to render the default json model.
+ * @class
+ * @alias module:fmk/views/CoreView
+ */
+var CoreView = Backbone.View.extend({
+    toogleIsHidden: function(options) {
+        this.isHidden = !this.isHidden;
+        this.render(options);
+    },
+    // Reference lists names.
+    // These _names_, must have been registered inside the the application to be used.
+    referenceNames: undefined,
 
-        //Options define by default for the view.
-        defaultOptions: {
-            isElementRedefinition: false, //This options is use in order to not have a tag container generated by Backbone arround the view.
-            isReadyReferences: true
-        },
-        //Options overriden By the instanciate view.
-        customOptions: {},
-
-        //This property is use in order to create a new Model if no model are define in the view.
-        modelName: undefined,
-
-        //Initialization of the coreview.
-        initialize: function initializeCoreView(options) {
-            options = options || {};
-            //Define default options foreach _core_ view, and override these options for each _project view_.
-            //Then each view will have access to options in any methods.
-            this.opts = _.extend({}, this.defaultOptions, this.customOptions, options);
-
-            this.on('toogleIsHidden', this.toogleIsHidden);
-            this.initializeModel();
-
-            /*Register after renger.*/
-            _.bindAll(this, 'render', 'afterRender');
-            var _this = this;
-            this.render = _.wrap(this.render, function(render, options) {
-                //If the view is ready perform the standard render.
-                if (_this.isReady()) {
-                    if (_this.opts.DEBUG) {
-                        _this.debug();
-                    }
-                    render(options);
-                    _this.afterRender();
-                } else {
-                    //Else render the spinner.
-                    this.renderSpinner();
-                }
-                return _this;
-            });
-
-            //Listen to the reference list loading.
-            this.listenTo(this.model, "references:loaded", this.render, this);
-
-            //Load all the references lists which are defined in referenceNames.
-            var currentView = this;
-            if (_.isArray(this.referenceNames) && this.referenceNames.length > 0) {
-                this.opts.isReadyReferences = false;
-                Promise.all(RefHelper.loadMany(this.referenceNames)).then(function(results) {
-                    currentView.opts.isReadyReferences = true;
-                    //console.log('resultsreferenceNames', results);
-                    var res = {}; //Container for all the results.
-                    for (var i = 0, l = results.length; i < l; i++) {
-                        res[currentView.referenceNames[i]] = results[i];
-                        //The results are save into an object with a name for each reference list.
-                    }
-                    //Add the reference lists as model properties.
-                    currentView.model.references = res; //Add all the references into the
-                    currentView.model.trigger('references:loaded');
-                    //Inform the view that we are ready to render well.
-                }).then(null, function(error) {
-                    currentView.opts.isReadyReferences = true;
-                    currentView.render();
-                    ErrorHelper.manageResponseErrors(error, {
-                        isDisplay: true
-                    });
-                });
-            }
-
-            this.registerSessionHelper(this);
-        },
+    /**
+     * Options define by default for the view.
+     * @enum
+     * @virtual
+     */
+    defaultOptions: {
         /**
-         * Register session helper
-         * @param context execution context
+         * This options is use in order to not have a tag container generated by Backbone around the view.
+         * (type {boolean], default value : false)
          */
-        registerSessionHelper: function registerSessionHelper(context){
-            context.session = {
-                save : function saveItem(item){
-                    return sessionHelper.saveItem(context.getSessionKey(), item);
-                },
-                get : function getItem(){
-                    return sessionHelper.getItem(context.getSessionKey());
-                },
-                delete : function deleteItem(){
-                    return sessionHelper.removeItem(context.getSessionKey());
-                }
-            };
-        },
+        isElementRedefinition: false,
+        /**
+         * Indicate if references values are ready.
+         * (type {boolean], default value : true)
+         */
+        isReadyReferences: true,
+        /**
+         * Activate debug information.
+         * (type {boolean], default value : false)
+         */
+        DEBUG: false
+    },
+    /**
+     * Options overriden By the instanciate view.
+     */
+    customOptions: {},
 
-        //Initialize the model of the view.
-        //In order to be able to be initialize, a view must have a _model_ or a _modelName_.
-        initializeModel: function initializeModelCoreView() {
-            if (this.model) {
-                return;
-            } else if (this.opts.modelName) {
-                //Création d'une collection et d'un model
-                var ModelCreated = Model.extend({
-                    modelName: this.opts.modelName
-                });
-                //Case of a collection.
-                if (this.opts.modelType !== undefined && this.opts.modelType === "collection") {
-                    var CollectionCreated = PaginatedCollection.extend({
-                        modelName: this.opts.modelName,
-                        model: ModelCreated
-                    });
-                    this.model = new CollectionCreated();
-                } else {
-                    //Case of a model.
-                    this.model = new ModelCreated();
+    // This property is use in order to create a new Model if no model are define in the view.
+    modelName: undefined,
 
+    /**
+     * Initialization of the CoreView.
+     * @param options
+     * @virtual
+     */
+    initialize: function initializeCoreView(options) {
+        options = options || {};
+        // Define default options foreach _core_ view, and override these options for each _project view_.
+        // Then each view will have access to options in any methods.
+        this.opts = _.extend({}, this.defaultOptions, this.customOptions, options);
+
+        this.on('toogleIsHidden', this.toogleIsHidden);
+        this.initializeModel();
+
+        // Register after render.
+        _.bindAll(this, 'render', 'afterRender');
+        var _this = this;
+        this.render = _.wrap(this.render, function(render, options) {
+            // If the view is ready perform the standard render.
+            if (_this.isReady()) {
+                if (_this.opts.DEBUG) {
+                    _this.debug();
                 }
+                render(options);
+                _this.afterRender();
             } else {
-                throw new ArgumentNullException("The view must have a model or a model name.", this);
+                // Else render the spinner.
+                this.renderSpinner();
             }
-        },
-        //The handlebars template has to be defined here.
-        template: function emptyTemplate(json) {
-            console.log("templateData", json);
-            return "<p>Your template has to be implemented.</p>";
-        }, // Example: require('./templates/coreView'),
-        templateSpinner: templateSpinner,
-        //Defaults events.
-        events: {
-            "focus input": "inputFocus", //Deal with the focus in the field.
-            "blur input": "inputBlur", //Deal with the focus out of the field.
-            "click .panel-collapse.in": "hideCollapse",
-            "click .panel-collapse:not('.in')": "showCollapse",
-            "click button[data-loading]": "loadingButton"
-        },
-        //Input focus event.
-        inputFocus: function coreViewInputFocus(event) {
-            if (!this.model.has('errors')) {
-                return;
-            }
-            //Remove the input hidden attribute.
-            return event.target.parentElement.parentElement.childNodes[5].removeAttribute('hidden');
-        },
-        //Input blur event gestion
-        inputBlur: function coreViewInputBlur(event) {
-            if (!this.model.has('errors')) {
-                return;
-            }
-            //If there is an error add the hidden attribute into it in odere to hide the errors.
-            return event.target.parentElement.parentElement.childNodes[5].setAttribute("hidden", "hidden");
-        },
-        //This method is use in order to inject json data to the template. By default, the this.model.toJSON() is called.
-        getRenderData: function getCoreViewRenderData() {
-            var jsonToRender = this.model.toJSON();
-            if (this.model.references) {
-                _.extend(jsonToRender, this.model.references);
-            }
-            return jsonToRender;
-        },
-        showCollapse: function showCollapseCoreView() {
-            $('.collapse', this.$el).collapse('show');
-        },
-        hideCollapse: function hideCollapseCoreView() {
-            $('.collapse', this.$el).collapse('hide');
-        },
-        toogleCollapse: function toogleCollapseCoreView(event) {
-            $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
-            $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
-        },
-        /**
-         * Debug the core View. Display whatever you need in the console on render.
-         * @return {undefined}
-         */
-        debug: function debugCoreView() {
-            console.log("--------------CORE VIEW-----------------");
-            console.log("View:     ", this);
-            console.log("Model:    ", this.model);
-            if (this.template) {
-                console.log("Template: ", this.template(this.getRenderData()));
-            }
-            console.log("----------------------------------------");
-        },
-        //Render function  by default call the getRenderData and inject it into the view dom element.
-        render: function renderCoreView() {
-            //If the view is not ready.
-            this.$el.html(this.template(this.getRenderData()));
+            return _this;
+        });
 
-            //_.defer(this.afterRender, this);
-            return this;
-        },
-        afterRender: function afterRenderCoreView() {
-            //Eventually pass the currentview as argument for this binding.
-            postRenderingBuilder({
-                model: this.model,
-                viewSelector: this.$el
+        // Listen to the reference list loading.
+        this.listenTo(this.model, "references:loaded", this.render, this);
+
+        // Load all the references lists which are defined in referenceNames.
+        var currentView = this;
+        if (_.isArray(this.referenceNames) && this.referenceNames.length > 0) {
+            this.opts.isReadyReferences = false;
+            Promise.all(RefHelper.loadMany(this.referenceNames)).then(function(results) {
+                currentView.opts.isReadyReferences = true;
+                //console.log('resultsreferenceNames', results);
+                var res = {}; //Container for all the results.
+                for (var i = 0, l = results.length; i < l; i++) {
+                    res[currentView.referenceNames[i]] = results[i];
+                    // The results are save into an object with a name for each reference list.
+                }
+                // Add the reference lists as model properties.
+                currentView.model.references = res; // Add all the references into the
+                currentView.model.trigger('references:loaded');
+                // Inform the view that we are ready to render well.
+            }).then(null, function(error) {
+                currentView.opts.isReadyReferences = true;
+                currentView.render();
+                ErrorHelper.manageResponseErrors(error, {
+                    isDisplay: true
+                });
             });
-            $('.collapse', this.$el).collapse({
-                toogle: true
-            });
-        },
-        // Get the id of the criteria.
-        getSessionKey: function getSessionKey() {
-            var hash = window.location.hash;
-            if (this.model.modelName !== undefined) {
-                hash += this.model.modelName;
-            }
-            return hash;
-        },
-        //Call the history back.
-        back: function back() {
-            Backbone.history.history.back();
-        },
-        //Function which tells if the view is ready to be display.
-        isReady: function isReady() {
-            return this.opts.isReadyReferences === true;
-        },
-        //renderSpinner
-        renderSpinner: function renderSpinner() {
-            this.$el.html(this.templateSpinner(this.getRenderData()));
-            return this;
-        },
-        /**
-         * Change the button state (loading, reset) ...
-         * @param  {string} selector - CSS selector for the button.
-         * @param  {string} state    - The new state you want for the button.
-         * @return {undefined}
-         */
-        changeButtonState: function changeButtonState(selector, state) {
-            $(selector, this.$el).button(state);
         }
-    });
 
-    module.exports = CoreView;
-    // ## Example calll:
+        this.registerSessionHelper(this);
+    },
+    /**
+     * Register session helper
+     * @param {CoreView} context execution context
+     * @private
+     */
+    registerSessionHelper: function registerSessionHelper(context){
+        context.session = {
+            save : function saveItem(item){
+                return sessionHelper.saveItem(context.getSessionKey(), item);
+            },
+            get : function getItem(){
+                return sessionHelper.getItem(context.getSessionKey());
+            },
+            delete : function deleteItem(){
+                return sessionHelper.removeItem(context.getSessionKey());
+            }
+        };
+    },
+    /**
+     * Initialize the model of the view.
+     * In order to be able to be initialize, a view must have a _model_ or a _modelName_.
+     */
+    initializeModel: function initializeModelCoreView() {
+        if (this.model) {
+            return;
+        } else if (this.opts.modelName) {
+            // Create collection or model
+            var ModelCreated = Model.extend({
+                modelName: this.opts.modelName
+            });
+            // Case of a collection.
+            if (this.opts.modelType !== undefined && this.opts.modelType === "collection") {
+                var CollectionCreated = PaginatedCollection.extend({
+                    modelName: this.opts.modelName,
+                    model: ModelCreated
+                });
+                this.model = new CollectionCreated();
+            } else {
+                // Case of a model.
+                this.model = new ModelCreated();
+
+            }
+        } else {
+            throw new ArgumentNullException("The view must have a model or a model name.", this);
+        }
+    },
+    // The handlebars template has to be defined here.
+    template: function emptyTemplate(json) {
+        console.log("templateData", json);
+        return "<p>Your template has to be implemented.</p>";
+    }, // Example: require('./templates/coreView'),
+    templateSpinner: templateSpinner,
+    // Defaults events.
+    events: {
+        "focus input": "inputFocus", // Deal with the focus in the field.
+        "blur input": "inputBlur", // Deal with the focus out of the field.
+        "click .panel-collapse.in": "hideCollapse",
+        "click .panel-collapse:not('.in')": "showCollapse",
+        "click button[data-loading]": "loadingButton"
+    },
+    /**
+     * Input focus event.
+     * @param event
+     * @returns {*}
+     */
+    inputFocus: function coreViewInputFocus(event) {
+        if (!this.model.has('errors')) {
+            return;
+        }
+        // Remove the input hidden attribute.
+        return event.target.parentElement.parentElement.childNodes[5].removeAttribute('hidden');
+    },
+    /**
+     * Input blur event processing
+     * @param event
+     * @returns {*}
+     */
+    inputBlur: function coreViewInputBlur(event) {
+        if (!this.model.has('errors')) {
+            return;
+        }
+        //If there is an error add the hidden attribute into it in odere to hide the errors.
+        return event.target.parentElement.parentElement.childNodes[5].setAttribute("hidden", "hidden");
+    },
+    /**
+     * This method is use in order to inject json data to the template. By default, the this.model.toJSON() is called.
+     * @returns {*|string}
+     * @virtual
+     */
+    getRenderData: function getRenderDataCoreView() {
+        var jsonToRender = this.model.toJSON();
+        if (this.model.references) {
+            _.extend(jsonToRender, this.model.references);
+        }
+        return jsonToRender;
+    },
+    /**
+     * Show collapse.
+     */
+    showCollapse: function showCollapseCoreView() {
+        $('.collapse', this.$el).collapse('show');
+    },
+    /**
+     * Hide collapse
+     */
+    hideCollapse: function hideCollapseCoreView() {
+        $('.collapse', this.$el).collapse('hide');
+    },
+    /**
+     * Toggle collapse.
+     * @param event
+     */
+    toogleCollapse: function toogleCollapseCoreView(event) {
+        $(".panel-collapse.in", event.target.parentNode.parentNode).collapse('hide'); //todo: change the selector
+        $(".panel-collapse:not('.in')", event.target.parentNode.parentNode).collapse('show');
+    },
+    /**
+     * Debug the core View. Display whatever you need in the console on render.
+     * @return {undefined}
+     */
+    debug: function debugCoreView() {
+        console.log("--------------CORE VIEW-----------------");
+        console.log("View:     ", this);
+        console.log("Model:    ", this.model);
+        if (this.template) {
+            console.log("Template: ", this.template(this.getRenderData()));
+        }
+        console.log("----------------------------------------");
+    },
+    /**
+     * Render function  by default call the getRenderData and inject it into the view dom element.
+     * @param options
+     * @returns {CoreView}
+     * @virtual
+     */
+    render: function renderCoreView(options) {
+        // If the view is not ready.
+        this.$el.html(this.template(this.getRenderData()));
+
+        //_.defer(this.afterRender, this);
+        return this;
+    },
+    /**
+     * Process post rendering logic.
+     * @virtual
+     */
+    afterRender: function afterRenderCoreView() {
+        // Eventually pass the current view as argument for this binding.
+        postRenderingBuilder({
+            model: this.model,
+            viewSelector: this.$el
+        });
+        $('.collapse', this.$el).collapse({
+            toogle: true
+        });
+    },
+    /**
+     * Get the id of the criteria.
+     * @returns {string}
+     * @virtual
+     */
+    getSessionKey: function getSessionKey() {
+        var hash = window.location.hash;
+        if (this.model.modelName !== undefined) {
+            hash += this.model.modelName;
+        }
+        return hash;
+    },
+    /**
+     * Call the history back.
+     * @return {undefined}
+     */
+    back: function back() {
+        Backbone.history.history.back();
+    },
+    /**
+     * Function which tells if the view is ready to be display.
+     * @returns {boolean}
+     */
+    isReady: function isReady() {
+        return this.opts.isReadyReferences === true;
+    },
+    /**
+     * Render spinner.
+     * @returns {CoreView}
+     */
+    renderSpinner: function renderSpinner() {
+        this.$el.html(this.templateSpinner(this.getRenderData()));
+        return this;
+    },
+    /**
+     * Change the button state (loading, reset) ...
+     * @param  {string} selector - CSS selector for the button.
+     * @param  {string} state    - The new state you want for the button.
+     * @return {undefined}
+     */
+    changeButtonState: function changeButtonState(selector, state) {
+        $(selector, this.$el).button(state);
+    }
+});
+
+module.exports = CoreView;
+// ## Example call:
 // ```javascript
 // var CoreView = require('./views/core-view');
 // new CoreView({model: new Model({firstName: "first name", lastName: "last name"}).render().el //Get the dom element of the view.
@@ -6855,6 +7096,10 @@ module.exports = headerItemsView;
 
   module.exports = headerView;
 },{"../helpers/site_description_helper":28,"../helpers/util_helper":31,"../models/header-items":38,"../templates/hbs/header.hbs":44,"./header-items-view":56}],58:[function(require,module,exports){
+/**
+ * @module fmk/views
+ */
+
 module.exports = {
   CollectionPaginationView: require('./collection-pagination-view'),
   CompositeView: require('./composite-view'),
@@ -7047,7 +7292,7 @@ var ListView = ConsultEditView.extend({
     //Handle the sort-column click.
     'click a.sortColumn': 'sortCollection',
     //Handle the collapse click on a panel headind.
-    "click .panel-heading": "toogleCollapse",
+    "click .panel-heading": "toggleCollapse",
     //Handle the button-back click.
     'click #btnBack': 'navigateBack',
     //Handle the change filter of the page event.
@@ -7456,7 +7701,7 @@ var SearchResultsView = ListView.extend({
       }));
     }
   },
-  toggleEditMode: function toogleEditModeSRV(event) {
+  toggleEditMode: function toggleEditModeSRV(event) {
     if (event) {
       event.preventDefault();
     }
@@ -7482,6 +7727,10 @@ module.exports = SearchResultsView;
 /*global  _, $*/
 "use strict";
 
+/**
+ * @module fmk/views/SearchView
+ */
+
 // Filename: views/search-view.js
 var NotImplementedException = require('../helpers/custom_exception').NotImplementedException;
 var ErrorHelper = require('../helpers/error_helper');
@@ -7492,6 +7741,12 @@ var errorHelper = require('../helpers/error_helper');
 var backboneNotification = require("../helpers/backbone_notification");
 
 var SearchView;
+/**
+ * SearchView
+ * @class
+ * @alias module:fmk/views/SearchView
+ * @augments module:fmk/views/CoreView
+ */
 SearchView = CoreView.extend({
   tagName: 'div',
   className: 'searchView',
@@ -7501,25 +7756,63 @@ SearchView = CoreView.extend({
   resultsSelector: 'div#results',
   isMoreCriteria: false,
 
-  //Default options of the search view.
-  defaultOptions: _.extend({}, CoreView.prototype.defaultOptions, {
-    isRefreshSearchOnInputChange: true
-  }),
+  /**
+   * Default options of the search view.
+   * @enum
+   * @override
+   */
+  defaultOptions: {
+    /**
+     * This options is use in order to not have a tag container generated by Backbone around the view.
+     * (inherited from fmk.views.CoreView, type {boolean], default value : false)
+     */
+    isElementRedefinition: CoreView.prototype.defaultOptions.isElementRedefinition,
+    /**
+     * If criteria is readonly.
+     * (type {boolean], default value: false)
+     */
+    isReadOnly: false,
+    /**
+     * Indicate if references values are ready.
+     * (inherited from fmk.views.CoreView, type {boolean], default value : true)
+     */
+    isReadyReferences: CoreView.prototype.defaultOptions.isReadyReferences,
+    /**
+     * Refresh on input change.
+     * (type {boolean], default value: true)
+     */
+    isRefreshSearchOnInputChange: true,
+    /**
+     * If search is triggered on load.
+     * (type {boolean], default value: false)
+     */
+    isSearchTriggered: false,
+    /**
+     * Activate debug information.
+     * (inherited from fmk.views.CoreView, type {boolean], default value : false)
+     */
+    DEBUG: CoreView.prototype.defaultOptions.DEBUG
+  },
 
-  initialize: function initializeSearch(options) {
+  /**
+   * Initialization of the SearchView.
+   * @param options
+   * @override
+   */
+  initialize: function initializeSearchView(options) {
     options = options || {};
     // Call the initialize function of the core view.
     CoreView.prototype.initialize.call(this, options);
-    this.isSearchTriggered = options.isSearchTriggered || false;
+    this.isSearchTriggered = options.isSearchTriggered;
     this.stopListening(this.model, "reset");
-    this.isReadOnly = options.isReadOnly || false;
+    this.isReadOnly = options.isReadOnly;
     this.model.set({
       isCriteriaReadonly: false
     }, {
       silent: true
     });
 
-    //init results collection
+    // Init results collection
     if (!this.Results) {
       throw new NotImplementedException('Your view should have a Reference to the result collection in the Results property', this);
     }
@@ -7527,14 +7820,14 @@ SearchView = CoreView.extend({
       throw new NotImplementedException('Your view should have a Reference to the ResultsView in order to display the results', this);
     }
     this.searchResults = new this.Results();
-    //initialization of the result view
+    // Initialization of the result view
     this.searchResultsView = new this.ResultsView({
       model: this.searchResults,
       criteria: this.model,
       searchView: this,
       isSearchTriggered: false
     });
-    //handle the clear criteria action
+    // Handle the clear criteria action
     this.listenTo(this.model, 'change', this.render);
     this.listenTo(this.searchResultsView, 'results:fetchDemand', function () {
       this.runSearch(null, {
@@ -7546,7 +7839,7 @@ SearchView = CoreView.extend({
     });
     var currentView = this;
     this.session.get().then(function (crit) {
-      //Restore the criteria if save into the session.
+      // Restore the criteria if save into the session.
       if (crit !== undefined && crit !== null && crit.pageInfo !== undefined && crit.pageInfo !== null) {
         currentView.model.set(crit.criteria, {
           silent: false
@@ -7554,7 +7847,7 @@ SearchView = CoreView.extend({
         currentView.searchResults.setPageInfo(crit.pageInfo);
         currentView.isSearchTriggered = true;
       }
-      //If the serach has to be triggered, trigger it.
+      // If the search has to be triggered, trigger it.
       if (currentView.isSearchTriggered) {
         currentView.runSearch(null, {
           isFormBinded: false
@@ -7574,8 +7867,8 @@ SearchView = CoreView.extend({
     "submit form": 'runSearch', // Launch the search.
     "click button.btnReset": 'clearSearchCriteria', // Reset all the criteria.
     "click button.btnEditCriteria": 'editCriteria', //Deal with the edit mode.
-    "click button.toogleCriteria": 'toogleMoreCriteria', // Deal with the more / less criteria.
-    "click .panel-heading": "toogleCollapse",
+    "click button.toggleCriteria": 'toggleMoreCriteria', // Deal with the more / less criteria.
+    "click .panel-heading": "toggleCollapse",
     "click button.btnCreate": "create"
   },
 
@@ -7585,36 +7878,53 @@ SearchView = CoreView.extend({
   },
 
   //Change the fact that the view is in the mode mode or less criteria.
-  toogleMoreCriteria: function toogleMoreCriteria() {
+  toggleMoreCriteria: function toggleMoreCriteria() {
     this.isMoreCriteria = !this.isMoreCriteria;
     form_helper.formModelBinder({
       inputs: $('input', this.$el)
     }, this.model);
     this.render();
   },
-  //get the JSON to attach to the template
-  getRenderData: function getRenderDataSearch() {
+  /**
+   * Get the JSON to attach to the template
+   * @returns {*|string}
+   * @override
+   * @todo Same code as CoreView
+   */
+  getRenderData: function getRenderDataSearchView() {
     var jsonToRender = this.model.toJSON();
     if (this.model.references) {
       _.extend(jsonToRender, this.model.references);
     }
     return jsonToRender;
   },
-
-  editCriteria: function editCriteria() {
+  /**
+   * Change criteria to edit mode.
+   */
+  editCriteria: function editCriteriaSearchView() {
     this.model.set({
       isCriteriaReadonly: false
     });
   },
-  create: function createNavigate() {
+  /**
+   * Create result view.
+   */
+  create: function createNavigateSearchView() {
     this.searchResultsView.create();
   },
-
-  searchSuccess: function searchSuccess(jsonResponse) {
+  /**
+   * Display search succeed.
+   * @param jsonResponse
+   */
+  searchSuccess: function searchSuccessSearchView(jsonResponse) {
     this.searchResults.setTotalRecords(jsonResponse.totalRecords);
     this.searchResults.reset(jsonResponse.values);
   },
-  searchError: function searchError(response) {
+  /**
+   * Display search errors.
+   * @param response
+   */
+  searchError: function searchErrorSearchView(response) {
     this.searchResults.reset([]);
     ErrorHelper.manageResponseErrors(response, {
       isDisplay: true,
@@ -7625,11 +7935,11 @@ SearchView = CoreView.extend({
    * Get the criteria from the view.
    * @return {object} A clone of the json model.
    */
-  getCriteria: function () {
+  getCriteria: function getCriteriaSearchView () {
     return _.clone(this.model.toJSON());
   },
   /**
-   * Run the search whent it is trigerred by the formaction or the session saved criteria.
+   * Run the search when it is trigerred by the formaction or the session saved criteria.
    * @param  {object} event   - jQuery event.
    * @param  {object} options - Options for the running search.
    * @return {undefined}
@@ -7639,18 +7949,18 @@ SearchView = CoreView.extend({
     var isEvent = event !== undefined && event !== null;
     if (isEvent) {
       event.preventDefault();
-      searchButton = $("button[type=submit]", event.target); // retrieving the button that triggered the search
+      searchButton = $("button[type=submit]", event.target); // Retrieving the button that triggered the search
     }
     options = options || {};
     var isFormBinded = options.isFormBinded === undefined ? true : options.isFormBinded;
-    //bind form fields on model
+    // Bind form fields on model
     if (isFormBinded) {
       form_helper.formModelBinder({
         inputs: $('input', this.$el),
         options: $('select', this.$el)
       }, this.model);
     }
-    //Render loading inside the search results:
+    // Render loading inside the search results:
     this.searchResultsView.opts.isReadyResultsData = false;
     this.searchResultsView.render();
     var currentView = this;
@@ -7672,7 +7982,7 @@ SearchView = CoreView.extend({
           currentView
               .search(criteria, pageInfo)
               .then(function success(jsonResponse) {
-                //Save the criteria in session.
+                // Save the criteria in session.
                 currentView.searchResultsView.opts.isReadyResultsData = true;
                 currentView.searchResultsView.isSearchTriggered = true;
                 currentView.searchResults.setPageInfo(pageInfo);
@@ -7680,7 +7990,6 @@ SearchView = CoreView.extend({
                   criteria: criteria,
                   pageInfo: pageInfo
                 }).then(function (s) {
-                  //console.log('criteria save in session', s);
                   backboneNotification.clearNotifications();
                   return currentView.searchSuccess(jsonResponse);
                 });
@@ -7705,7 +8014,10 @@ SearchView = CoreView.extend({
       });
     }
   },
-
+  /**
+   * Reset all the criteria. Handle reset button click.
+   * @param event
+   */
   clearSearchCriteria: function clearSearchCriteria(event) {
     event.preventDefault();
     this.model.clear();
@@ -7718,17 +8030,25 @@ SearchView = CoreView.extend({
       currentView.searchResults.reset();
     });
   },
-
-  // Get the id of the criteria.
-  getSessionKey: function getSessionKey() {
+  /**
+   * Get the id of the criteria.
+   * @returns {string}
+   * @override
+   */
+  getSessionKey: function getSessionKeySearchView() {
     var hash = CoreView.prototype.getSessionKey.call(this);
     if (this.opts.criteriaId !== undefined) {
       hash += this.opts.criteriaId;
     }
     return hash;
   },
-
-  render: function renderSearch(options) {
+  /**
+   * Render function  by default call the getRenderData and inject it into the view dom element.
+   * @param options
+   * @returns {SearchView}
+   * @override
+   */
+  render: function renderSearchView(options) {
     options = options || {};
     CoreView.prototype.render.call(this, options);
     this.$el.html(this.template(_.extend({
@@ -7737,6 +8057,10 @@ SearchView = CoreView.extend({
     $(this.resultsSelector, this.$el).html(this.searchResultsView.render().el);
     return this;
   },
+  /**
+   * Process post rendering logic.
+   * @override
+   */
   afterRender: function postRenderSearchView() {
     CoreView.prototype.afterRender.call(this);
     $('.collapse', this.$el).collapse('show');

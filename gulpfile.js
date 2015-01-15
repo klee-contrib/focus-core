@@ -81,7 +81,13 @@ gulp.task('jsdoc', function() {
   var infos = require('./package.json');
   var name = 'focus';
   //Js linting.
-  gulp.src('./lib/*/*.js')
+  gulp.src([
+    './lib/helpers/binder_helper.js',
+    "lib/views/consult-edit-view.js",
+    "lib/views/core-view.js",
+    "lib/views/index.js",
+    "lib/views/search-view.js"
+    ])
     .pipe(jsdoc.parser(infos, name))
     .pipe(jsdoc.generator('./jsDoc/'));
 });
