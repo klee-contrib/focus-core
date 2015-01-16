@@ -490,6 +490,9 @@ module.exports = listMetadataParser;
   module.exports = backboneNotification;
 },{"../models/notifications":42,"../views/notifications-view":61}],9:[function(require,module,exports){
 /*global _*/
+/**
+* @module focus/helpers/binderHelper
+*/
 
 var ArgumentInvalidException = require('./custom_exception').ArgumentInvalidException;
 var ArgumentNullException = require('./custom_exception').ArgumentNullException;
@@ -546,13 +549,11 @@ function callBinder(binderConf, value){
  * @type {{registerBinder: *, callBinder: *}}
  */
 
-/**
- * @module focus/helpers/binderHelper
- */
 module.exports = {
   registerBinder: registerBinder,
   callBinder: callBinder
 }
+
 },{"./custom_exception":10}],10:[function(require,module,exports){
 "use strict";
 
@@ -1140,10 +1141,11 @@ var _formInputModelBinder = function formInputModelBinder(inputs, model, options
                     }
                     break;
                 default:
-                    currentvalue = input.value === "" ? null : input.value;
+                    currentvalue = input.value;
             }
-
         }
+        //replace empty string by null
+        currentvalue = currentvalue === "" ? null : currentvalue;
         //Deal with the binder
         var binderName = input.getAttribute('data-binder');
         if(binderName){
@@ -1215,9 +1217,15 @@ var _formOptionModelBinder = function formOptionModelBinder(optionsSets, model, 
             if (this.hasAttribute('multiple')) {
                 selectedValue = $(this).val() || [];
             } else {
-                selectedValue = this.value === "" ? undefined : this.value;
+                selectedValue = this.value;
             }
-
+        }
+        //replace empty string by null
+        selectedValue = selectedValue === "" ? null : selectedValue;
+        //Deal with the binder
+        var binderName = this.getAttribute('data-binder');
+        if(binderName){
+            selectedValue = binderHelper.callBinder({name:binderName}, selectedValue);
         }
         modelContainer[attributeName] = selectedValue === "undefined" ? undefined : selectedValue;
     });
@@ -6036,7 +6044,11 @@ var ConsultEditView = CoreView.extend({
      * Activate debug information.
      * (inherited from fmk.views.CoreView, type {boolean], default value : false)
      */
-    DEBUG: CoreView.prototype.defaultOptions.DEBUG
+    DEBUG: CoreView.prototype.defaultOptions.DEBUG,
+    /**
+     * Activate the field focus after render.
+     */
+    isFocusField: true
   },
 
   /**
@@ -6563,6 +6575,14 @@ var ConsultEditView = CoreView.extend({
     $('.collapse', this.$el).collapse('show');
     // Button loading:
     $('button[data-loading]').button();
+    if (this.opts.isFocusField) {
+      this.focusField();
+    }
+  },
+  /**
+   * Focus the fisrst filed with an error else focus the first field.
+   */
+  focusField: function focusFieldAfterRender() {
 
     var errorField = $('input', 'div.form-group.has-error', this.$el)[0];
     if (errorField === undefined) {
@@ -6571,7 +6591,9 @@ var ConsultEditView = CoreView.extend({
     if (errorField !== undefined) {
       errorField.focus();
     }
+
   }
+
 });
 
 
@@ -7361,7 +7383,7 @@ var ListView = ConsultEditView.extend({
   },
 
   generateNavigationUrl: function generateNavigationUrl(id) {
-    return _url.generateUrl([this.model.model.prototype.modelName.replace('.', '/'), 'show', id]);
+    return _url.generateUrl([this.model.model.prototype.modelName.replace('.', '/'), id]);
   },
   renderDetail: function renderDetail() {
     $(this.resultsContainer, this.$el).html(new this.ResultSelectionView({
