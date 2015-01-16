@@ -1141,10 +1141,11 @@ var _formInputModelBinder = function formInputModelBinder(inputs, model, options
                     }
                     break;
                 default:
-                    currentvalue = input.value === "" ? null : input.value;
+                    currentvalue = input.value;
             }
-
         }
+        //replace empty string by null
+        currentvalue = currentvalue === "" ? null : currentvalue;
         //Deal with the binder
         var binderName = input.getAttribute('data-binder');
         if(binderName){
@@ -1216,9 +1217,15 @@ var _formOptionModelBinder = function formOptionModelBinder(optionsSets, model, 
             if (this.hasAttribute('multiple')) {
                 selectedValue = $(this).val() || [];
             } else {
-                selectedValue = this.value === "" ? undefined : this.value;
+                selectedValue = this.value;
             }
-
+        }
+        //replace empty string by null
+        selectedValue = selectedValue === "" ? null : selectedValue;
+        //Deal with the binder
+        var binderName = this.getAttribute('data-binder');
+        if(binderName){
+            selectedValue = binderHelper.callBinder({name:binderName}, selectedValue);
         }
         modelContainer[attributeName] = selectedValue === "undefined" ? undefined : selectedValue;
     });
@@ -7376,7 +7383,7 @@ var ListView = ConsultEditView.extend({
   },
 
   generateNavigationUrl: function generateNavigationUrl(id) {
-    return _url.generateUrl([this.model.model.prototype.modelName.replace('.', '/'), 'show', id]);
+    return _url.generateUrl([this.model.model.prototype.modelName.replace('.', '/'), id]);
   },
   renderDetail: function renderDetail() {
     $(this.resultsContainer, this.$el).html(new this.ResultSelectionView({
