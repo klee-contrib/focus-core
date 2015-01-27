@@ -92,6 +92,19 @@ gulp.task('jsdoc', function() {
     .pipe(jsdoc.generator('./jsDoc/'));
 });
 
+var markdox = require("gulp-markdox");
+var concat = require("gulp-concat");
+
+gulp.task("markdox", function(){
+  gulp.src([
+    './lib/helpers/binder_helper.js'
+    ])
+    .pipe(markdox())
+    .pipe(concat("doc.md"))
+    .pipe(gulp.dest("./doc"));
+});
+
+
 /**********************
   Building css files
 **********************/
