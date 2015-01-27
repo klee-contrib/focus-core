@@ -527,7 +527,7 @@ module.exports =(Handlebars) ->
   Handlebars.registerHelper "button",(text_key, options) ->
     #console.log "button", i18n.t(text_key)
     opt = options.hash or {}
-    if opt.role  isnt undefined and !Fmk.Helpers.userHelper.hasRole(opt.role)
+    if opt.role  isnt undefined and !Focus.Helpers.userHelper.hasRole(opt.role)
       return ""
     isLoading =  opt.isLoading
     cssClass = opt.class or ""
@@ -690,7 +690,7 @@ module.exports =(Handlebars) ->
   Handlebars.registerHelper "hasOneRole", (property, options)->
     if _.isString(property)
       roles = property.split(',')
-      if Fmk.Helpers.userHelper.hasOneRole(roles)
+      if Focus.Helpers.userHelper.hasOneRole(roles)
         return options.fn(this)
 
   # Check if the user has a role.
@@ -700,7 +700,7 @@ module.exports =(Handlebars) ->
     {{/hasRole}}
   ###
   Handlebars.registerHelper "hasRole", (property, options)->
-    if _.isString(property) and Fmk.Helpers.userHelper.hasRole(property)
+    if _.isString(property) and Focus.Helpers.userHelper.hasRole(property)
       return options.fn(this)
 
   # Generate the bootstrap css classes for the grid.
