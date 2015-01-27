@@ -1,4 +1,4 @@
-Focus
+[Focus](https://kleegroup.github.io/focus-docs)
 =======
 [![Build Status](https://travis-ci.org/KleeGroup/focus.svg)](https://travis-ci.org/KleeGroup/focus.svg)
 
@@ -19,7 +19,8 @@ Then you have to launch the following command: `npm run build` which generates t
 The browser build is inside the `dist/browser/fmk.js`
 
 ### Node js
-`dist/node` and one file per sub module.
+
+Focus is publish under the name [focusjs](https://www.npmjs.com/package/focusjs) on npm.
 
 ## Unit tests
 All unit tests are written with mocha, and can be launched using the `npm run test` command.
