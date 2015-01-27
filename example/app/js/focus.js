@@ -718,14 +718,13 @@ function configure(options) {
  * @return {object} The constructed object from the error response.
  */
 function treatEntityExceptions(responseJSON, options) {
-    var errors = responseJSON.errors;
     /*if (options.isDisplay || options.model) {
         displayErrors(errors, options);
     }*/
     if (options.model) {
-        setModelErrors(options.model, errors);
+        setModelErrors(options.model, responseJSON);
     }
-    return errors;
+    return responseJSON;
 }
 
 /**
@@ -735,14 +734,13 @@ function treatEntityExceptions(responseJSON, options) {
  * @return {object} The constructed object from the error response.
  */
 function treatCollectionExceptions(responseJSON, options) {
-    var errors = responseJSON.errors;
     /* if (options.isDisplay || options.model) {
         displayErrors(errors, options);
     }*/
     if (options.model) {
-        setCollectionErrors(options.model, errors);
+        setCollectionErrors(options.model, responseJSON);
     }
-    return errors;
+    return responseJSON;
 
 }
 
@@ -765,10 +763,10 @@ function treatGlobalMessagesPerType(messages, type) {
 }
 
 /**
- * Treat the global errors.
- * @param  {object} responseJSON - Treat the global errors.
- * @param {object} options - Options for error handling.{isDisplay:[true/false], globalMessages: [{type: "error", name: "propertyName"}]}
- * @return {}
+* Treat the global errors.
+* @param  {object} responseJSON - Treat the global errors.
+* @param {object} options - Options for error handling.{isDisplay:[true/false], globalMessages: [{type: "error", name: "propertyName"}]}
+* @return {}
  */
 function treatGlobalErrors(responseJSON, options) {
     options = options || {};
@@ -787,11 +785,7 @@ function treatGlobalErrors(responseJSON, options) {
         if (isDisplay) {
             BackboneNotification.renderNotifications();
         }
-
     }
-
-
-
 }
 
 /**
@@ -801,20 +795,16 @@ function treatGlobalErrors(responseJSON, options) {
  * @return {object}              - The parsed error response.
  */
 function treatBadRequestExceptions(responseJSON, options) {
-
     if (responseJSON.type !== undefined) {
         switch (responseJSON.type) {
             case errorTypes.entity:
-                treatEntityExceptions(responseJSON, options);
-                break;
+                return treatEntityExceptions(responseJSON, options);
             case errorTypes.collection:
-                treatCollectionExceptions(responseJSON, options);
-                break;
+                return treatCollectionExceptions(responseJSON, options);
             default:
                 break;
         }
     }
-
 }
 
 // .
@@ -859,20 +849,16 @@ function manageResponseErrors(response, options) {
         /*Deal with all the specific exceptions*/
         switch (responseErrors.statusCode || response.status) {
             case 400:
-                treatBadRequestExceptions(responseErrors, options);
-                break;
+                return treatBadRequestExceptions(responseErrors, options);
             case 401:
-                treatBadRequestExceptions(responseErrors, options);
-                break;
+                return treatBadRequestExceptions(responseErrors, options);
             case 422:
-                treatBadRequestExceptions(responseErrors, options);
-                break;
+                return treatBadRequestExceptions(responseErrors, options);
             default:
                 break;
         }
         return;
     }
-
 
     //Container for global errors.
     var globalErrors = [];
@@ -968,9 +954,9 @@ function displayErrors(errors, options) {
  */
 function setModelErrors(model, errors, options) {
     if (errors !== undefined && errors.fieldErrors !== undefined) {
-        model.set({
-            'errors': errors.fieldErrors
-        }, options);
+            model.set({
+                'errors': errors.fieldErrors
+            }, options);
     }
 }
 
@@ -2344,7 +2330,10 @@ var PromiseModel = Backbone.Model.extend({
           success: function (data, textStatus, jqXHR) {
             resolve(httpResponseParser.parse(jqXHR));
           },
-          error: reject
+          error: function(jsonResponse){
+            jsonResponse.responseJSON = _.extend({},jsonResponse.responseJSON,{type: "entity"});
+            reject(jsonResponse);
+          }
         }, options);
         Backbone.sync(method, model, opts);
       }
@@ -2459,7 +2448,10 @@ var PromiseCollection = Backbone.Collection.extend({
           success: function (data, textStatus, jqXHR) {
             resolve(httpResponseParser.parse(jqXHR));
           },
-          error: reject
+          error: function(jsonResponse){
+            jsonResponse.responseJSON = _.extend({},jsonResponse.responseJSON,{type: "collection"});
+            reject(jsonResponse);
+          }
         });
       }
     );
@@ -5641,6 +5633,12 @@ var CompositeView = ConsultEditView.extend({
     }, this);
   },
 
+  dispatchModelErrors: function dispatchModelErrors(context, data){
+    _.each(context.viewsConfiguration, function (viewConfig) {
+      context[viewConfig.name].model.setErrors(data[viewConfig.modelProperty]);
+    }, this);
+  },
+
   //Method to call in order to register a new view inside the composite view.
   //Be carefull, a view must be inside the composite view before being registered.
   // Example: this.registerView({ selector: "div#zone1", name: "contactView", type: "model", modelProperty: "property"});
@@ -5856,6 +5854,15 @@ var CompositeView = ConsultEditView.extend({
       this.toggleEditMode();
     }else{
       ConsultEditView.prototype.saveSuccess.call(this, jsonModel);
+    }
+  },
+
+  saveError: function saveErrorCompositeView(err) {
+    var errors = errorHelper.manageResponseErrors(err,{});
+    if(errors !== undefined && errors.fieldErrors !== undefined ){
+      //TODO use the objectErrors property
+      var fieldErrors = utilHelper.unflatten(errors.fieldErrors);
+      this.dispatchModelErrors(this,fieldErrors);
     }
   },
 
@@ -6311,6 +6318,12 @@ var ConsultEditView = CoreView.extend({
    */
   loadLoadingButton: function loadLoadingButtonConsultEditView(event) {
     $(event.target).closest('button[data-loading]').button('loading');
+  },
+  /**
+   * Bind a form element to the model.
+   */
+  bindPropertyToModel: function bindPropertyToModel(){
+    throw new NotImplementedException('bindPropertyToModel is not yet implemented');
   },
   /**
    * Bind the html to the backbone model or collection..
