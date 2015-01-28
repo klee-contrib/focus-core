@@ -53,7 +53,7 @@ class Model extends Backbone.Model
   # Return a json to Save.
   toSaveJSON: ->
     json = @toJSON()
-    return _.omit(json, 'isNew', 'metadatas', 'cid', 'modelName')
+    return _.omit(json, 'isNew', 'metadatas', 'cid', 'modelName', 'isNewModel')
   # Return true if the model is inside a collection.
   isInCollection: ->
     return @collection?
