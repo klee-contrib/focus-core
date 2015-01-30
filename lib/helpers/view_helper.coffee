@@ -209,6 +209,8 @@ module.exports =(Handlebars) ->
           return "value='" + propValue + "'"
         if dataType is "number"
           return "value='" + numeral(propValue).value() + "'"
+        if dataType is "textarea"
+          return _.escape(propValue)
         else return "value='#{_.escape(propValue)}'"
       ""
     #Get the value of the translated label.
