@@ -2,41 +2,78 @@
 /*global window*/
 window.Focus = require('./index');
 },{"./index":34}],2:[function(require,module,exports){
+/*global _*/
+/**
+ * @module focus/configuration
+ */
+
+/**
+ * Configuration object.
+ * @type {{CORS: boolean}}
+ */
+var configuration = {
+  CORS: true
+};
+
+/**
+ * Function which overrides the configuration.
+ * @param conf
+ */
+function configure(conf){
+  if(_.isObject(conf)){
+    _.extend(configuration, conf);
+  }
+
+}
 
 
-
-
+module.exports = {
+  configure: configure,
+  get: function(){
+    return _.clone(configuration);
+  }
+};
 },{}],3:[function(require,module,exports){
 /*global XMLHttpRequest, XDomainRequest*/
 var ArgumentInvalidException = require('../helpers/custom_exception').ArgumentInvalidException;
 /**
  * Create a cors http request.
- * @param method Type of method yopu want to reach.
- * @param url Url to reach.
+ * @param method - Type of method yopu want to reach.
+ * @param url - Url to reach.
+ * @param options - The cors options.
  * @returns {XMLHttpRequest}
  */
-module.exports = function createCORSRequest(method, url) {
-  if(typeof method !== "string"){
+module.exports = function createCORSRequest(method, url, options) {
+  options = options || {};
+  var isCORS = options.cors || require("../config").get().CORS;
+  if (typeof method !== "string") {
     throw new ArgumentInvalidException('The method should be a string in GET/POST/PUT/DELETE', method);
   }
-  if(typeof url !== "string"){
+  if (typeof url !== "string") {
     throw new ArgumentInvalidException('The url should be a string', url);
   }
   var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr) {
-    // XHR for Chrome/Firefox/Opera/Safari.
+  // xhr.overrideMimeType("application/json");
+  //If CORS is not needed.
+  if (!isCORS) {
     xhr.open(method, url, true);
-  } else if (typeof XDomainRequest != "undefined") {
-    // XDomainRequest for IE.
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
   } else {
-    // CORS not supported.
-    xhr = null;
+    if ("withCredentials" in xhr) {
+      // XHR for Chrome/Firefox/Opera/Safari.
+      xhr.open(method, url, true);
+    } else if (typeof XDomainRequest != "undefined") {
+      // XDomainRequest for IE.
+      xhr = new XDomainRequest();
+      xhr.open(method, url);
+    } else {
+      // CORS not supported.
+      xhr = null;
+    }
   }
+  xhr.setRequestHeader("Content-Type", "application/json");
   return xhr;
 }
-},{"../helpers/custom_exception":10}],4:[function(require,module,exports){
+},{"../config":2,"../helpers/custom_exception":10}],4:[function(require,module,exports){
 var createCORSRequest = require('./cors');
 var httpResponseParser = require('./http_response_parser');
 /**
@@ -46,7 +83,7 @@ var httpResponseParser = require('./http_response_parser');
 module.exports =  function fetch(obj, options) {
   options = options || {};
   options.parser = options.parser || httpResponseParser.parse;
-  var request = createCORSRequest(obj.type, obj.url);
+  var request = createCORSRequest(obj.type, obj.url, options);
   if (!request) {
     throw new Error('You cannot perform ajax request on other domains.');
   }
@@ -4284,7 +4321,7 @@ module.exports = function(Handlebars) {
   Handlebars.registerHelper("button", function(text_key, options) {
     var action, button, cssClass, cssId, dataAttributes, icon, isLoading, loading, opt, type;
     opt = options.hash || {};
-    if (opt.role !== void 0 && !Fmk.Helpers.userHelper.hasRole(opt.role)) {
+    if (opt.role !== void 0 && !Focus.Helpers.userHelper.hasRole(opt.role)) {
       return "";
     }
     isLoading = opt.isLoading;
@@ -4480,7 +4517,7 @@ module.exports = function(Handlebars) {
     var roles;
     if (_.isString(property)) {
       roles = property.split(',');
-      if (Fmk.Helpers.userHelper.hasOneRole(roles)) {
+      if (Focus.Helpers.userHelper.hasOneRole(roles)) {
         return options.fn(this);
       }
     }
@@ -4492,7 +4529,7 @@ module.exports = function(Handlebars) {
     {{/hasRole}}
    */
   Handlebars.registerHelper("hasRole", function(property, options) {
-    if (_.isString(property) && Fmk.Helpers.userHelper.hasRole(property)) {
+    if (_.isString(property) && Focus.Helpers.userHelper.hasRole(property)) {
       return options.fn(this);
     }
   });
@@ -4768,8 +4805,9 @@ module.exports = function initializeFocus(options) {
   require('./core/list_metadata_parser').configure(options);
   require('./helpers/metadata_builder.coffee').metadataBuilder.initialize(options);
   require('./helpers/model_validation_promise').initialize(options);
+  require('./config').configure(options);
 }
-},{"./core/list_metadata_parser":7,"./helpers/metadata_builder.coffee":18,"./helpers/model_validation_promise":19}],36:[function(require,module,exports){
+},{"./config":2,"./core/list_metadata_parser":7,"./helpers/metadata_builder.coffee":18,"./helpers/model_validation_promise":19}],36:[function(require,module,exports){
 "use strict";
 var Collection, metadataBuilder,
   __hasProp = {}.hasOwnProperty,
@@ -5175,7 +5213,7 @@ Model = (function(_super) {
   Model.prototype.toSaveJSON = function() {
     var json;
     json = this.toJSON();
-    return _.omit(json, 'isNew', 'metadatas', 'cid', 'modelName');
+    return _.omit(json, 'isNew', 'metadatas', 'cid', 'modelName', 'isNewModel');
   };
 
   Model.prototype.isInCollection = function() {
@@ -5597,7 +5635,7 @@ var CompositeView = ConsultEditView.extend({
     ConsultEditView.prototype.initialize.call(this, options);
     this.viewsConfiguration = [];
     //register all views of the composite
-    this.initViews();
+    this.initViews(options);
 
     //manage global loading on the composite : must be executed after registering all views
     if(this.opts.isGlobalLoading){
@@ -5619,7 +5657,7 @@ var CompositeView = ConsultEditView.extend({
   /**
    * Register all the views to add in the composite. must be overloaded.
    */
-  initViews : function initViews(){
+  initViews : function initViews(options){
   },
 
   /**
@@ -5633,9 +5671,14 @@ var CompositeView = ConsultEditView.extend({
     }, this);
   },
 
-  dispatchModelErrors: function dispatchModelErrors(context, data){
+  /**
+   * Dispatch errors on composite models.
+   * @param context execution context
+   * @param errors errors to set
+   */
+  dispatchModelErrors: function dispatchModelErrors(context, errors){
     _.each(context.viewsConfiguration, function (viewConfig) {
-      context[viewConfig.name].model.setErrors(data[viewConfig.modelProperty]);
+      context[viewConfig.name].model.setErrors(errors[viewConfig.modelProperty]);
     }, this);
   },
 
@@ -5860,7 +5903,7 @@ var CompositeView = ConsultEditView.extend({
   saveError: function saveErrorCompositeView(err) {
     var errors = errorHelper.manageResponseErrors(err,{});
     if(errors !== undefined && errors.fieldErrors !== undefined ){
-      //TODO use the objectErrors property
+      //TODO use the objectErrors property delete unflatten call
       var fieldErrors = utilHelper.unflatten(errors.fieldErrors);
       this.dispatchModelErrors(this,fieldErrors);
     }
@@ -5908,9 +5951,25 @@ var CompositeView = ConsultEditView.extend({
   afterRender: function postRenderListView() {
     ConsultEditView.prototype.afterRender.call(this);
     $('.collapse', this.$el).collapse('show');
+  },
+  /**
+  * Debug the core View. Display whatever you need in the console on render.
+  * @return {undefined}
+  * @override
+  */
+  debug: function debugCompositeView() {
+    console.log("--------------COMPOSITE VIEW-----------------");
+    console.log("View:     ", this);
+    console.log("Model:    ", this.model);
+    console.log("View configuration: "   ,this.viewsConfiguration)
+    if (this.template) {
+      console.log("Template: ", this.template(this.getRenderData()));
+    }
+    console.log("----------------------------------------");
   }
 });
 module.exports = CompositeView;
+
 },{"../helpers/custom_exception":10,"../helpers/error_helper":11,"../helpers/model_validation_promise":19,"../helpers/util_helper":31,"./consult-edit-view":54}],54:[function(require,module,exports){
 /*global  Backbone, $, i18n, _*/
 "use strict";
@@ -6605,12 +6664,30 @@ var ConsultEditView = CoreView.extend({
       errorField.focus();
     }
 
+  },
+  /**
+  * Debug the consult edit. Display whatever you need in the console on render.
+  * @return {undefined}
+  * @override
+  */
+  debug: function debugConsultView() {
+    console.log("--------------CONSULT EDIT VIEW-----------------");
+    console.log("View:     ", this);
+    console.log("Model:    ", this.model);
+    if (this.templateConsult) {
+      console.log("Template consult: ", this.templateConsult(this.getRenderData()));
+    }
+    if (this.templateEdit) {
+      console.log("Template edit: ", this.templateConsult(this.getRenderData()));
+    }
+    console.log("------------------------------------------------");
   }
 
 });
 
 
 module.exports = ConsultEditView;
+
 },{"../helpers/backbone_notification":8,"../helpers/custom_exception":10,"../helpers/error_helper":11,"../helpers/form_helper":12,"../helpers/model_validation_promise":19,"../helpers/url_helper":29,"../helpers/util_helper":31,"./core-view":55}],55:[function(require,module,exports){
 /*global Backbone, _, window, Promise, $ */
 "use strict";
@@ -7507,6 +7584,23 @@ var ListView = ConsultEditView.extend({
       criteria: criteria,
       pageInfo: pageInfo
     });
+  },
+
+  /**
+  * Debug the list edit. Display whatever you need in the console on render.
+  * @return {undefined}
+  * @override
+  */
+  debug: function debugListView() {
+    console.log("--------------LIST VIEW-----------------");
+    console.log("View:     ", this);
+    console.log("Criteria  ", this.getCriteria());
+    console.log("Model:    ", this.model);
+
+    if (this.template) {
+      console.log("Template: ", this.template(this.getRenderData()));
+    }
+    console.log("------------------------------------------------");
   }
   //,
   //triggerSaveModels: function triggerSaveModels() {
@@ -7754,10 +7848,27 @@ var SearchResultsView = ListView.extend({
     this.session.save({criteria: criteria, pageInfo: pageInfo}).then(function (s) {
       console.log('criteria save in session', s);
     });
+  },
+  /**
+  * Debug the consule edit. Display whatever you need in the console on render.
+  * @return {undefined}
+  * @override
+  */
+  debug: function debugSearchResultView() {
+    console.log("--------------RESULTS VIEW-----------------");
+    console.log("View:     ", this);
+    console.log("Criteria  ", this.getCriteria());
+    console.log("Model:    ", this.model);
+
+    if (this.template) {
+      console.log("Template: ", this.template(this.getRenderData()));
+    }
+    console.log("------------------------------------------------");
   }
 });
 
 module.exports = SearchResultsView;
+
 },{"../templates/hbs/noResults.hbs":47,"./list-view":59}],63:[function(require,module,exports){
 /*global  _, $*/
 "use strict";
@@ -8099,10 +8210,27 @@ SearchView = CoreView.extend({
   afterRender: function postRenderSearchView() {
     CoreView.prototype.afterRender.call(this);
     $('.collapse', this.$el).collapse('show');
+  } ,
+/**
+  * Debug the search edit. Display whatever you need in the console on render.
+  * @return {undefined}
+  * @override
+  */
+  debug: function debugSearchView() {
+    console.log("--------------SEARCH VIEW-----------------");
+    console.log("View:     ", this);
+    console.log("Criteria  ", this.getCriteria());
+    console.log("Model:    ", this.model);
+
+    if (this.template) {
+      console.log("Template: ", this.template(this.getRenderData()));
+    }
+    console.log("------------------------------------------------");
   }
 });
 
 module.exports = SearchView;
+
 },{"../helpers/backbone_notification":8,"../helpers/custom_exception":10,"../helpers/error_helper":11,"../helpers/form_helper":12,"../helpers/model_validation_promise":19,"./core-view":55}],64:[function(require,module,exports){
 "use strict";
 /*globals Handlebars: true */
@@ -8583,9 +8711,9 @@ module.exports = require("handlebars/runtime")["default"];
 
 },{"handlebars/runtime":70}],72:[function(require,module,exports){
 module.exports={
-  "name": "focus",
+  "name": "focusjs",
   "version": "0.3.1",
-  "description": "Klee group framework for SinglePageApplication.",
+  "description": "Focus library.",
   "main": "lib/index.js",
   "directories": {
     "test": "test"
@@ -8636,24 +8764,22 @@ module.exports={
     "backbone": "~1.1.2",
     "backbone-validation": "~0.9.1",
     "bluebird": "~2.3.2",
-    "chai": "~1.9.1",
     "coffee-script": "^1.8.0",
-    "coffee-script-brunch": "~1.8.1",
-    "gulp-handlebars": "~2.2.0",
-    "gulp-wrap": "~0.3.0",
     "handlebars": "~1.3.0",
     "i18next": "~1.7.4",
-    "javascript-brunch": "~1.7.1",
-    "sinon": "~1.10.3",
-    "sinon-chai": "~2.5.0",
     "underscore": "~1.7.0",
-    "browserify-handlebars": "~1.0.0",
-    "browserify": "~8.0.3",
-    "vinyl-source-stream": "~1.0.0",
-    "coffeeify": "~1.0.0",
     "hbsfy": "~2.2.1"
   },
   "devDependencies": {
+    "vinyl-source-stream": "~1.0.0",
+    "browserify": "~8.0.3",
+    "coffeeify": "~1.0.0",
+    "gulp-handlebars": "~2.2.0",
+    "gulp-wrap": "~0.3.0",
+    "sinon": "~1.10.3",
+    "chai": "~1.9.1",
+    "sinon-chai": "~2.5.0",
+    "browser-sync": "~1.8.3",
     "eslint": "^0.8.2",
     "express": "~4.9.4",
     "gulp": "~3.8.8",
@@ -8666,11 +8792,11 @@ module.exports={
     "gulp-if": "~1.2.4",
     "gulp-jsdoc": "^0.1.4",
     "gulp-jshint": "~1.8.4",
+    "gulp-markdox": "^0.1.1",
     "gulp-util": "~3.0.1",
     "hapi": "^6.9.0",
     "jshint-stylish": "~1.0.0",
-    "mocha": "~1.21.4",
-    "browser-sync": "~1.8.3"
+    "mocha": "~1.21.4"
   }
 }
 
