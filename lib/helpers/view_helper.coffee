@@ -209,6 +209,8 @@ module.exports =(Handlebars) ->
           return "value='" + propValue + "'"
         if dataType is "number"
           return "value='" + numeral(propValue).value() + "'"
+        if dataType is "textarea"
+          return _.escape(propValue)
         else return "value='#{_.escape(propValue)}'"
       ""
     #Get the value of the translated label.
@@ -256,14 +258,19 @@ module.exports =(Handlebars) ->
     #Deal with error
     errors = ()=>
       if error == "has-error" then "<span class='#{error} #{errorSize()} help-inline pull-left' style='color:#b94a48'> #{errorValue } </span>" else ""
+
+    openTag = ->
+      if opt.rows? then "<textarea rows='#{opt.rows}' " else "<input"
+    closeTag = ->
+      if opt.rows? then ">#{propertyValue()}</textarea>" else "#{propertyValue()} />"
     #Build the html tag.
     # <div class="form-group">
     #     <label for="exampleInputEmail">Email address</label>
     #     <input type="text" class="form-control" id="exampleInputEmail" placeholder="Enter email">
     #   </div>
     if minimalHtml
-        html = " <input id='#{property}' #{dataFields(@)} #{decorator()} #{binder()} class=''"
-        html += "data-name='#{property}' type='#{dataType}' #{inputAttributes} #{cidAttr} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>"
+        html = "#{openTag()} id='#{property}' #{dataFields(@)} #{decorator()} #{binder()} class=''"
+        html += "data-name='#{property}' type='#{dataType}' #{inputAttributes} #{cidAttr} #{placeholder}  #{readonly} #{disabled} #{closeTag()}"
     else
         html = "
                 <div class='form-group #{error} #{col}'>
@@ -271,9 +278,9 @@ module.exports =(Handlebars) ->
                   <div class='#{inputSize()} #{containerCss}' #{containerAttribs}>
                       <div class='#{if isAddOnInput then 'input-group' else ""}'>
                      #{icon()}
-                    <input id='#{property}' #{decorator()} #{binder()} #{dataFields(@)} class='"
+                    #{openTag()} id='#{property}' #{decorator()} #{binder()} #{dataFields(@)} class='"
         if(dataType != "checkbox") then html +="form-control "
-        html += "input-sm' data-name='#{property}' type='#{dataType}' #{inputAttributes} #{placeholder} #{propertyValue()} #{readonly} #{disabled}/>
+        html += "input-sm' data-name='#{property}' type='#{dataType}' #{inputAttributes} #{placeholder}  #{readonly} #{disabled} #{closeTag()}
                     #{symbol()}"
         if(dataType !="checkbox") then html +="              #{isRequired()}" else html+="              "
 
