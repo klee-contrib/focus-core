@@ -73,6 +73,7 @@ module.exports = function createCORSRequest(method, url, options) {
   xhr.setRequestHeader("Content-Type", "application/json");
   return xhr;
 }
+
 },{"../config":2,"../helpers/custom_exception":10}],4:[function(require,module,exports){
 var createCORSRequest = require('./cors');
 var httpResponseParser = require('./http_response_parser');
@@ -1004,7 +1005,9 @@ function setModelErrors(model, errors, options) {
  * @param {object} options - Options defined when setting the errors to the model.
  */
 function setCollectionErrors(collection, errors, options) {
-    collection.setErrors(errors, options);
+    if(errors !== undefined && errors.objectFieldErrors !== undefined ){
+        collection.setErrors(errors.objectFieldErrors, options);
+    }
 }
 
 /**
@@ -1176,12 +1179,13 @@ var _formInputModelBinder = function formInputModelBinder(inputs, model, options
         }
 
         if (input.multiple) {
+            // Init field values array.
+            if (modelContainer[this.getAttribute('data-name')] === undefined) {
+                modelContainer[this.getAttribute('data-name')] = [];
+            }
+            /* Add value if checked. */
             if (input.checked) {
-                if (modelContainer[this.getAttribute('data-name')] === undefined) {
-                    modelContainer[this.getAttribute('data-name')] = [currentvalue];
-                } else {
-                    modelContainer[this.getAttribute('data-name')].push(currentvalue);
-                }
+                modelContainer[this.getAttribute('data-name')].push(currentvalue);
             }
         } else {
             modelContainer[this.getAttribute('data-name')] = currentvalue;
@@ -3526,13 +3530,13 @@ function stringLength(stringToTest, options) {
 }
 //Function to  validate that an input is a number.
 function numberValidation(numberToValidate, options) {
-  options = options || {};
-  if (!numberToValidate) {
+   options = options || {};
+  if (_.isUndefined(numberToValidate) || _.isNull(numberToValidate)) {
     return true;
-  }
-  if (isNaN(numberToValidate)) {
+  }  
+  if (_.isNaN(numberToValidate)) {
     return false;
-  }
+  }  
   numberToValidate = +numberToValidate; //Cast it into a number.
   var isMin = options.min !== undefined ? numberToValidate >= options.min : true;
   var isMax = options.max !== undefined ? numberToValidate <= options.max : true;
@@ -3823,7 +3827,7 @@ module.exports = function(Handlebars) {
     };
   })(this));
   Handlebars.registerHelper("input_for", function(property, options) {
-    var binder, cidAttr, col, container, containerAttribs, containerCss, dataFields, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
+    var binder, cidAttr, closeTag, col, container, containerAttribs, containerCss, dataFields, dataType, decorator, disabled, domain, error, errorSize, errorValue, errors, html, icon, inputAttributes, inputSize, isAddOnInput, isDisplayRequired, isRequired, label, labelSize, labelSizeValue, metadata, minimalHtml, modelName, noGrid, openTag, opt, placeholder, propertyValue, readonly, symbol, translationKey, translationRoot;
     options = options || {};
     html = void 0;
     translationRoot = void 0;
@@ -3928,6 +3932,9 @@ module.exports = function(Handlebars) {
           }
           if (dataType === "number") {
             return "value='" + numeral(propValue).value() + "'";
+          }
+          if (dataType === "textarea") {
+            return _.escape(propValue);
           } else {
             return "value='" + (_.escape(propValue)) + "'";
           }
@@ -4008,15 +4015,29 @@ module.exports = function(Handlebars) {
         }
       };
     })(this);
+    openTag = function() {
+      if (opt.rows != null) {
+        return "<textarea rows='" + opt.rows + "' ";
+      } else {
+        return "<input";
+      }
+    };
+    closeTag = function() {
+      if (opt.rows != null) {
+        return ">" + (propertyValue()) + "</textarea>";
+      } else {
+        return "" + (propertyValue()) + " />";
+      }
+    };
     if (minimalHtml) {
-      html = " <input id='" + property + "' " + (dataFields(this)) + " " + (decorator()) + " " + (binder()) + " class=''";
-      html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + cidAttr + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/>";
+      html = "" + (openTag()) + " id='" + property + "' " + (dataFields(this)) + " " + (decorator()) + " " + (binder()) + " class=''";
+      html += "data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + cidAttr + " " + placeholder + "  " + readonly + " " + disabled + " " + (closeTag());
     } else {
-      html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " <input id='" + property + "' " + (decorator()) + " " + (binder()) + " " + (dataFields(this)) + " class='";
+      html = "<div class='form-group " + error + " " + col + "'> " + (label()) + " <div class='" + (inputSize()) + " " + containerCss + "' " + containerAttribs + "> <div class='" + (isAddOnInput ? 'input-group' : "") + "'> " + (icon()) + " " + (openTag()) + " id='" + property + "' " + (decorator()) + " " + (binder()) + " " + (dataFields(this)) + " class='";
       if (dataType !== "checkbox") {
         html += "form-control ";
       }
-      html += "input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + " " + (propertyValue()) + " " + readonly + " " + disabled + "/> " + (symbol());
+      html += "input-sm' data-name='" + property + "' type='" + dataType + "' " + inputAttributes + " " + placeholder + "  " + readonly + " " + disabled + " " + (closeTag()) + " " + (symbol());
       if (dataType !== "checkbox") {
         html += "              " + (isRequired());
       } else {
@@ -5902,9 +5923,8 @@ var CompositeView = ConsultEditView.extend({
 
   saveError: function saveErrorCompositeView(err) {
     var errors = errorHelper.manageResponseErrors(err,{});
-    if(errors !== undefined && errors.fieldErrors !== undefined ){
-      //TODO use the objectErrors property delete unflatten call
-      var fieldErrors = utilHelper.unflatten(errors.fieldErrors);
+    if(errors !== undefined && errors.objectFieldErrors !== undefined ){
+      var fieldErrors = errors.objectFieldErrors;
       this.dispatchModelErrors(this,fieldErrors);
     }
   },
@@ -7579,6 +7599,20 @@ var ListView = ConsultEditView.extend({
       this.renderDetail();
     }
   },
+
+  /**
+   * Actions on save error.
+   * @param errors
+   * @virtual
+   */
+  saveError: function saveErrorCustomListView(err) {
+    var errors = errorHelper.manageResponseErrors(err,{});
+    if(errors !== undefined && errors.objectFieldErrors !== undefined ){
+      var fieldErrors = errors.objectFieldErrors;
+      this.model.setErrors(fieldErrors);
+    }
+  },
+
   saveCriteria: function (criteria, pageInfo) {
     this.session.save({
       criteria: criteria,
@@ -7757,7 +7791,7 @@ module.exports = ModalView;
 			//In order to call the templat only if needed.
 			function printMessageIfExists(messageContainerName, context) {
 				if (messages[messageContainerName].length > 0) {
-					context.$el.append(template(messageToPrint[messageContainerName]));
+					context.$el.append(context.template(messageToPrint[messageContainerName]));
 				}
 			}
 			printMessageIfExists('errorMessages', this); //The this is put into a closure in order to not lose it.
