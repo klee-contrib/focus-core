@@ -8746,7 +8746,7 @@ module.exports = require("handlebars/runtime")["default"];
 },{"handlebars/runtime":70}],72:[function(require,module,exports){
 module.exports={
   "name": "focusjs",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Focus library.",
   "main": "lib/index.js",
   "directories": {
