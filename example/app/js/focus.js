@@ -1007,6 +1007,8 @@ function setModelErrors(model, errors, options) {
 function setCollectionErrors(collection, errors, options) {
     if(errors !== undefined && errors.objectFieldErrors !== undefined ){
         collection.setErrors(errors.objectFieldErrors, options);
+    }else{
+        collection.setErrors(errors, options);
     }
 }
 
