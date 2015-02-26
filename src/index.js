@@ -1,4 +1,4 @@
-var infos = require('../package.json');
+var infos = {author: "pbesson", version: "0.5.0", documentation: "http://github.com"};//require('../package.json'); //Bug with literalify.
 /**
  * Focus library.
  * This file requires all submodules.
