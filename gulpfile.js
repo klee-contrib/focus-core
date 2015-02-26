@@ -178,6 +178,14 @@ gulp.task('templatesExample', function() {
 
 
 
+gulp.task('focus-component', function() {
+  gulp.src(['package.json','index.js','{component,application,helper,network,router,store,util}/**/*'])
+  .pipe(gulp.dest('../focus-components/node_modules/focus/'));
+});
+
+
+
+
 /**********************
   Documentation
 **********************/
