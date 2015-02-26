@@ -2,10 +2,10 @@
 var gulp = require('gulp');
 
 // include plug-ins
-var gulpif = require('gulp-if');
-var coffee = require('gulp-coffee');
+//var gulpif = require('gulp-if');
+//var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
-var gutil = require('gulp-util');
+//var gutil = require('gulp-util');
 
 //buildConfig:
 var buildConf = require('./build.json');
@@ -45,7 +45,7 @@ gulp.task('eslint', function() {
       "Fmk": true,
       "_": true,
       "Promise": true,
-      "module": true
+      "module": true,
     },
     "env": {
       "browser": true,
@@ -91,11 +91,12 @@ gulp.task('jsdoc', function() {
     .pipe(jsdoc.parser(infos, name))
     .pipe(jsdoc.generator('./jsDoc/'));
 });
-
-var markdox = require("gulp-markdox");
 var concat = require("gulp-concat");
 
 gulp.task("markdox", function(){
+
+  var markdox = require("gulp-markdox");
+
   gulp.src([
     './lib/helpers/binder_helper.js'
     ])
@@ -120,17 +121,25 @@ gulp.task('style', function() {
 **********************/
 
 gulp.task('browserify', function(){
-  var browserify = require('browserify');
+  var babelify = require("babelify"); //es6
+  var browserify = require('browserify'); //build the source
   var source = require('vinyl-source-stream');
-  return browserify(({entries: ['./lib/browser.js'], extensions: ['.coffee', '.hbs']}))
-    .bundle()
-    //Pass desired output filename to vinyl-source-stream
-    .pipe(source('focus.js'))
-    .pipe(gulp.dest('./dist/'))
-    .pipe(gulp.dest('./example/app/js/'))
-    //Current project destination.
-    //.pipe(gulp.dest('../SPA-skeleton/vendor'));
-    .pipe(gulp.dest(buildConf.spaDirectory));
+    var literalify = require('literalify');
+    return browserify(({
+        entries: ['./index.js'],
+        extensions: ['.jsx'],
+        standalone: "focus"
+      }))
+      .transform(
+        {global:true},
+        literalify.configure({
+        react: 'window.React'
+      }))
+      .transform(babelify)
+      .bundle()
+      //Pass desired output filename to vinyl-source-stream
+      .pipe(source("focus-"+require('./package.json').version+".js"))
+      .pipe(gulp.dest('./dist/'));
 });
 
 
