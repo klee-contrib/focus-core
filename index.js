@@ -7,6 +7,7 @@ var infos = {author: "pbesson", version: "0.5.0", documentation: "http://github.
 module.exports = {
   application: require('./application'),
   component: require('./component'),
+  exception: require('./exception'),
   helper: require('./helper'),
   network: require('./network'),
   router: require('./router'),
