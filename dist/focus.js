@@ -97,8 +97,9 @@ module.exports =  function fetch(obj, options) {
     request.onload = function () {
       var status = request.status;
       if (status !== 200) {
-        var err = JSON.parse(request.response);
-        err.statusCode = status;
+        var err = {};
+        err.responseJSON = JSON.parse(request.response);
+        err.responseJSON.statusCode = status;
         failure(err);
       }
       var contentType = request.getResponseHeader('content-type');
@@ -115,6 +116,7 @@ module.exports =  function fetch(obj, options) {
   });
 
 };
+
 },{"./cors":3,"./http_response_parser":5}],5:[function(require,module,exports){
 /*global _*/
 
@@ -1007,6 +1009,8 @@ function setModelErrors(model, errors, options) {
 function setCollectionErrors(collection, errors, options) {
     if(errors !== undefined && errors.objectFieldErrors !== undefined ){
         collection.setErrors(errors.objectFieldErrors, options);
+    }else{
+        collection.setErrors(errors,options);
     }
 }
 
@@ -2411,6 +2415,12 @@ var PromiseModel = Backbone.Model.extend({
 
 // Backbone collection with **promise** CRUD method instead of its own methods.
 var PromiseCollection = Backbone.Collection.extend({
+  /**
+   * Fecth the data in the search case.
+   * @param  {object} params  - Search params.
+   * @param  {object} options - Search options.
+   * @return {Promise} -  THe promise of the search.
+   */
   search: function searchPromiseCollection(params, options) {
     options = options || {};
     params = params || {};
@@ -2433,7 +2443,12 @@ var PromiseCollection = Backbone.Collection.extend({
     params.pageInfo = params.pagesInfos;
     delete params.pagesInfos;
     var requestParams = listMetadataParser.createMetadataOptions(params, options);
-    return fetch(requestParams);
+    return fetch(requestParams).then(null,function(jsonResponse){
+      jsonResponse.responseJSON = _.extend({},jsonResponse.responseJSON,{type: "entity"});
+      return new Promise(function(resolve, reject){
+        reject(jsonResponse);
+     });
+   });
 
 
   },
@@ -8140,13 +8155,15 @@ SearchView = CoreView.extend({
         options: $('select', this.$el)
       }, this.model);
     }
-    // Render loading inside the search results:
-    this.searchResultsView.opts.isReadyResultsData = false;
-    this.searchResultsView.render();
+
     var currentView = this;
     ModelValidator
         .validate(this.model)
         .then(function(model) {
+          // Render loading inside the search results:
+          currentView.searchResultsView.opts.isReadyResultsData = false;
+          currentView.searchResultsView.render();
+
           currentView.model.unsetErrors({
             silent: false
           });
