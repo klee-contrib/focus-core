@@ -9,7 +9,7 @@ var concat = require('gulp-concat');
 
 //buildConfig:
 var buildConf = require('./build.json');
-
+var sources = ['index.js','{component,application,helper,network,router,store,util}/**/*'];
 /**********************
   Linting files
 **********************/
@@ -45,7 +45,7 @@ gulp.task('eslint', function() {
       "Fmk": true,
       "_": true,
       "Promise": true,
-      "module": true,
+      "module": true
     },
     "env": {
       "browser": true,
@@ -53,9 +53,9 @@ gulp.task('eslint', function() {
     },
     rules: {
       "valid-jsdoc": [2, {
-        "prefer": {
-          "return": "returns"
-        },
+      /*  "prefer": {
+          "return": "return"
+        },*/
         "requireParamDescription": true
       }],
       "quotes": [0]
@@ -63,7 +63,7 @@ gulp.task('eslint', function() {
   };
   var format = "compact"; //"compact", "checkstyle", "jslint-xml", "junit" and "tap".
   gulp
-    .src('./lib/*/*.js')
+    .src(sources)
     .pipe(eslint(options))
   //.pipe(eslint.format(undefined, process.stdout))
   //.pipe(eslint.failOnError())
