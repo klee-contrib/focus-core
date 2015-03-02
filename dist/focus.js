@@ -97,9 +97,8 @@ module.exports =  function fetch(obj, options) {
     request.onload = function () {
       var status = request.status;
       if (status !== 200) {
-        var err = {};
-        err.responseJSON = JSON.parse(request.response);
-        err.responseJSON.statusCode = status;
+        var err = JSON.parse(request.response);
+        err.statusCode = status;
         failure(err);
       }
       var contentType = request.getResponseHeader('content-type');
@@ -878,7 +877,9 @@ function manageResponseErrors(response, options) {
                     globalErrorMessages: [response.responseText]
                 };
             }
+
         }
+
     }
     responseErrors.statusCode = responseErrors.statusCode || response.status;
     if (responseErrors.statusCode) {
@@ -2410,12 +2411,6 @@ var PromiseModel = Backbone.Model.extend({
 
 // Backbone collection with **promise** CRUD method instead of its own methods.
 var PromiseCollection = Backbone.Collection.extend({
-  /**
-   * Fetch the collection data
-   * @param params
-   * @param options
-   * @returns {*}
-   */
   search: function searchPromiseCollection(params, options) {
     options = options || {};
     params = params || {};
@@ -2438,12 +2433,9 @@ var PromiseCollection = Backbone.Collection.extend({
     params.pageInfo = params.pagesInfos;
     delete params.pagesInfos;
     var requestParams = listMetadataParser.createMetadataOptions(params, options);
-    return fetch(requestParams).then(null,function(jsonResponse){
-      jsonResponse.responseJSON = _.extend({},jsonResponse.responseJSON,{type: "entity"});
-      return new Promise(function(resolve, reject){
-        reject(jsonResponse);
-      });
-    });
+    return fetch(requestParams);
+
+
   },
   /**
    * Fetch the collection datas, clean the share collection and parse.

@@ -20,5 +20,3 @@ lint
 jsdoc
 example/app/js/fmk.js
 .idea
-dist
-out
