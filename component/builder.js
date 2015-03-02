@@ -1,7 +1,8 @@
 var React = require('react');
 var assign = require('object-assign');
-var isObject = require('lodash/lang/isObject');
-var isFunction = require('lodash/lang/isFunction');
+//var isObject = require('lodash/lang/isObject');
+//var isFunction = require('lodash/lang/isFunction');
+
 /**
  * Build a module with a mixin and a React component.
  * @param  {object} componentMixin - Mixin of the component.
@@ -10,7 +11,7 @@ var isFunction = require('lodash/lang/isFunction');
  */
 module.exports = function(componentMixin, isMixinOnly){
 
-  return {
+  return assign( {
     mixin: componentMixin,
     /*extend: function extendMixin(properties){
       if(isFunction(componentMixin)){
@@ -21,18 +22,18 @@ module.exports = function(componentMixin, isMixinOnly){
       }
       return assign({}, componentMixin, properties);
     },*/
-    component: createComponent(componentMixin, isMixinOnly)
-  };
+  }, createComponent(componentMixin, isMixinOnly));
 };
 
 /**
  * Create a component with a mixin except id the component is mixin only.
  * @param {object}  mixin - The component mixin.
  * @param {Boolean} isMixinOnly - define if the component is a mixin only.
+ * @return
  */
 function createComponent(mixin, isMixinOnly){
     if (isMixinOnly){
       return undefined;//Error('Your class publish a mixin only...');
     }
-    return React.createClass(mixin);
+    return {component:React.createClass(mixin)};
 }
