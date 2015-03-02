@@ -5,6 +5,7 @@ var isArray = require('lodash/lang/isArray');
 
 /**
  * Expose a React type validation for the component properties validation.
+ * @see http://facebook.github.io/react/docs/reusable-components.html
  * @param  {string or array} type - String or array of the types to use.
  * @return {object} The corresponding react type.
  */

@@ -177,10 +177,11 @@ gulp.task('templatesExample', function() {
 
 
 
-
+//Build focus components into the other repositories.
 gulp.task('focus-component', function() {
   gulp.src(['package.json','index.js','{component,application,helper,network,router,store,util}/**/*'])
-  .pipe(gulp.dest('../focus-components/node_modules/focus/'));
+  .pipe(gulp.dest('../focus-components/node_modules/focus/'))
+  .pipe(gulp.dest('../rodolphe/app/node_modules/focus/'));
 });
 
 
