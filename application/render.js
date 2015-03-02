@@ -1,14 +1,20 @@
+"use strict";
 /*global document*/
  var React = require('react');
- var mountedComponents  = {};
 /**
- * Render a react component in the DOM.
- * @type {undefined}
- * @param component - A react component.
- * @param selector  - A selector on a DOM node.
- * @param options   - Options for the component rendering.
+ * Map containing all the mounted components.
+ * @type {Object}
  */
-module.exports =  (component,selector, options) =>{
+ var mountedComponents = {};
+
+/**
+ *  Render a react component in a DOM selector.
+ * @param {object} component - A react component.
+ * @param {string} selector  - A selector on a DOM node.
+ * @param {object} options   - Options for the component rendering.
+ * @return {undefined} - Return nothing.
+ */
+module.exports = function(component, selector, options){
   options = options || {};
   //Unmount component if there is one mounted.
   if(mountedComponents[selector]){
