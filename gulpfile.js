@@ -179,7 +179,12 @@ gulp.task('templatesExample', function() {
 
 //Build focus components into the other repositories.
 gulp.task('focus-component', function() {
+  var react = require('gulp-react');
+  var babel = require('gulp-babel');
+  var gulpif = require('gulp-if');
   gulp.src(['package.json','index.js','{component,application,helper,network,router,store,util}/**/*'])
+  .pipe(gulpif(/[.]js$/, react({harmony: true})))
+  .pipe(gulpif(/[.]js$/, babel()))
   .pipe(gulp.dest('../focus-components/node_modules/focus/'))
   .pipe(gulp.dest('../rodolphe/app/node_modules/focus/'));
 });
