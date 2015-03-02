@@ -178,7 +178,7 @@ gulp.task('templatesExample', function() {
 
 
 //Build focus components into the other repositories.
-gulp.task('focus-component', function() {
+gulp.task('focus-npm', function() {
   var react = require('gulp-react');
   var babel = require('gulp-babel');
   var gulpif = require('gulp-if');
