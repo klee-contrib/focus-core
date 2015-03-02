@@ -42,6 +42,10 @@ The build system is made with `gulp` which is a node base build system. `npm ins
 Then you have to launch the following command: `npm run build` which generates two outputs: one for the browser, one for node js (expecially for unit tests purpose).
 All build dependencies are listed into the **devDepandencies** of the `package.json` file.
 
+## Dependencies
+
+In order to install all your dependencies: `npm install --no-optional`
+
 ### Browser
 The browser build is inside the `dist/focus.js`
 
