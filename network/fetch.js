@@ -1,11 +1,21 @@
-var createCORSRequest = require('./cors');
+"use strict";
 /**
- * @module core/fetch
- * @type {Promise}
+ * Dependency on the CORS module.
+ * @type {object}
  */
-module.exports =  function fetch(obj, options) {
+var createCORSRequest = require('./cors');
+
+/**
+ * Fecth function to ease http request.
+ * @param  {object} obj - The json to save.
+ * @param  {object} options - The options object.
+ * @return {Promise} The promise of the execution of the HTTP request.
+ */
+function fetch(obj, options) {
   options = options || {};
-  options.parser = options.parser || function(request){return JSON.parse(request.responseText)};
+  options.parser = options.parser || function(req){
+    return JSON.parse(req.responseText);
+  };
   var request = createCORSRequest(obj.method, obj.url, options);
   if (!request) {
     throw new Error('You cannot perform ajax request on other domains.');
@@ -36,4 +46,6 @@ module.exports =  function fetch(obj, options) {
     request.send(JSON.stringify(obj.data));
   });
 
-};
+}
+
+module.exports = fetch;

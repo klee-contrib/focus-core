@@ -1,11 +1,17 @@
+"use strict";
 /*global XMLHttpRequest, XDomainRequest*/
+/**
+ * Error.
+ * @type {Error}
+ */
 var ArgumentInvalidException = Error;
+
 /**
  * Create a cors http request.
- * @param method - Type of method yopu want to reach.
- * @param url - Url to reach.
- * @param options - The cors options.
- * @returns {XMLHttpRequest}
+ * @param {string} method - Type of method yopu want to reach.
+ * @param {string} url - Url to reach.
+ * @param {object} options - The cors options.
+ * @returns {XMLHttpRequest} - The CORS http request.
  */
 module.exports = function createCORSRequest(method, url, options) {
   options = options || {};
