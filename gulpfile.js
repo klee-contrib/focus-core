@@ -9,7 +9,7 @@ var concat = require('gulp-concat');
 
 //buildConfig:
 var buildConf = require('./build.json');
-
+var sources = ['index.js','{component,application,helper,network,router,store,util}/**/*'];
 /**********************
   Linting files
 **********************/
@@ -45,7 +45,7 @@ gulp.task('eslint', function() {
       "Fmk": true,
       "_": true,
       "Promise": true,
-      "module": true,
+      "module": true
     },
     "env": {
       "browser": true,
@@ -53,9 +53,9 @@ gulp.task('eslint', function() {
     },
     rules: {
       "valid-jsdoc": [2, {
-        "prefer": {
-          "return": "returns"
-        },
+      /*  "prefer": {
+          "return": "return"
+        },*/
         "requireParamDescription": true
       }],
       "quotes": [0]
@@ -63,7 +63,7 @@ gulp.task('eslint', function() {
   };
   var format = "compact"; //"compact", "checkstyle", "jslint-xml", "junit" and "tap".
   gulp
-    .src('./lib/*/*.js')
+    .src(sources)
     .pipe(eslint(options))
   //.pipe(eslint.format(undefined, process.stdout))
   //.pipe(eslint.failOnError())
@@ -178,8 +178,13 @@ gulp.task('templatesExample', function() {
 
 
 //Build focus components into the other repositories.
-gulp.task('focus-component', function() {
+gulp.task('focus-npm', function() {
+  var react = require('gulp-react');
+  var babel = require('gulp-babel');
+  var gulpif = require('gulp-if');
   gulp.src(['package.json','index.js','{component,application,helper,network,router,store,util}/**/*'])
+  .pipe(gulpif(/[.]js$/, react({harmony: true})))
+  .pipe(gulpif(/[.]js$/, babel()))
   .pipe(gulp.dest('../focus-components/node_modules/focus/'))
   .pipe(gulp.dest('../rodolphe/app/node_modules/focus/'));
 });
