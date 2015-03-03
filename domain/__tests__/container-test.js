@@ -5,7 +5,7 @@ jest.dontMock('lodash/lang/isObject');
 jest.dontMock('lodash/lang/isString');*/
 jest.dontMock('../container');
 
-describe('### builder', function() {
+describe('### container', function() {
 
 
   it('domain should be empty by default', function() {
