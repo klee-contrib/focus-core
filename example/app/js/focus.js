@@ -12,7 +12,8 @@ window.Focus = require('./index');
  * @type {{CORS: boolean}}
  */
 var configuration = {
-  CORS: true
+  CORS: true,
+  ajaxErrors: {}
 };
 
 /**
@@ -88,6 +89,7 @@ module.exports =  function fetch(obj, options) {
   if (!request) {
     throw new Error('You cannot perform ajax request on other domains.');
   }
+  var config = require('../config').get();
   return new Promise(function (success, failure) {
     //Request error handler
     request.onerror = function (error) {
@@ -97,6 +99,9 @@ module.exports =  function fetch(obj, options) {
     request.onload = function () {
       var status = request.status;
       if (status !== 200) {
+        if(config.ajaxErrors[status]){
+          config.ajaxErrors[status](request.response);
+        }
         var err = {};
         err.responseJSON = JSON.parse(request.response);
         err.responseJSON.statusCode = status;
@@ -117,7 +122,7 @@ module.exports =  function fetch(obj, options) {
 
 };
 
-},{"./cors":3,"./http_response_parser":5}],5:[function(require,module,exports){
+},{"../config":2,"./cors":3,"./http_response_parser":5}],5:[function(require,module,exports){
 /*global _*/
 
 /**
