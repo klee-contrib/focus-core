@@ -1,6 +1,9 @@
 /*global jest, expect*/
 // __tests__/container-test.js
 jest.dontMock('../container');
+require('../../../test/dontMock');
+var ArgumentInvalidException = require('../../../exception/ArgumentInvalidException');
+
 describe('### container', function() {
   it('domain should be empty by default', function() {
     var domainContainer = require('../container');
@@ -21,13 +24,13 @@ describe('### container', function() {
 it('wrong domain set should throw an exception', function() {
  var domainContainer = require('../container');
  var doText = {namea: "DO_TEXT", type: "string"};
- expect( function(){ domainContainer.set(doText);}).toThrow(new Error('domain.name should extists and be a string'));
+ expect( function(){ domainContainer.set(doText);}).toThrow(new ArgumentInvalidException('domain.name should extists and be a string'));
 });
 describe('### container', function() {
 });
 it('wrong domain set should throw an exception', function() {
  var domainContainer = require('../container');
  var doText = {namea: "DO_TEXT", type: "string"};
- expect( function(){ domainContainer.set(doText);}).toThrow(new Error('domain.name should extists and be a string'));
+ expect( function(){ domainContainer.set(doText);}).toThrow(new ArgumentInvalidException('domain.name should extists and be a string'));
 });
 });

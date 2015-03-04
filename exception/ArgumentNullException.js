@@ -1,4 +1,4 @@
-var CustomException = require('CustomException');
+var CustomException = require('./CustomException');
 /**
  * Class standing for the NotImplemented exceptions.
  */

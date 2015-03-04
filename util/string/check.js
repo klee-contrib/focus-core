@@ -1,4 +1,4 @@
-var ArgumentInvalidException = require('../../excaption/ArgumentInvalidException');
+var ArgumentInvalidException = require('../../exception/ArgumentInvalidException');
 var isString = require('lodash/lang/isString');
 
 /**
