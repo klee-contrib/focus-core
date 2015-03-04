@@ -7,7 +7,6 @@ var isString = require('lodash/lang/isString');
 var InvalidException =  Error;
 var checkIsString = require('../util/string/check');
 var checkIsObject = require('../util/object/check');
-const SEPARATOR = ".";
 
 /**
  * Container for the application domains.
