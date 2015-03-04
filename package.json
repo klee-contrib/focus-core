@@ -47,5 +47,21 @@
 		"literalify": "^0.3.0",
 		"react-tools": "^0.12.2",
 		"vinyl-source-stream": "^1.0.0"
+	},
+	"jest": {
+		"testFileExtensions": [
+			"es6",
+			"js"
+		],
+		"moduleFileExtensions": [
+			"js",
+			"json",
+			"es6"
+		],
+		"unmockedModulePathPatterns": [
+			"react",
+			"lodash",
+			"immutable"
+		]
 	}
 }
