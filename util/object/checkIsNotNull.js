@@ -1,4 +1,4 @@
-var ArgumentNullException = require('../../excaption/ArgumentNullException');
+var ArgumentNullException = require('../../exception/ArgumentNullException');
 var isNull = require('lodash/lang/isNull');
 
 /**
@@ -7,8 +7,8 @@ var isNull = require('lodash/lang/isNull');
  * @param  {object} data - The data to validate.
  * @return {undefined} - Return nothing, throw an Exception if this is not valid.
  */
-module.exports = function(name, data){
-  if(!isNull(data)){
-    throw new ArgumentNullException(`${name} should be defined`, data);
-  }
+module.exports = function(name, data) {
+	if (!isNull(data)) {
+		throw new ArgumentNullException(`${name} should be defined`, data);
+	}
 };

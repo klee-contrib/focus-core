@@ -1,3 +1,4 @@
 module.exports = {
-  builder: require('./builder')
+	builder: require('./builder'),
+	container: require('./container')
 };
