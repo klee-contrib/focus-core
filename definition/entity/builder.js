@@ -37,11 +37,14 @@ function _buildEntityInformation(entityName) {
 	for (var key in entityDomainInfos) {
 		container[key] = _buildFieldInformation(`${entityName}${SEPARATOR}${key}`);
 	}
+	//Update the computed information map.
+	computedEntityContainer = computedEntityContainer.set(entityName, Immutable.Map(container));
 }
 
+
 function _buildFieldInformation(fieldPath) {
-	var fieldConf = computedEntityContainer.getFieldConfiguration(fieldPath);
-	return Immutable.Map(fieldConf).mergeDeep(domainContainer[fieldConf.domain]);
+	var fieldConf = entityContainer.getFieldConfiguration(fieldPath);
+	return Immutable.Map(fieldConf).mergeDeep(domainContainer.get(fieldConf.domain));
 }
 
 function getEntityInformations(entityName, complementaryInformation) {
@@ -51,7 +54,7 @@ function getEntityInformations(entityName, complementaryInformation) {
 	if (!computedEntityContainer.hasIn(key)) {
 		_buildEntityInformation(entityName);
 	}
-	return computedEntityContainer.mergeDeep(complementaryInformation).toJS();
+	return computedEntityContainer.get(entityName).mergeDeep(complementaryInformation).toJS();
 }
 
 
@@ -66,7 +69,7 @@ function getFieldInformations(fieldName, complementaryInformation) {
 	checkIsObject("complementaryInformation", complementaryInformation);
 	var fieldPath = fieldName.split(SEPARATOR);
 	if (computedEntityContainer.hasIn(fieldPath)) {
-		return computedEntityContainer.getIn(fieldPath);
+		return computedEntityContainer.getIn(fieldPath).toJS();
 	}
 	return _buildFieldInformation(fieldPath).mergeDeep(complementaryInformation).toJS();
 }

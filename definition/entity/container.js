@@ -36,7 +36,7 @@ function getEntityConfiguration(nodePath, extendedEntityConfiguration){
  */
 function setEntityConfiguration(newEntities){
   checkIsObject('newEntities', newEntities);
-  entitiesMap = entitiesMap.mergeDeep(newDomains);
+  entitiesMap = entitiesMap.mergeDeep(newEntities);
 }
 
 

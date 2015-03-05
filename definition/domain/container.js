@@ -52,7 +52,7 @@ function getDomain(domainName){
   if(!isString(domainName)){
     throw new InvalidException('domaiName should extists and be a string', domainName);
   }
-  domainsMap.get(domainName);
+  return domainsMap.get(domainName);
 }
 
 

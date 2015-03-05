@@ -9,7 +9,7 @@ var isObject = require('lodash/lang/isObject');
  * @return {undefined} - Return nothing, throw an Exception if this is not valid.
  */
 module.exports = function(name, data) {
-	if (!isObject(data)) {
+	if (data !== undefined && !isObject(data)) {
 		throw new ArgumentInvalidException(`${name} should be an object`, data);
 	}
 };

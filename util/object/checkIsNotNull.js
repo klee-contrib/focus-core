@@ -8,7 +8,7 @@ var isNull = require('lodash/lang/isNull');
  * @return {undefined} - Return nothing, throw an Exception if this is not valid.
  */
 module.exports = function(name, data) {
-	if (!isNull(data)) {
-		throw new ArgumentNullException(`${name} should be defined`, data);
+	if (isNull(data)) {
+		throw new ArgumentNullException(`${name} should be defined`);
 	}
 };
