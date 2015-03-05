@@ -138,8 +138,10 @@ gulp.task('browserify', function(){
       .transform(babelify)
       .bundle()
       //Pass desired output filename to vinyl-source-stream
-      .pipe(source("focus-"+require('./package.json').version+".js"))
-      .pipe(gulp.dest('./dist/'));
+      //.pipe(source("focus-"+require('./package.json').version+".js"))
+      .pipe(source("focus.js"))
+      .pipe(gulp.dest('./dist/'))
+      .pipe(gulp.dest('../focus-components/dist'));
 });
 
 
