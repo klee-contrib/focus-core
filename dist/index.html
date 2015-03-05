@@ -1,0 +1,70 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Test react and backbone</title>
+  <meta name="description" content="Example of the component.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Place favicon.ico in the root directory -->
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
+  <script src="focus-0.5.1.js"></script>
+</head>
+<body>
+  <h1>Focus</h1>
+  <script type="text/javascript">
+  console.log(focus);
+  var domain =  {
+  	"DO_TEXT": {
+  		style: "do_text",
+  		type: "text",
+  		component: "PapaSinge",
+  		validation: [{
+  			type: "function",
+  			value: function() {
+  				return false;
+  			}
+  		}]
+  	},
+  	"DO_EMAIL": {
+  		style: "do_email",
+  		type: "email",
+  		component: "PapaMail",
+  		validation: [{
+  			type: "function",
+  			value: function() {
+  				return true;
+  			}
+  		}]
+  	}
+  };
+  focus.definition.domain.container.setAll(domain);
+  var entities ={
+  "contact": {
+    "firstName": {
+      "domain": "DO_TEXT",
+      "required": false
+    },
+    "lastName": {
+      "domain": "DO_TEXT",
+      "required": true
+    },
+    "age": {
+      "domain": "DO_NUMBER",
+      "required": false
+    },
+    "email": {
+      "domain": "DO_EMAIL",
+      "required": false
+    }
+  }};
+  focus.definition.entity.container.setEntityConfiguration(entities);
+  var contact = focus.definition.entity.builder.getEntityInformations('contact',  {firstName: {required: true, symbolique: "papa"}});
+  </script>
+
+</body>
+
+</html>
