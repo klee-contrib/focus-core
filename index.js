@@ -1,7 +1,7 @@
 var infos = {
-	author: "pbesson",
-	version: "0.5.0",
-	documentation: "http://github.com"
+  author: "pbesson",
+  version: "0.5.0",
+  documentation: "http://github.com"
 }; //require('../package.json'); //Bug with literalify.
 /**
  * Focus library.
@@ -9,16 +9,17 @@ var infos = {
  * @type {Object}
  */
 module.exports = {
-	application: require('./application'),
-	component: require('./component'),
-	definition: require('./definition'),
-	exception: require('./exception'),
-	helper: require('./helper'),
-	network: require('./network'),
-	router: require('./router'),
-	store: require('./store'),
-	util: require('./util'),
-	VERSION: infos.version,
-	AUTHOR: infos.author,
-	DOCUMENTATION: infos.documentation
+  application: require('./application'),
+  component: require('./component'),
+  definition: require('./definition'),
+  dispatcher: require('./dispatcher'),
+  exception: require('./exception'),
+  helper: require('./helper'),
+  network: require('./network'),
+  router: require('./router'),
+  store: require('./store'),
+  util: require('./util'),
+  VERSION: infos.version,
+  AUTHOR: infos.author,
+  DOCUMENTATION: infos.documentation
 };
