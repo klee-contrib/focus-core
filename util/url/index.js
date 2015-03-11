@@ -1,4 +1,4 @@
 module.exports = {
   builder: require('./builder'),
-  preprocessor: require('./preprocessor')
+  preprocessor: require('./processor')
 };
