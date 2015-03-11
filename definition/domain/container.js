@@ -5,8 +5,8 @@ var Immutable = require('immutable');
 var isObject = require('lodash/lang/isObject');
 var isString = require('lodash/lang/isString');
 var InvalidException =  Error;
-var checkIsString = require('../util/string/check');
-var checkIsObject = require('../util/object/check');
+var checkIsString = require('../../util/string/check');
+var checkIsObject = require('../../util/object/check');
 
 /**
  * Container for the application domains.
@@ -52,7 +52,7 @@ function getDomain(domainName){
   if(!isString(domainName)){
     throw new InvalidException('domaiName should extists and be a string', domainName);
   }
-  domainsMap.get(domainName);
+  return domainsMap.get(domainName);
 }
 
 

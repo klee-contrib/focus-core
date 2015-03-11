@@ -1,4 +1,5 @@
-var ArgumentInvalidException = require('../../excaption/ArgumentInvalidException');
+var ArgumentInvalidException = require(
+	'../../exception/ArgumentInvalidException');
 var isString = require('lodash/lang/isString');
 
 /**
@@ -7,8 +8,8 @@ var isString = require('lodash/lang/isString');
  * @param  {string} data - The data to validate.
  * @return {undefined} - Return nothing, throw an Exception if this is not valid.
  */
-module.exports = function(name, data){
-  if(!isString(data)){
-    throw new ArgumentInvalidException(`${name} should be a string`, data);
-  }
+module.exports = function(name, data) {
+	if (!isString(data)) {
+		throw new ArgumentInvalidException(`${name} should be a string`, data);
+	}
 };

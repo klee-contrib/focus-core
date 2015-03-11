@@ -25,6 +25,9 @@ __util //Utility functions
 All unit tests are written with mocha, and can be launched using the `npm run test` command.
 It uses **jest**.
 
+debug unit tests
+`node-debug --nodejs --harmony ./node_modules/jest-cli/bin/jest.js --runInBand`
+
 
 ## Dependencies
 

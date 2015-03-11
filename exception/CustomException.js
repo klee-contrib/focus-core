@@ -16,9 +16,9 @@ class CustomException extends Error{
   /**
    * JSONify the exception.
    */
-  toJSON(){
+  /*toJSON(){
     return {"name": this.name, "message": this.message,  "options": this.options};
-  }
+  }*/
 }
 
 
