@@ -1,4 +1,4 @@
-var urlProcessor = require('./url-processor');
+var urlProcessor = require('./processor');
 /*
 * @module config/server/url-builder
 * @param url - url with params such as http://url/entity/${id}
