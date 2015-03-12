@@ -1,3 +1,4 @@
 module.exports = {
-	CoreStore: require('./CoreStore')
+	CoreStore: require('./CoreStore'),
+	SearchStore: require('./search')
 }
