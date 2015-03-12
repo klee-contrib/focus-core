@@ -1,6 +1,7 @@
 //The store is an event emitter.
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
+var isArray = require('lodash/lang/isArray');
 var getEntityInformations = require('../definition/entity/builder').getEntityInformations;
 var capitalize = require('lodash/string/capitalize');
 var Immutable = require('immutable');
@@ -45,23 +46,29 @@ class CoreStore extends EventEmitter {
   * Build a change listener for each property in the definition. (should be macro entities);
   */
   buildEachNodeChangeEventListener() {
+    var currentStore = this;
       //Loop through each store properties.
       for (var definition in this.definition) {
         var capitalizeDefinition = capitalize(definition);
         //Creates the change listener
-        this[`add${capitalizeDefinition}ChangeListener`] = function (cb) {
-            this.addListener(`${definition}:change`, cb);
-        };
+        currentStore[`add${capitalizeDefinition}ChangeListener`] = function(def){
+          return function (cb) {
+            currentStore.addListener(`${def}:change`, cb);
+        }}(definition);
         //Create an update method.
-        this[`update${capitalizeDefinition}`] = function (dataNode) {
+        currentStore[`update${capitalizeDefinition}`] = function(def){
+          return function (dataNode) {
           //CheckIsObject
-          this.data = this.data.set(definition,dataNode);
-          this.emit(`${definition}:change`);
-        };
+          var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+          currentStore.data = currentStore.data.set(def,immutableNode);
+          currentStore.emit(`${def}:change`);
+        }}(definition);
         //Create a get method.
-        this[`get${capitalizeDefinition}`] = function () {
-          return this.data.get(definition).toJS();
-        };
+        currentStore[`get${capitalizeDefinition}`] = function(def){
+          return function () {
+            return currentStore.data.get(def).toJS();
+          };
+        }(definition);
       }
     }
   /**
