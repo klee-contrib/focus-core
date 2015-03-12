@@ -1,4 +1,4 @@
-
+var Dispatcher = require('./Dispatcher');
 var assign = require('object-assign');
 
 var AppDispaytcher = assign(new Dispatcher(), {
