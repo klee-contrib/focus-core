@@ -1,5 +1,5 @@
 //Dependencies.
-var CoreStore = require('./CoreStore');
+var CoreStore = require('../CoreStore');
 var assign = require('object-assign');
 
 /**

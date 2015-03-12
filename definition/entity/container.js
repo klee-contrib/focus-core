@@ -11,7 +11,11 @@ var checkIsObject = require('../../util/object/check');
  */
 const SEPARATOR = ".";
 
-
+/**
+ * Definition of the search informations.
+ * @type {object}
+ */
+var searchDefinition = require('../../store/search/definition');
 /**
  * Container for the application entities.
  * @type {object}
@@ -64,7 +68,7 @@ function getFieldConfiguration(fieldPath, customFieldConf){
   return _getNode(fieldPath, customFieldConf).toJS();
 }
 
-
+setEntityConfiguration(searchDefinition);
 
 module.exports = {
   getEntityConfiguration: getEntityConfiguration,

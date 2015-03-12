@@ -63,7 +63,13 @@
   }};
   focus.definition.entity.container.setEntityConfiguration(entities);
   var contact = focus.definition.entity.builder.getEntityInformations('contact',  {firstName: {required: true, symbolique: "papa"}});
-  var store  = new focus.store.CoreStore({
+  //Cas simple.
+  var storeSimple  = new focus.store.CoreStore({
+    definitionPath : 'contact'
+  });
+  storeSimple.addFirstNameChangeListener(function(data){console.log('store2 firstName: change', data)});
+  //Cas plus compliqué
+  var storeSurcharge  = new focus.store.CoreStore({
     definitionPath : 'contact',
     customDefinition: {
       firstName: {
@@ -75,23 +81,18 @@
       firstName: {
         update: function(d){
           console.log('customHandler', this, "data", d);
+          this.emit('firstName:change');
         }
       }
     }
   });
-  store.addFirstNameChangeListener(function(data){console.log('store1 firstName: change', data)});
+  storeSurcharge.addFirstNameChangeListener(function(data){console.log('store1 firstName: change', data)});
 
-  var store2  = new focus.store.CoreStore({
-    definitionPath : 'contact',
-    customDefinition: {
-      firstName: {
-        required: true,
-        symbolique: "papasinge"
-      }
-    }
-  });
-  store2.addFirstNameChangeListener(function(data){console.log('store2 firstName: change', data)});
-  focus.dispatcher.handleServerAction({data: {firstName: "baggio"}, type: "update"});
+
+  focus.dispatcher.handleServerAction({data: {firstName: {roberto: "baggio"}}, type: "update"});
+  var searchStore =  new focus.store.SearchStore();
+  searchStore.updateList(['papa', 'singe']);
+  console.log('list result',searchStore.getList());
   </script>
 
 </body>
