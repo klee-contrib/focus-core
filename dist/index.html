@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
-  <script src="focus-0.5.1.js"></script>
+  <script src="focus.js"></script>
 </head>
 <body>
   <h1>Focus</h1>
@@ -63,6 +63,35 @@
   }};
   focus.definition.entity.container.setEntityConfiguration(entities);
   var contact = focus.definition.entity.builder.getEntityInformations('contact',  {firstName: {required: true, symbolique: "papa"}});
+  var store  = new focus.store.CoreStore({
+    definitionPath : 'contact',
+    customDefinition: {
+      firstName: {
+        required: true,
+        symbolique: "papasinge"
+      }
+    },
+    customHandler: {
+      firstName: {
+        update: function(d){
+          console.log('customHandler', this, "data", d);
+        }
+      }
+    }
+  });
+  store.addFirstNameChangeListener(function(data){console.log('store1 firstName: change', data)});
+
+  var store2  = new focus.store.CoreStore({
+    definitionPath : 'contact',
+    customDefinition: {
+      firstName: {
+        required: true,
+        symbolique: "papasinge"
+      }
+    }
+  });
+  store2.addFirstNameChangeListener(function(data){console.log('store2 firstName: change', data)});
+  focus.dispatcher.handleServerAction({data: {firstName: "baggio"}, type: "update"});
   </script>
 
 </body>
