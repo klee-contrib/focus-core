@@ -27,7 +27,12 @@ class SearchStore extends CoreStore {
    * @return {}
   */
   update(newData){
-    var processedData = assign(this.data.toJS(),newData);//Todo: logic to implement
+    var previousData = this.data.toJS();
+    var processedData = assign(previousData,newData);
+    if(previousData.searchContext.scope === newData.searchContext.scope
+        && previousData.searchContext.query === newData.searchContext.query){
+      processedData.list = previousData.list.concat(newData.list);
+    }
     var data = {};
     for(var key in processedData){
       data[key] = Immutable[isArray(dataNode) ? "List" : "Map"](processedData[key]);
@@ -48,7 +53,7 @@ class SearchStore extends CoreStore {
   registerDispatcher(){
     var currentStore = this;
     this.dispatch = AppDispatcher.register(function(transferInfo) {
-      var defKeys = keys(this.definition); //TOdo: a sub part of the keys may be needed.
+      var defKeys = keys(this.definition); //TODO: a sub part of the keys may be needed.
       var dataKeys = keys(transferInfo.data);
       var intersectKeys = intersection(defKeys, dataKeys);
       if(intersectKeys.length === defKeys.keys){
