@@ -77,6 +77,11 @@ class CoreStore extends EventEmitter {
   registerDispatcher(){
     var currentStore = this;
     this.dispatch = AppDispatcher.register(function(transferInfo) {
+      //Complete rewrie by the store.
+      //todo: see if this has meaning instead of an override
+      if(currentStore.globalCustomHandler){
+        return currentStore.globalCustomHandler.call(currentStore, transferInfo);
+      }
       var rawData = transferInfo.action.data;
       var type = transferInfo.action.type;
       for(var node in rawData){
