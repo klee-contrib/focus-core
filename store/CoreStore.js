@@ -36,7 +36,7 @@ class CoreStore extends EventEmitter {
        * Build the definitions for the entity (may be a subject.)
        * @type {object}
        */
-      this.definition = getEntityInformations(
+      this.definition = this.config.definition || getEntityInformations(
         this.config.definitionPath,
         this.config.customDefinition
       );
