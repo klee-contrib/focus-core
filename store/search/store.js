@@ -53,11 +53,11 @@ class SearchStore extends CoreStore {
   registerDispatcher(){
     var currentStore = this;
     this.dispatch = AppDispatcher.register(function(transferInfo) {
-      var defKeys = keys(this.definition); //TODO: a sub part of the keys may be needed.
+      var defKeys = keys(currentStore.definition); //TODO: a sub part of the keys may be needed.
       var dataKeys = keys(transferInfo.data);
       var intersectKeys = intersection(defKeys, dataKeys);
-      if(intersectKeys.length === defKeys.keys){
-       this.update(transferInfo.data);
+      if(intersectKeys.length === defKeys.length){
+       currentStore.update(transferInfo.data);
       }
     });
   }
