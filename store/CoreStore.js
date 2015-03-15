@@ -55,6 +55,11 @@ class CoreStore extends EventEmitter {
           return function (cb) {
             currentStore.addListener(`${def}:change`, cb);
         }}(definition);
+        //Remove the change listener
+        currentStore[`remove{capitalizeDefinition}ChangeListener`] = function(def){
+          return function (cb) {
+            currentStore.removeListener(`${def}:change`, cb);
+        }}(definition);
         //Create an update method.
         currentStore[`update${capitalizeDefinition}`] = function(def){
           return function (dataNode) {
@@ -105,6 +110,14 @@ class CoreStore extends EventEmitter {
      */
   addListener(eventName, cb) {
     this.on(eventName, cb);
+  }
+    /**
+     * Remove a listener on a store event.
+     * @param {string}   eventName - Event name.
+     * @param {Function} cb - CallBack to call on the event change name.
+     */
+  removeListener(eventName, cb) {
+    this.off(eventName, cb);
   }
 }
 module.exports = CoreStore;
