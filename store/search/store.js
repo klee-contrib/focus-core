@@ -31,8 +31,8 @@ class SearchStore extends CoreStore {
   */
   update(newData){
     var previousData = this.data.toJS();
-    var processedData = assign(previousData,newData);
-    if(previousData.searchContext.scope === newData.searchContext.scope
+    var processedData = assign({},previousData,newData);
+    if(previousData.searchContext!== undefined && previousData.searchContext.scope === newData.searchContext.scope
         && previousData.searchContext.query === newData.searchContext.query){
       processedData.list = previousData.list.concat(newData.list);
     }
@@ -49,6 +49,10 @@ class SearchStore extends CoreStore {
    */
   addSearchChangeListener(cb){
     this.addListener('search:change', cb);
+  }
+
+  removeSearchChangeListener(cb){
+    this.removeListener('search:change', cb);
   }
   /**
    * The store registrer itself on the dispatcher.
