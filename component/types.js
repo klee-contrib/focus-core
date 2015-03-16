@@ -18,6 +18,6 @@ module.exports = function(type){
   if(isStringType){
     return React.PropTypes[type];
   }
-  return React.PropTypes.oneOf(type);
+  return React.PropTypes.oneOfType(type.map((type)=>{return React.PropTypes[type]}));
 
 };
