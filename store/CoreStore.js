@@ -56,7 +56,7 @@ class CoreStore extends EventEmitter {
             currentStore.addListener(`${def}:change`, cb);
         }}(definition);
         //Remove the change listener
-        currentStore[`remove{capitalizeDefinition}ChangeListener`] = function(def){
+        currentStore[`remove${capitalizeDefinition}ChangeListener`] = function(def){
           return function (cb) {
             currentStore.removeListener(`${def}:change`, cb);
         }}(definition);
