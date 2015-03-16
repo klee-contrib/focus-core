@@ -71,7 +71,8 @@ class CoreStore extends EventEmitter {
         //Create a get method.
         currentStore[`get${capitalizeDefinition}`] = function(def){
           return function () {
-            return currentStore.data.get(def).toJS();
+            var hasData = currentStore.data.has(def);
+            return hasData ? currentStore.data.get(def).toJS() : undefined;
           };
         }(definition);
       }
