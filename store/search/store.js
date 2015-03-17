@@ -32,8 +32,7 @@ class SearchStore extends CoreStore {
   update(newData){
     var previousData = this.data.toJS();
     var processedData = assign({},previousData,newData);
-    if(previousData.searchContext!== undefined && previousData.searchContext.scope === newData.searchContext.scope
-        && previousData.searchContext.query === newData.searchContext.query){
+    if(this._isConcatenation(previousData, newData)){
       processedData.list = previousData.list.concat(newData.list);
     }
     //add calculated fields on data
@@ -47,6 +46,16 @@ class SearchStore extends CoreStore {
     this.data = Immutable.Map(data);
     this.emit('search:change');
   }
+
+  /**
+   * Check if the search need to concat the nexData with the previous data (infinite scrol case).
+   */
+  _isConcatenation(previousData, newData) {
+    return previousData.searchContext!== undefined && previousData.searchContext.scope === newData.searchContext.scope
+        && previousData.searchContext.query === newData.searchContext.query
+        && previousData.facet === newData.facet;
+  }
+
   /**
    * Add a listener on the global change on the search store.
    * @param {Function} cb [description]
