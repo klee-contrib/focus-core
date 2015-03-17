@@ -8,13 +8,14 @@ var urlProcessor = require('./processor');
 module.exports =  function(url, method){
   /**
    * Function returns by the module.
-   * @param  {object} data - The JSON data to inject in the URL.
+   * @param  {object} param - urlData: The JSON data to inject in the URL, data: The JSON data to give to the request.
    * @return {function} returns a function which takes the URL as parameters.
    */
-  return function generateUrl(data){
+  return function generateUrl(param){
     return {
-      url: urlProcessor(url, data),
-      method: method
+      url: urlProcessor(url, param.urlData),
+      method: method,
+      data: param.data
     };
   };
 };
