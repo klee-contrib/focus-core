@@ -36,6 +36,10 @@ class SearchStore extends CoreStore {
         && previousData.searchContext.query === newData.searchContext.query){
       processedData.list = previousData.list.concat(newData.list);
     }
+    //add calculated fields on data
+    if(processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage!=0){
+      processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+    }
     var data = {};
     for(var key in processedData){
       data[key] = Immutable[isArray(processedData[key]) ? "List" : "Map"](processedData[key]);
