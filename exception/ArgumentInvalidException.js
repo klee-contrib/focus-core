@@ -1,5 +1,5 @@
 var CustomException = require('./CustomException');
-/**
+/** 
  * Class standing for the NotImplemented exceptions.
  */
 class ArgumentInvalidException extends CustomException {
