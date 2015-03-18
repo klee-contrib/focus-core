@@ -55,10 +55,10 @@ class SearchStore extends CoreStore {
     if(previousData.searchContext) {
       var isSameScope = previousData.searchContext.scope === newData.searchContext.scope;
       var isSameQuery = previousData.searchContext.query === newData.searchContext.query;
-      isSameSearchContext =  isSameScope && isSameQuery;
+      var isSameFacet = JSON.stringify(previousData.facet) == JSON.stringify(newData.facet);
+      var isSameSearchContext =  isSameScope && isSameQuery && isSameFacet;
     }
-
-    return isSameSearchContext && previousData.facet === newData.facet;
+    return isSameSearchContext;
   }
 
   /**
