@@ -4,6 +4,7 @@ var assign = require('object-assign');
 var AppDispatcher = require('../../dispatcher');
 var keys = require('lodash/object/keys');
 var intersection = require('lodash/array/intersection');
+var isEqual = require('lodash/lang/isEqual');
 var Immutable = require('immutable');
 var isArray = require('lodash/lang/isArray');
 
@@ -57,8 +58,12 @@ class SearchStore extends CoreStore {
       var isSameQuery = previousData.searchContext.query === newData.searchContext.query;
       isSameSearchContext =  isSameScope && isSameQuery;
     }
+    var isSameFacetContext = false;
+    if(previousData.facet){
+      isSameFacetContext = isEqual(previousData.facet,newData.facet);
+    }
 
-    return isSameSearchContext && previousData.facet === newData.facet;
+    return isSameSearchContext && isSameFacetContext;
   }
 
   /**
@@ -69,6 +74,10 @@ class SearchStore extends CoreStore {
     this.addListener('search:change', cb);
   }
 
+  /**
+   * Remove listener on search change event.
+   * @param cb callback
+   */
   removeSearchChangeListener(cb){
     this.removeListener('search:change', cb);
   }
