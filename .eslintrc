@@ -12,7 +12,13 @@
         "defaultParams": true,
         "superInFunctions": true,
         "modules": true,
-        "arrowFunctions": true
+        "arrowFunctions": true,
+        "objectLiteralComputedProperties": true,
+        "objectLiteralDuplicateProperties": true,
+        "objectLiteralShorthandMethods": true,
+        "objectLiteralShorthandProperties": true,
+        "spread": true,
+        "destructuring": true
   },
   "globals": {
     "jQuery": false,
@@ -33,7 +39,8 @@
     "valid-jsdoc": [
       2,
       {
-        "requireParamDescription": true
+        "requireParamDescription": true,
+        "requireReturn": false
       }
     ],
     "quotes": [2, "single"],
@@ -41,6 +48,9 @@
     "strict": 0,
     "yoda": "always",
     "camelcase": 1,
-    "block-scoped-var": 1
+    "no-underscore-dangle": 0,
+    "block-scoped-var": 1,
+    "new-cap": 0,
+    "block-scoped-var": 0
   }
 }
