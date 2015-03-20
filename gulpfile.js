@@ -9,7 +9,7 @@ var concat = require('gulp-concat');
 
 //buildConfig:
 var buildConf = require('./build.json');
-var sources = ['index.js','{component,application,helper,network,router,store,util,definition}/**/*'];
+var sources = ['index.js', '{component,application,helper,network,router,store,util,definition}/**/*'];
 /**********************
   Linting files
 **********************/
@@ -141,7 +141,7 @@ gulp.task('browserify', function(){
       //.pipe(source("focus-"+require('./package.json').version+".js"))
       .pipe(source("focus.js"))
       .pipe(gulp.dest('./dist/'))
-      .pipe(gulp.dest('../focus-components/dist'));
+      .pipe(gulp.dest('../focus-components/dist/js'));
 });
 
 
