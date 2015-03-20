@@ -7,7 +7,7 @@ var createCORSRequest = require('./cors');
 
 /**
  * Fecth function to ease http request.
- * @param  {object} obj - The json to save.
+ * @param  {object} obj - method: http verb, url: http url, data:The json to save.
  * @param  {object} options - The options object.
  * @return {Promise} The promise of the execution of the HTTP request.
  */
