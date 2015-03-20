@@ -38,6 +38,7 @@
     "babelify": "^5.0.3",
     "browser-sync": "^2.2.1",
     "browserify": "^9.0.3",
+    "eslint": "^0.17.1",
     "express": "^4.12.2",
     "gulp": "^3.8.11",
     "gulp-babel": "^4.0.0",

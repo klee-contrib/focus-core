@@ -1,27 +1,36 @@
 {
-	"settings": {
-		"ecmascript": 6,
-		"jsx": true
-	},{
-		"globals": {
-			"jQuery": false,
-			"$": true,
-			"require": true,
-			"Backbone": true,
-			"Fmk": true,
-			"_": true,
-			"Promise": true,
-			"module": true
-		},
-		"env": {
-			"browser": true,
-			"node": true
-		},
-		"rules": {
-			"valid-jsdoc": [2, {
-				"requireParamDescription": true
-			}],
-			"quotes": [0]
-		}
-	}
+  "settings": {
+    "ecmascript": 6,
+    "jsx": true
+  },
+  "globals": {
+    "jQuery": false,
+    "$": true,
+    "Focus": true,
+    "require": true,
+    "Backbone": true,
+    "Fmk": true,
+    "_": true,
+    "Promise": true,
+    "module": true
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "valid-jsdoc": [
+      2,
+      {
+        "requireParamDescription": true
+      }
+    ],
+    "quotes": [2, "single"],
+    "eqeqeq": 0,
+    "strict": 0,
+    "yoda": "always",
+    "camelcase": "always",
+    "block-scoped-var": "always"
+  }
 }
+
