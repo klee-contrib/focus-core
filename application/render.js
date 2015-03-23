@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 /*global document*/
  var React = require('react');
 /**
@@ -12,7 +12,6 @@
  * @param {object} component - A react component.
  * @param {string} selector  - A selector on a DOM node.
  * @param {object} options   - Options for the component rendering.
- * @return {undefined} - Return nothing.
  */
 module.exports = function(component, selector, options){
   options = options || {};
