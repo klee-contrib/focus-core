@@ -12,7 +12,7 @@
 
   /**
    * Load a list from its description
-   * @param {[type]} listDesc [description]
+   * @param {object} listDesc - Description of the list to load
    * @returns {Promise} - A promise of the loading.
    * @example - refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
    */
@@ -22,6 +22,11 @@
 
   // Load a reference with its list name.
   // It calls the service which must have been registered.
+  /**
+   * Load a list by name.
+   * @param {string} listName - The name of the list to load.
+   * @param {object} args     - Argument to provide to the function.
+   */
   function loadListByName(listName, args) {
     checkIsString(listName);
     var configurationElement = getConfigurationElement(listName);
@@ -45,7 +50,11 @@
       }
     return promises;
   }
-
+  /**
+   * Get a function to trigger in autocomplete case.
+   * The function will trigger a promise.
+   * @param {string} listName - Name of the list.
+   */
   function getAutoCompleteServiceQuery(listName) {
       return function (query) {
           loadListByName(listName, query.term).then(function (results) {
