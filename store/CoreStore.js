@@ -112,13 +112,5 @@ class CoreStore extends EventEmitter {
   addListener(eventName, cb) {
     this.on(eventName, cb);
   }
-    /**
-     * Remove a listener on a store event.
-     * @param {string}   eventName - Event name.
-     * @param {Function} cb - CallBack to call on the event change name.
-     */
-  removeListener(eventName, cb) {
-    this.off(eventName, cb);
-  }
 }
 module.exports = CoreStore;
