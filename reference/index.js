@@ -1,5 +1,5 @@
 module.exports = {
   config: require('./config'),
   builder: require('./builder'),
-  store: require('../store/reference')
+  builtInStore: require('./built-in-store')
 };
