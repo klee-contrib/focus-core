@@ -29,6 +29,7 @@ module.exports = {
   helper: require('./helper'),
   network: require('./network'),
   router: require('./router'),
+  reference: require('./reference'),
   store: require('./store'),
   util: require('./util'),
   VERSION: infos.version,

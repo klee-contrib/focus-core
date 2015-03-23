@@ -1,6 +1,56 @@
 {
-	"settings": {
-		"ecmascript": 6,
-		"jsx": true
-	}
+  "settings": {
+    "ecmascript": 6,
+    "jsx": true
+  },
+  "ecmaFeatures": {
+        "blockBindings": true,
+        "forOf": true,
+        "jsx": true,
+        "classes": true,
+        "templateStrings": true,
+        "defaultParams": true,
+        "superInFunctions": true,
+        "modules": true,
+        "arrowFunctions": true,
+        "objectLiteralComputedProperties": true,
+        "objectLiteralDuplicateProperties": true,
+        "objectLiteralShorthandMethods": true,
+        "objectLiteralShorthandProperties": true,
+        "spread": true,
+        "destructuring": true
+  },
+  "globals": {
+    "jQuery": false,
+    "$": true,
+    "Focus": true,
+    "require": true,
+    "Backbone": true,
+    "Fmk": true,
+    "_": true,
+    "Promise": true,
+    "module": true
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "valid-jsdoc": [
+      2,
+      {
+        "requireParamDescription": true,
+        "requireReturn": false
+      }
+    ],
+    "quotes": [2, "single"],
+    "eqeqeq": 0,
+    "strict": 0,
+    "yoda": "always",
+    "camelcase": 1,
+    "no-underscore-dangle": 0,
+    "block-scoped-var": 1,
+    "new-cap": 0,
+    "block-scoped-var": 0
+  }
 }

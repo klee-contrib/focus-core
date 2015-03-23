@@ -9,7 +9,7 @@ var concat = require('gulp-concat');
 
 //buildConfig:
 var buildConf = require('./build.json');
-var sources = ['index.js','{component,application,helper,network,router,store,util,definition}/**/*'];
+var sources = ['index.js', '{component,application,helper,network,router,store,util,definition,reference}/**/*'];
 /**********************
   Linting files
 **********************/
@@ -234,5 +234,10 @@ gulp.task('serve', ['build'], function () {
   //gulp.watch(['app/images/**/*'], reload);
 });
 
+
+gulp.task('watch', function(){
+  var src = '{application,component,definition,dispatcher,exception,helper,network,router,store,util,reference}/**/*.js';
+  gulp.watch(['package.json','index.js',src],['browserify']);
+});
 // The default task (called when you run `gulp` from cli)
 gulp.task('default', ['build']);

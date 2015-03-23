@@ -5,7 +5,7 @@ var urlProcessor = require('./processor');
 * @param method - HTTP verb {GET, POST, PUT, DELETE}
 * @return {function}
 */
-module.exports =  function(url, method){
+module.exports = function(url, method){
   /**
    * Function returns by the module.
    * @param  {object} param - urlData: The JSON data to inject in the URL, data: The JSON data to give to the request.
