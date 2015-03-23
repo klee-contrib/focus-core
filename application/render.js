@@ -18,7 +18,7 @@ module.exports = function(component, selector, options){
   options = options || {};
   //Unmount component if there is one mounted.
   if(mountedComponents[selector]){
-    React.unmountComponentAtNode(document.getElementById(selector));
+    React.unmountComponentAtNode(document.querySelector(selector));
     console.log('component unmounted');
   }
   React.render(
