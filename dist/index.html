@@ -93,6 +93,14 @@
   var searchStore =  new focus.store.SearchStore();
   searchStore.updateList(['papa', 'singe']);
   console.log('list result',searchStore.getList());
+function loadRedList(name){
+    return function loadRef(){
+    return Promise.resolve({name: name, papa: "singe"});
+  }
+}
+
+  focus.reference.config.set({'papas': loadRedList("papas"), 'singe': loadRedList('singe')})
+  focus.definition.entity.container.setEntityConfiguration(entities);
   </script>
 
 </body>
