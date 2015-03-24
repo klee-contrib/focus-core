@@ -35,6 +35,8 @@ class SearchStore extends CoreStore {
     var processedData = assign({},previousData,newData);
     if(this._isSameSearchContext(previousData, newData)){
       processedData.list = previousData.list.concat(newData.list);
+    } else {
+        processedData.pageInfos.currentPage = 1;
     }
     //add calculated fields on data
     if(processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage!=0){
@@ -56,14 +58,24 @@ class SearchStore extends CoreStore {
     if(previousData.searchContext) {
       var isSameScope = previousData.searchContext.scope === newData.searchContext.scope;
       var isSameQuery = previousData.searchContext.query === newData.searchContext.query;
-      isSameSearchContext =  isSameScope && isSameQuery;
+      isSameSearchContext = isSameScope && isSameQuery;
     }
     var isSameFacetContext = false;
     if(previousData.facet){
       isSameFacetContext = isEqual(previousData.facet,newData.facet);
     }
 
-    return isSameSearchContext && isSameFacetContext;
+    var isSameOrderContext = false;
+    if(previousData.pageInfos) {
+        isSameOrderContext = isEqual(previousData.pageInfos.order, newData.pageInfos.order);
+    }
+
+    var isSameGroupContext = false;
+    if(previousData.pageInfos) {
+        isSameGroupContext = isEqual(previousData.pageInfos.group, newData.pageInfos.group);
+    }
+
+    return isSameSearchContext && isSameFacetContext && isSameOrderContext && isSameGroupContext;
   }
 
   /**
