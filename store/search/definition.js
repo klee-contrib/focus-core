@@ -13,9 +13,6 @@ module.exports =  {
     },
     pageInfos: {
       domain: "DO_TEXT"
-    },
-    searchContext: {
-        domain: "DO_TEXT"
     }
   }
 };
