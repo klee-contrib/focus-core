@@ -19,8 +19,8 @@ var isArray = require('lodash/lang/isArray');
 };*/
 
 class SearchStore extends CoreStore {
-  constructor(conf){
-    var config = assign({}, {definitionPath: "search"}, conf);
+  constructor(conf) {
+    var config = assign({}, {definitionPath: 'search'}, conf);
     super(config);
   }
   get(){
@@ -32,18 +32,21 @@ class SearchStore extends CoreStore {
   */
   update(newData){
     var previousData = this.data.toJS();
-    var processedData = assign({},previousData,newData);
-    if(this._isSameSearchContext(previousData, newData)){
-      processedData.list = previousData.list.concat(newData.list);
-    }
+    var processedData = assign({}, previousData, newData);
 
-    //add calculated fields on data
-    if(processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage!=0){
-      processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+    if(isArray(newData.list)) {
+        if (this._isSameSearchContext(previousData, newData)) {
+            processedData.list = previousData.list.concat(newData.list);
+        }
+
+        //add calculated fields on data
+        if (processedData.pageInfos.totalRecords && processedData.pageInfos.perPage && processedData.pageInfos.perPage != 0) {
+            processedData.pageInfos.totalPages = Math.ceil(processedData.pageInfos.totalRecords / processedData.pageInfos.perPage);
+        }
     }
     var data = {};
     for(var key in processedData){
-      data[key] = Immutable[isArray(processedData[key]) ? "List" : "Map"](processedData[key]);
+      data[key] = Immutable[isArray(processedData[key]) ? 'List' : 'Map'](processedData[key]);
     }
     this.data = Immutable.Map(data);
     this.emit('search:change');
