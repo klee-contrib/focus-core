@@ -1,3 +1,4 @@
 module.exports = {
-  render: require('./render')
+  render: require('./render'),
+  actionBuilder: require('./action-builder')
 };
