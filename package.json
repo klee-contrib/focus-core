@@ -50,7 +50,7 @@
     "gulp-react": ">2.1.0",
     "jest": "^0.1.37",
     "jest-cli": "^0.4.0",
-    "literalify": "^0.3.0",
+    "literalify": "^0.4.0",
     "react-tools": "^0.12.2",
     "vinyl-source-stream": "^1.0.0"
   },

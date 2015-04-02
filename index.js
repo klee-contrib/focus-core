@@ -10,11 +10,7 @@ console.log(
     .##........#######...######...#######...######.
 `
 );
-var infos = {
-  author: "pbesson",
-  version: "0.5.0",
-  documentation: "http://github.com"
-}; //require('../package.json'); //Bug with literalify.
+var infos = require('./package.json');
 /**
  * Focus library.
  * This file requires all submodules.
@@ -34,5 +30,9 @@ module.exports = {
   util: require('./util'),
   VERSION: infos.version,
   AUTHOR: infos.author,
-  DOCUMENTATION: infos.documentation
+  DOCUMENTATION: function(){
+    console.log(`documentation: ${infos.documentation}`);
+    console.log(`repository: ${infos.repository.url}`);
+    console.log(`issues: ${infos.bugs.url}`);
+  }
 };
