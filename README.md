@@ -13,6 +13,7 @@ Here is  the library structure.
 ```
 index.js //entry point
 __application/ //All application related functions/ helper
+__definition/ // all the domain and metadata informations
 __component // Component functions /helper
 __helper // Global helpers
 __network // Network layer (fech, //)
