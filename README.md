@@ -7,7 +7,7 @@
 Technical stack for spa application.
 
 ## structure
-Here is  the library structure.
+Here is  the library structure. It works with focus components. 
 
 - Structure:
 ```
