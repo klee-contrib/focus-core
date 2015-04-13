@@ -1,4 +1,5 @@
 module.exports = {
   login: require('./login'),
-  password: require('./password')
+  profile: require('./profile'),
+  builtInStore: require('./built-in-store')
 };

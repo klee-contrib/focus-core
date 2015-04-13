@@ -28,6 +28,7 @@ module.exports = {
   reference: require('./reference'),
   store: require('./store'),
   util: require('./util'),
+  user: require('./user'),
   VERSION: infos.version,
   AUTHOR: infos.author,
   DOCUMENTATION: function(){
