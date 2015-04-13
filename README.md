@@ -1,6 +1,6 @@
 [Focus](https://kleegroup.github.io/focus-docs)
 =======
-![Build Status](https://travis-ci.org/KleeGroup/focus.svg)(https://travis-ci.org/KleeGroup/focus.svg)
+![Build Status](https://travis-ci.org/KleeGroup/focus.svg)
 
 **Currently in dev**
 
