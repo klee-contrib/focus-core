@@ -2,7 +2,7 @@
 var CoreStore = require('../CoreStore');
 var buildDefinition = require('./definition');
 /**
- * Class standing for the reference store.
+ * Class standing for the user store.
  */
 class UserStore extends CoreStore {
   constructor(conf){
