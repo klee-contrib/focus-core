@@ -1,14 +1,15 @@
 var ArgumentNullException = require('../../exception/ArgumentNullException');
-var isNull = require('lodash/lang/isNull');
+var {isNull, isUndefined} = require('lodash/lang');
 
 /**
  * Assert an object is an objet.
  * @param  {string} name - The property name
  * @param  {object} data - The data to validate.
- * @return {undefined} - Return nothing, throw an Exception if this is not valid.
+ * @returns {undefined} - Return nothing, throw an Exception if this is not valid.
+ * @example var objToTest = { papa : "singe"}; isNull('objToTest', objToTest);
  */
 module.exports = function(name, data) {
-	if (isNull(data)) {
+	if (isNull(data) || isUndefined(data)) {
 		throw new ArgumentNullException(`${name} should be defined`);
 	}
 };
