@@ -8,7 +8,7 @@ var dispatcher = require('../dispatcher');
  */
 function builtInReferenceAction(referenceNames){
   return function(){
-       if(!this.referenceNames){
+       if(!referenceNames){
          return undefined;
        }
        return Promise.all(loadManyReferenceList(referenceNames))
