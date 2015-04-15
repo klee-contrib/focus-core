@@ -12,6 +12,9 @@ module.exports = function(url, method){
    * @return {function} returns a function which takes the URL as parameters.
    */
   return function generateUrl(param){
+    if (param == undefined) {
+      param = {};
+    }
     return {
       url: urlProcessor(url, param.urlData),
       method: method,
