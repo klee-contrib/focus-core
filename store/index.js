@@ -1,6 +1,6 @@
 module.exports = {
 	CoreStore: require('./CoreStore'),
-	CartridgeStore: require('./cartridge'),
+	ApplicationStore: require('./application'),
 	SearchStore: require('./search'),
 	ReferenceStore: require('./reference'),
 	UserStore: require('./user')

@@ -5,7 +5,7 @@ var getDefinition = require('./definition');
 /**
  * Class standing for the cartridge store.
  */
-class CartridgeStore extends CoreStore {
+class ApplicationStore extends CoreStore {
   constructor(conf){
     conf = conf || {};
     conf.definition = conf.definition || getDefinition();
@@ -14,4 +14,4 @@ class CartridgeStore extends CoreStore {
 
 }
 
-module.exports = CartridgeStore;
+module.exports = ApplicationStore;
