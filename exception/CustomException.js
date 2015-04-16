@@ -3,11 +3,22 @@
  */
 class CustomException extends Error{
   constructor(name, message, options){
-    super(message);
-    this.name = name;
-    this.message = message;
+    super();
+    if (Error.hasOwnProperty('captureStackTrace')){
+      Error.captureStackTrace(this, this.constructor);
+    }
+    else{
+      Object.defineProperty(this, 'stack', {
+        value: (new Error()).stack
+      });
+    }
+    Object.defineProperty(this, 'message', {
+      value: message
+    });
     this.options = options;
-    this.log();
+  }
+  get name () {
+    return this.constructor.name;
   }
   /**
    * Log the exception in the js console.
@@ -18,10 +29,11 @@ class CustomException extends Error{
   /**
    * JSONify the exception.
    */
-  /*toJSON(){
+  toJSON(){
     return {"name": this.name, "message": this.message,  "options": this.options};
-  }*/
+  }
 }
+
 
 
 module.exports = CustomException;
