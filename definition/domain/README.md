@@ -28,4 +28,8 @@ Les différentes propriétés réglables sont les suivantes:
         return "" + day +" "+ monthNames[monthIndex] +" "+ year;
     }
 
+`DO_BOOLEAN`: {
+  "FieldComponent": focusComponents.common.input.toggle.component
+}
+
 ```
