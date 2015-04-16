@@ -101,7 +101,7 @@ class CoreStore extends EventEmitter {
           }
         }
       }
-      console.log('dispatchHandler:action', transferInfo);
+      //console.log('dispatchHandler:action', transferInfo);
     });
   }
     /**
