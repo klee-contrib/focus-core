@@ -52,10 +52,17 @@ class MessageStore extends CoreStore {
   }
   /**
    * Add a listener on the global change on the search store.
-   * @param {function} cb - The callback to call when a message is added.
+   * @param {function} cb - The callback to call when a message is pushed.
    */
   addPushedMessageListener(cb){
     this.addListener(PUSH, cb);
+  }
+  /**
+   * Remove a listener on the global change on the search store.
+   * @param {function} cb - The callback to called when a message is pushed.
+   */
+  removePushedMessageListener(cb){
+    this.removeListener(PUSH, cb);
   }
 }
 
