@@ -6,8 +6,7 @@ class CustomException extends Error{
     super();
     if (Error.hasOwnProperty('captureStackTrace')){
       Error.captureStackTrace(this, this.constructor);
-    }
-    else{
+    } else{
       Object.defineProperty(this, 'stack', {
         value: (new Error()).stack
       });
