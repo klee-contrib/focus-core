@@ -13,4 +13,4 @@ class NotImplementedException extends CustomException{
   }
 }
 
-module.expôrts = NotImplementedException;
+module.exports = NotImplementedException;

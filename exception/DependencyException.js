@@ -13,4 +13,4 @@ class DependencyException extends CustomException{
   }
 }
 
-module.expôrts = DependencyException;
+module.exports = DependencyException;
