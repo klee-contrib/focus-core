@@ -18,9 +18,9 @@ Le store fournit également une méthode permettant de récupérer un message  v
 
 On de pouvoir ajouter des messages dans la pile la partie message de focus fournit des méthodes simples d'ajout:
 
--`addMessage`: Ajoute un message dans la pile de message typée par son type dans l'objet fournit.
--`addWarningMessage`: Ajoute un message dans la pile de message typée **Warning**.
--`addInformationMessage`: Ajoute un message dans la pile de message typée **Information**.
--`addErrorMessage`: Ajoute un message dans la pile de message typée **Error**.
--`addSuccessMessage`: Ajoute un message dans la pile de message typée **Success**.
--`clearMessages`: Vide la pile de message.
+- `addMessage`: Ajoute un message dans la pile de message typée par son type dans l'objet fournit.
+- `addWarningMessage`: Ajoute un message dans la pile de message typée **Warning**.
+- `addInformationMessage`: Ajoute un message dans la pile de message typée **Information**.
+- `addErrorMessage`: Ajoute un message dans la pile de message typée **Error**.
+- `addSuccessMessage`: Ajoute un message dans la pile de message typée **Success**.
+- `clearMessages`: Vide la pile de message.
