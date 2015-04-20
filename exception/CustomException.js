@@ -1,5 +1,6 @@
 /**
  * Classe standing for custom exception.
+ * @see https://gist.github.com/daliwali/09ca19032ab192524dc6
  */
 class CustomException extends Error{
   constructor(name, message, options){

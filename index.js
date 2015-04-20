@@ -29,6 +29,7 @@ module.exports = {
   store: require('./store'),
   util: require('./util'),
   user: require('./user'),
+  message: require('./message'),
   VERSION: infos.version,
   AUTHOR: infos.author,
   DOCUMENTATION: function(){

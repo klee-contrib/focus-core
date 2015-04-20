@@ -4,7 +4,6 @@ var assign = require('object-assign');
 var AppDispatcher = require('../../dispatcher');
 var keys = require('lodash/object/keys');
 var intersection = require('lodash/array/intersection');
-var isEqual = require('lodash/lang/isEqual');
 var Immutable = require('immutable');
 var isArray = require('lodash/lang/isArray');
 
