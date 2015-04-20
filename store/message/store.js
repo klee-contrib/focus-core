@@ -3,6 +3,8 @@ var CoreStore = require('../CoreStore');
 var getDefinition = require('./definition');
 var uuid = require('uuid').v4;
 const PUSH = 'push';
+const CLEAR = 'clear';
+var AppDispatcher = require('../../dispatcher');
 
 /**
  * Class standing for the cartridge store.
@@ -51,6 +53,13 @@ class MessageStore extends CoreStore {
     this.emit(PUSH, message.id);
   }
   /**
+   * Clear all messages in the stack.
+   */
+  clearMessages(){
+    this.data = this.data.clear();
+    this.emit(CLEAR);
+  }
+  /**
    * Add a listener on the global change on the search store.
    * @param {function} cb - The callback to call when a message is pushed.
    */
@@ -63,6 +72,41 @@ class MessageStore extends CoreStore {
    */
   removePushedMessageListener(cb){
     this.removeListener(PUSH, cb);
+  }
+
+  /**
+   * Add a listener on the global change on the search store.
+   * @param {function} cb - The callback to call when a message is pushed.
+   */
+  addClearMessagesListener(cb){
+    this.addListener(CLEAR, cb);
+  }
+  /**
+   * Remove a listener on the global change on the search store.
+   * @param {function} cb - The callback to called when a message is pushed.
+   */
+  removeClearMessagesListener(cb){
+    this.removeListener(CLEAR, cb);
+  }
+  registerDispatcher(){
+    var currentStore = this;
+    this.dispatch = AppDispatcher.register(function(transferInfo) {
+      var rawData = transferInfo.action.data;
+      var type = transferInfo.action.type;
+
+      switch (type) {
+        case 'push':
+          if(rawData.message){
+            currentStore.pushMessage(rawData.message);
+          }
+          break;
+        case 'clear':
+          if(rawData.messages){
+            currentStore.clearMessages();
+          }
+          break;
+      }
+    });
   }
 }
 

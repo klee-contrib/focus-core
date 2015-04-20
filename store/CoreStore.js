@@ -93,8 +93,8 @@ class CoreStore extends EventEmitter {
       for(var node in rawData){
         if(currentStore.definition[node]){
           //Call a custom handler if this exists.
-          if(currentStore.customHandler && currentStore.customHandler[node] &&  currentStore.customHandler[node][type]){
-            currentStore.customHandler[node][type].call(currentStore, rawData[node])
+          if(currentStore.customHandler && currentStore.customHandler[node] && currentStore.customHandler[node][type]){
+            currentStore.customHandler[node][type].call(currentStore, rawData[node]);
           }else {
             //Update the data for the given node. and emit the change/.
             currentStore[`${type}${capitalize(node)}`](rawData[node]);
