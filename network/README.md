@@ -13,3 +13,13 @@ La fonction fecth a pour but d'appeller l'api côté serveur. Elle retourne une 
   - `url` L'url à appeller
   - `data` Les data à envoyer au serveur
 - `options` permet de reféfinir le parseur de la requête http.
+
+## Exemple
+
+```javascript
+fetch({
+  url: "http://api.focus.com",
+  verb: "POST",
+  data: {pierre: "besson"}
+});
+```
