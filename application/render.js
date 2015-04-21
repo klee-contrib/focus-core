@@ -28,3 +28,9 @@ module.exports = function(component, selector, options){
   mountedComponents[selector] = true;
   console.log('Mounted components : ', mountedComponents);
 };
+/*
+  Exemple
+  var render = focus.application.render;
+  var MyComponent = require('./my-component');
+  render(MyComponent, 'div.component-container', {props: {id: '12'}});
+ */
