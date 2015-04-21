@@ -1,5 +1,17 @@
 var dispatcher = require('../dispatcher');
-var isObject = require("lodash/lang/isObject");
+var isString = require('lodash/lang/isString');
+
+/**
+ * Transform the message into objet if it is a string.
+ * @param {[string, object]} message - The message to display (object or string).
+ * @returns {object} - The well constructed message.
+ */
+function _parseString(message) {
+    if(isString(message)) {
+        message = {content: message};
+    }
+    return message;
+}
 
 /**
  * Add a message.
@@ -17,7 +29,7 @@ function addMessage(message){
  * @param {object} message - The message content.
  */
 function addErrorMessage(message){
-  message = parseStringMessage(message);
+  message = _parseString(message);
   message.type = 'error';
   addMessage(message);
 }
@@ -26,7 +38,7 @@ function addErrorMessage(message){
  * @param {object} message - The message content.
  */
 function addWarningMessage(message){
-  message = parseStringMessage(message);
+  message = _parseString(message);
   message.type = 'warning';
   addMessage(message);
 }
@@ -36,7 +48,7 @@ function addWarningMessage(message){
  * @param {object} message - The message content.
  */
 function addInformationMessage(message){
-  message = parseStringMessage(message);
+  message = _parseString(message);
   message.type = 'info';
   addMessage(message);
 }
@@ -46,7 +58,7 @@ function addInformationMessage(message){
  * @param {object} message - The message content.
  */
 function addSuccessMessage(message){
-  message = parseStringMessage(message);
+  message = _parseString(message);
   message.type = 'success';
   addMessage(message);
 }
@@ -55,12 +67,7 @@ function clearMessages(){
   dispatcher.handleServerAction({data: {messages: {}}, type: 'clear'});
 }
 
-function parseStringMessage(message) {
-    if(!isObject(message)) {
-        message = {content: message};
-    }
-    return message;
-}
+
 
 module.exports = {
   addMessage: addMessage,
