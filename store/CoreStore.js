@@ -1,7 +1,7 @@
 //The store is an event emitter.
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
-var isArray = require('lodash/lang/isArray');
+var {isArray, isEmpty} = require('lodash/lang');
 var getEntityInformations = require('../definition/entity/builder').getEntityInformations;
 var capitalize = require('lodash/string/capitalize');
 var Immutable = require('immutable');
@@ -72,7 +72,13 @@ class CoreStore extends EventEmitter {
         currentStore[`get${capitalizeDefinition}`] = function(def){
           return function () {
             var hasData = currentStore.data.has(def);
-            return hasData ? currentStore.data.get(def).toJS() : undefined;
+            if(hasData){
+              var data = currentStore.data.get(def).toJS();
+              if(!isEmpty(data)){
+                return data;
+              }
+            }
+            return undefined;
           };
         }(definition);
       }
