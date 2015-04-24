@@ -1,7 +1,7 @@
 //The store is an event emitter.
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
-var isArray = require('lodash/lang/isArray');
+var {isArray, isEmpty} = require('lodash/lang');
 var getEntityInformations = require('../definition/entity/builder').getEntityInformations;
 var capitalize = require('lodash/string/capitalize');
 var Immutable = require('immutable');
@@ -20,6 +20,7 @@ class CoreStore extends EventEmitter {
     });
     //Initialize the data as immutable map.
     this.data = Immutable.Map({});
+    this.dataError = Immutable.Map({});
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
     this.buildDefinition();
@@ -72,9 +73,43 @@ class CoreStore extends EventEmitter {
         currentStore[`get${capitalizeDefinition}`] = function(def){
           return function () {
             var hasData = currentStore.data.has(def);
-            return hasData ? currentStore.data.get(def).toJS() : undefined;
+            if(hasData){
+              var data = currentStore.data.get(def).toJS();
+              if(!isEmpty(data)){
+                return data;
+              }
+            }
+            return undefined;
           };
         }(definition);
+
+
+
+          //Creates the error change listener
+          currentStore[`add${capitalizeDefinition}ErrorListener`] = function(def){
+              return function (cb) {
+                  currentStore.addListener(`${def}:error`, cb);
+              }}(definition);
+          //Remove the change listener
+          currentStore[`remove${capitalizeDefinition}ErrorListener`] = function(def){
+              return function (cb) {
+                  currentStore.removeListener(`${def}:error`, cb);
+              }}(definition);
+          //Create an update method.
+          currentStore[`updateError${capitalizeDefinition}`] = function(def){
+              return function (dataNode) {
+                  //CheckIsObject
+                  var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+                  currentStore.dataError = currentStore.dataError.set(def,immutableNode);
+                  currentStore.emit(`${def}:error`);
+              }}(definition);
+          //Create a get method.
+          currentStore[`getError${capitalizeDefinition}`] = function(def){
+              return function () {
+                  var hasData = currentStore.dataError.has(def);
+                  return hasData ? currentStore.dataError.get(def).toJS() : undefined;
+              };
+          }(definition);
       }
     }
   /**
