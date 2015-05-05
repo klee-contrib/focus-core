@@ -85,9 +85,14 @@ class SearchStore extends CoreStore {
       var defKeys = keys(currentStore.definition); //TODO: a sub part of the keys may be needed.
       var dataKeys = keys(transferInfo.action.data);
       var intersectKeys = intersection(defKeys, dataKeys);
-      if(intersectKeys.length === defKeys.length){
-       currentStore.update(transferInfo.action.data);
+      if (intersectKeys.length > 0) {
+        if(intersectKeys.length === defKeys.length){
+          currentStore.update(transferInfo.action.data);
+        } else {
+          console.warn('Incomplete search store update received. Got [' + dataKeys.join(',') + '], expected [' + defKeys.join(',') + '].');
+        }
       }
+      
     });
   }
 }
