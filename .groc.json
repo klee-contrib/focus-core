@@ -1,3 +1,4 @@
 {
-  "glob": ["{application,component,definition,dispatcher,helper,message,network,reference,router}/**/*.{js,scss,json,md}","README.md", "index.js"]
+  "glob": ["{application,component,definition,dispatcher,helper,message,network,reference,router}/**/*.{js,scss,json,md}","README.md", "index.js"],
+  "github": true
 }
