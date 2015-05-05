@@ -1,4 +1,3 @@
 {
-  "glob": ["lib/**/*.coffee","lib/views/*.js","README.md"],
-  "github": true
+  "glob": ["{application,component,definition,dispatcher,helper,message,network,reference,router}/**/*.{js,scss,json,md}","README.md", "index.js"]
 }
