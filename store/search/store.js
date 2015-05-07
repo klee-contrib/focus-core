@@ -89,10 +89,10 @@ class SearchStore extends CoreStore {
         if(intersectKeys.length === defKeys.length){
           currentStore.update(transferInfo.action.data);
         } else {
-          console.warn('Incomplete search store update received. Got [' + dataKeys.join(',') + '], expected [' + defKeys.join(',') + '].');
+          console.warn(`Incomplete search store update received. Got [${dataKeys.join(',')}], expected [${defKeys.join(',')}].`);
         }
       }
-      
+
     });
   }
 }
