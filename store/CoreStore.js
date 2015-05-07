@@ -64,13 +64,7 @@ class CoreStore extends EventEmitter {
         //Create an update method.
         currentStore[`update${capitalizeDefinition}`] = function(def){
           return function (dataNode) {
-            var immutableNode;
-            //CheckIsObject
-            if (typeof(dataNode) === 'object') { // dataNode is an object (might be an array, considered as 'object' by typeof)
-              immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
-            } else { // dataNode is a primitive, so immutable already
-              immutableNode = dataNode;
-            }
+            var immutableNode = Immutable.fromJS(dataNode);
             currentStore.data = currentStore.data.set(def,immutableNode);
             currentStore.emit(`${def}:change`);
         }}(definition);
