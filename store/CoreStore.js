@@ -20,6 +20,7 @@ class CoreStore extends EventEmitter {
     });
     //Initialize the data as immutable map.
     this.data = Immutable.Map({});
+    this.status = Immutable.Map({});
     this.error = Immutable.Map({});
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
@@ -42,7 +43,16 @@ class CoreStore extends EventEmitter {
         this.config.customDefinition
       );
       return this.definition;
+  }
+  /** Return the status of a definition.
+   * @returns {string} - The status of a definition.
+   */
+  getStatus(def){
+    if (this.status.has(def)){
+      return this.status.get(def);
     }
+    return undefined;
+  }
   /**
   * Build a change listener for each property in the definition. (should be macro entities);
   */
@@ -63,10 +73,12 @@ class CoreStore extends EventEmitter {
         }}(definition);
         //Create an update method.
         currentStore[`update${capitalizeDefinition}`] = function(def){
-          return function (dataNode) {
+          return function (dataNode, status) {
             var immutableNode = Immutable.fromJS(dataNode);
-            currentStore.data = currentStore.data.set(def,immutableNode);
-            currentStore.emit(`${def}:change`);
+            currentStore.data = currentStore.data.set(def, immutableNode);
+            //Update the status on the data.
+            currentStore.status = currentStore.status.set(def, status);
+            currentStore.emit(`${def}:change`, {status: status});
         }}(definition);
         //Create a get method.
         currentStore[`get${capitalizeDefinition}`] = function(def){
@@ -101,7 +113,7 @@ class CoreStore extends EventEmitter {
             return function (dataNode) {
               //CheckIsObject
               var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
-              currentStore.error = currentStore.error.set(def,immutableNode);
+              currentStore.error = currentStore.error.set(def, immutableNode);
               currentStore.emit(`${def}:error`);
         }}(definition);
         //Create a get method.
@@ -125,15 +137,16 @@ class CoreStore extends EventEmitter {
         return currentStore.globalCustomHandler.call(currentStore, transferInfo);
       }
       var rawData = transferInfo.action.data;
+      var status = transferInfo.action.status || {};
       var type = transferInfo.action.type;
       for(var node in rawData){
         if(currentStore.definition[node]){
           //Call a custom handler if this exists.
           if(currentStore.customHandler && currentStore.customHandler[node] && currentStore.customHandler[node][type]){
-            currentStore.customHandler[node][type].call(currentStore, rawData[node]);
+            currentStore.customHandler[node][type].call(currentStore, rawData[node], status[node]);
           }else {
             //Update the data for the given node. and emit the change/.
-            currentStore[`${type}${capitalize(node)}`](rawData[node]);
+            currentStore[`${type}${capitalize(node)}`](rawData[node], status[node]);
           }
         }
       }
@@ -148,6 +161,6 @@ class CoreStore extends EventEmitter {
   addListener(eventName, cb) {
     this.on(eventName, cb);
   }
-  
+
 }
 module.exports = CoreStore;
