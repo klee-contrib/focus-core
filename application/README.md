@@ -14,7 +14,7 @@ On doit lui fournir le composant à rendre, le selecteur dans lequel on veut le 
 ### Exemple
 
 ```javascript
-var render = focus.application.render;
+var render = Focus.application.render;
 var MyComponent = require('./my-component');
 render(MyComponent, 'div.component-container', {props: {id: '12'}});
 ```

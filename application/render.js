@@ -30,7 +30,7 @@ module.exports = function(component, selector, options){
 };
 /*
   Exemple
-  var render = focus.application.render;
+  var render = Focus.application.render;
   var MyComponent = require('./my-component');
   render(MyComponent, 'div.component-container', {props: {id: '12'}});
  */
