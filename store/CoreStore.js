@@ -20,7 +20,7 @@ class CoreStore extends EventEmitter {
     });
     //Initialize the data as immutable map.
     this.data = Immutable.Map({});
-    this.dataError = Immutable.Map({});
+    this.error = Immutable.Map({});
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
     this.buildDefinition();
@@ -86,34 +86,31 @@ class CoreStore extends EventEmitter {
             return undefined;
           };
         }(definition);
-
-
-
-          //Creates the error change listener
-          currentStore[`add${capitalizeDefinition}ErrorListener`] = function(def){
-              return function (cb) {
-                  currentStore.addListener(`${def}:error`, cb);
-              }}(definition);
-          //Remove the change listener
-          currentStore[`remove${capitalizeDefinition}ErrorListener`] = function(def){
-              return function (cb) {
-                  currentStore.removeListener(`${def}:error`, cb);
-              }}(definition);
-          //Create an update method.
-          currentStore[`updateError${capitalizeDefinition}`] = function(def){
-              return function (dataNode) {
-                  //CheckIsObject
-                  var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
-                  currentStore.dataError = currentStore.dataError.set(def,immutableNode);
-                  currentStore.emit(`${def}:error`);
-              }}(definition);
-          //Create a get method.
-          currentStore[`getError${capitalizeDefinition}`] = function(def){
-              return function () {
-                  var hasData = currentStore.dataError.has(def);
-                  return hasData ? currentStore.dataError.get(def).toJS() : undefined;
-              };
-          }(definition);
+        //Creates the error change listener
+        currentStore[`add${capitalizeDefinition}ErrorListener`] = function(def){
+            return function (cb) {
+              currentStore.addListener(`${def}:error`, cb);
+        }}(definition);
+        //Remove the change listener
+        currentStore[`remove${capitalizeDefinition}ErrorListener`] = function(def){
+            return function (cb) {
+              currentStore.removeListener(`${def}:error`, cb);
+        }}(definition);
+        //Create an update method.
+        currentStore[`updateError${capitalizeDefinition}`] = function(def){
+            return function (dataNode) {
+              //CheckIsObject
+              var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+              currentStore.error = currentStore.error.set(def,immutableNode);
+              currentStore.emit(`${def}:error`);
+        }}(definition);
+        //Create a get method.
+        currentStore[`getError${capitalizeDefinition}`] = function(def){
+            return function(){
+              var hasData = currentStore.error.has(def);
+              return hasData ? currentStore.error.get(def).toJS() : undefined;
+            };
+        }(definition);
       }
     }
   /**
@@ -151,5 +148,6 @@ class CoreStore extends EventEmitter {
   addListener(eventName, cb) {
     this.on(eventName, cb);
   }
+  
 }
 module.exports = CoreStore;

@@ -1,16 +1,20 @@
-//Generator http://patorjk.com/software/taag/#p=display&h=1&f=Banner4&t=Focus
+//http://www.ascii-fr.com/Generateur-de-texte.html
+var infos = require('./package.json');
 console.log(
   `
-    .########..#######...######..##.....##..######.
-    .##.......##.....##.##....##.##.....##.##....##
-    .##.......##.....##.##.......##.....##.##......
-    .######...##.....##.##.......##.....##..######.
-    .##.......##.....##.##.......##.....##.......##
-    .##.......##.....##.##....##.##.....##.##....##
-    .##........#######...######...#######...######.
+  _____   _____   _____   _   _   _____
+ |  ___| /  _  \\ /  ___| | | | | /  ___/
+ | |__   | | | | | |     | | | | | |___
+ |  __|  | | | | | |     | | | | \\___  \\
+ | |     | |_| | | |___  | |_| |  ___| |
+ |_|     \\_____/ \\_____| \\_____/ /_____/
+
+ version: ${infos.version}
+ focus: ${infos.homepage}
+ documentation: ${infos.documentation}
+ issues: ${infos.bugs.url}
 `
 );
-var infos = require('./package.json');
 /**
  * Focus library.
  * This file requires all submodules.
