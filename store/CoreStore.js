@@ -78,7 +78,7 @@ class CoreStore extends EventEmitter {
             currentStore.data = currentStore.data.set(def, immutableNode);
             //Update the status on the data.
             currentStore.status = currentStore.status.set(def, status);
-            currentStore.emit(`${def}:change`, {status: status});
+            currentStore.emit(`${def}:change`, {property: def, status: status});
         }}(definition);
         //Create a get method.
         currentStore[`get${capitalizeDefinition}`] = function(def){
