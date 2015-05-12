@@ -2,6 +2,7 @@
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
 var {isArray, isEmpty, isObject} = require('lodash/lang');
+var {defer} = require('lodash/function');
 var getEntityInformations = require('../definition/entity/builder').getEntityInformations;
 var capitalize = require('lodash/string/capitalize');
 var Immutable = require('immutable');
@@ -162,7 +163,7 @@ class CoreStore extends EventEmitter {
           }
         }
       }
-      Promise.resolve().then(function(d){
+      Promise.resolve().then(()=>{
         currentStore.emitAll();
       });
 
