@@ -12398,7 +12398,7 @@ module.exports = uuid;
 },{"./rng":172}],174:[function(require,module,exports){
 module.exports={
   "name": "focusjs",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "Technical stack in order to build single page application.",
   "main": "index.js",
   "directories": {
