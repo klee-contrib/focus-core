@@ -23,6 +23,7 @@ class CoreStore extends EventEmitter {
     this.data = Immutable.Map({});
     this.status = Immutable.Map({});
     this.error = Immutable.Map({});
+    this.pendingEvents = [];
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
     this.buildDefinition();
@@ -54,17 +55,30 @@ class CoreStore extends EventEmitter {
     }
     return undefined;
   }
-
-  emitAll(){
-    this.emitArray.map((evtToEmit)=>{
+  /**
+   * Emit all events pending in the pendingEvents map.
+   */
+  emitPendingEvents(){
+    this.pendingEvents.map((evtToEmit)=>{
       this.emit(evtToEmit.name, evtToEmit.data);
     });
   }
 
+  /**
+   * Replace the emit function with a willEmit in otder to store the changing event but send it afterwards.
+   * @param eventName {string} - The event name.
+   * @param  data {object} - The event's associated data.
+   */
   willEmit(eventName, data){
-    this.emitArray.push({name: eventName, data: data});
+    this.pendingEvents.push({name: eventName, data: data});
   }
 
+  /**
+   * Clear all pending events.
+   */
+  clearPendingEvents(){
+    this.pendingEvents = [];
+  }
   /**
   * Build a change listener for each property in the definition. (should be macro entities);
   */
@@ -143,15 +157,18 @@ class CoreStore extends EventEmitter {
   registerDispatcher(){
     var currentStore = this;
     this.dispatch = AppDispatcher.register(function(transferInfo) {
-      //Complete rewrie by the store.
-      //todo: see if this has meaning instead of an override
-      currentStore.emitArray = [];
+
+      //currentStore.clearPendingEvents();
       if(currentStore.globalCustomHandler){
         return currentStore.globalCustomHandler.call(currentStore, transferInfo);
       }
+
+      //Read data from the action transfer information.
       var rawData = transferInfo.action.data;
       var status = transferInfo.action.status || {};
       var type = transferInfo.action.type;
+
+      //Call each node handler for the matching definition's node.
       for(var node in rawData){
         if(currentStore.definition[node]){
           //Call a custom handler if this exists.
@@ -163,11 +180,13 @@ class CoreStore extends EventEmitter {
           }
         }
       }
-      Promise.resolve().then(()=>{
-        currentStore.emitAll();
+
+      //Delay all the change emit by the store to be sure it is done after the internal store propagation and to go out of the dispatch function.
+      defer(()=>{
+        currentStore.emitPendingEvents();
+        currentStore.clearPendingEvents();
       });
 
-      //console.log('dispatchHandler:action', transferInfo);
     });
   }
     /**
