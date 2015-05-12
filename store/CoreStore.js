@@ -53,6 +53,17 @@ class CoreStore extends EventEmitter {
     }
     return undefined;
   }
+
+  emitAll(){
+    this.emitArray.map((evtToEmit)=>{
+      this.emit(evtToEmit.name, evtToEmit.data);
+    });
+  }
+
+  willEmit(eventName, data){
+    this.emitArray.push({name: eventName, data: data});
+  }
+
   /**
   * Build a change listener for each property in the definition. (should be macro entities);
   */
@@ -78,7 +89,7 @@ class CoreStore extends EventEmitter {
             currentStore.data = currentStore.data.set(def, immutableNode);
             //Update the status on the data.
             currentStore.status = currentStore.status.set(def, status);
-            currentStore.emit(`${def}:change`, {property: def, status: status});
+            currentStore.willEmit(`${def}:change`, {property: def, status: status});
         }}(definition);
         //Create a get method.
         currentStore[`get${capitalizeDefinition}`] = function(def){
@@ -114,7 +125,7 @@ class CoreStore extends EventEmitter {
               //CheckIsObject
               var immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
               currentStore.error = currentStore.error.set(def, immutableNode);
-              currentStore.emit(`${def}:error`);
+              currentStore.willEmit(`${def}:error`);
         }}(definition);
         //Create a get method.
         currentStore[`getError${capitalizeDefinition}`] = function(def){
@@ -133,6 +144,7 @@ class CoreStore extends EventEmitter {
     this.dispatch = AppDispatcher.register(function(transferInfo) {
       //Complete rewrie by the store.
       //todo: see if this has meaning instead of an override
+      currentStore.emitArray = [];
       if(currentStore.globalCustomHandler){
         return currentStore.globalCustomHandler.call(currentStore, transferInfo);
       }
@@ -150,6 +162,10 @@ class CoreStore extends EventEmitter {
           }
         }
       }
+      Promise.resolve().then(function(d){
+        currentStore.emitAll();
+      });
+
       //console.log('dispatchHandler:action', transferInfo);
     });
   }
