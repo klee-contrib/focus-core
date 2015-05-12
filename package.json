@@ -1,6 +1,6 @@
 {
   "name": "focusjs",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Technical stack in order to build single page application.",
   "main": "index.js",
   "directories": {
@@ -24,8 +24,8 @@
     "url": "https://github.com/KleeGroup/focus.git"
   },
   "scripts":{
-    "prepublish":"node_modules/gulp/bin/gulp.js build"
-  }
+    "prepublish":"gulp build"
+  },
   "keywords": [
     "spa",
     "react",
