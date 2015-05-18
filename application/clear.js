@@ -1,12 +1,13 @@
+var mountedComponents = require('./mounted-components');
+
 /**
- * Clear a DOM node.
- * If it does not exist, send a warning to the console.
- * @param {String} targetSelector - the target node's selector
+ * Clear a react component.
+ * @param {String} targetSelector - the component's DOM selector
  */
-module.exports = function clearDOMNode(targetSelector) {
-    if (document.querySelector(targetSelector)) {
-        document.querySelector(targetSelector).innerHTML = '';
-    } else {
-        console.warn(`Tried to clear content of ${targetSelector}, but could not find it in the current page.`);
+module.exports = function clearComponent(targetSelector) {
+    if(mountedComponents[targetSelector]){
+        React.unmountComponentAtNode(document.querySelector(targetSelector));
+        delete mountedComponents[targetSelector];
+        console.info('Component ' + targetSelector + ' unmounted.');
     }
 };
