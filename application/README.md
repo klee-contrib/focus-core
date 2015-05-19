@@ -18,3 +18,17 @@ var render = Focus.application.render;
 var MyComponent = require('./my-component');
 render(MyComponent, 'div.component-container', {props: {id: '12'}});
 ```
+
+## Clear
+Cette fonction permet de supprimer un composant actuellement rendu dans le DOM, et nettoie les eventuels listeners associés.
+Elle prend en argument une chaine de caractère constituant le sélecteur du point de montage du composant.
+
+### Exemple
+
+```javascript
+// console : Mounted components :  ["MY_TARGET_SELECTOR", "other", ...]
+var clear = Focus.application.clear;
+clear('MY_TARGET_SELECTOR');
+// console : Component MY_TARGET_SELECTOR unmounted.
+// console : Mounted components :  ["other", ...]
+```
