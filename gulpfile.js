@@ -128,7 +128,7 @@ gulp.task('browserify', function(){
     return browserify(({
         entries: ['./index.js'],
         extensions: ['.jsx'],
-        standalone: "focus"
+        standalone: "Focus"
       }))
       .transform(
         {global:true},

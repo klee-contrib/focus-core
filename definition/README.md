@@ -40,7 +40,7 @@ Les différentes propriétés réglables sont les suivantes:
 ### Définir les domaines de focus
 
 Voici comment définir les domaines de focus.
-`focus.definition.domain.container.setAll(domain);`
+`Focus.definition.domain.container.setAll(domain);`
 
 ## Definition
 
@@ -74,4 +74,4 @@ var entities ={
 ### Définir les définitions de focus
 
 Afin que focus soit capable d'utiliser les définitions, il faut les setter dans le framework via la commande suivante.
-`focus.definition.entity.container.setEntityConfiguration(entities);` où `entities` est un objet contenant les définitions.
+`Focus.definition.entity.container.setEntityConfiguration(entities);` où `entities` est un objet contenant les définitions.
