@@ -5,7 +5,9 @@
  * Map containing all the mounted components.
  * @type {Object}
  */
- var mountedComponents = {};
+var mountedComponents = require('./mounted-components');
+
+var clearComponent = require('./clear');
 
 /**
  *  Render a react component in a DOM selector.
@@ -15,18 +17,16 @@
  */
 module.exports = function(component, selector, options){
   options = options || {};
-  //Unmount component if there is one mounted.
-  if(mountedComponents[selector]){
-    React.unmountComponentAtNode(document.querySelector(selector));
-    console.log('component unmounted');
-  }
+  // Clear a potential previously mounted component
+  clearComponent(selector);
+  // Render the component
   React.render(
     React.createElement(component, options.props, options.data),
     document.querySelector(selector)
   );
-  //Save the fact that a comonent is mounted.
+  //Save the fact that a component is mounted.
   mountedComponents[selector] = true;
-  console.log('Mounted components : ', mountedComponents);
+  console.info('Mounted components : ', Object.keys(mountedComponents));
 };
 /*
   Exemple
