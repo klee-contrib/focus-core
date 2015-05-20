@@ -8,7 +8,7 @@
     "test": "test"
   },
   "dependencies": {
-    "flux": "^2.0.1",
+    "flux": "^2.0.3",
     "immutable": "^3.7.3",
     "keymirror": "^0.1.1",
     "lodash": "^3.3.1",
