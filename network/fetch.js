@@ -4,9 +4,10 @@
  * @type {object}
  */
 var createCORSRequest = require('./cors');
+var CancellablePromise = require('./cancellable-promise');
 
 /**
- * Fecth function to ease http request.
+ * Fetch function to ease http request.
  * @param  {object} obj - method: http verb, url: http url, data:The json to save.
  * @param  {object} options - The options object.
  * @return {Promise} The promise of the execution of the HTTP request.
@@ -20,7 +21,7 @@ function fetch(obj, options) {
   if (!request) {
     throw new Error('You cannot perform ajax request on other domains.');
   }
-  return new Promise(function (success, failure) {
+  return new CancellablePromise(function (success, failure) {
     //Request error handler
     request.onerror = function (error) {
       failure(error);
@@ -44,8 +45,13 @@ function fetch(obj, options) {
     };
     //Execute the request.
     request.send(JSON.stringify(obj.data));
+  }, function() { // Promise cancel handler
+    if (!request.status) { // request has not yet ended
+      request.abort();
+    } else { // trying to abort an ended request, send a warning to the console
+      console.warn('Tried to abort an already ended request', request);
+    }
   });
-
 }
 
 module.exports = fetch;
