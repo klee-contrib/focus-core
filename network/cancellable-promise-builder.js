@@ -14,7 +14,7 @@ function isFunction(functionToCheck) {
  * @param {Function} cancelHandler
  * @returns {Promise} the resulting Promise, with a cancel() method attached.
  */
-function createCancellablePromise(promiseFn, cancelHandler) {
+function cancellablePromiseBuilder(promiseFn, cancelHandler) {
     if (!isFunction(promiseFn)) {
         throw new Error(`Promise function ${promiseFn} is not a function.`);
     }
@@ -22,7 +22,7 @@ function createCancellablePromise(promiseFn, cancelHandler) {
         throw new Error(`Cancel handler ${cancelHandler} is not a function.`);
     }
     var p = new Promise(promiseFn);
-    p.cancel = function() {
+    p.cancel = function cancelCurrentPromise() {
         if(cancelHandler) { // cancel handler exists, call it
             cancelHandler.call(this, arguments);
         } else { // cancel handler does not exist but was called, send a warning
@@ -35,4 +35,4 @@ function createCancellablePromise(promiseFn, cancelHandler) {
     return p;
 }
 
-module.exports = createCancellablePromise;
+module.exports = cancellablePromiseBuilder;
