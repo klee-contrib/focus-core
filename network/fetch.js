@@ -46,7 +46,7 @@ function fetch(obj, options) {
     //Execute the request.
     request.send(JSON.stringify(obj.data));
   }, function cancelHandler() { // Promise cancel handler
-    if (!request.status) { // request has not yet ended
+    if (request.status === 0) { // request has not yet ended
       request.abort();
       return true;
     } else { // trying to abort an ended request, send a warning to the console
