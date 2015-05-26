@@ -17,7 +17,8 @@
     "uuid": "^2.0.1"
   },
   "scripts": {
-    "prepublish": "gulp build"
+    "prepublish": "gulp build",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
