@@ -1,4 +1,4 @@
-var Immutable = require('Immutable');
+var Immutable = require('immutable');
 var config = Immutable.Map({});
 var checkIsObject = require('../util/object/check');
 var checkIsString = require('../util/string/check');
