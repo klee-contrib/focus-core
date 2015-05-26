@@ -1,5 +1,7 @@
 [Focus](https://kleegroup.github.io/focus-docs)
 =======
+[![NPM](https://nodei.co/npm/focusjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/focusjs/)
+
 ![Build Status](https://travis-ci.org/KleeGroup/focus.svg)
 
 **Currently in dev**
