@@ -1,6 +1,7 @@
 'use strict';
 /*global document*/
  var React = require('react');
+var keys = require('lodash/object/keys');
 /**
  * Map containing all the mounted components.
  * @type {Object}
@@ -26,7 +27,7 @@ module.exports = function renderComponent(component, selector, options){
   );
   //Save the fact that a component is mounted.
   mountedComponents[selector] = mountedComponent;
-  console.info('Mounted components : ', Object.keys(mountedComponents));
+  console.info('Mounted components : ', keys(mountedComponents));
   return mountedComponent;
 };
 /*
