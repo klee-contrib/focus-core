@@ -5,14 +5,8 @@ module.exports =  {
    * @type {Object}
    */
   search:{
-    facet:{
-      domain: "DO_TEXT"
-      },
-    list:{
-      domain: "DO_TEXT"
-    },
-    pageInfos: {
-      domain: "DO_TEXT"
-    }
+    facet:'facet',
+    list:'list',
+    pageInfos: 'pageInfos'
   }
 };
