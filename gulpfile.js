@@ -133,7 +133,8 @@ gulp.task('browserify', function(){
       .transform(
         {global:true},
         literalify.configure({
-        react: 'window.React'
+        react: 'window.React',
+        backbone: 'window.Backbone'
       }))
       .transform(babelify)
       .bundle()
