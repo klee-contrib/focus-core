@@ -30,6 +30,7 @@ module.exports = function(config){
   //Exposes a function consumes by the compoennt.
   return function(criteria){
     preServiceCall(config);
+    //todo: add middleware see slack for more informations
     return config.service(criteria).then(function(jsonData){
       postServiceCall(config, jsonData);
     }, function actionError(err){

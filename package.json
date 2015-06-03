@@ -8,6 +8,7 @@
     "test": "test"
   },
   "dependencies": {
+    "backbone": "^1.2.0",
     "flux": "^2.0.3",
     "immutable": "^3.7.3",
     "keymirror": "^0.1.1",

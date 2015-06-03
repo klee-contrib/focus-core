@@ -20,10 +20,12 @@ module.exports = function renderComponent(component, selector, options){
   options = options || {};
   // Clear a potential previously mounted component
   clearComponent(selector);
+  let targetDOMContainer = document.querySelector(selector);
+  if(!targetDOMContainer){throw new Error(`You are trying to render a component in a DOM element which is not existing, your selector is  ${selector}`); }
   // Render the component
   var mountedComponent = React.render(
     React.createElement(component, options.props, options.data),
-    document.querySelector(selector)
+    targetDOMContainer
   );
   //Save the fact that a component is mounted.
   mountedComponents[selector] = mountedComponent;
