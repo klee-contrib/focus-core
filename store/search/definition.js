@@ -1,12 +1,17 @@
-var Immutable = require('immutable');
 module.exports =  {
   /**
    * Metadata defintion informations for the search.
    * @type {Object}
    */
   search:{
-    facet:'facet',
-    list:'list',
-    pageInfos: 'pageInfos'
+    facet:{
+      domain: "DO_TEXT"
+    },
+    list:{
+      domain: "DO_TEXT"
+    },
+    pageInfos: {
+      domain: "DO_TEXT"
+    }
   }
 };
