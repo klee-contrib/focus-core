@@ -1,6 +1,6 @@
 {
   "name": "focusjs",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Technical stack in order to build single page application.",
   "main": "index.js",
   "directories": {
@@ -8,23 +8,22 @@
     "test": "test"
   },
   "dependencies": {
-    "flux": "^2.0.1",
-    "immutable": "^3.6.2",
+    "backbone": "^1.2.0",
+    "flux": "^2.0.3",
+    "immutable": "^3.7.3",
     "keymirror": "^0.1.1",
-    "lodash": "^3.3.1",
+    "lodash": "^3.9.1",
     "object-assign": "^2.0.0",
-    "react": "^0.13.2",
+    "react": "^0.13.3",
     "uuid": "^2.0.1"
   },
   "scripts": {
+    "prepublish": "gulp build",
     "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/KleeGroup/focus.git"
-  },
-  "scripts":{
-    "prepublish":"gulp build"
   },
   "keywords": [
     "spa",

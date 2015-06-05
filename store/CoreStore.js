@@ -1,7 +1,7 @@
 //The store is an event emitter.
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
-var {isArray, isEmpty, isObject} = require('lodash/lang');
+var {isArray, isEmpty, isObject, isFunction} = require('lodash/lang');
 var {defer} = require('lodash/function');
 var getEntityInformations = require('../definition/entity/builder').getEntityInformations;
 var capitalize = require('lodash/string/capitalize');
@@ -98,32 +98,39 @@ class CoreStore extends EventEmitter {
             currentStore.removeListener(`${def}:change`, cb);
         }}(definition);
         //Create an update method.
-        currentStore[`update${capitalizeDefinition}`] = function(def){
-          return function (dataNode, status) {
-            var immutableNode = Immutable.fromJS(dataNode);
-            currentStore.data = currentStore.data.set(def, immutableNode);
-            //Update the status on the data.
-            currentStore.status = currentStore.status.set(def, status);
-            currentStore.willEmit(`${def}:change`, {property: def, status: status});
-        }}(definition);
+        if(currentStore[`update${capitalizeDefinition}`] === undefined){
+          currentStore[`update${capitalizeDefinition}`] = function(def){
+            return function (dataNode, status) {
+              var immutableNode = isFunction(dataNode) ? dataNode : Immutable.fromJS(dataNode);
+              currentStore.data = currentStore.data.set(def, immutableNode);
+              //Update the status on the data.
+              currentStore.status = currentStore.status.set(def, status);
+              currentStore.willEmit(`${def}:change`, {property: def, status: status});
+          }}(definition);
+        }
+
         //Create a get method.
-        currentStore[`get${capitalizeDefinition}`] = function(def){
-          return function () {
-            var hasData = currentStore.data.has(def);
-            if(hasData){
-              var rawData = currentStore.data.get(def);
-              if (isObject(rawData)) {
-                var data = rawData.toJS();
-                if(!isEmpty(data)){
-                  return data;
+        if(currentStore[`get${capitalizeDefinition}`] === undefined){
+          currentStore[`get${capitalizeDefinition}`] = function(def){
+            return function () {
+              var hasData = currentStore.data.has(def);
+              if(hasData){
+                var rawData = currentStore.data.get(def);
+                //If the store node isn't an object, immutable solution are non sens.  
+                if(isFunction(rawData) || !isObject(rawData)){
+                  return rawData;
                 }
-              } else {
-                return rawData;
+                else {
+                  var data = rawData.toJS();
+                  if(!isEmpty(data)){
+                    return data;
+                  }
+                }
               }
-            }
-            return undefined;
-          };
-        }(definition);
+              return undefined;
+            };
+          }(definition);
+        }
         //Creates the error change listener
         currentStore[`add${capitalizeDefinition}ErrorListener`] = function(def){
             return function (cb) {

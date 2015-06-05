@@ -4,7 +4,8 @@
  */
 module.exports = function(){
   return {
-    'barSummaryCartridgeComponent': 'barSummaryCartridgeComponent',
-    'cartridgeComponent': 'cartridgeComponent'
+    'summaryComponent': 'summaryComponent',
+    'cartridgeComponent': 'cartridgeComponent',
+    'actions': 'actions'
   };
 };

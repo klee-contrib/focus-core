@@ -133,7 +133,8 @@ gulp.task('browserify', function(){
       .transform(
         {global:true},
         literalify.configure({
-        react: 'window.React'
+        react: 'window.React',
+        backbone: 'window.Backbone'
       }))
       .transform(babelify)
       .bundle()
@@ -141,7 +142,9 @@ gulp.task('browserify', function(){
       //.pipe(source("focus-"+require('./package.json').version+".js"))
       .pipe(source("focus.js"))
       .pipe(gulp.dest('./dist/'))
-      .pipe(gulp.dest('../focus-components/dist/js'));
+      .pipe(gulp.dest('../focus-components/dist/js'))
+      .pipe(gulp.dest('../rodolphe-demo/ui/vendor'))
+      ;
 });
 
 
