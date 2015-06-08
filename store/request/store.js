@@ -115,7 +115,7 @@ class RequestStore extends CoreStore {
           break;
         case 'clear':
           if(rawData.request){
-            currentStore.clearRequest();
+            currentStore.clearRequests();
           }
           break;
       }
