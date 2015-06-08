@@ -10,7 +10,9 @@
   <!-- Place favicon.ico in the root directory -->
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.12.2/react.js"></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js'></script>
+  <script src='http://backbonejs.org/backbone.js'></script>
+  <script src="https://fb.me/react-0.13.3.js"></script>
   <script src="focus.js"></script>
 </head>
 <body>
@@ -41,7 +43,7 @@
   		}]
   	}
   };
-  focus.definition.domain.container.setAll(domain);
+  Focus.definition.domain.container.setAll(domain);
   var entities ={
   "contact": {
     "firstName": {
@@ -61,15 +63,15 @@
       "required": false
     }
   }};
-  focus.definition.entity.container.setEntityConfiguration(entities);
-  var contact = focus.definition.entity.builder.getEntityInformations('contact',  {firstName: {required: true, symbolique: "papa"}});
+  Focus.definition.entity.container.setEntityConfiguration(entities);
+  var contact = Focus.definition.entity.builder.getEntityInformations('contact',  {firstName: {required: true, symbolique: "papa"}});
   //Cas simple.
-  var storeSimple  = new focus.store.CoreStore({
+  var storeSimple  = new Focus.store.CoreStore({
     definitionPath : 'contact'
   });
   storeSimple.addFirstNameChangeListener(function(data){console.log('store2 firstName: change', data)});
   //Cas plus compliqué
-  var storeSurcharge  = new focus.store.CoreStore({
+  var storeSurcharge  = new Focus.store.CoreStore({
     definitionPath : 'contact',
     customDefinition: {
       firstName: {
@@ -89,8 +91,8 @@
   storeSurcharge.addFirstNameChangeListener(function(data){console.log('store1 firstName: change', data)});
 
 
-  focus.dispatcher.handleServerAction({data: {firstName: {roberto: "baggio"}}, type: "update"});
-  var searchStore =  new focus.store.SearchStore();
+  Focus.dispatcher.handleServerAction({data: {firstName: {roberto: "baggio"}}, type: "update"});
+  var searchStore =  new Focus.store.SearchStore();
   searchStore.updateList(['papa', 'singe']);
   console.log('list result',searchStore.getList());
 function loadRedList(name){
@@ -99,8 +101,8 @@ function loadRedList(name){
   }
 }
 
-  focus.reference.config.set({'papas': loadRedList("papas"), 'singe': loadRedList('singe')})
-  focus.definition.entity.container.setEntityConfiguration(entities);
+  Focus.reference.config.set({'papas': loadRedList("papas"), 'singe': loadRedList('singe')})
+  Focus.definition.entity.container.setEntityConfiguration(entities);
   </script>
 
 </body>
