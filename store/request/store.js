@@ -55,11 +55,11 @@ class RequestStore extends CoreStore {
   updateRequest(request){
     request.id = request.id || `${uuid()}`;
     //If the status is supported
-    if(this.definition[this.request.status]){
+    if(this.definition[request.status]){
       //Update the associated collection
-      this[status] = this[status].set(request.id, request);
+      this[request.status] = this[request.status].set(request.id, request);
       //Remove the associated request from pending
-      if(status !== pending && this.pending.has(request.id)){
+      if(request.status !== 'pending' && this.pending.has(request.id)){
         this.pending = this.pending.delete(request.id);
       }
     }
