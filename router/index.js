@@ -15,6 +15,7 @@ module.exports = Backbone.Router.extend({
     }
     var customWrapperAroundCallback = ()=>{
       var currentRoute = route;
+      console.log(`Route change: ${currentRoute}`);
       //The default route is the noRoleRoute by default
       if(currentRoute === ''){
         currentRoute = router.noRoleRoute;
