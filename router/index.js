@@ -13,8 +13,8 @@ function beforeRouting(){
   //Clear header
   dispatcher.handleViewAction({
     data: {
-      cartridgeComponent: React.DOM.div,
-      summaryComponent: React.DOM.div,
+      cartridgeComponent: {component: React.DOM.div},
+      summaryComponent: {component: React.DOM.div},
       actions: {primary: [], secondary: []}
     },
     type: 'update'
