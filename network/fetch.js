@@ -5,6 +5,33 @@
  */
 var createCORSRequest = require('./cors');
 var cancellablePromiseBuilder = require('./cancellable-promise-builder');
+var uuid = require('uuid').v4;
+var dispatcher = require('../dispatcher');
+
+/**
+ * Create a pending status.
+ * @return {object} The instanciated request status.
+ */
+function createRequestStatus(){
+  return {
+    id : uuid(),
+    status: 'pending'
+  };
+}
+/**
+ * Update the request status.
+ * @param  {object} request - The request to treat.
+ * @return {[object} - The request to dispatch.
+ */
+function updateRequestStatus(request){
+  if(!request || !request.id || !request.status){return;}
+  dispatcher.handleViewAction({
+    data: {request: request},
+    type: 'update'
+  });
+  return request;
+
+}
 
 /**
  * Fetch function to ease http request.
@@ -18,12 +45,15 @@ function fetch(obj, options) {
     return JSON.parse(req.responseText);
   };
   var request = createCORSRequest(obj.method, obj.url, options);
+  var requestStatus = createRequestStatus();
   if (!request) {
     throw new Error('You cannot perform ajax request on other domains.');
   }
+
   return cancellablePromiseBuilder(function promiseFn(success, failure) {
     //Request error handler
     request.onerror = function (error) {
+      updateRequestStatus({id: requestStatus.id, status: 'error'});
       failure(error);
     };
     //Request success handler
@@ -32,6 +62,7 @@ function fetch(obj, options) {
       if (status !== 200) {
         var err = JSON.parse(request.response);
         err.statusCode = status;
+        updateRequestStatus({id: requestStatus.id, status: 'error'});
         failure(err);
       }
       var contentType = request.getResponseHeader('content-type');
@@ -41,12 +72,15 @@ function fetch(obj, options) {
       } else {
         data = request.responseText;
       }
+      updateRequestStatus({id: requestStatus.id, status: 'success'});
       success(data);
     };
+    updateRequestStatus({id: requestStatus.id, status: 'pending'});
     //Execute the request.
     request.send(JSON.stringify(obj.data));
   }, function cancelHandler() { // Promise cancel handler
     if (request.status === 0) { // request has not yet ended
+      updateRequestStatus({id: requestStatus.id, status: 'cancelled'});
       request.abort();
       return true;
     } else { // trying to abort an ended request, send a warning to the console
