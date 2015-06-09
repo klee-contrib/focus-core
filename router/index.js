@@ -20,23 +20,29 @@ function beforeRouting(){
     type: 'update'
   });
   //Clear errors
-  
+
   //Render stack errors
 
 }
 module.exports = Backbone.Router.extend({
   noRoleRoute: 'home',
-  route(route, name, callback) {
+  route : function (urlRoute, name, callback) {
     var router = this;
     if (!callback){
       callback = this[name];
     }
     if(callback === undefined || callback === null){
+      console.warn(`
+        The callback is not defined for your route, you should check these two points in the routes property of your router:
+        - You directly have a callback associated to your route: 'routeName': function handleRoute(){ //do what you want}
+        - You have a string property, your router should have a function in its declaration with the same name as your property
+        For more informations please see http://backbonejs.org/#Router-route
+      `);
       throw new ArgumentNullException(`The route callback seems to be undefined, please check your router file for your route: ${name}`);
     }
     var customWrapperAroundCallback = ()=>{
-      var currentRoute = route;
-      console.log(`Route change: ${currentRoute}`);
+      var currentRoute = urlRoute;
+      console.log(`Route change: ${urlRoute}`);
       //The default route is the noRoleRoute by default
       if(currentRoute === ''){
         currentRoute = router.noRoleRoute;
@@ -56,7 +62,7 @@ module.exports = Backbone.Router.extend({
       callback.apply(router, arguments);
 
   };
-    return Backbone.Router.prototype.route.call(this, route, name, customWrapperAroundCallback);
+    return Backbone.Router.prototype.route.call(this, urlRoute, name, customWrapperAroundCallback);
   },
   /**
    * Render the compoennt into the page content.
