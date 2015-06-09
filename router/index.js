@@ -26,8 +26,9 @@ module.exports = Backbone.Router.extend({
         message.addErrorMessage('application.noRights');
         return Backbone.history.navigate('', true);
       }else {
-        //Rendre all the notifications in the stack.
-        backboneNotification.renderNotifications();
+        //Rendre all the errors notifications in the stack.
+        //backboneNotification.renderNotifications();
+
       }
       //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
       callback.apply(router, arguments);
