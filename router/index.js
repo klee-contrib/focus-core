@@ -3,6 +3,27 @@ var Backbone = require('backbone');
 var ArgumentNullException = require('../exception/ArgumentNullException');
 var message = require('../message');
 var userHelper = require('../user');
+var dispatcher = require('../dispatcher');
+
+/**
+ * Function call before each route.
+ */
+function beforeRouting(){
+  console.log('Routing: before');
+  //Clear header
+  dispatcher.handleViewAction({
+    data: {
+      cartridgeComponent: React.DOM.div,
+      summaryComponent: React.DOM.div,
+      actions: {primary: [], secondary: []}
+    },
+    type: 'update'
+  });
+  //Clear errors
+  
+  //Render stack errors
+
+}
 module.exports = Backbone.Router.extend({
   noRoleRoute: 'home',
   route(route, name, callback) {
@@ -26,9 +47,10 @@ module.exports = Backbone.Router.extend({
         message.addErrorMessage('application.noRights');
         return Backbone.history.navigate('', true);
       }else {
+
         //Rendre all the errors notifications in the stack.
         //backboneNotification.renderNotifications();
-
+        beforeRouting();
       }
       //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
       callback.apply(router, arguments);
