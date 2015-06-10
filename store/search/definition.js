@@ -7,7 +7,7 @@ module.exports =  {
     facet:{
       domain: "DO_TEXT"
     },
-    list:{
+    map:{
       domain: "DO_TEXT"
     },
     pageInfos: {
