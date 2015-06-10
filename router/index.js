@@ -4,26 +4,14 @@ var ArgumentNullException = require('../exception/ArgumentNullException');
 var message = require('../message');
 var userHelper = require('../user');
 var dispatcher = require('../dispatcher');
-
+var application = require('../application');
 /**
  * Function call before each route.
  */
 function beforeRouting(newRoute){
   console.log('Routing: before');
-  //Clear header
-  dispatcher.handleViewAction({
-    data: {
-      cartridgeComponent: {component: React.DOM.div},
-      summaryComponent: {component: React.DOM.div},
-      actions: {primary: [], secondary: []},
-      route: newRoute
-    },
-    type: 'update'
-  });
-  //Clear errors
-
-  //Render stack errors
-
+  application.changeRoute(newRoute);
+  application.clearCartridge();
 }
 module.exports = Backbone.Router.extend({
   noRoleRoute: 'home',
@@ -32,7 +20,9 @@ module.exports = Backbone.Router.extend({
     if (!callback){
       callback = this[name];
     }
-    if(callback === undefined || callback === null){
+
+    var routeArguments = [urlRoute , ...arguments];
+    if(!callback){
       console.warn(`
         The callback is not defined for your route, you should check these two points in the routes property of your router:
         - You directly have a callback associated to your route: 'routeName': function handleRoute(){ //do what you want}
@@ -60,7 +50,7 @@ module.exports = Backbone.Router.extend({
         beforeRouting(urlRoute);
       }
       //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
-      callback.apply(router, arguments);
+      callback.apply(router, routeArguments);
 
   };
     return Backbone.Router.prototype.route.call(this, urlRoute, name, customWrapperAroundCallback);

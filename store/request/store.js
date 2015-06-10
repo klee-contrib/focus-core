@@ -106,7 +106,7 @@ class RequestStore extends CoreStore {
     this.dispatch = AppDispatcher.register(function(transferInfo) {
       var rawData = transferInfo.action.data;
       var type = transferInfo.action.type;
-      if(!rawData.request){return;}
+      if(!rawData || !rawData.request){return;}
       switch (type) {
         case 'update':
           if(rawData.request){
