@@ -7,6 +7,7 @@ module.exports = function(){
     'summaryComponent': 'summaryComponent',
     'cartridgeComponent': 'cartridgeComponent',
     'actions': 'actions',
-    'mode': 'mode'
+    'mode': 'mode',
+    'route': 'route'
   };
 };
