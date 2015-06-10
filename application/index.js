@@ -11,5 +11,12 @@ module.exports = {
   },
   changeRoute(newRoute){
     dispatcher.handleViewAction({data: {route: newRoute}, type: 'update'});
+  },
+  clearCartridge(){
+    dispatcher.handleViewAction({
+      cartridgeComponent: {component: React.DOM.div},
+      summaryComponent: {component: React.DOM.div},
+      actions: {primary: [], secondary: []}
+    });
   }
 };
