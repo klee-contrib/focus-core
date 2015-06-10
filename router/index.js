@@ -8,14 +8,15 @@ var dispatcher = require('../dispatcher');
 /**
  * Function call before each route.
  */
-function beforeRouting(){
+function beforeRouting(newRoute){
   console.log('Routing: before');
   //Clear header
   dispatcher.handleViewAction({
     data: {
       cartridgeComponent: {component: React.DOM.div},
       summaryComponent: {component: React.DOM.div},
-      actions: {primary: [], secondary: []}
+      actions: {primary: [], secondary: []},
+      route: newRoute
     },
     type: 'update'
   });
@@ -56,7 +57,7 @@ module.exports = Backbone.Router.extend({
 
         //Rendre all the errors notifications in the stack.
         //backboneNotification.renderNotifications();
-        beforeRouting();
+        beforeRouting(urlRoute);
       }
       //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
       callback.apply(router, arguments);
