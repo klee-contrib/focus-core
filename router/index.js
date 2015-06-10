@@ -4,26 +4,14 @@ var ArgumentNullException = require('../exception/ArgumentNullException');
 var message = require('../message');
 var userHelper = require('../user');
 var dispatcher = require('../dispatcher');
-
+var application = require('../application');
 /**
  * Function call before each route.
  */
 function beforeRouting(newRoute){
   console.log('Routing: before');
-  //Clear header
-  dispatcher.handleViewAction({
-    data: {
-      cartridgeComponent: {component: React.DOM.div},
-      summaryComponent: {component: React.DOM.div},
-      actions: {primary: [], secondary: []},
-      route: newRoute
-    },
-    type: 'update'
-  });
-  //Clear errors
-
-  //Render stack errors
-
+  application.changeRoute(newRoute);
+  application.clearCartridge();
 }
 module.exports = Backbone.Router.extend({
   noRoleRoute: 'home',
