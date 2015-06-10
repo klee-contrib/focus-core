@@ -6,6 +6,7 @@ module.exports = function(){
   return {
     'summaryComponent': 'summaryComponent',
     'cartridgeComponent': 'cartridgeComponent',
-    'actions': 'actions'
+    'actions': 'actions',
+    'mode': 'mode'
   };
 };
