@@ -1,4 +1,10 @@
 var dispatcher = require('../dispatcher');
+var Empty = React.createClass({
+  render: function() {
+    return <div></div>;
+  }
+});
+
 module.exports = {
   render: require('./render'),
   builtInStore: require('./built-in-store'),
@@ -14,9 +20,12 @@ module.exports = {
   },
   clearCartridge(){
     dispatcher.handleViewAction({
-      cartridgeComponent: {component: React.DOM.div},
-      summaryComponent: {component: React.DOM.div},
-      actions: {primary: [], secondary: []}
-    });
+        data: {
+          cartridgeComponent: {component: Empty},
+          summaryComponent: {component: Empty},
+          actions: {primary: [], secondary: []}
+        },
+        type: 'update'
+      });
   }
 };
