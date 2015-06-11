@@ -1,10 +1,13 @@
-/*global i18n, _, moment*/
-"use strict";
-//Filename: helpers/validators.js
-//Dependency gestion depending on the fact that we are in the browser or in node.
+//Dependency
 let DependencyException = require("../../exception").DependencyException;
 let i18n = require('i18n');
 let assign = require('object-assign');
+
+//Focus validators
+let emailValidation = require('./email');
+let numberValidation = require('./number');
+let stringLength = require('./string-length');
+let dateValidation = require('./date');
 
 //Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
 var validate = function validate(property, validators) {
