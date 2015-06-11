@@ -1,7 +1,7 @@
 module.exports = {
-  date: date,
-  email: email,
-  number: number,
-  stringLength: stringLength,
-  validate: validate
+  date: require('./date'),
+  email: require('./email'),
+  number: require('./number'),
+  stringLength: require('./string-length'),
+  validate: require('./validate')
 };
