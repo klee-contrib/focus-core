@@ -135,7 +135,8 @@ gulp.task('browserify', function(){
         literalify.configure({
         react: 'window.React',
         backbone: 'window.Backbone',
-        moment: 'window.moment'
+        moment: 'window.moment',
+        i18n: 'window.i18n'
       }))
       .transform(babelify)
       .bundle()
