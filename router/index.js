@@ -5,12 +5,12 @@ var message = require('../message');
 var userHelper = require('../user');
 var dispatcher = require('../dispatcher');
 var application = require('../application');
+var isFunction = require('lodash/lang/isFunction');
 /**
  * Function call before each route.
  */
-function beforeRouting(newRoute){
-  console.log('Routing: before');
-  application.changeRoute(newRoute);
+function _beforeRouting(newRoute){
+  //application.changeRoute(newRoute);
   application.clearCartridge();
 }
 module.exports = Backbone.Router.extend({
@@ -20,8 +20,6 @@ module.exports = Backbone.Router.extend({
     if (!callback){
       callback = this[name];
     }
-
-    var routeArguments = [urlRoute , ...arguments];
     if(!callback){
       console.warn(`
         The callback is not defined for your route, you should check these two points in the routes property of your router:
@@ -31,26 +29,36 @@ module.exports = Backbone.Router.extend({
       `);
       throw new ArgumentNullException(`The route callback seems to be undefined, please check your router file for your route: ${name}`);
     }
-    var customWrapperAroundCallback = ()=>{
+    function customWrapperAroundCallback(){
       var currentRoute = urlRoute;
-      console.log(`Route change: ${urlRoute}`);
+      //Rebuild the callback arguments.
+      var routeArguments = [urlRoute , ...arguments];
+
+      if(router.log){
+        console.log(`Route change: ${urlRoute}`);
+      }
+
       //The default route is the noRoleRoute by default
       if(currentRoute === ''){
         currentRoute = router.noRoleRoute;
       }
       var routeName = '';//siteDescriptionBuilder.findRouteName(currentRoute);
       var routeDescciption = {roles: ['DEFAULT_ROLE']};//siteDescriptionBuilder.getRoute(routeName);
+      //Test the user's role on the route.
       if((routeDescciption === undefined && currentRoute !== '') || !userHelper.hasRole(routeDescciption.roles)){
         message.addErrorMessage('application.noRights');
         return Backbone.history.navigate('', true);
       }else {
-
         //Rendre all the errors notifications in the stack.
         //backboneNotification.renderNotifications();
-        beforeRouting(urlRoute);
+        _beforeRouting.apply(router, routeArguments);
+        //Call the instanciated router's method before performing the routing.
+        if(isFunction(router.beforeRoute)){
+          router.beforeRoute.apply(router, routeArguments);
+        }
       }
       //console.log('routeObject', siteDescriptionBuilder.getRoute(n));
-      callback.apply(router, routeArguments);
+      callback.apply(router, [...arguments]);
 
   };
     return Backbone.Router.prototype.route.call(this, urlRoute, name, customWrapperAroundCallback);
