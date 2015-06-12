@@ -5,6 +5,7 @@
 module.exports = function(){
   return {
     'summaryComponent': 'summaryComponent',
+    'barContentLeftComponent': 'barContentLeftComponent',
     'cartridgeComponent': 'cartridgeComponent',
     'actions': 'actions',
     'mode': 'mode',
