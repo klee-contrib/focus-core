@@ -3,14 +3,14 @@ function preServiceCall(config){
   dispatcher.handleViewAction({
     data: {[config.node]: undefined},
     type: config.type,
-    status: {[config.type]: config.preStatus, isLoading: true}
+    status: {[config.node]: {name:config.preStatus}, isLoading: true}
   });
 }
 function postServiceCall(config, json){
   dispatcher.handleServerAction({
     data: {[config.node]: json},
     type: config.type,
-    status: {[config.type]: config.status, isLoading: false}
+    status: {[config.node]: {name:config.status}, isLoading: false}
   });
 }
 
