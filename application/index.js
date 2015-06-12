@@ -22,6 +22,7 @@ module.exports = {
     dispatcher.handleViewAction({
         data: {
           cartridgeComponent: {component: Empty},
+          barContentLeftComponent: {component: Empty},
           summaryComponent: {component: Empty},
           actions: {primary: [], secondary: []}
         },
