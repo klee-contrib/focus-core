@@ -1,5 +1,6 @@
 module.exports = {
 	domain: require('./domain'),
 	entity: require('./entity'),
-	validator: require('./validator')
+	validator: require('./validator'),
+	formatter: require('./formatter')
 };
