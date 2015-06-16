@@ -5,6 +5,10 @@
 module.exports = function(){
   return {
     'summaryComponent': 'summaryComponent',
-    'cartridgeComponent': 'cartridgeComponent'
+    'barContentLeftComponent': 'barContentLeftComponent',
+    'cartridgeComponent': 'cartridgeComponent',
+    'actions': 'actions',
+    'mode': 'mode',
+    'route': 'route'
   };
 };

@@ -6,16 +6,13 @@ var keys = require('lodash/object/keys');
 var intersection = require('lodash/array/intersection');
 var Immutable = require('immutable');
 var isArray = require('lodash/lang/isArray');
+var isEqual = require('lodash/lang/isEqual');
+var merge = require('lodash/object/merge');
 
 /**
  * Default configuration of the search.
  * @type {Object}
  */
-/*var defaultSearchConfig = {
- facet:"facet",
- list:"list",
- pageInfos: "pageInfos"
- };*/
 
 class SearchStore extends CoreStore {
     constructor(conf) {
@@ -33,9 +30,10 @@ class SearchStore extends CoreStore {
         var previousData = this.data.toJS();
         var processedData = assign({}, previousData, newData);
 
-        if(isArray(newData.list)) {
+        if (keys(newData.map).length === 1) { // Only one type of result, compute the total pages to trigger the infinite scroll behaviour
             if (this._isSameSearchContext(previousData, newData)) {
-                processedData.list = previousData.list.concat(newData.list);
+                var key = keys(previousData.map)[0];
+                processedData.map[key] = previousData.map[key].concat(newData.map[key]);
             }
 
             //add calculated fields on data
@@ -47,6 +45,7 @@ class SearchStore extends CoreStore {
                 }
             }
         }
+
         var data = {};
         for(var key in processedData){
             data[key] = Immutable[isArray(processedData[key]) ? 'List' : 'Map'](processedData[key]);
@@ -60,7 +59,7 @@ class SearchStore extends CoreStore {
      */
     _isSameSearchContext(previousData, newData) {
         if(newData.pageInfos) {
-            return newData.pageInfos.currentPage != 1;
+            return newData.pageInfos.currentPage != 1 && isEqual(keys(previousData.map), keys(newData.map));
         }
         return false;
     }

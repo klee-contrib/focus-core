@@ -116,7 +116,7 @@ class CoreStore extends EventEmitter {
               var hasData = currentStore.data.has(def);
               if(hasData){
                 var rawData = currentStore.data.get(def);
-                //If the store node isn't an object, immutable solution are non sens.  
+                //If the store node isn't an object, immutable solution are non sens.
                 if(isFunction(rawData) || !isObject(rawData)){
                   return rawData;
                 }
@@ -158,6 +158,14 @@ class CoreStore extends EventEmitter {
         }(definition);
       }
     }
+
+  delayPendingEvents(context){
+    //Delay all the change emit by the store to be sure it is done after the internal store propagation and to go out of the dispatch function.
+    defer(()=>{
+      context.emitPendingEvents();
+      context.clearPendingEvents();
+    });
+  }
   /**
    * The store registrer itself on the dispatcher.
    */
@@ -187,12 +195,8 @@ class CoreStore extends EventEmitter {
           }
         }
       }
+      currentStore.delayPendingEvents(currentStore);
 
-      //Delay all the change emit by the store to be sure it is done after the internal store propagation and to go out of the dispatch function.
-      defer(()=>{
-        currentStore.emitPendingEvents();
-        currentStore.clearPendingEvents();
-      });
 
     });
   }

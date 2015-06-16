@@ -30,6 +30,7 @@ module.exports = {
   network: require('./network'),
   router: require('./router'),
   reference: require('./reference'),
+  search: require('./search'),
   store: require('./store'),
   util: require('./util'),
   user: require('./user'),
