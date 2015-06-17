@@ -189,7 +189,7 @@ class CoreStore extends EventEmitter {
       var rawData = transferInfo.action.data;
       var status = transferInfo.action.status || {};
       var type = transferInfo.action.type;
-      var otherInformations = this._buildInformations(transferInfo);
+      var otherInformations = currentStore._buildInformations(transferInfo);
 
       //Call each node handler for the matching definition's node.
       for(var node in rawData){
