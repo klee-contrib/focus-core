@@ -23,6 +23,7 @@ class CoreStore extends EventEmitter {
     this.data = Immutable.Map({});
     this.status = Immutable.Map({});
     this.error = Immutable.Map({});
+    this.callerId = undefined;
     this.pendingEvents = [];
     this.customHandler = assign({}, config.customHandler);
     //Register all gernerated methods.
@@ -100,12 +101,13 @@ class CoreStore extends EventEmitter {
         //Create an update method.
         if(currentStore[`update${capitalizeDefinition}`] === undefined){
           currentStore[`update${capitalizeDefinition}`] = function(def){
-            return function (dataNode, status) {
+            return function (dataNode, status, informations) {
               var immutableNode = isFunction(dataNode) ? dataNode : Immutable.fromJS(dataNode);
               currentStore.data = currentStore.data.set(def, immutableNode);
               //Update the status on the data.
               currentStore.status = currentStore.status.set(def, status);
-              currentStore.willEmit(`${def}:change`, {property: def, status: status});
+
+              currentStore.willEmit(`${def}:change`, {property: def, status: status, informations: informations});
           }}(definition);
         }
 
@@ -166,6 +168,11 @@ class CoreStore extends EventEmitter {
       context.clearPendingEvents();
     });
   }
+  _buildInformations(incomingInfos){
+    return {
+      callerId : incomingInfos.action.callerId
+    }
+  }
   /**
    * The store registrer itself on the dispatcher.
    */
@@ -182,22 +189,21 @@ class CoreStore extends EventEmitter {
       var rawData = transferInfo.action.data;
       var status = transferInfo.action.status || {};
       var type = transferInfo.action.type;
+      var otherInformations = currentStore._buildInformations(transferInfo);
 
       //Call each node handler for the matching definition's node.
       for(var node in rawData){
         if(currentStore.definition[node]){
           //Call a custom handler if this exists.
           if(currentStore.customHandler && currentStore.customHandler[node] && currentStore.customHandler[node][type]){
-            currentStore.customHandler[node][type].call(currentStore, rawData[node], status[node]);
+            currentStore.customHandler[node][type].call(currentStore, rawData[node], status[node], otherInformations);
           }else {
             //Update the data for the given node. and emit the change/.
-            currentStore[`${type}${capitalize(node)}`](rawData[node], status[node]);
+            currentStore[`${type}${capitalize(node)}`](rawData[node], status[node], otherInformations);
           }
         }
       }
       currentStore.delayPendingEvents(currentStore);
-
-
     });
   }
     /**
