@@ -2,7 +2,7 @@ var userBuiltInStore = require('./built-in-store');
 var userStoreInstance = userBuiltInStore();
 var isArray = require('lodash/lang/isArray');
 var intersection = require('lodash/array/intersection');
-var dispactcher = require('../dispatcher');
+var dispatcher = require('../dispatcher');
 module.exports = {
   login: require('./login'),
   profile: require('./profile'),
