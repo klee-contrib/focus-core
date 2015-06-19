@@ -10,9 +10,6 @@ class UserStore extends CoreStore {
     conf.definition = conf.definition || buildDefinition();
     super(conf);
   }
-  getRoles(){
-    return ['DEFAULT_ROLE'];
-  }
 
 }
 
