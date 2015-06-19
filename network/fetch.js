@@ -8,6 +8,7 @@ var cancellablePromiseBuilder = require('./cancellable-promise-builder');
 var uuid = require('uuid').v4;
 var dispatcher = require('../dispatcher');
 
+
 /**
  * Create a pending status.
  * @return {object} The instanciated request status.
@@ -46,6 +47,7 @@ function fetch(obj, options) {
   };
   var request = createCORSRequest(obj.method, obj.url, options);
   var requestStatus = createRequestStatus();
+  var config = require('./config').get();
   if (!request) {
     throw new Error('You cannot perform ajax request on other domains.');
   }
@@ -59,9 +61,13 @@ function fetch(obj, options) {
     //Request success handler
     request.onload = function () {
       var status = request.status;
-      if (status !== 200) {
+      var err = JSON.parse(request.response);
+      if (status < 200 || status >= 300 ) {
         var err = JSON.parse(request.response);
         err.statusCode = status;
+        if(config.xhrErrors[status]){
+          config.xhrErrors[status](request.response);
+        }
         updateRequestStatus({id: requestStatus.id, status: 'error'});
         failure(err);
       }
