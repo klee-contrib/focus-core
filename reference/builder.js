@@ -9,6 +9,20 @@
   //Container for the list and
   var getConfigurationElement = require('./config').getElement;
 
+  const CACHE_DURATION = 1000 * 60; //1 min
+  let cache = {};
+
+  function _getTimeStamp(){
+    return new Date().getTime();
+  }
+  /*
+  * Serve the data from the cache.
+  */
+  function _cacheData(key, value){
+    console.info('data served from cache', key, value);
+    cache[key] = {timeStamp: _getTimeStamp(), value: value};
+    return value;
+  }
 
   /**
    * Load a list from its description
@@ -33,8 +47,15 @@
     if (typeof configurationElement !== `function`) {
         throw new Error(`You are trying to load the reference list: ${listName} which does not have a list configure.`);
     }
+    let now = _getTimeStamp();
+    if(cache[listName] && (now - cache[listName].timeStamp) > CACHE_DURATION){
+      return Promise.resolve(cache[listName].value);
+    }
     //Call the service, the service must return a promise.
-      return configurationElement(args);
+    return configurationElement(args)
+           .then((data)=>{
+             return _cacheData(listName, data)
+            });
   }
 
   //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
