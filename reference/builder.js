@@ -19,7 +19,6 @@
   * Serve the data from the cache.
   */
   function _cacheData(key, value){
-    console.info('data served from cache', key, value);
     cache[key] = {timeStamp: _getTimeStamp(), value: value};
     return value;
   }
@@ -48,7 +47,8 @@
         throw new Error(`You are trying to load the reference list: ${listName} which does not have a list configure.`);
     }
     let now = _getTimeStamp();
-    if(cache[listName] && (now - cache[listName].timeStamp) > CACHE_DURATION){
+    if(cache[listName] && (now - cache[listName].timeStamp) < CACHE_DURATION){
+      console.info('data served from cache', listName, cache[listName].value);
       return Promise.resolve(cache[listName].value);
     }
     //Call the service, the service must return a promise.
