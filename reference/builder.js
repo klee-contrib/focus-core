@@ -48,7 +48,7 @@
     }
     let now = _getTimeStamp();
     if(cache[listName] && (now - cache[listName].timeStamp) < CACHE_DURATION){
-      console.info('data served from cache', listName, cache[listName].value);
+      //console.info('data served from cache', listName, cache[listName].value);
       return Promise.resolve(cache[listName].value);
     }
     //Call the service, the service must return a promise.
