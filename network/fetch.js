@@ -34,6 +34,10 @@ function updateRequestStatus(request){
 
 }
 
+function jsonParser(req){
+  return JSON.parse(req.responseText);
+};
+
 /**
  * Fetch function to ease http request.
  * @param  {object} obj - method: http verb, url: http url, data:The json to save.
@@ -42,9 +46,8 @@ function updateRequestStatus(request){
  */
 function fetch(obj, options) {
   options = options || {};
-  options.parser = options.parser || function(req){
-    return JSON.parse(req.responseText);
-  };
+  options.parser = options.parser || jsonParser;
+  options.errorParser = options.errorParser ||  jsonParser;
   var request = createCORSRequest(obj.method, obj.url, options);
   var requestStatus = createRequestStatus();
   var config = require('./config').get();
