@@ -124,9 +124,9 @@ function _treatGlobalErrors(responseJSON, options) {
  */
 function _treatEntityExceptions(responseJSON, options) {
   dispatcher.handleServerAction({
-    data: {[config.node]: err},
+    data: {[options.node]: err}, //maybe err[options.node]
     type: 'updateError',
-    status: {[config.node]: {name:config.status}, isLoading: false}
+    status: {[options.node]: {name:config.status}, isLoading: false}
   });
 }
 
