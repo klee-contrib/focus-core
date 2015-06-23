@@ -34,6 +34,10 @@ function updateRequestStatus(request){
 
 }
 
+function jsonParser(req){
+  return JSON.parse(req.responseText);
+};
+
 /**
  * Fetch function to ease http request.
  * @param  {object} obj - method: http verb, url: http url, data:The json to save.
@@ -42,9 +46,8 @@ function updateRequestStatus(request){
  */
 function fetch(obj, options) {
   options = options || {};
-  options.parser = options.parser || function(req){
-    return JSON.parse(req.responseText);
-  };
+  options.parser = options.parser || jsonParser;
+  options.errorParser = options.errorParser ||  jsonParser;
   var request = createCORSRequest(obj.method, obj.url, options);
   var requestStatus = createRequestStatus();
   var config = require('./config').get();
@@ -64,12 +67,12 @@ function fetch(obj, options) {
       var err = JSON.parse(request.response);
       if (status < 200 || status >= 300 ) {
         var err = JSON.parse(request.response);
-        err.statusCode = status;
+        err.status = status;
         if(config.xhrErrors[status]){
           config.xhrErrors[status](request.response);
         }
         updateRequestStatus({id: requestStatus.id, status: 'error'});
-        failure(err);
+        return failure(err);
       }
       var contentType = request.getResponseHeader('content-type');
       var data;
@@ -79,7 +82,7 @@ function fetch(obj, options) {
         data = request.responseText;
       }
       updateRequestStatus({id: requestStatus.id, status: 'success'});
-      success(data);
+      return success(data);
     };
     updateRequestStatus({id: requestStatus.id, status: 'pending'});
     //Execute the request.

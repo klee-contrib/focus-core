@@ -3,5 +3,6 @@ module.exports = {
   fetch: require('./fetch'),
   cancellablePromiseBuilder: require('./cancellable-promise-builder'),
   builtInStore: require('./built-in-store'),
-  config: require('./config')
+  config: require('./config'),
+  errorParsing: require('./error-parsing')
 };
