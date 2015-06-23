@@ -67,12 +67,12 @@ function fetch(obj, options) {
       var err = JSON.parse(request.response);
       if (status < 200 || status >= 300 ) {
         var err = JSON.parse(request.response);
-        err.statusCode = status;
+        err.status = status;
         if(config.xhrErrors[status]){
           config.xhrErrors[status](request.response);
         }
         updateRequestStatus({id: requestStatus.id, status: 'error'});
-        failure(err);
+        return failure(err);
       }
       var contentType = request.getResponseHeader('content-type');
       var data;
@@ -82,7 +82,7 @@ function fetch(obj, options) {
         data = request.responseText;
       }
       updateRequestStatus({id: requestStatus.id, status: 'success'});
-      success(data);
+      return success(data);
     };
     updateRequestStatus({id: requestStatus.id, status: 'pending'});
     //Execute the request.
