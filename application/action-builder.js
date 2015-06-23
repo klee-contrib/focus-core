@@ -1,5 +1,7 @@
-var dispatcher = require('../dispatcher');
-var message = require('../message');
+let dispatcher = require('../dispatcher');
+let message = require('../message');
+let manageResponseErrors = require('../network/error-parsing').manageResponseErrors;
+
 function preServiceCall(config){
   dispatcher.handleViewAction({
     data: {[config.node]: undefined},
@@ -17,7 +19,8 @@ function postServiceCall(config, json){
 
 /***/
 function errorOnCall(config, err){
-  if(err.statusCode === 422){
+  return manageResponseErrors(err, config);
+  if(err.status === 422){
     dispatcher.handleServerAction({
       data: {[config.node]: err},
       type: 'updateError',
