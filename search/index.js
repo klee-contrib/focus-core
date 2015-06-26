@@ -1,6 +1,10 @@
 let dispatcher = require('../dispatcher');
 module.exports = {
     builtInStore: require('./built-in-store'),
+    /**
+     * Action builder
+     */
+    actionBuilder: require('./action-builder'),
     /*
     * Dispatch the change of the query value, with the callerId information.
     */
