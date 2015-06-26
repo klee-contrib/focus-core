@@ -4,6 +4,83 @@ let keys = require('lodash/object/keys');
 let {clone, isEqual} = require('lodash/lang');
 
 const ALL = 'ALL';
+
+let _buildPagination = (pageInfos) => {
+    return {
+        page: pageInfos.page || 0,
+        skip: pageInfos.skip || 0
+    }
+};
+let _buildOrderAndSort = (pageInfos) => {
+    if (pageInfos.order) {
+        let result = {};
+        result.sortFieldName = pageInfos.order.key;
+        if (pageInfos.order.order) {
+            result.sortDesc = pageInfos.order.order.toLowerCase() === 'desc';
+        }
+        return result;
+    } else {
+        return {
+            sortFieldName: '',
+            sortDesc: false
+        }
+    }
+};
+let _buildFacets = (facets) => {
+    return keys(facets).map((selectedFacetKey) => {
+        let selectedFacet = facets[selectedFacetKey];
+        return {
+            key: selectedFacetKey,
+            value: selectedFacet.key
+        };
+    });
+};
+let _parseUnscopedResponse = (data, context) => {
+    return ({
+        map: data.groups,
+        facet: _parseFacets(data.facets),
+        pageInfos: _parsePageInfos(data, context)
+    });
+};
+
+let _parseScopedResponse = (data, context) => {
+    return ({
+        map: data.groups || {[context.scope]: data.list},
+        facet: _parseFacets(data.facets),
+        pageInfos: _parsePageInfos(data, context)
+    });
+};
+let _parseFacets = (facets) => {
+    return keys(facets).reduce((formattedFacets, serverFacetKey) => {
+        let serverFacetData = facets[serverFacetKey];
+        formattedFacets[serverFacetKey] = keys(serverFacetData).reduce((facetData, serverFacetItemKey) => {
+            let serverFacetItemValue = serverFacetData[serverFacetItemKey];
+            facetData[serverFacetItemKey] = {
+                label: serverFacetItemKey,
+                count: serverFacetItemValue
+            };
+            return facetData;
+        }, {});
+        return formattedFacets;
+    }, {});
+};
+
+let _dispatchResult = (data) => {
+    Focus.dispatcher.handleServerAction({
+        data,
+        type: 'update'
+    });
+};
+
+
+let _parsePageInfos = (data, context) => {
+    return {
+        currentPage: context.page,
+        perPage: 50,
+        totalRecords: data.totalCount
+    }
+};
+
 module.exports = function(config){
   /**
    * Builded search action.
@@ -30,7 +107,7 @@ module.exports = function(config){
    * 	}
    * }
    * ```
-   * @return {[type]}         [description]
+   * @return {function} - The builded search action.
    */
   return function searchAction(options){
     options = options || {};
