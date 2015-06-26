@@ -186,7 +186,13 @@ class CoreStore extends EventEmitter {
   registerDispatcher(){
     var currentStore = this;
     this.dispatch = AppDispatcher.register(function(transferInfo) {
-
+      //Check if an identifier check is necessary.
+      if(this.identifier){
+        //If an identifier is needed a check is triggered.
+        if(!this.transferInfo || !this.transferInfo.identifier || this.transferInfo.identifier !== this.identifier){
+          return;
+        }
+      }
       //currentStore.clearPendingEvents();
       if(currentStore.globalCustomHandler){
         return currentStore.globalCustomHandler.call(currentStore, transferInfo);
