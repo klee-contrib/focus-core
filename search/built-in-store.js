@@ -1,7 +1,7 @@
-var SearchStore = require('../store/search');
-var QueryStore = require('../store/query');
+let AdvancedSearchStore = require('../store/search/advanced-search');
+let QuickSearchStore = require('../store/search/advanced-search');
 
 module.exports = {
-    searchStore: new SearchStore(),
-    queryStore: new QueryStore()
+    quickSearchStore: new QuickSearchStore(),
+    advancedSearchStore: new AdvancedSearchStore()
 };
