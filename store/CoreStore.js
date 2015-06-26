@@ -47,6 +47,13 @@ class CoreStore extends EventEmitter {
       );
       return this.definition;
   }
+  /**
+   * Getter on the identifier property.
+   * @return {string} - Store identifier.
+   */
+  get identifier(){
+    return this.config && this.config.identifier ? this.config.identifier : undefined;
+  }
   /** Return the status of a definition.
    * @returns {string} - The status of a definition.
    */
