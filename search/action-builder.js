@@ -1,3 +1,4 @@
+let dispatcher = require('../dispatcher');
 module.exports = function(identifier){
   return {
     /**
@@ -10,19 +11,31 @@ module.exports = function(identifier){
     },
     /**
      * Update the query for the identifier scope.
+     * @param  {string} value - The query value
      * @return {function} The update query function for the given identifier.
      */
-    updateQuery(){
-      console.warn('update query NOT IMPLEMENTED....');
-      return identifier;
+    updateQuery(value){
+      return dispatcher.handleViewAction({
+        data: {
+          query: value
+        },
+        type: 'update',
+        identifier: identifier
+      });
     },
     /**
      * Update the scope for the identifier scope.
+     * @param  {string} value - The scope value
      * @return {function} The update scope function for the given identifier.
      */
-    updateScope(){
-      console.warn('update scope NOT IMPLEMENTED....');
-      return identifier;
+    updateScope(value){
+      return dispatcher.handleViewAction({
+        data: {
+          scope: value
+        },
+        type: 'update',
+        identifier: identifier
+      });
     }
   };
 };
