@@ -1,14 +1,19 @@
 let dispatcher = require('../dispatcher');
-module.exports = function(identifier){
+let searchAction = require('./search-action');
+module.exports = function(config){
+  config = config || {};
+  if(!config.identifier){
+    console.warn('Your action should have an identifier');
+  }
+  if(!config.service){
+    console.warn('Your action should have a service');
+  }
   return {
     /**
      * Build the search for the identifier scope.
      * @return {function} The search function for the given identifier.
      */
-    search(){
-      console.warn(' search NOT IMPLEMENTED....');
-      return identifier;
-    },
+    search: searchAction(config),
     /**
      * Update the query for the identifier scope.
      * @param  {string} value - The query value
@@ -20,7 +25,7 @@ module.exports = function(identifier){
           query: value
         },
         type: 'update',
-        identifier: identifier
+        identifier: config.identifier
       });
     },
     /**
@@ -34,7 +39,7 @@ module.exports = function(identifier){
           scope: value
         },
         type: 'update',
-        identifier: identifier
+        identifier: config.identifier
       });
     }
   };
