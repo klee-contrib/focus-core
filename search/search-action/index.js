@@ -118,7 +118,7 @@ module.exports = function(config){
     }else{
       //The component which call the serice should be know if it has all the data.
       if(options.previousData){ //Maybe rename pagination or something like that.
-        options.service.unScope(options).then((response)=>{
+        config.service.unScope(options).then((response)=>{
             // Read the previous data from options.previous;
             return response;
         });
