@@ -111,6 +111,10 @@ module.exports = function(config){
    */
   return function searchAction(options){
     options = options || {};
+
+    ///////// COMMENT //////////
+    // Could be nice to read all the info from the stores, so that no complex option needs to be passed to mutliple functions....
+
     let {scope, query} = options.criteria; //Cannot be read from the store ?
     if(scope === ALL){
       //Call the search action.
