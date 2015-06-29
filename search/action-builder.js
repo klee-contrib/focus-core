@@ -1,6 +1,23 @@
 let dispatcher = require('../dispatcher');
 let searchAction = require('./search-action');
 const NB_SEARCH_ELEMENT = 50;
+
+ /**
+  * Builded search action.
+  * @param  {object} options - The options used to build the service, it should have the following structure:
+  * ```javascript
+  * {
+  *   identifier: string: should be 'ADVANCED_SEARCH' or 'QUICK_SEARCH'
+  * 	service:{
+  * 		scoped: "function which launch the scope search"
+  * 		unScoped: "function whoch launch the unscoped search"
+  * 	}
+  * 	getSearchOptions a function which get the associated search store value
+  * 	nbSearchElement: number of elements to request on each search.
+  * }
+  * ```
+  * @return {function} - The builded search action.
+  */
 module.exports = function(config){
   config = config || {};
   if(!config.identifier){
