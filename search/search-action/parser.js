@@ -1,11 +1,5 @@
+//Requirements
 let keys = require('lodash/object/keys');
-let _parsePageInfos = (data, context) => {
-    return {
-        currentPage: context.page,
-        perPage: 50,
-        totalCount: data.totalCount
-    };
-};
 
 let _parseFacets = (facets) => {
     return keys(facets).reduce((formattedFacets, serverFacetKey) => {
@@ -23,15 +17,24 @@ let _parseFacets = (facets) => {
 };
 let _parseUnscopedResponse = (data) => {
     return ({
-        map: data.groups,
-        facet: _parseFacets(data.facets)
+        groups: data.groups,
+        facets: _parseFacets(data.facets),
+        totalCount: data.totalCount
     });
 };
 
 let _parseScopedResponse = (data, context) => {
+    //Scroll can only happen when there is an ungroupSearch
+    if(context.isScroll){
+      let resultsKeys = keys(context.results);
+      let key = resultsKeys[0];
+      //Concat previous data with incoming data.
+      data.list = [...context.results[key], ...data.list];
+    }
     return ({
-        map: data.groups || {[context.scope]: data.list},
-        facet: _parseFacets(data.facets)
+        groups: data.groups || {[context.scope]: data.list},
+        facets: _parseFacets(data.facets),
+        totalCount: data.totalCount
     });
 };
 module.exports = {

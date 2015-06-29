@@ -1,7 +1,5 @@
 //Dependencies.
 let assign = require('object-assign');
-let keys = require('lodash/object/keys');
-let {isEqual} = require('lodash/lang');
 let _builder = require('./builder');
 let _parser = require('./parser');
 const ALL = 'ALL';
@@ -48,7 +46,6 @@ module.exports = function(config){
     let {
       scope,
       query,
-      facets,
       selectedFacets,
       groupingKey,
       sortBy,
@@ -66,7 +63,7 @@ module.exports = function(config){
     );
     let postData = {
       criteria: {scope, query},
-      facets: _builder.facets(selectedFacets) || [],
+      facets: selectedFacets ? _builder.facets(selectedFacets) : [],
       group: groupingKey
     };
     if(scope === ALL){
@@ -76,16 +73,10 @@ module.exports = function(config){
                     .then(_dispatchResult);
     }else{
       //The component which call the serice should be know if it has all the data.
-        config.service.scope(options).then((response)=>{
-            // Read the previous data from options.previous;
-            if(isScroll){
-
-            }
-            return response;
-        });
-        //Read the totalCount
-
-
+        config.service.scope({urlData: urlData, data: postData})
+                      .then((response)=>{
+                          return _parser.scopedResponse(response, {isScroll, scope, results});
+                      }).then(_dispatchResult);
     }
   };
 };
