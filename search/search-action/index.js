@@ -1,8 +1,9 @@
 //Dependencies.
 let assign = require('object-assign');
 let keys = require('lodash/object/keys');
-let {clone, isEqual} = require('lodash/lang');
+let {isEqual} = require('lodash/lang');
 let _builder = require('./builder');
+let _parser = require('./parser');
 const ALL = 'ALL';
 
 
@@ -43,33 +44,46 @@ module.exports = function(config){
    * ```
    * @return {function} - The builded search action.
    */
-  return function searchAction(options){
-    options = clone(options || {});
-
-
-    ///////// COMMENT //////////
-    // Could be nice to read all the info from the stores, so that no complex option needs to be passed to mutliple functions....
-
-    let {scope, query} = options.criteria; //Cannot be read from the store ?
+  return function searchAction(isScroll){
+    let {
+      scope,
+      query,
+      facets,
+      selectedFacets,
+      groupingKey,
+      sortBy,
+      sortAsc,
+      results,
+      totalCount
+      } = config.getSearchOptions();
+    let nbSearchElement = config.nbSearchElement;
     if(query === ''){
       query = '*';
     }
-    let urlData = assign(_builder.pagination(options.pageInfos), _builder.orderAndSort(options.pageInfos));
-
+    let urlData = assign(
+      _builder.pagination({results, totalCount, isScroll, nbSearchElement}),
+      _builder.orderAndSort({sortBy, sortAsc})
+    );
+    let postData = {
+      criteria: {scope, query},
+      facets: _builder.facets(selectedFacets) || [],
+      group: groupingKey
+    };
     if(scope === ALL){
       //Call the search action.
-      options.service.scope(options);
+      config.service.unscope({urlData: urlData, data: postData})
+                    .then(_parser.unscopedResponse)
+                    .then(_dispatchResult);
     }else{
       //The component which call the serice should be know if it has all the data.
-      if(options.previousData){ //Maybe rename pagination or something like that.
-        config.service.unScope(options).then((response)=>{
+        config.service.scope(options).then((response)=>{
             // Read the previous data from options.previous;
+            if(isScroll){
+
+            }
             return response;
         });
         //Read the totalCount
-
-      }
-      //The search is unscoped.
 
 
     }
