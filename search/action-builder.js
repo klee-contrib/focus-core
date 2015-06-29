@@ -19,25 +19,9 @@ module.exports = function(config){
      * @param  {string} value - The query value
      * @return {function} The update query function for the given identifier.
      */
-    updateQuery(value){
+    updateProperties(value){
       return dispatcher.handleViewAction({
-        data: {
-          query: value
-        },
-        type: 'update',
-        identifier: config.identifier
-      });
-    },
-    /**
-     * Update the scope for the identifier scope.
-     * @param  {string} value - The scope value
-     * @return {function} The update scope function for the given identifier.
-     */
-    updateScope(value){
-      return dispatcher.handleViewAction({
-        data: {
-          scope: value
-        },
+        data: value,
         type: 'update',
         identifier: config.identifier
       });
