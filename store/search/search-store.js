@@ -1,4 +1,4 @@
-let CoreStore = require('../../CoreStore');
+let CoreStore = require('../CoreStore');
 /**
  * Class standing for all advanced search information.
  * The state should be the complete state of the page.
