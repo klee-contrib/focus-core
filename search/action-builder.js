@@ -1,5 +1,6 @@
 let dispatcher = require('../dispatcher');
 let searchAction = require('./search-action');
+const NB_SEARCH_ELEMENT = 50;
 module.exports = function(config){
   config = config || {};
   if(!config.identifier){
@@ -7,6 +8,12 @@ module.exports = function(config){
   }
   if(!config.service){
     console.warn('Your action should have a service');
+  }
+  if(!config.getSearchOptions){
+    console.warn('Your action should have a search options getter.');
+  }
+  if(!config.nbSearchElement){
+    config.nbSearchElement = NB_SEARCH_ELEMENT;
   }
   return {
     /**
