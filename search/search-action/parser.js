@@ -3,7 +3,7 @@ let _parsePageInfos = (data, context) => {
     return {
         currentPage: context.page,
         perPage: 50,
-        totalRecords: data.totalCount
+        totalCount: data.totalCount
     };
 };
 
@@ -21,22 +21,20 @@ let _parseFacets = (facets) => {
         return formattedFacets;
     }, {});
 };
-let _parseUnscopedResponse = (data, context) => {
+let _parseUnscopedResponse = (data) => {
     return ({
         map: data.groups,
-        facet: _parseFacets(data.facets),
-        pageInfos: _parsePageInfos(data, context)
+        facet: _parseFacets(data.facets)
     });
 };
 
 let _parseScopedResponse = (data, context) => {
     return ({
         map: data.groups || {[context.scope]: data.list},
-        facet: _parseFacets(data.facets),
-        pageInfos: _parsePageInfos(data, context)
+        facet: _parseFacets(data.facets)
     });
 };
 module.exports = {
-  parseUnscopedResponse: _parseUnscopedResponse,
-  parseScopedResponse: _parseScopedResponse
+  unscopedResponse: _parseUnscopedResponse,
+  scopedResponse: _parseScopedResponse
 };
