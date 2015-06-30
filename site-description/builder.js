@@ -1,64 +1,29 @@
-/* global  _, Backbone*/
-  "use strict";
-  //Filename: helpers/routes_helper.js
+let {find, some} = require('lodash/collection');
+let clone = require('lodash/lang/clone');
+let Backbone = require('backbone');
 
-  var userHelper = require("./user_helper");
-  var siteDescriptionHelper = require("./site_description_helper");
-  var ArgumentNullException =  require("./custom_exception").ArgumentNullException;
-  //Container for the site description and routes.
-  var siteDescription, routes = {}, siteStructure = {};
+let userHelper = require('../user');
+let siteDescriptionReader = require('./reader');
 
-  //Process the siteDescription if necessary.
-  var processSiteDescription = function(options){
-    options = options || {};
-    if(!siteDescriptionHelper.isProcessed() || options.isForceProcess){
-      siteDescription = siteDescriptionHelper.getSite();
-      regenerateRoutes();
-      return siteDescription;
-    }
-    return false;
-  };
+//Container for the site description and routes.
+let siteDescription, routes = {}, siteStructure = {};
+const EMPTY = '';
 
-  //Regenerate the application routes.
-  var regenerateRoutes = function regenerateRoutes() {
-    //Clean all previous registered routes.
-    routes = {};
-    siteStructure = {};
-    //Process the new routes.
-    processElement(siteDescription);
-  };
-
-  //Process the name of 
-  var processName = function(pfx, eltDescName) {
-    if (pfx === undefined || pfx === null) {
-      pfx = "";
-    }
-    if (eltDescName === undefined || eltDescName === null) {
-      return pfx;
-    }
-    if (pfx === "") {
-      return eltDescName;
-    }
-    return pfx + '.' + eltDescName;
-  };
-
-  
-  var processElement = function(siteDescElt, prefix, options) {
-    options = options || {};
-    if (!siteDescElt) {
-      console.warn('The siteDescription does not exists', siteDescElt);
-      return;
-    }
-    var pfx = processName(prefix, siteDescElt.name);
-    //if(siteDescriptionHelper.checkParams(siteDescElt.requiredParams)){
-     processHeaders(siteDescElt, pfx);
-    //}
-    processPages(siteDescElt, pfx);
-    processRoute(siteDescElt, pfx, options);
-  };
-
-  //Process the deaders element of the site description element.
-  var processHeaders = function(siteDesc, prefix) {
+//Process the name of
+function _processName(pfx, eltDescName) {
+  if (pfx === undefined || pfx === null) {
+    pfx = EMPTY;
+  }
+  if (eltDescName === undefined || eltDescName === null) {
+    return pfx;
+  }
+  if (pfx === EMPTY) {
+    return eltDescName;
+  }
+  return pfx + '.' + eltDescName;
+}
+//Process the deaders element of the site description element.
+function _processHeaders(siteDesc, prefix) {
 
     if (!siteDesc.headers) {
       return;
@@ -66,113 +31,144 @@
     //console.log('headers', siteDesc.headers, 'prefix', prefix);
     var headers = siteDesc.headers;
     var isInSiteStructure = false;
-    if(siteDescriptionHelper.checkParams(siteDesc.requiredParams)){
+    if(siteDescriptionReader.checkParams(siteDesc.requiredParams)){
       isInSiteStructure = true;
     }
     for (var i in headers) {
-      processElement(headers[i], prefix, {isInSiteStructure: isInSiteStructure});
+      _processElement(headers[i], prefix, {isInSiteStructure: isInSiteStructure});
     }
-  };
+  }
 
   //Process the pages element of the site description.
-  var processPages = function(siteDesc, prefix) {
+  function _processPages(siteDesc, prefix) {
     if (siteDesc.pages !== undefined && siteDesc.pages !== null) {
       //console.log('pages', siteDesc.pages, 'prefix', prefix);
 
       for (var i in siteDesc.pages) {
-        processElement(siteDesc.pages[i], prefix);
+        _processElement(siteDesc.pages[i], prefix);
       }
     }
-  };
+  }
 
- 
-  //Process the route part of the site description element.
-  var processRoute = function(siteDesc, prefix, options) {
-    options = options || {};
-    if (siteDesc.roles !== undefined && siteDesc.url !== undefined)
-    //console.log('route', siteDesc.url, 'prefix', prefix);
+//Process the route part of the site description element.
+function _processRoute(siteDesc, prefix, options) {
+  options = options || {};
+  //if (siteDesc.roles !== undefined && siteDesc.url !== undefined)
+  //console.log('route', siteDesc.url, 'prefix', prefix);
 
-      if (userHelper.hasOneRole(siteDesc.roles)) {
-        var route = {
-          roles: siteDesc.roles,
-          name: prefix,
-          route: siteDesc.url,
-          regex: routeToRegExp(siteDesc.url),
-          requiredParams: siteDesc.requiredParams
-        };
-        //Call the Backbone.history.handlers....
-        //console.log('*****************');
-        //console.log('ROute name: ',route.route);
-        //console.log('Route handler name : ',  findRouteName(route.route.substring(1)));
-        routes[findRouteName(route.route.substring(1))] = route;
-        if(options.isInSiteStructure){
-          siteStructure[prefix] = route;
-        }
+    if (userHelper.hasRole(siteDesc.roles)) {
+      var route = {
+        roles: siteDesc.roles,
+        name: prefix,
+        route: siteDesc.url,
+        regex: routeToRegExp(siteDesc.url),
+        requiredParams: siteDesc.requiredParams
+      };
+      //Call the Backbone.history.handlers....
+      //console.log('*****************');
+      //console.log('ROute name: ',route.route);
+      //console.log('Route handler name : ',  findRouteName(route.route.substring(1)));
+      routes[findRouteName(route.route.substring(1))] = route;
+      if(options.isInSiteStructure){
+        siteStructure[prefix] = route;
       }
-  };
+    }
+}
+
+
+function _processElement(siteDescElt, prefix, options) {
+  options = options || {};
+  if (!siteDescElt) {
+    console.warn('The siteDescription does not exists', siteDescElt);
+    return;
+  }
+  var pfx = _processName(prefix, siteDescElt.name);
+  //if(siteDescriptionReader.checkParams(siteDescElt.requiredParams)){
+   _processHeaders(siteDescElt, pfx);
+  //}
+  _processPages(siteDescElt, pfx);
+  _processRoute(siteDescElt, pfx, options);
+}
+
 
 //Find a route with its name.
 // _routeToTest_ : Route to test.
-// *return* : The handler route name. 
- var findRouteName = function(routeToTest) {
+// *return* : The handler route name.
+function findRouteName(routeToTest) {
     var handlers = Backbone.history.handlers;
     //console.log('handlers', )
-    var h = _.find(handlers, function(handler){
+    var h = find(handlers, function(handler){
       return handler.route.test(routeToTest);
     });
     if(h !== undefined){
-      return  h.route.toString();
+      return h.route.toString();
     }
-    return _.any(handlers, function(handler) {
+    return some(handlers, function(handler) {
       if (handler.route.test(routeToTest)) {
-        return  handler.route.toString();
+        return handler.route.toString();
       }
     });
-  };
-  
+  }
 
-    //Convert a route to regexp
-  var optionalParam = /\((.*?)\)/g;
-  var namedParam    = /(\(\?)?:\w+/g;
-  var splatParam    = /\*\w+/g;
-  var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-  var routeToRegExp=  function routeToRegExp(route) {
-      route = route.replace(escapeRegExp, '\\$&')
-                   .replace(optionalParam, '(?:$1)?')
-                   .replace(namedParam, function(match, optional) {
-                     return optional ? match : '([^/?]+)';
-                   })
-                   .replace(splatParam, '([^?]*?)');
-      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
-    };
+
+  //Convert a route to regexp
+const optionalParam = /\((.*?)\)/g;
+const namedParam = /(\(\?)?:\w+/g;
+const splatParam = /\*\w+/g;
+const escapeRegExp = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+function routeToRegExp(route) {
+    route = route.replace(escapeRegExp, '\\$&')
+                 .replace(optionalParam, '(?:$1)?')
+                 .replace(namedParam, function(match, optional) {
+                   return optional ? match : '([^/?]+)';
+                 })
+                 .replace(splatParam, '([^?]*?)');
+    return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
+}
 
   //Get the siteDescription.
-  var getSiteDescription = function getSiteDescription() {
-    return _.clone(siteDescription);
-  };
+function getSiteDescription() {
+    return clone(siteDescription);
+}
 
   //Get all the application routes from the siteDescription.
-  var getRoute = function getRoutes(routeName) {
-    return _.clone(routes[routeName]);
-  };
+function getRoute(routeName) {
+    return clone(routes[routeName]);
+}
+function getRoutes() {
+    return clone(routes);
+}
 
-  var getRoutes = function getRoutes() {
-    return _.clone(routes);
-  };
+function getSiteStructure() {
+    return clone(siteStructure);
+}
+//Process the siteDescription if necessary.
+function processSiteDescription(options){
+  options = options || {};
+  if(!siteDescriptionReader.isProcessed() || options.isForceProcess){
+    siteDescription = siteDescriptionReader.getSite();
+    regenerateRoutes();
+    return siteDescription;
+  }
+  return false;
+}
 
-  var getSiteStructure = function getSiteStructure() {
-    return _.clone(siteStructure);
-  };
+//Regenerate the application routes.
+function regenerateRoutes() {
+  //Clean all previous registered routes.
+  routes = {};
+  siteStructure = {};
+  //Process the new routes.
+  _processElement(siteDescription);
+}
 
-  var siteDescriptionBuilder = {
-    getRoute: getRoute,
-    getRoutes: getRoutes,
-    getSiteDescription: getSiteDescription,
-    regenerateRoutes: regenerateRoutes,
-    getSiteStructure: getSiteStructure,
-    processSiteDescription: processSiteDescription,
-    findRouteName: findRouteName,
-    routeToRegExp:routeToRegExp
-  };
-
-  module.exports = siteDescriptionBuilder;
+module.exports = {
+  getRoute: getRoute,
+  getRoutes: getRoutes,
+  getSiteDescription: getSiteDescription,
+  regenerateRoutes: regenerateRoutes,
+  getSiteStructure: getSiteStructure,
+  processSiteDescription: processSiteDescription,
+  findRouteName: findRouteName,
+  routeToRegExp: routeToRegExp
+};
