@@ -1,13 +1,12 @@
-"use strict";
 /**
  * Dependency on the CORS module.
  * @type {object}
  */
-var createCORSRequest = require('./cors');
-var cancellablePromiseBuilder = require('./cancellable-promise-builder');
-var uuid = require('uuid').v4;
-var dispatcher = require('../dispatcher');
-
+let createCORSRequest = require('./cors');
+let cancellablePromiseBuilder = require('./cancellable-promise-builder');
+let uuid = require('uuid').v4;
+let dispatcher = require('../dispatcher');
+let isObject = require('lodash/lang/isObject');
 
 /**
  * Create a pending status.
@@ -15,17 +14,17 @@ var dispatcher = require('../dispatcher');
  */
 function createRequestStatus(){
   return {
-    id : uuid(),
+    id: uuid(),
     status: 'pending'
   };
 }
 /**
  * Update the request status.
  * @param  {object} request - The request to treat.
- * @return {[object} - The request to dispatch.
+ * @return {object} - The request to dispatch.
  */
 function updateRequestStatus(request){
-  if(!request || !request.id || !request.status){return;}
+  if(!request || !request.id || !request.status){return; }
   dispatcher.handleViewAction({
     data: {request: request},
     type: 'update'
@@ -33,10 +32,23 @@ function updateRequestStatus(request){
   return request;
 
 }
-
+/**
+ * Parse the response.
+ * @param  {object} req - The requets object send back from the xhr.
+ * @return {object}     - The parsed object.
+ */
 function jsonParser(req){
-  return JSON.parse(req.responseText);
-};
+  if(req.responseText === null || req.responseText === null || req.responseText === ''){
+    console.warn('The response of your request was empty');
+    return null;
+  }
+  let parsedObject = JSON.parse(req.responseText);
+  if(!isObject(parsedObject)){
+    //Maybe this check should read the header content-type
+    console.warn('The response did not sent a JSON object');
+  }
+  return parsedObject;
+}
 
 /**
  * Fetch function to ease http request.
@@ -47,7 +59,7 @@ function jsonParser(req){
 function fetch(obj, options) {
   options = options || {};
   options.parser = options.parser || jsonParser;
-  options.errorParser = options.errorParser ||  jsonParser;
+  options.errorParser = options.errorParser || jsonParser;
   var request = createCORSRequest(obj.method, obj.url, options);
   var requestStatus = createRequestStatus();
   var config = require('./config').get();
@@ -64,9 +76,8 @@ function fetch(obj, options) {
     //Request success handler
     request.onload = function () {
       var status = request.status;
-      var err = JSON.parse(request.response);
       if (status < 200 || status >= 300 ) {
-        var err = JSON.parse(request.response);
+        let err = options.errorParser(request.response);
         err.status = status;
         if(config.xhrErrors[status]){
           config.xhrErrors[status](request.response);
@@ -76,7 +87,7 @@ function fetch(obj, options) {
       }
       var contentType = request.getResponseHeader('content-type');
       var data;
-      if (contentType && contentType.indexOf("application/json") !== -1) {
+      if (contentType && contentType.indexOf('application/json') !== -1) {
         data = options.parser(request);
       } else {
         data = request.responseText;
