@@ -50,7 +50,7 @@ module.exports = function(config){
     let postData = {
       criteria: {scope, query},
       facets: selectedFacets ? _builder.facets(selectedFacets) : [],
-      group: groupingKey
+      group: groupingKey || ''
     };
     //Different call depending on the scope.
     if(scope === ALL){
