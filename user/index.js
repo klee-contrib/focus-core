@@ -12,6 +12,6 @@ module.exports = {
     return intersection(role, userStoreInstance.getRoles()).length > 0;
   },
   setRoles(roles){
-    dispatcher.handleViewAction({data: {roles: roles}, type: 'update'})
+    dispatcher.handleViewAction({data: {roles: roles}, type: 'update'});
   }
 };
