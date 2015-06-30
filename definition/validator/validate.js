@@ -1,6 +1,5 @@
 //Dependency
 let DependencyException = require("../../exception").DependencyException;
-let i18n = require('i18n');
 let assign = require('object-assign');
 
 //Focus validators
@@ -80,6 +79,7 @@ function validateProperty(property, validator) {
 
 function getErrorLalel(type, fieldName, options) {
   options = options || {};
+  let i18n = require('i18n');
   if (!i18n) {
     throw new DependencyException("Dependency not resolved: i18n.js");
   }
