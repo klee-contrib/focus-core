@@ -30,7 +30,6 @@ function updateRequestStatus(request){
     type: 'update'
   });
   return request;
-
 }
 /**
  * Parse the response.
