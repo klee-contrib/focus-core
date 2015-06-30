@@ -31,6 +31,7 @@ module.exports = {
   router: require('./router'),
   reference: require('./reference'),
   search: require('./search'),
+  siteDescription: require('./site-description'),
   store: require('./store'),
   util: require('./util'),
   user: require('./user'),
