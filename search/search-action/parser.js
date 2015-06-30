@@ -1,4 +1,5 @@
 //Requirements
+
 let keys = require('lodash/object/keys');
 
 let _parseFacets = (facets) => {
@@ -17,7 +18,7 @@ let _parseFacets = (facets) => {
 };
 let _parseUnscopedResponse = (data) => {
     return ({
-        groups: data.groups,
+        results: data.groups,
         facets: _parseFacets(data.facets),
         totalCount: data.totalCount
     });
@@ -32,7 +33,7 @@ let _parseScopedResponse = (data, context) => {
       data.list = [...context.results[key], ...data.list];
     }
     return ({
-        groups: data.groups || {[context.scope]: data.list},
+        results: data.groups || {[context.scope]: data.list},
         facets: _parseFacets(data.facets),
         totalCount: data.totalCount
     });
