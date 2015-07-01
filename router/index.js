@@ -46,6 +46,7 @@ module.exports = Backbone.Router.extend({
       var routeDescciption = {roles: ['DEFAULT_ROLE']};//siteDescriptionBuilder.getRoute(routeName);
       //Test the user's role on the route.
       if((routeDescciption === undefined && currentRoute !== '') || !userHelper.hasRole(routeDescciption.roles)){
+        console.warn(`You don't have the needed role to see this page`);
         message.addErrorMessage('application.noRights');
         return Backbone.history.navigate('', true);
       }else {

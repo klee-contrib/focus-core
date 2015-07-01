@@ -1,16 +1,15 @@
 let dispatcher = require('../dispatcher');
 module.exports = {
     builtInStore: require('./built-in-store'),
-    /*
-    * Dispatch the change of the query value, with the callerId information.
-    */
-    changeQuery(queryValue, callerId){
-      dispatcher.handleViewAction({data: {query: queryValue}, type: 'update', callerId: callerId});
-    },
-    /*
-    * Dispatch the change of the scope value, with the callerId information.
-    */
-    changeScope(scopeValue, callerId){
-      dispatcher.handleViewAction({data: {scope: scopeValue}, type: 'update', callerId: callerId});
+    /**
+     * Action builder
+     */
+    actionBuilder: require('./action-builder'),
+    log(){
+        let builtInStore = require('./built-in-store');
+        console.info('---------------------------');
+        console.info('QuickSearch', builtInStore.quickSearchStore.value);
+        console.info('AdvancedSearch', builtInStore.advancedSearchStore.value);
+        console.info('---------------------------');
     }
 };
