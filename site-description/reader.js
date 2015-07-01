@@ -1,24 +1,35 @@
-/* global  _*/
-"use strict";
-//Filename: helpers/routes_helper.js
-//Dependency gestion depending on the fact that we are in the browser or in node.
-var ArgumentNullException = require("./custom_exception").ArgumentNullException;
-var ArgumentInvalidException = require("./custom_exception").ArgumentInvalidException;
+let ArgumentNullException = require('../exception').ArgumentNullException;
+let ArgumentInvalidException = require('../exception').ArgumentInvalidException;
+let {isObject, isFunction, isArray, isEqual, clone} = require('lodash/lang');
+let contains = require('lodash/collection/contains');
+let intersection = require('lodash/array/intersection');
+let keys = require('lodash/object/keys');
+
 //Module page.
-var siteDescriptionStructure,
+let siteDescriptionStructure,
   siteDescriptionParams,
   isProcess = false;
+
+  //Get the site process
+  var getSite = function getSite() {
+    isProcess = true;
+    if(!isFunction(siteDescriptionStructure)){
+      console.warn('You are trying to call getSite before it was correctly initialized...');
+    }
+    return siteDescriptionStructure(siteDescriptionParams);
+  };
+
 //Define the application site description.
 //The siteDescription must be a function which return an object with the following structure:
 // `{headers: [{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: [[{name: "NameOfTheModule", url: "#nameOftheModule/:param, roles:['CHIEF', 'MASTER']", headers: []}]]}]}`
 var defineSite = function defineSite(siteDescription) {
-  if (typeof siteDescription !== "object") {
+  if (!isObject(siteDescription)) {
     throw new ArgumentNullException('SiteDescription must be an object', siteDescription);
   }
-  if (typeof siteDescription.params !== "object") {
+  if (!isObject(siteDescription.params)) {
     throw new ArgumentNullException('SiteDescription.params must be an object', siteDescription);
   }
-  if (typeof siteDescription.value !== "function") {
+  if (!isFunction(siteDescription.value)) {
     throw new ArgumentNullException('SiteDescription.value must be a function', siteDescription);
   }
   siteDescriptionParams = siteDescription.params || {};
@@ -27,7 +38,7 @@ var defineSite = function defineSite(siteDescription) {
 };
 
 //param must be a {name: 'paramName', value: 'paramValue'} object.
-var defineParam = function defineParamSiteDescriptionHelper(param) {
+let defineParam = function defineParamSiteDescriptionHelper(param) {
   if (param === undefined) {
     throw new ArgumentNullException('You cannot set an undefined param.', param);
   }
@@ -38,7 +49,7 @@ var defineParam = function defineParamSiteDescriptionHelper(param) {
       siteParams: siteDescriptionParams
     });
   }
-  if (siteDescriptionParams[param.name].value === param.value && _.isEqual(siteDescriptionParams[param.name].title, param.title)) {
+  if (siteDescriptionParams[param.name].value === param.value && isEqual(siteDescriptionParams[param.name].title, param.title)) {
     console.info('No changes on param', param);
     return false;
   }
@@ -51,50 +62,36 @@ var defineParam = function defineParamSiteDescriptionHelper(param) {
   return true;
 };
 
-//Get the site process
-var getSite = function getSite() {
-  isProcess = true;
-  return siteDescriptionStructure(siteDescriptionParams);
-};
-
 //Check if the params is define in the params list.
 var checkParams = function checkParams(paramsArray) {
-  if (typeof paramsArray === "undefined") {
+  if (typeof paramsArray === 'undefined') {
     return true;
   }
-  if (!_.isArray(paramsArray)) {
-    throw new ArgumentInvalidException("The paramsArray must be an array");
+  if (isArray(paramsArray)) {
+    throw new ArgumentInvalidException('The paramsArray must be an array');
   }
-  if (_.intersection(_.keys(siteDescriptionParams), paramsArray).length !== paramsArray.length) {
+  if (intersection(keys(siteDescriptionParams), paramsArray).length !== paramsArray.length) {
     return false;
   }
   for (var prop in siteDescriptionParams) {
-    if (_.contains(paramsArray, prop) && !siteDescriptionParams[prop].isDefine) {
+    if (contains(paramsArray, prop) && !siteDescriptionParams[prop].isDefine) {
       return false;
     }
   }
   return true;
 };
-/**
- * @description Get th site structure processed with the user roles.
- * @returns {object}
- */
-function getUserSiteStructure(){
-  return require("./site_description_builder").getSiteStructure();
-}
 
 var siteDescriptionHelper = {
   defineSite: defineSite,
   defineParam: defineParam,
   getSite: getSite,
   getParams: function () {
-    return _.clone(siteDescriptionParams);
+    return clone(siteDescriptionParams);
   },
   checkParams: checkParams,
   isProcessed: function isProcessed() {
     return isProcess;
-  },
-  getUserSiteStructure: getUserSiteStructure
-};
+  }
+  };
 
 module.exports = siteDescriptionHelper;
