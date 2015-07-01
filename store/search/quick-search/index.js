@@ -10,6 +10,7 @@ class QuickSearchStore extends SearchStore{
       query: 'query',
       scope: 'scope',
       results: 'results',
+      facets: 'facets',
       totalCount: 'totalCount'
     };
     conf.identifier = 'QUICK_SEARCH';
