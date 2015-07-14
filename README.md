@@ -1,5 +1,7 @@
 [Focus](https://kleegroup.github.io/focus-docs)
 =======
+
+[![Join the chat at https://gitter.im/KleeGroup/focus](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/KleeGroup/focus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![NPM](https://nodei.co/npm/focusjs.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/focusjs/)
 
 ![Build Status](https://travis-ci.org/KleeGroup/focus.svg)
