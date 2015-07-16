@@ -76,7 +76,7 @@ function fetch(obj, options) {
     request.onload = function () {
       var status = request.status;
       if (status < 200 || status >= 300 ) {
-        let err = options.errorParser(request.response);
+        let err = options.errorParser(request);
         err.status = status;
         if(config.xhrErrors[status]){
           config.xhrErrors[status](request.response);
