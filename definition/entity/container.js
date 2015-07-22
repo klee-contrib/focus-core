@@ -46,7 +46,14 @@ function setEntityConfiguration(newEntities){
  */
 function _getNode(nodePath, extendedConfiguration){
   checkIsString("nodePath",nodePath);
-  var conf =  entitiesMap.getIn(nodePath.split(SEPARATOR));
+  if(!entitiesMap.hasIn(nodePath.split(SEPARATOR))){
+    console.warn(`
+      It seems the definition your are trying to use does not exists in the entity definitions of your project.
+      The definition you want is ${nodePath} and the definition map is:
+    `, entitiesMap.toJS());
+    throw new Error('Wrong definition path given, see waning for more details');
+  }
+  var conf = entitiesMap.getIn(nodePath.split(SEPARATOR));
   if(extendedConfiguration){
     checkIsObject(extendedConfiguration);
     conf = conf.mergeDeep(extendedConfiguration);
