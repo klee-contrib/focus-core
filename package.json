@@ -20,7 +20,9 @@
   },
   "scripts": {
     "prepublish": "gulp build",
-    "test": "jest"
+    "test": "jest",
+    "build": "sh ./build.sh",
+    "serve": "sh ./build.sh && node static-server.js"
   },
   "repository": {
     "type": "git",
