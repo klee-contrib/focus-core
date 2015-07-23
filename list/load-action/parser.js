@@ -1,8 +1,12 @@
 //Requirements
 
-module.exports = (data) => {
+module.exports = (data, context) => {
+    let {dataList, totalCount} = data;
+    if(context.isScroll){
+        dataList = [...context.dataList, ...data.dataList];
+    }
     return ({
-        dataList: data.dataList,
-        totalCount: data.totalCount
+        dataList: dataList,
+        totalCount: totalCount
     });
 };

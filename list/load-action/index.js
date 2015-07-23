@@ -37,7 +37,7 @@ module.exports = function loadActionFn(config){
         //Number of element to search on each search.
         let nbElement = config.nbElement;
         //Process the query if empty.
-        
+
         //Build URL data.
         let urlData = assign(
             _builder.pagination({dataList, totalCount, isScroll, nbElement}),
@@ -49,7 +49,12 @@ module.exports = function loadActionFn(config){
             group: groupingKey || ''
         };
         config.service({urlData: urlData, data: postData})
-        .then(_parser)
+        .then((response)=>{
+            return _parser(
+                    response,
+                    {isScroll, dataList}
+                );
+        })
         .then(_dispatchResult);
     };
 };
