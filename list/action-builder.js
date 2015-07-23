@@ -30,7 +30,7 @@ module.exports = function(config){
     console.warn('Your action should have a search options getter.');
   }
   if(!config.nbSearchElement){
-    config.nbSearchElement = NB_SEARCH_ELEMENT;
+    config.nbElement = NB_LIST_ELEMENT;
   }
   return {
     /**

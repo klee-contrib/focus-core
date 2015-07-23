@@ -1,50 +1,43 @@
 let keys = require('lodash/object/keys');
-let _buildFacets = (facets) => {
-    return keys(facets).map((selectedFacetKey) => {
-        let selectedFacet = facets[selectedFacetKey];
-        return {
-            key: selectedFacetKey,
-            value: selectedFacet.key
-        };
-    });
-};
-
+let isArray = require('lodash/lang/isArray');
 /**
  * Build sort infotmation.
  * @param  {object} sortConf - The sort configuration.
  * @return {object} - The builded sort configuration.
  */
-let _buildOrderAndSort = (sortConf) => {
+function _buildOrderAndSort(sortConf){
     return {
-      sortFieldName: sortConf.sortBy,
-      sortDesc: !sortConf.sortAsc
+        sortFieldName: sortConf.sortBy,
+        sortDesc: !sortConf.sortAsc
+    };
+}
+
+
+/**
+ * Build the pagination configuration given the options.
+ * @param  {object} opts - The pagination options should be :
+ *   isScroll (:bool) - Are we in a scroll context.
+ *   totalCount (:number) - The total number of element. (intresting only in the scroll case)
+ *   nbSearchElement (:number) - The number of elements you want to get back from the search.
+ * @return {object} - An object with {top, skip}.
+ */
+function _buildPagination(opts){
+    let {isScroll, dataList, totalCount, nbElement} = opts;
+    if(isScroll){
+        if(!isArray(dataList)){
+            throw new Error('The data list options sould exist and be an array')
+        }
+        if(dataList.length < totalCount){
+            return {top: nbElement, skip: dataList.length};
+        }
     }
-};
-
-
-
-let _buildPagination = (opts) => {
-    let resultsKeys = keys(opts.results);
-    if(opts.isScroll && resultsKeys.length === 1){
-      let key = resultsKeys[0];
-      let previousRes = opts.results[key];
-      if(previousRes.length < opts.totalCount){
-        return {
-          top: opts.nbSearchElement,
-          skip: previousRes.length
-        };
-        //Else should not be called.
-        console.warn('This should not happen.')
-      };
-    } else {
-      return {
-        skip: 0,
-        top: opts.nbSearchElement || 0
-      }
+    return {
+        top: nbElement,
+        skip: 0
     }
-};
+}
+
 module.exports = {
-  pagination: _buildPagination,
-  orderAndSort: _buildOrderAndSort,
-  facets: _buildFacets
+    pagination: _buildPagination,
+    orderAndSort: _buildOrderAndSort
 };
