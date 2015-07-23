@@ -1,11 +1,15 @@
 let CoreStore = require('../CoreStore');
+/**
+ * Store definition.
+ * @type {Object}
+ */
 const DEFINITION = {
-  criteria: 'criteria',
-  groupingKey: 'groupingKey',
-  sortBy: 'sortBy',
-  sortAsc: 'sortAsc',
-  results: 'results',
-  totalCount: 'totalCount'
+    criteria: 'criteria',
+    groupingKey: 'groupingKey',
+    sortBy: 'sortBy',
+    sortAsc: 'sortAsc',
+    dataList: 'dataList',
+    totalCount: 'totalCount'
 };
 
 /**
@@ -14,17 +18,17 @@ const DEFINITION = {
  */
 class ListStore extends CoreStore{
   constructor(conf){
-    conf = conf || {};
-    if(!conf.identifier){
-      throw new Error(
-        `
-        The identifier is necessary, maybe it should be the name of the entity which is in the List.
-        Your code shoul look like let myListStore = new ListStore({identifier: 'myEntityList'}) or something like that.
-        `
-      );
-    }
-    conf.definition = DEFINITION;
-    super(conf);
+      conf = conf || {};
+      if(!conf.identifier){
+          throw new Error(
+            `
+            The identifier is necessary, maybe it should be the name of the entity which is in the List.
+            Your code should look like let myListStore = new ListStore({identifier: 'myEntityList'}) or something like that.
+           `
+         );
+      }
+      conf.definition = DEFINITION;
+      super(conf);
   }
 }
 module.exports = ListStore;
