@@ -48,6 +48,13 @@ class CoreStore extends EventEmitter {
         return this.definition;
     }
     /**
+     * Get the whole value of the
+     * @return {[type]} [description]
+     */
+    getValue(){
+        return this.data ? this.data.toJS() : {};
+    }
+    /**
     * Getter on the identifier property.
     * @return {string} - Store identifier.
     */
@@ -55,6 +62,7 @@ class CoreStore extends EventEmitter {
         return this.config && this.config.identifier ? this.config.identifier : undefined;
     }
     /** Return the status of a definition.
+    * @param {string} - The definition to load.
     * @returns {string} - The status of a definition.
     */
     getStatus(def){

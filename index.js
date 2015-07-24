@@ -1,5 +1,5 @@
 //http://www.ascii-fr.com/Generateur-de-texte.html
-var infos = require('./package.json');
+const infos = require('./package.json');
 console.log(
   `
   _____   _____   _____   _   _   _____
@@ -21,26 +21,27 @@ console.log(
  * @type {Object}
  */
 module.exports = {
-  application: require('./application'),
-  component: require('./component'),
-  definition: require('./definition'),
-  dispatcher: require('./dispatcher'),
-  exception: require('./exception'),
-  helper: require('./helper'),
-  network: require('./network'),
-  router: require('./router'),
-  reference: require('./reference'),
-  search: require('./search'),
-  siteDescription: require('./site-description'),
-  store: require('./store'),
-  util: require('./util'),
-  user: require('./user'),
-  message: require('./message'),
-  VERSION: infos.version,
-  AUTHOR: infos.author,
-  DOCUMENTATION: function(){
-    console.log(`documentation: ${infos.documentation}`);
-    console.log(`repository: ${infos.repository.url}`);
-    console.log(`issues: ${infos.bugs.url}`);
-  }
+    application: require('./application'),
+    component: require('./component'),
+    definition: require('./definition'),
+    dispatcher: require('./dispatcher'),
+    list: require('./list'),
+    exception: require('./exception'),
+    helper: require('./helper'),
+    network: require('./network'),
+    router: require('./router'),
+    reference: require('./reference'),
+    search: require('./search'),
+    siteDescription: require('./site-description'),
+    store: require('./store'),
+    util: require('./util'),
+    user: require('./user'),
+    message: require('./message'),
+    VERSION: infos.version,
+    AUTHOR: infos.author,
+    DOCUMENTATION: function doc(){
+        console.log(`documentation: ${infos.documentation}`);
+        console.log(`repository: ${infos.repository.url}`);
+        console.log(`issues: ${infos.bugs.url}`);
+    }
 };
