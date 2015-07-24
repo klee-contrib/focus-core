@@ -23,6 +23,8 @@
     "test": "jest",
     "build": "sh ./build.sh",
     "serve": "sh ./build.sh && node static-server.js"
+    "test": "jest",
+    "ci-lint": "node ./node_modules/eslint/bin/eslint.js index.js application component definition dispatcher exception helper network router reference search site-description store util user message -f checkstyle > checkstyle-result.xml"
   },
   "repository": {
     "type": "git",
