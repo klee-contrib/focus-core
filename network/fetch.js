@@ -95,6 +95,7 @@ function fetch(obj, options) {
             }
             if (204 === status) {
                 data = undefined;
+                updateRequestStatus({id: requestStatus.id, status: 'success'});
                 return success(data);
             }
             let contentType = request.getResponseHeader('content-type');
