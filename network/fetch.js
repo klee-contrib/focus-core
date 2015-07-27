@@ -93,6 +93,11 @@ function fetch(obj, options) {
                 updateRequestStatus({id: requestStatus.id, status: 'error'});
                 return failure(err);
             }
+            if (204 === status) {
+                data = undefined;
+                updateRequestStatus({id: requestStatus.id, status: 'success'});
+                return success(data);
+            }
             let contentType = request.getResponseHeader('content-type');
             let data;
             if (contentType && contentType.indexOf('application/json') !== -1) {
