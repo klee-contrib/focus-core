@@ -46,7 +46,9 @@ function jsonParser(req){
         parsedObject = JSON.parse(req.responseText);
     } catch(error) {
         parsedObject = {
-            globalErrors: `${req.status} error when calling ${req.requestURL}`
+            globalErrors: [{
+                message: `${req.status} error when calling ${req.responseURL}`
+            }]
         }
     }
     if(!isObject(parsedObject)){
