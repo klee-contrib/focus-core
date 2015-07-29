@@ -32,6 +32,10 @@ describe('### validator number', function() {
     var numberValidation = require('../number');
     expect(numberValidation('7', {min: 6})).toEqual(true);
   });
+  it('number max should be false when number superior to max', function() {
+    var numberValidation = require('../number');
+    expect(numberValidation('12', {max: 7})).toEqual(false);
+  });
   it('number max should be true when number inferior to max', function() {
     var numberValidation = require('../number');
     expect(numberValidation('7', {max: 7})).toEqual(true);
