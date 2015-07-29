@@ -5,6 +5,7 @@
 Les différentes propriétés réglables sont les suivantes:
 - `validator` => Une fonction de validation. Cette fonction doit renvoyer true si valide et le message d'erreur si non valide.
 - `formatter`=> Une fonction de formattage
+- `unformatter` => Une fonction pour reconstruire la donnée à partir de l'input
 - `isRequired` => Définit si une propriété est requise ou non
 - `FieldComponent` => Surcharger le composant de field par défaut (utilisation rare)
 - `InputLabelComponent` => Surecharge du composant Field mais uniquement dans le cas d'une checkbox ou d'un composannt input embarqué dans le label.
