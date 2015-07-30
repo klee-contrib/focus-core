@@ -21,8 +21,10 @@
   "scripts": {
     "prepublish": "gulp build",
     "test": "jest",
-    "build": "sh ./build.sh",
-    "serve": "sh ./build.sh && node static-server.js",
+    "build": "node ./node_modules/gulp/bin/gulp.js build",
+    "watch": "node ./node_modules/gulp/bin/gulp.js watch",
+    "prepublish": "node ./node_modules/gulp/bin/gulp.js build",
+    "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
     "ci-lint": "node ./node_modules/eslint/bin/eslint.js index.js application component definition dispatcher exception helper network router reference search site-description store util user message -f checkstyle > checkstyle-result.xml"
   },
   "repository": {
