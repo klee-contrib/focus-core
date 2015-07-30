@@ -23,7 +23,6 @@
     "test": "jest",
     "build": "sh ./build.sh",
     "serve": "sh ./build.sh && node static-server.js",
-    "test": "jest",
     "ci-lint": "node ./node_modules/eslint/bin/eslint.js index.js application component definition dispatcher exception helper network router reference search site-description store util user message -f checkstyle > checkstyle-result.xml"
   },
   "repository": {
@@ -43,13 +42,16 @@
   },
   "homepage": "https://github.com/KleeGroup/focus",
   "devDependencies": {
-    "babel-eslint": "^3.1.26",
+    "babel-eslint": "4.0.5",
+    "eslint": "0.24.1",
+    "eslint-plugin-filenames": "0.1.1",
+    "eslint-plugin-react": "2.7.1",
+    "eslint-plugin-require-jsdoc": "^1.0.4",
+    "eslint-config-focus": "^0.1.4",
     "babel-jest": "^5.3.0",
     "babelify": "^5.0.3",
     "browser-sync": "^2.2.1",
     "browserify": "^9.0.3",
-    "eslint": "1.0.0-rc-1",
-    "eslint-plugin-react": "^2.7.1",
     "express": "^4.12.2",
     "gulp": "^3.8.11",
     "gulp-babel": "^4.0.0",
