@@ -1,20 +1,21 @@
-/*global jest, expect, it*/
+/*global jest, expect, it, describe*/
 // __tests__/container-test.js
 jest.dontMock('../action-builder');
 jest.autoMockOff();
 require('../../test/dontMock');
-var actionBuilder = require('../action-builder');
+let actionBuilder = require('../action-builder');
 
-describe('### action-builder', function() {
-    it('Config must have a service', function() {
-      expect(function(){
-          actionBuilder({});
-      }).toThrow('You need to provide a service to call');
+describe('### action-builder', ()=>{
+    it('Config must have a service', ()=>{
+        expect(()=>actionBuilder({}))
+        .toThrow('You need to provide a service to call');
     });
-    it('Config must have a status', function() {
-      expect(function(){
-          actionBuilder({service: function fakeService(){return Promise.resolve('Data')}});
-      }).toThrow('You need to provide a status to your action');
+    it('Config must have a status', ()=>{
+        expect(()=>actionBuilder({service: ()=>{}}))
+        .toThrow('You need to provide a status to your action');
     });
-
+    it('builded action should be a function', ()=>{
+        let action = actionBuilder({status: 'test', service: ()=>{}});
+        expect(typeof action).toEqual('function');
+    });
 });
