@@ -16,6 +16,7 @@ class CoreStore extends EventEmitter {
     * Contructor of the store class.
     */
     constructor(config) {
+        super();
         assign(this, {
             config
         });
