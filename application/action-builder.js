@@ -7,11 +7,12 @@ let {manageResponseErrors} = require('../network/error-parsing');
  * @param  {Object} config - The action builder config.
  */
 function _preServiceCall(config = {}){
+    let {node, type, preStatus, callerId} = config;
     dispatcher.handleViewAction({
-        data: {[config.node]: undefined},
-        type: config.type,
-        status: {[config.node]: {name: config.preStatus}, isLoading: true},
-        caller: config.caller
+        data: {[node]: undefined},
+        type: type,
+        status: {[node]: {name: preStatus}, isLoading: true},
+        callerId: callerId
     });
 }
 /**
@@ -20,11 +21,12 @@ function _preServiceCall(config = {}){
  * @param  {object} json   - The data return from the service call.
  */
 function _postServiceCall(config = {}, json){
+    let {node, type, status, callerId} = config;
     dispatcher.handleServerAction({
-        data: {[config.node]: json},
-        type: config.type,
-        status: {[config.node]: {name: config.status}, isLoading: false},
-        caller: config.caller
+        data: {[node]: json},
+        type: type,
+        status: {[node]: {name: status}, isLoading: false},
+        callerId: callerId
     });
 }
 
@@ -57,6 +59,9 @@ module.exports = function actionBuilder(config){
     }
     if(!config.status){
         throw new Error('You need to provide a status to your action');
+    }
+    if(!config.node){
+        throw new Error('You shoud specify the store node name impacted by the action');
     }
   /*if(!config.data){
     throw new Error('You need to provide an action data');
