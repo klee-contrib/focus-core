@@ -6,9 +6,9 @@ let {isObject, isArray} = require('lodash/lang');
  * @type {object}
  */
 let errorTypes = {
-    entity: "entity",
-    collection: "collection",
-    composite: "composite"
+    entity: 'entity',
+    collection: 'collection',
+    composite: 'composite'
 };
 
 /**
@@ -124,9 +124,9 @@ function _treatGlobalErrors(responseJSON, options) {
  */
 function _treatEntityExceptions(responseJSON, options) {
   dispatcher.handleServerAction({
-    data: {[options.node]: err}, //maybe err[options.node]
+    data: {[options.node]: responseJSON}, //maybe err[options.node]
     type: 'updateError',
-    status: {[options.node]: {name:config.status}, isLoading: false}
+    status: {[options.node]: {name: options.status}, isLoading: false}
   });
 }
 

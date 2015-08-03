@@ -1,60 +1,77 @@
 let dispatcher = require('../dispatcher');
 let message = require('../message');
-let manageResponseErrors = require('../network/error-parsing').manageResponseErrors;
+let {manageResponseErrors} = require('../network/error-parsing');
 
-function preServiceCall(config){
-  dispatcher.handleViewAction({
-    data: {[config.node]: undefined},
-    type: config.type,
-    status: {[config.node]: {name:config.preStatus}, isLoading: true}
-  });
-}
-function postServiceCall(config, json){
-  dispatcher.handleServerAction({
-    data: {[config.node]: json},
-    type: config.type,
-    status: {[config.node]: {name:config.status}, isLoading: false}
-  });
-}
-
-/***/
-function errorOnCall(config, err){
-  return manageResponseErrors(err, config);
-  if(err.status === 422){
-    dispatcher.handleServerAction({
-      data: {[config.node]: err},
-      type: 'updateError',
-      status: {[config.node]: {name:config.status}, isLoading: false}
+/**
+ * Method call before the service.
+ * @param  {Object} config - The action builder config.
+ */
+function _preServiceCall(config = {}){
+    let {node, type, preStatus, callerId} = config;
+    dispatcher.handleViewAction({
+        data: {[node]: undefined},
+        type: type,
+        status: {[node]: {name: preStatus}, isLoading: true},
+        callerId: callerId
     });
-  }else {
-    message.addErrorMessage(JSON.stringify(err));
-  }
+}
+/**
+ * Method call after the service call.
+ * @param  {Object} config - Action builder config.
+ * @param  {object} json   - The data return from the service call.
+ */
+function _postServiceCall(config = {}, json){
+    let {node, type, status, callerId} = config;
+    dispatcher.handleServerAction({
+        data: {[node]: json},
+        type: type,
+        status: {[node]: {name: status}, isLoading: false},
+        callerId: callerId
+    });
 }
 
-module.exports = function(config){
-  config = config || {};
-  config.type = config.type || 'update';
-  config.preStatus = config.preStatus || 'loading';
-  if(!config.service){
-    throw new Error('You need to provide a service to call');
-  }
-  if(!config.status){
-    throw new Error('You need to provide a status to your action');
-  }
+/**
+ * Method call when there is an error.
+ * @param  {object} config -  The action builder configuration.
+ * @param  {object} err    - The error from the API call.
+ * @return {object}     - The data from the manageResponseErrors function.
+ */
+function _errorOnCall(config, err){
+    console.warn('Error in action', err);
+    return manageResponseErrors(err, config);
+}
+
+/**
+ * Action builder function.
+ * @param  {object} config - The action builder configuration should contain:
+ *                         - type(:string) - Is the action an update, a load, a save.
+ *                         - preStatus(:string) The status to dispatch before the calling.
+ *                         - service(:function) The service to call for the action. Should return a Promise.
+ *                         - status(:string)} The status after the action.
+ * @return {function} - The build action from the configuration. This action dispatch the preStatus, call the service and dispatch the result from the server.
+ */
+module.exports = function actionBuilder(config){
+    config = config || {};
+    config.type = config.type || 'update';
+    config.preStatus = config.preStatus || 'loading';
+    if(!config.service){
+        throw new Error('You need to provide a service to call');
+    }
+    if(!config.status){
+        throw new Error('You need to provide a status to your action');
+    }
+    if(!config.node){
+        throw new Error('You shoud specify the store node name impacted by the action');
+    }
   /*if(!config.data){
     throw new Error('You need to provide an action data');
   }*/
   //Exposes a function consumes by the compoennt.
-  return function(criteria){
-    preServiceCall(config);
-    //todo: add middleware see slack for more informations
-    return config.service(criteria).then(function(jsonData){
-      postServiceCall(config, jsonData);
-    }, function actionError(err){
-      console.warn('Error in action', err);
-      errorOnCall(config, err);
-      //Get code back from a project
-      //throw new Error('An errror occurs');
-    });
-  };
+    return function actionBuilderFn(criteria){
+        _preServiceCall(config);
+        return config.service(criteria).then(
+            jsonData => _postServiceCall(config, jsonData),
+            err=> _errorOnCall(config, err)
+        );
+    };
 };
