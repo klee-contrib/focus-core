@@ -68,6 +68,8 @@ module.exports = function actionBuilder(config){
   }*/
   //Exposes a function consumes by the compoennt.
     return function actionBuilderFn(criteria){
+        //It the callerId is not defined in the config, it is overriden with the form identifier.
+        config.callerId = config.callerId || this._identifier;
         _preServiceCall(config);
         return config.service(criteria).then(
             jsonData => _postServiceCall(config, jsonData),
