@@ -24,7 +24,6 @@ class CoreStore extends EventEmitter {
         this.data = Immutable.Map({});
         this.status = Immutable.Map({});
         this.error = Immutable.Map({});
-        this.callerId = undefined;
         this.pendingEvents = [];
         this.customHandler = assign({}, config.customHandler);
         //Register all gernerated methods.
@@ -77,7 +76,8 @@ class CoreStore extends EventEmitter {
     */
     emitPendingEvents(){
         this.pendingEvents.map((evtToEmit)=>{
-            this.emit(evtToEmit.name, evtToEmit.data);
+            let {name, data} = evtToEmit;
+            this.emit(name, data);
         });
     }
 
