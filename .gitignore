@@ -22,3 +22,4 @@ example/app/js/fmk.js
 .idea
 dist/index.html
 out
+checkstyle-result.xml
