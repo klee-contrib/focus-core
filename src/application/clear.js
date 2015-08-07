@@ -1,3 +1,4 @@
+let React = require('react');
 var mountedComponents = require('./mounted-components');
 
 /**

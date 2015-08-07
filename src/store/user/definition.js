@@ -3,9 +3,9 @@
  * @return {[type]} [description]
  */
 module.exports = function(){
-  return {
-    login: require('../../user/login/definition.json'),
-    profile: require('../../user/profile/definition.json'),
-    roles: 'roles'
+    return {
+      login: require('../../user/login/definition'),
+      profile: require('../../user/profile/definition'),
+      roles: 'roles'
   };
 };

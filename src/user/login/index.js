@@ -1,3 +1,3 @@
 module.exports = {
-  definition: require('./definition.json')
+  definition: require('./definition')
 };

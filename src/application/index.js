@@ -1,3 +1,4 @@
+let React = require('react');
 var dispatcher = require('../dispatcher');
 var Empty = React.createClass({
   render: function() {
