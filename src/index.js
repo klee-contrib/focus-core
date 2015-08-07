@@ -1,5 +1,5 @@
 //http://www.ascii-fr.com/Generateur-de-texte.html
-const infos = require('./package.json');
+const infos = require('../package.json');
 console.log(
   `
   _____   _____   _____   _   _   _____
@@ -27,7 +27,6 @@ module.exports = {
     dispatcher: require('./dispatcher'),
     list: require('./list'),
     exception: require('./exception'),
-    helper: require('./helper'),
     network: require('./network'),
     router: require('./router'),
     reference: require('./reference'),
@@ -39,7 +38,7 @@ module.exports = {
     message: require('./message'),
     VERSION: infos.version,
     AUTHOR: infos.author,
-    DOCUMENTATION: function doc(){
+    DOCUMENTATION(){
         console.log(`documentation: ${infos.documentation}`);
         console.log(`repository: ${infos.repository.url}`);
         console.log(`issues: ${infos.bugs.url}`);
