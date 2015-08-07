@@ -105,17 +105,6 @@ gulp.task("markdox", function(){
     .pipe(gulp.dest("./doc"));
 });
 
-
-/**********************
-  Building css files
-**********************/
-gulp.task('style', function() {
-  gulp.src('./lib/styles/*.css')
-    .pipe(concat('focus.css'))
-    .pipe(gulp.dest('./example/app/css/'))
-    .pipe(gulp.dest('./dist/'))
-    .pipe(gulp.dest(buildConf.spaDirectory));
-});
 /**********************
   Building js files
 **********************/
@@ -126,7 +115,7 @@ gulp.task('browserify', function(){
   var source = require('vinyl-source-stream');
     var literalify = require('literalify');
     return browserify(({
-        entries: ['./index.js'],
+        entries: ['./src/index.js'],
         extensions: ['.jsx'],
         standalone: "Focus"
       }))
@@ -152,7 +141,7 @@ gulp.task('browserify', function(){
 
 //Grouping build tasks.
 //Async build
-gulp.task('build', ['style', 'browserify'], function() {
+gulp.task('build', ['browserify'], function() {
 
 });
 /*gulp.task('build', function (callback) {
@@ -241,8 +230,8 @@ gulp.task('serve', ['build'], function () {
 
 
 gulp.task('watch', function(){
-  var src = '{application,component,definition,dispatcher,exception,helper,network,router,store,util,reference,user}/**/*.js';
-  gulp.watch(['package.json','index.js',src],['browserify']);
+  var src = 'src/**/*.js';
+  gulp.watch(['package.json',src],['browserify']);
 });
 // The default task (called when you run `gulp` from cli)
 gulp.task('default', ['build']);
