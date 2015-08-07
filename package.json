@@ -19,9 +19,10 @@
     "uuid": "^2.0.1"
   },
   "scripts": {
-    "prepublish": "npm run build:node && node ./node_modules/gulp/bin/gulp.js build",
+    "prepublish": "npm run build",
     "test": "jest",
-    "build": "node ./node_modules/gulp/bin/gulp.js build",
+    "build": "npm run build:node && npm run build:browser",
+    "build:browser": "node ./node_modules/gulp/bin/gulp.js build",
     "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
     "watch": "node ./node_modules/gulp/bin/gulp.js watch",
     "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
