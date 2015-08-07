@@ -1,6 +1,6 @@
 {
   "name": "focusjs",
-  "version": "0.8.1",
+  "version": "0.8.2-beta",
   "description": "Technical stack in order to build single page application.",
   "main": "lib/index.js",
   "directories": {
