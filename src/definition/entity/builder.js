@@ -1,16 +1,16 @@
-var Immutable = require('immutable');
-var checkIsString = require('../../util/string/check');
-var checkIsObject = require('../../util/object/check');
-var checkIsNotNull = require('../../util/object/checkIsNotNull');
+const Immutable = require('immutable');
+let checkIsString = require('../../util/string/check');
+let checkIsObject = require('../../util/object/check');
+let checkIsNotNull = require('../../util/object/checkIsNotNull');
 const SEPARATOR = ".";
 
 /**
  * Pointer to the domain contaier.
  * @type {Object}
  */
-var domainContainer = require('../domain/container');
-var entityContainer = require('./container');
-var computedEntityContainer = Immutable.Map({});
+let domainContainer = require('../domain/container');
+let entityContainer = require('./container');
+let computedEntityContainer = Immutable.Map({});
 
 /*
 binder
@@ -30,11 +30,11 @@ domain
 //
 
 function _buildEntityInformation(entityName) {
-  var entityDomainInfos = entityContainer.getEntityConfiguration(entityName);
+  let entityDomainInfos = entityContainer.getEntityConfiguration(entityName);
   checkIsNotNull('entityDomainInfos', entityDomainInfos);
-  var container = {};
+  let container = {};
   //Populate the domain values i
-  for (var key in entityDomainInfos) {
+  for (let key in entityDomainInfos) {
     container[key] = _buildFieldInformation(`${entityName}${SEPARATOR}${key}`);
   }
   //Update the computed information map.
@@ -43,8 +43,11 @@ function _buildEntityInformation(entityName) {
 
 
 function _buildFieldInformation(fieldPath) {
-  var fieldConf = entityContainer.getFieldConfiguration(fieldPath);
-  return Immutable.Map(fieldConf).mergeDeep(domainContainer.get(fieldConf.domain));
+    let fieldConf = entityContainer.getFieldConfiguration(fieldPath);
+    let immutableFieldConf = Immutable.Map(fieldConf);
+    //Maybe add a domain check existance
+    let {domain} = fieldConf;
+    return domainContainer.get(domain).mergeDeep(immutableFieldConf);
 }
 
 /**
@@ -55,7 +58,7 @@ function _buildFieldInformation(fieldPath) {
 function getEntityInformations(entityName, complementaryInformation) {
   checkIsString("entityName", entityName);
   checkIsObject("complementaryInformation", complementaryInformation);
-  var key = entityName.split(SEPARATOR);
+  let key = entityName.split(SEPARATOR);
   if (!computedEntityContainer.hasIn(key)) {
     _buildEntityInformation(entityName);
   }
@@ -70,7 +73,7 @@ function getEntityInformations(entityName, complementaryInformation) {
 function getFieldInformations(fieldName, complementaryInformation) {
   checkIsString("fieldName", fieldName);
   checkIsObject("complementaryInformation", complementaryInformation);
-  var fieldPath = fieldName.split(SEPARATOR);
+  let fieldPath = fieldName.split(SEPARATOR);
   if (computedEntityContainer.hasIn(fieldPath)) {
     return computedEntityContainer.getIn(fieldPath).toJS();
   }
