@@ -17614,7 +17614,7 @@ module.exports = uuid;
 },{"./rng":310}],312:[function(require,module,exports){
 module.exports={
   "name": "focusjs",
-  "version": "0.8.2-beta",
+  "version": "0.8.3",
   "description": "Technical stack in order to build single page application.",
   "main": "lib/index.js",
   "directories": {
@@ -18115,6 +18115,10 @@ function getDomain(domainName) {
   if (!isString(domainName)) {
     throw new InvalidException("domaiName should extists and be a string", domainName);
   }
+  if (!domainsMap.has(domainName)) {
+    console.warn("You are trying to access a non existing domain: " + domainName);
+    return Immutable.Map({});
+  }
   return domainsMap.get(domainName);
 }
 
@@ -18184,7 +18188,11 @@ function _buildEntityInformation(entityName) {
 
 function _buildFieldInformation(fieldPath) {
   var fieldConf = entityContainer.getFieldConfiguration(fieldPath);
-  return Immutable.Map(fieldConf).mergeDeep(domainContainer.get(fieldConf.domain));
+  var immutableFieldConf = Immutable.Map(fieldConf);
+  //Maybe add a domain check existance
+  var domain = fieldConf.domain;
+
+  return domainContainer.get(domain).mergeDeep(immutableFieldConf);
 }
 
 /**
