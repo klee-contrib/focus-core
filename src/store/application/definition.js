@@ -1,14 +1,11 @@
 /**
- * Build the cartridge store definition.
- * @return {object} - The cartridge component.
- */
-module.exports = function(){
-  return {
-    'summaryComponent': 'summaryComponent',
-    'barContentLeftComponent': 'barContentLeftComponent',
-    'cartridgeComponent': 'cartridgeComponent',
-    'actions': 'actions',
-    'mode': 'mode',
-    'route': 'route'
-  };
+* Build the cartridge store definition.
+* @return {object} - The cartridge component.
+*/
+module.exports = () => {
+    return ['summaryComponent', 'barContentLeftComponent', 'barContentRightComponent', 'cartridgeComponent', 'actions', 'mode', 'route']
+    .reduce((def, node) => {
+        def[node] = node;
+        return def;
+    }, {});
 };
