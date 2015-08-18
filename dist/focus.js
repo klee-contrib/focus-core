@@ -17614,7 +17614,7 @@ module.exports = uuid;
 },{"./rng":310}],312:[function(require,module,exports){
 module.exports={
   "name": "focusjs",
-  "version": "0.8.3",
+  "version": "0.8.4-0",
   "description": "Technical stack in order to build single page application.",
   "main": "lib/index.js",
   "directories": {
@@ -19673,14 +19673,14 @@ var CACHE_DURATION = 1000 * 60; //1 min
 var cache = {};
 
 function _getTimeStamp() {
-  return new Date().getTime();
+    return new Date().getTime();
 }
 /*
 * Serve the data from the cache.
 */
 function _cacheData(key, value) {
-  cache[key] = { timeStamp: _getTimeStamp(), value: value };
-  return value;
+    cache[key] = { timeStamp: _getTimeStamp(), value: value };
+    return value;
 }
 
 /**
@@ -19690,7 +19690,7 @@ function _cacheData(key, value) {
  * @example - refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
  */
 function loadList(listDesc) {
-  return fetch({ url: listDesc.url, method: "GET" });
+    return fetch({ url: listDesc.url, method: "GET" });
 }
 
 // Load a reference with its list name.
@@ -19701,34 +19701,34 @@ function loadList(listDesc) {
  * @param {object} args     - Argument to provide to the function.
  */
 function loadListByName(listName, args) {
-  checkIsString("listName", listName);
-  var configurationElement = getConfigurationElement(listName);
-  if (typeof configurationElement !== "function") {
-    throw new Error("You are trying to load the reference list: " + listName + " which does not have a list configure.");
-  }
-  var now = _getTimeStamp();
-  if (cache[listName] && now - cache[listName].timeStamp < CACHE_DURATION) {
-    //console.info('data served from cache', listName, cache[listName].value);
-    return Promise.resolve(cache[listName].value);
-  }
-  //Call the service, the service must return a promise.
-  return configurationElement(args).then(function (data) {
-    return _cacheData(listName, data);
-  });
+    checkIsString("listName", listName);
+    var configurationElement = getConfigurationElement(listName);
+    if (typeof configurationElement !== "function") {
+        throw new Error("You are trying to load the reference list: " + listName + " which does not have a list configure.");
+    }
+    var now = _getTimeStamp();
+    if (cache[listName] && now - cache[listName].timeStamp < CACHE_DURATION) {
+        //console.info('data served from cache', listName, cache[listName].value);
+        return Promise.resolve(cache[listName].value);
+    }
+    //Call the service, the service must return a promise.
+    return configurationElement(args).then(function (data) {
+        return _cacheData(listName, data);
+    });
 }
 
 //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
 // Return an array of many promises for all the given lists.
 // Be carefull, if there is a problem for one list, the error callback is called.
 function loadMany(names) {
-  var promises = [];
-  //todo: add a _.isArray tests and throw an rxception.
-  if (names !== undefined) {
-    names.forEach(function (name) {
-      promises.push(loadListByName(name));
-    });
-  }
-  return promises;
+    var promises = [];
+    //todo: add a _.isArray tests and throw an rxception.
+    if (names !== undefined) {
+        names.forEach(function (name) {
+            promises.push(loadListByName(name));
+        });
+    }
+    return promises;
 }
 /**
  * Get a function to trigger in autocomplete case.
@@ -19736,18 +19736,18 @@ function loadMany(names) {
  * @param {string} listName - Name of the list.
  */
 function getAutoCompleteServiceQuery(listName) {
-  return function (query) {
-    loadListByName(listName, query.term).then(function (results) {
-      query.callback(results);
-    });
-  };
+    return function (query) {
+        loadListByName(listName, query.term).then(function (results) {
+            query.callback(results);
+        });
+    };
 }
 
 module.exports = {
-  loadListByName: loadListByName,
-  loadList: loadList,
-  loadMany: loadMany,
-  getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
+    loadListByName: loadListByName,
+    loadList: loadList,
+    loadMany: loadMany,
+    getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
 };
 
 },{"../network/fetch":358,"../util/string/check":407,"./config":363}],361:[function(require,module,exports){
@@ -20810,20 +20810,16 @@ module.exports = CoreStore;
 
 },{"../definition/entity/builder":325,"../dispatcher":338,"events":2,"immutable":6,"lodash/function":93,"lodash/lang":260,"lodash/string/capitalize":300,"object-assign":309}],376:[function(require,module,exports){
 /**
- * Build the cartridge store definition.
- * @return {object} - The cartridge component.
- */
+* Build the cartridge store definition.
+* @return {object} - The cartridge component.
+*/
 "use strict";
 
 module.exports = function () {
-  return {
-    summaryComponent: "summaryComponent",
-    barContentLeftComponent: "barContentLeftComponent",
-    cartridgeComponent: "cartridgeComponent",
-    actions: "actions",
-    mode: "mode",
-    route: "route"
-  };
+    return ["summaryComponent", "barContentLeftComponent", "barContentRightComponent", "cartridgeComponent", "actions", "mode", "route"].reduce(function (def, node) {
+        def[node] = node;
+        return def;
+    }, {});
 };
 
 },{}],377:[function(require,module,exports){
