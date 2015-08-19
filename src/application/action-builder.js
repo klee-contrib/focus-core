@@ -11,7 +11,7 @@ function _preServiceCall(config = {}){
     dispatcher.handleViewAction({
         data: {[node]: undefined},
         type: type,
-        status: {[node]: {name: preStatus}, isLoading: true},
+        status: {[node]: {name: preStatus, isLoading: true}},
         callerId: callerId
     });
 }
@@ -25,7 +25,7 @@ function _postServiceCall(config = {}, json){
     dispatcher.handleServerAction({
         data: {[node]: json},
         type: type,
-        status: {[node]: {name: status}, isLoading: false},
+        status: {[node]: {name: status, isLoading: false}},
         callerId: callerId
     });
 }
