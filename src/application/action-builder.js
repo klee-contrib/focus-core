@@ -70,7 +70,7 @@ module.exports = function actionBuilder(config){
   //Exposes a function consumes by the compoennt.
     return function actionBuilderFn(criteria) {
         //It the callerId is not defined in the config, it is overriden with the form identifier.
-        var conf = clone(config);
+        let conf = clone(config);
         conf.callerId = conf.callerId || this._identifier;
         _preServiceCall(conf);
         return conf.service(criteria).then(function (jsonData) {
