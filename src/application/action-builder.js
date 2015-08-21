@@ -1,6 +1,7 @@
 let dispatcher = require('../dispatcher');
 let message = require('../message');
 let {manageResponseErrors} = require('../network/error-parsing');
+let clone = require("lodash/lang/clone");
 
 /**
  * Method call before the service.
@@ -67,13 +68,15 @@ module.exports = function actionBuilder(config){
     throw new Error('You need to provide an action data');
   }*/
   //Exposes a function consumes by the compoennt.
-    return function actionBuilderFn(criteria){
+    return function actionBuilderFn(criteria) {
         //It the callerId is not defined in the config, it is overriden with the form identifier.
-        config.callerId = config.callerId || this._identifier;
-        _preServiceCall(config);
-        return config.service(criteria).then(
-            jsonData => _postServiceCall(config, jsonData),
-            err=> _errorOnCall(config, err)
-        );
+        var conf = clone(config);
+        conf.callerId = conf.callerId || this._identifier;
+        _preServiceCall(conf);
+        return conf.service(criteria).then(function (jsonData) {
+            return _postServiceCall(conf, jsonData);
+        }, function (err) {
+            return _errorOnCall(conf, err);
+        });
     };
 };
