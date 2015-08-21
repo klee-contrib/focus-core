@@ -1,12 +1,6 @@
-var MessageStore = require('../store/message');
-var instanciatedMessageStore;
+const MessageStore = require('../store/message');
 /**
  * Built the store in order to the .
  * @return {MessageStore} - An instanciated reference store.
  */
-module.exports = function builtInStore(){
-  if(!instanciatedMessageStore){
-    instanciatedMessageStore = new MessageStore();
-  }
-  return instanciatedMessageStore;
-};
+module.exports = new MessageStore();
