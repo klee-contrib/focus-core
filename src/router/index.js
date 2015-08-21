@@ -11,7 +11,7 @@ var isFunction = require('lodash/lang/isFunction');
  */
 function _beforeRouting(newRoute){
   //application.changeRoute(newRoute);
-  application.clearCartridge();
+  application.clearHeader();
 }
 module.exports = Backbone.Router.extend({
   noRoleRoute: 'home',
