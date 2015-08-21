@@ -1,18 +1,31 @@
-let dispatcher = require('../dispatcher');
-let message = require('../message');
-let {manageResponseErrors} = require('../network/error-parsing');
-let clone = require("lodash/lang/clone");
+const dispatcher = require('../dispatcher');
+const {manageResponseErrors} = require('../network/error-parsing');
+const {clone, isArray} = require('lodash/lang');
 
 /**
  * Method call before the service.
  * @param  {Object} config - The action builder config.
  */
 function _preServiceCall(config = {}){
-    let {node, type, preStatus, callerId} = config;
+    //There is a problem if the node is empty. //Node should be an array
+    const {node, type, preStatus, callerId} = config;
+    let data = {};
+    let status;
+    // When there is a multi node update it should be an array.
+    if(isArray(node)){
+        node.forEach((nd)=>{
+            data[nd] = null;
+            status[nd] = {name: preStatus, isLoading: true};
+        });
+    }else{
+        data[node] = null;
+        status[node] = {name: preStatus, isLoading: true};
+    }
+    //Dispatch store cleaning.
     dispatcher.handleViewAction({
-        data: {[node]: undefined},
+        data: data,
         type: type,
-        status: {[node]: {name: preStatus, isLoading: true}},
+        status: status,
         callerId: callerId
     });
 }
@@ -22,11 +35,20 @@ function _preServiceCall(config = {}){
  * @param  {object} json   - The data return from the service call.
  */
 function _postServiceCall(config = {}, json){
-    let {node, type, status, callerId} = config;
+    const {node, type, status, callerId} = config;
+    const isMultiNode = isArray(node);
+    const data = isMultiNode ? json : {[node]: json};
+    const postStatus = {name: status, isLoading: false};
+    let newStatus;
+    if(isMultiNode){
+        node.forEach((nd)=>{newStatus[nd] = postStatus; });
+    }else {
+        newStatus[node] = postStatus;
+    }
     dispatcher.handleServerAction({
-        data: {[node]: json},
+        data: data,
         type: type,
-        status: {[node]: {name: status, isLoading: false}},
+        status: status,
         callerId: callerId
     });
 }
@@ -69,13 +91,13 @@ module.exports = function actionBuilder(config){
   }*/
   //Exposes a function consumes by the compoennt.
     return function actionBuilderFn(criteria) {
-        //It the callerId is not defined in the config, it is overriden with the form identifier.
         let conf = clone(config);
+        //It the callerId is not defined in the config, it is overriden with the form identifier.
         conf.callerId = conf.callerId || this._identifier;
         _preServiceCall(conf);
-        return conf.service(criteria).then(function (jsonData) {
+        return conf.service(criteria).then((jsonData)=>{
             return _postServiceCall(conf, jsonData);
-        }, function (err) {
+        }, (err)=>{
             return _errorOnCall(conf, err);
         });
     };
