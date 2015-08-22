@@ -22,4 +22,4 @@ module.exports = function checkDomain(entityDef, domains){
         console.warn('Useless domain definition', useLessDomains);
     }
     console.info('####################################################################');
-}
+};
