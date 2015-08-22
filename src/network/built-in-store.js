@@ -1,12 +1,6 @@
-var RequestStore = require('../store/request');
-var instanciatedRequestStore;
+const RequestStore = require('../store/request');
 /**
  * Built the store in order to the .
  * @return {RequestStore} - An instanciated application store.
  */
-module.exports = function builtInStore(){
-  if(!instanciatedRequestStore){
-    instanciatedRequestStore = new RequestStore();
-  }
-  return instanciatedRequestStore;
-};
+module.exports = new RequestStore();
