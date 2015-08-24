@@ -1,8 +1,8 @@
 //Exceptions.
 function exception(){
   jest.dontMock('../exception.js');
-  jest.dontMock('../exception/ArgumentInvalidException.js');
-  jest.dontMock('../exception/ArgumentNullException.js');
+  jest.dontMock('../exception/argument-invalid-exception.js');
+  jest.dontMock('../exception/argument-null-exception.js');
   jest.dontMock('../exception/CustomException.js');
 }
 
