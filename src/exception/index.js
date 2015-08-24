@@ -1,8 +1,8 @@
 module.exports = {
-	ArgumentInvalidException: require('./ArgumentInvalidException'),
-	ArgumentNullException: require('./ArgumentNullException'),
-	CustomException: require('./CustomException'),
-	DependencyException: require('./DependencyException'),
-	FocusException: require('./FocusException'),
-	NotImplementedException: require('./NotImplementedException')
+	ArgumentInvalidException: require('./argument-invalid-exception'),
+	ArgumentNullException: require('./argument-null-exception'),
+	CustomException: require('./custom-exception'),
+	DependencyException: require('./dependency-exception'),
+	FocusException: require('./focus-exception'),
+	NotImplementedException: require('./not-implemented-exception')
 };

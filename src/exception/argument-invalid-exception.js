@@ -1,12 +1,12 @@
-const CustomException = require('./CustomException');
+const CustomException = require('./custom-exception');
 /**
 * Class standing for the NotImplemented exceptions.
 */
 class ArgumentInvalidException extends CustomException {
 	/**
-	* Exception constructor..
-	* @param messgae {string} - Exception message.
-	* @param options {object} - Object to add to the exception.
+	* Exception constructor.
+	* @param {string} message  - Exception message.
+	* @param {object} options  - Object to add to the exception.
 	*/
 	constructor(message, options) {
 		super('ArgumentInvalidException', message, options);

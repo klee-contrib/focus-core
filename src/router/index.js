@@ -1,6 +1,6 @@
 var render = require('../application/render');
 var Backbone = require('backbone');
-var ArgumentNullException = require('../exception/ArgumentNullException');
+var ArgumentNullException = require('../exception/argument-null-exception');
 var message = require('../message');
 var userHelper = require('../user');
 var dispatcher = require('../dispatcher');

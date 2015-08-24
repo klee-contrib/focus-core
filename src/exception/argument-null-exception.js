@@ -1,16 +1,16 @@
-var CustomException = require('./CustomException');
+const CustomException = require('./custom-exception');
 /**
- * Class standing for the NotImplemented exceptions.
- */
+* Class standing for the NotImplemented exceptions.
+*/
 class ArgumentNullException extends CustomException{
-  /**
-   * Exception constructor..
-   * @param messgae {string} - Exception message.
-   * @param options {object} - Object to add to the exception.
-   */
-  constructor(message, options){
-    super("ArgumentNullException", message, options);
-  }
+    /**
+    * Exception constructor..
+    * @param message {string} - Exception message.
+    * @param options {object} - Object to add to the exception.
+    */
+    constructor(message, options){
+        super('ArgumentNullException', message, options);
+    }
 }
 
 module.exports = ArgumentNullException;
