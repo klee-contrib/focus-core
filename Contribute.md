@@ -1,0 +1,3 @@
+- Fork the project
+- Add focus as a remote origin: https://help.github.com/articles/configuring-a-remote-for-a-fork/
+- Stay up to date with focus https://help.github.com/articles/syncing-a-fork/ 
