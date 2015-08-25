@@ -26,7 +26,7 @@ git merge upstream/master
 -  Add with `git add path/file.js` Commit `git commit -m '[feature] Commit messgae.'`
 -  Push your changes `git push origin feature-fix`
 -  Create a pull request
-![contribute](http://gifmaker.me/files/download/home/20150824/19/a4yMR0fGTa9ijpJ5of0qdx/output_48hvHk.gif)
+![contribute](https://cloud.githubusercontent.com/assets/286966/9466383/c3e98ff2-4b34-11e5-985e-ad6425619bc0.gif)
 - Wait for your pull request to be review
 - Go back on your local master branch `git checkout master`
 - Don't hesitate to come chat with us in case of any problem
