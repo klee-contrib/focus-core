@@ -10,7 +10,7 @@ function _preServiceCall(config = {}){
     //There is a problem if the node is empty. //Node should be an array
     const {node, type, preStatus, callerId} = config;
     let data = {};
-    let status;
+    let status = {};
     // When there is a multi node update it should be an array.
     if(isArray(node)){
         node.forEach((nd)=>{
@@ -39,7 +39,7 @@ function _postServiceCall(config = {}, json){
     const isMultiNode = isArray(node);
     const data = isMultiNode ? json : {[node]: json};
     const postStatus = {name: status, isLoading: false};
-    let newStatus;
+    let newStatus = {};
     if(isMultiNode){
         node.forEach((nd)=>{newStatus[nd] = postStatus; });
     }else {
@@ -48,7 +48,7 @@ function _postServiceCall(config = {}, json){
     dispatcher.handleServerAction({
         data: data,
         type: type,
-        status: status,
+        status: newStatus,
         callerId: callerId
     });
 }
