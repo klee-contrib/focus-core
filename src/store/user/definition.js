@@ -4,8 +4,8 @@
  */
 module.exports = function(){
     return {
-      login: require('../../user/login/definition'),
-      profile: require('../../user/profile/definition'),
+      login: 'login',
+      profile: 'profile',
       roles: 'roles'
   };
 };
