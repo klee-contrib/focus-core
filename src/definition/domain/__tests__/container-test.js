@@ -2,7 +2,7 @@
 // __tests__/container-test.js
 jest.dontMock('../container');
 require('../../../test/dontMock');
-var ArgumentInvalidException = require('../../../exception/ArgumentInvalidException');
+var ArgumentInvalidException = require('../../../exception/argument-invalid-exception');
 
 
 describe('### container', function() {

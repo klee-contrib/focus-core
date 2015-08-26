@@ -1,4 +1,4 @@
-var ArgumentNullException = require('../../exception/ArgumentNullException');
+var ArgumentNullException = require('../../exception/argument-null-exception');
 var {isNull, isUndefined} = require('lodash/lang');
 
 /**

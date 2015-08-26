@@ -1,5 +1,5 @@
 var ArgumentInvalidException = require(
-	'../../exception/ArgumentInvalidException');
+	'../../exception/argument-invalid-exception');
 var isString = require('lodash/lang/isString');
 
 /**
