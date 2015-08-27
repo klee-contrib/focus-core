@@ -23,3 +23,6 @@ example/app/js/fmk.js
 dist/index.html
 out
 checkstyle-result.xml
+
+dist
+list
