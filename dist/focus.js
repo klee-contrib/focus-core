@@ -34,7 +34,7 @@ module.exports = {
     }
 };
 
-},{"../package.json":312,"./application":316,"./component":320,"./definition":330,"./dispatcher":338,"./exception":345,"./list":347,"./message":352,"./network":359,"./reference":364,"./router":365,"./search":368,"./site-description":373,"./store":379,"./user":398,"./util":403}],2:[function(require,module,exports){
+},{"../package.json":312,"./application":316,"./component":320,"./definition":330,"./dispatcher":337,"./exception":343,"./list":346,"./message":351,"./network":358,"./reference":363,"./router":364,"./search":367,"./site-description":372,"./store":378,"./user":397,"./util":398}],2:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1029,7 +1029,7 @@ module.exports = invariant;
       var array = this._array;
       var maxIndex = array.length - 1;
       var ii = 0;
-      return new src_Iterator__Iterator(function() 
+      return new src_Iterator__Iterator(function()
         {return ii > maxIndex ?
           iteratorDone() :
           iteratorValue(type, ii, array[reverse ? maxIndex - ii++ : ii++])}
@@ -1858,7 +1858,7 @@ module.exports = invariant;
         return flipSequence;
       };
     }
-    reversedSequence.get = function(key, notSetValue) 
+    reversedSequence.get = function(key, notSetValue)
       {return iterable.get(useKeys ? key : -1 - key, notSetValue)};
     reversedSequence.has = function(key )
       {return iterable.has(useKeys ? key : -1 - key)};
@@ -2042,7 +2042,7 @@ module.exports = invariant;
         return this.cacheResult().__iterate(fn, reverse);
       }
       var iterations = 0;
-      iterable.__iterate(function(v, k, c) 
+      iterable.__iterate(function(v, k, c)
         {return predicate.call(context, v, k, c) && ++iterations && fn(v, k, this$0)}
       );
       return iterations;
@@ -2233,7 +2233,7 @@ module.exports = invariant;
     interposedSequence.size = iterable.size && iterable.size * 2 -1;
     interposedSequence.__iterateUncached = function(fn, reverse) {var this$0 = this;
       var iterations = 0;
-      iterable.__iterate(function(v, k) 
+      iterable.__iterate(function(v, k)
         {return (!iterations || fn(separator, iterations++, this$0) !== false) &&
         fn(v, iterations++, this$0) !== false},
         reverse
@@ -3121,7 +3121,7 @@ module.exports = invariant;
   }
 
   function deepMerger(merger) {
-    return function(existing, value, key) 
+    return function(existing, value, key)
       {return existing && existing.mergeDeepWith && isIterable(value) ?
         existing.mergeDeepWith(merger, value) :
         merger ? merger(existing, value, key) : value};
@@ -4807,7 +4807,7 @@ module.exports = invariant;
 
     Repeat.prototype.__iterator = function(type, reverse) {var this$0 = this;
       var ii = 0;
-      return new src_Iterator__Iterator(function() 
+      return new src_Iterator__Iterator(function()
         {return ii < this$0.size ? iteratorValue(type, ii++, this$0._value) : iteratorDone()}
       );
     };
@@ -16728,7 +16728,7 @@ module.exports = property;
         var power = Math.pow(10, precision),
             optionalsRegExp,
             output;
-            
+
         //roundingFunction = (roundingFunction !== undefined ? roundingFunction : Math.round);
         // Multiply up by precision, round accurately, then divide and use native toFixed():
         output = (roundingFunction(value * power) / power).toFixed(precision);
@@ -16873,7 +16873,7 @@ module.exports = property;
         }
 
         output = formatNumber(value, format, roundingFunction);
-        
+
         if (output.indexOf(')') > -1 ) {
             output = output.split('');
             output.splice(-1, 0, space + '%');
@@ -17118,7 +17118,7 @@ module.exports = property;
 
         return numeral;
     };
-    
+
     // This function provides access to the loaded language data.  If
     // no arguments are passed in, it will simply return the current
     // global language object.
@@ -17126,11 +17126,11 @@ module.exports = property;
         if (!key) {
             return languages[currentLanguage];
         }
-        
+
         if (!languages[key]) {
             throw new Error('Unknown language : ' + key);
         }
-        
+
         return languages[key];
     };
 
@@ -17187,14 +17187,14 @@ module.exports = property;
     if ('function' !== typeof Array.prototype.reduce) {
         Array.prototype.reduce = function (callback, opt_initialValue) {
             'use strict';
-            
+
             if (null === this || 'undefined' === typeof this) {
                 // At the moment all modern browsers, that support strict mode, have
                 // native implementation of Array.prototype.reduce. For instance, IE8
                 // does not support strict mode, so this check is actually useless.
                 throw new TypeError('Array.prototype.reduce called on null or undefined');
             }
-            
+
             if ('function' !== typeof callback) {
                 throw new TypeError(callback + ' is not a function');
             }
@@ -17228,7 +17228,7 @@ module.exports = property;
         };
     }
 
-    
+
     /**
      * Computes the multiplier necessary to make x >= 1,
      * effectively eliminating miscalculations caused by
@@ -17254,7 +17254,7 @@ module.exports = property;
                 mn = multiplier(next);
         return mp > mn ? mp : mn;
         }, -Infinity);
-    }        
+    }
 
 
     /************************************
@@ -17269,15 +17269,15 @@ module.exports = property;
         },
 
         format : function (inputString, roundingFunction) {
-            return formatNumeral(this, 
-                  inputString ? inputString : defaultFormat, 
+            return formatNumeral(this,
+                  inputString ? inputString : defaultFormat,
                   (roundingFunction !== undefined) ? roundingFunction : Math.round
               );
         },
 
         unformat : function (inputString) {
-            if (Object.prototype.toString.call(inputString) === '[object Number]') { 
-                return inputString; 
+            if (Object.prototype.toString.call(inputString) === '[object Number]') {
+                return inputString;
             }
             return unformatNumeral(this, inputString ? inputString : defaultFormat);
         },
@@ -17309,7 +17309,7 @@ module.exports = property;
             function cback(accum, curr, currI, O) {
                 return accum - corrFactor * curr;
             }
-            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;            
+            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;
             return this;
         },
 
@@ -17328,7 +17328,7 @@ module.exports = property;
                 var corrFactor = correctionFactor(accum, curr);
                 return (accum * corrFactor) / (curr * corrFactor);
             }
-            this._value = [this._value, value].reduce(cback);            
+            this._value = [this._value, value].reduce(cback);
             return this;
         },
 
@@ -17613,92 +17613,97 @@ module.exports = uuid;
 
 },{"./rng":310}],312:[function(require,module,exports){
 module.exports={
-  "name": "focusjs",
-  "version": "0.8.4-0",
-  "description": "Technical stack in order to build single page application.",
-  "main": "lib/index.js",
-  "directories": {
-    "example": "example",
-    "test": "test"
-  },
-  "dependencies": {
-    "backbone": "^1.2.0",
-    "flux": "^2.0.3",
-    "immutable": "^3.7.3",
-    "keymirror": "^0.1.1",
-    "lodash": "^3.9.1",
-    "numeral": "^1.5.3",
-    "object-assign": "^2.0.0",
-    "react": "^0.13.3",
-    "uuid": "^2.0.1"
-  },
-  "scripts": {
-    "prepublish": "npm run build",
-    "test": "jest",
-    "build": "npm run build:node && npm run build:browser",
-    "build:browser": "node ./node_modules/gulp/bin/gulp.js build",
-    "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
-    "watch": "node ./node_modules/gulp/bin/gulp.js watch",
-    "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
-    "ci-lint": "node ./node_modules/eslint/bin/eslint.js index.js application component definition dispatcher exception helper network router reference search site-description store util user message -f checkstyle > checkstyle-result.xml"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/KleeGroup/focus.git"
-  },
-  "keywords": [
-    "spa",
-    "react",
-    "es6"
-  ],
-  "author": "Pierre Besson <pierre.besson@kleegroup.com>",
-  "documentation": "http://kleegroup.github.io/focus-docs/",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/KleeGroup/focus/issues"
-  },
-  "homepage": "https://github.com/KleeGroup/focus",
-  "devDependencies": {
-    "babel": "^5.8.21",
-    "babel-eslint": "4.0.5",
-    "babel-jest": "^5.3.0",
-    "babelify": "^5.0.3",
-    "browser-sync": "^2.2.1",
-    "browserify": "^9.0.3",
-    "eslint": "0.24.1",
-    "eslint-config-focus": "^0.1.4",
-    "eslint-plugin-filenames": "0.1.1",
-    "eslint-plugin-react": "2.7.1",
-    "eslint-plugin-require-jsdoc": "^1.0.4",
-    "express": "^4.12.2",
-    "gulp": "^3.8.11",
-    "gulp-babel": "^4.0.0",
-    "gulp-concat": "^2.5.2",
-    "gulp-eslint": "^0.5.0",
-    "gulp-if": "^1.2.5",
-    "gulp-react": ">2.1.0",
-    "jest-cli": "^0.4.15",
-    "literalify": "^0.4.0",
-    "react-tools": "^0.12.2",
-    "vinyl-source-stream": "^1.0.0"
-  },
-  "jest": {
-    "scriptPreprocessor": "./node_modules/babel-jest",
-    "testFileExtensions": [
-      "es6",
-      "js"
+    "name": "focusjs",
+    "version": "0.9.0",
+    "description": "Technical stack in order to build single page application.",
+    "main": "lib/index.js",
+    "directories": {
+        "example": "example",
+        "test": "test"
+    },
+    "dependencies": {
+        "backbone": "^1.2.0",
+        "flux": "^2.0.3",
+        "immutable": "^3.7.3",
+        "keymirror": "^0.1.1",
+        "lodash": "^3.9.1",
+        "numeral": "^1.5.3",
+        "object-assign": "^2.0.0",
+        "react": "^0.13.3",
+        "uuid": "^2.0.1",
+        "babel-eslint": "4.0.5",
+        "eslint": "0.24.1",
+        "eslint-plugin-filenames": "0.1.1",
+        "eslint-plugin-react": "2.7.1",
+        "eslint-plugin-require-jsdoc-focus": "0.1.0"
+    },
+    "scripts": {
+        "prepublish": "npm run build",
+        "test": "jest",
+        "build": "npm run build:node && npm run build:browser",
+        "build:browser": "node ./node_modules/gulp/bin/gulp.js build",
+        "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
+        "watch": "node ./node_modules/gulp/bin/gulp.js watch",
+        "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
+        "ci-lint": "node ./node_modules/eslint/bin/eslint.js index.js application component definition dispatcher exception helper network router reference search site-description store util user message -f checkstyle > checkstyle-result.xml"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/KleeGroup/focus.git"
+    },
+    "keywords": [
+        "spa",
+        "react",
+        "es6"
     ],
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "es6"
-    ],
-    "unmockedModulePathPatterns": [
-      "react",
-      "lodash",
-      "immutable"
-    ]
-  }
+    "author": "Pierre Besson <pierre.besson@kleegroup.com>",
+    "documentation": "http://kleegroup.github.io/focus-docs/",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/KleeGroup/focus/issues"
+    },
+    "homepage": "https://github.com/KleeGroup/focus",
+    "devDependencies": {
+        "babel": "^5.8.21",
+        "babel-eslint": "4.0.5",
+        "babel-jest": "^5.3.0",
+        "babelify": "^5.0.3",
+        "browser-sync": "^2.2.1",
+        "browserify": "^9.0.3",
+        "eslint": "0.24.1",
+        "eslint-config-focus": "^0.1.4",
+        "eslint-plugin-filenames": "0.1.1",
+        "eslint-plugin-react": "2.7.1",
+        "eslint-plugin-require-jsdoc": "^1.0.4",
+        "express": "^4.12.2",
+        "gulp": "^3.8.11",
+        "gulp-babel": "^4.0.0",
+        "gulp-concat": "^2.5.2",
+        "gulp-eslint": "^0.5.0",
+        "gulp-if": "^1.2.5",
+        "gulp-react": ">2.1.0",
+        "jest-cli": "^0.4.15",
+        "literalify": "^0.4.0",
+        "react-tools": "^0.12.2",
+        "vinyl-source-stream": "^1.0.0"
+    },
+    "jest": {
+        "scriptPreprocessor": "./node_modules/babel-jest",
+        "testFileExtensions": [
+            "es6",
+            "js"
+        ],
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "es6"
+        ],
+        "unmockedModulePathPatterns": [
+            "react",
+            "lodash",
+            "immutable"
+        ]
+    }
 }
 
 },{}],313:[function(require,module,exports){
@@ -17707,11 +17712,15 @@ module.exports={
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 
 var dispatcher = require("../dispatcher");
-var message = require("../message");
 
 var _require = require("../network/error-parsing");
 
 var manageResponseErrors = _require.manageResponseErrors;
+
+var _require2 = require("lodash/lang");
+
+var clone = _require2.clone;
+var isArray = _require2.isArray;
 
 /**
  * Method call before the service.
@@ -17719,23 +17728,30 @@ var manageResponseErrors = _require.manageResponseErrors;
  */
 function _preServiceCall() {
     var config = arguments[0] === undefined ? {} : arguments[0];
+
+    //There is a problem if the node is empty. //Node should be an array
     var node = config.node;
     var type = config.type;
     var preStatus = config.preStatus;
     var callerId = config.callerId;
 
+    var data = {};
+    var status = {};
+    // When there is a multi node update it should be an array.
+    if (isArray(node)) {
+        node.forEach(function (nd) {
+            data[nd] = null;
+            status[nd] = { name: preStatus, isLoading: true };
+        });
+    } else {
+        data[node] = null;
+        status[node] = { name: preStatus, isLoading: true };
+    }
+    //Dispatch store cleaning.
     dispatcher.handleViewAction({
-        data: _defineProperty({}, node, undefined),
+        data: data,
         type: type,
-        status: (function () {
-            var _status = {};
-
-            _defineProperty(_status, node, { name: preStatus });
-
-            _defineProperty(_status, "isLoading", true);
-
-            return _status;
-        })(),
+        status: status,
         callerId: callerId
     });
 }
@@ -17751,18 +17767,21 @@ function _postServiceCall(_x, json) {
     var status = config.status;
     var callerId = config.callerId;
 
+    var isMultiNode = isArray(node);
+    var data = isMultiNode ? json : _defineProperty({}, node, json);
+    var postStatus = { name: status, isLoading: false };
+    var newStatus = {};
+    if (isMultiNode) {
+        node.forEach(function (nd) {
+            newStatus[nd] = postStatus;
+        });
+    } else {
+        newStatus[node] = postStatus;
+    }
     dispatcher.handleServerAction({
-        data: _defineProperty({}, node, json),
+        data: data,
         type: type,
-        status: (function () {
-            var _status = {};
-
-            _defineProperty(_status, node, { name: status });
-
-            _defineProperty(_status, "isLoading", false);
-
-            return _status;
-        })(),
+        status: newStatus,
         callerId: callerId
     });
 }
@@ -17805,34 +17824,30 @@ module.exports = function actionBuilder(config) {
     }*/
     //Exposes a function consumes by the compoennt.
     return function actionBuilderFn(criteria) {
+        var conf = clone(config);
         //It the callerId is not defined in the config, it is overriden with the form identifier.
-        config.callerId = config.callerId || this._identifier;
-        _preServiceCall(config);
-        return config.service(criteria).then(function (jsonData) {
-            return _postServiceCall(config, jsonData);
+        conf.callerId = conf.callerId || this._identifier;
+        _preServiceCall(conf);
+        return conf.service(criteria).then(function (jsonData) {
+            return _postServiceCall(conf, jsonData);
         }, function (err) {
-            return _errorOnCall(config, err);
+            return _errorOnCall(conf, err);
         });
     };
 };
 
-},{"../dispatcher":338,"../message":352,"../network/error-parsing":357}],314:[function(require,module,exports){
+},{"../dispatcher":337,"../network/error-parsing":356,"lodash/lang":260}],314:[function(require,module,exports){
 "use strict";
 
 var ApplicationStore = require("../store/application");
-var instanciatedApplicationStore;
+
 /**
  * Built the store in order to the .
  * @return {ApplicationStore} - An instanciated application store.
  */
-module.exports = function builtInStore() {
-  if (!instanciatedApplicationStore) {
-    instanciatedApplicationStore = new ApplicationStore();
-  }
-  return instanciatedApplicationStore;
-};
+module.exports = new ApplicationStore();
 
-},{"../store/application":377}],315:[function(require,module,exports){
+},{"../store/application":376}],315:[function(require,module,exports){
 "use strict";
 
 var React = window.React;
@@ -17855,41 +17870,56 @@ module.exports = function clearComponent(targetSelector) {
 
 var React = window.React;
 var dispatcher = require("../dispatcher");
+//Empty compoennt.
 var Empty = React.createClass({
-  displayName: "Empty",
-
-  render: function render() {
-    return React.createElement("div", null);
-  }
+    /** @inheritdoc */
+    displayName: "Empty",
+    /** @inheritdoc */
+    render: function render() {
+        return React.createElement("div", null);
+    }
 });
 
 module.exports = {
-  render: require("./render"),
-  builtInStore: require("./built-in-store"),
-  actionBuilder: require("./action-builder"),
-  clear: require("./clear"),
-  mountedComponents: require("./mounted-components"),
-  changeMode: function changeMode(newMode, previousMode) {
-    var mode = { newMode: newMode, previousMode: previousMode };
-    dispatcher.handleViewAction({ data: { mode: mode }, type: "update" });
-  },
-  changeRoute: function changeRoute(newRoute) {
-    dispatcher.handleViewAction({ data: { route: newRoute }, type: "update" });
-  },
-  clearCartridge: function clearCartridge() {
-    dispatcher.handleViewAction({
-      data: {
-        cartridgeComponent: { component: Empty },
-        barContentLeftComponent: { component: Empty },
-        summaryComponent: { component: Empty },
-        actions: { primary: [], secondary: [] }
-      },
-      type: "update"
-    });
-  }
+    render: require("./render"),
+    builtInStore: require("./built-in-store"),
+    actionBuilder: require("./action-builder"),
+    clear: require("./clear"),
+    mountedComponents: require("./mounted-components"),
+    /**
+     * Change application mode.
+     * @param  {string} newMode      - New application mode.
+     * @param  {string} previousMode - Previous mode.
+     */
+    changeMode: function changeMode(newMode, previousMode) {
+        var mode = { newMode: newMode, previousMode: previousMode };
+        dispatcher.handleViewAction({ data: { mode: mode }, type: "update" });
+    },
+    /**
+     * Change application route (maybe not the wole route but a route's group.)
+     * @param  {string} newRoute - new route name.
+     */
+    changeRoute: function changeRoute(newRoute) {
+        dispatcher.handleViewAction({ data: { route: newRoute }, type: "update" });
+    },
+    /**
+     * Clear the application's header.
+     * @return {[type]} [description]
+     */
+    clearHeader: function clearHeader() {
+        dispatcher.handleViewAction({
+            data: {
+                cartridgeComponent: { component: Empty },
+                barContentLeftComponent: { component: Empty },
+                summaryComponent: { component: Empty },
+                actions: { primary: [], secondary: [] }
+            },
+            type: "update"
+        });
+    }
 };
 
-},{"../dispatcher":338,"./action-builder":313,"./built-in-store":314,"./clear":315,"./mounted-components":317,"./render":318}],317:[function(require,module,exports){
+},{"../dispatcher":337,"./action-builder":313,"./built-in-store":314,"./clear":315,"./mounted-components":317,"./render":318}],317:[function(require,module,exports){
 /**
  * Map containing all the mounted components' selectors.
  * The map has the shape {'selector1': true, 'selector2': true, ...}
@@ -17901,129 +17931,117 @@ module.exports = {
 module.exports = {}; // Empty by default
 
 },{}],318:[function(require,module,exports){
-"use strict";
 /*global document*/
+//dependencies
+"use strict";
+
 var React = window.React;
 var keys = require("lodash/object/keys");
-/**
- * Map containing all the mounted components.
- * @type {Object}
- */
 var mountedComponents = require("./mounted-components");
-
 var clearComponent = require("./clear");
 
 /**
- *  Render a react component in a DOM selector.
- * @param {object} component - A react component.
- * @param {string} selector  - A selector on a DOM node.
- * @param {object} options   - Options for the component rendering.
- */
+*  Render a react component in a DOM selector.
+* @param {object} component - A react component.
+* @param {string} selector  - A selector on a DOM node.
+* @param {object} options   - Options for the component rendering.
+*/
 module.exports = function renderComponent(component, selector, options) {
-  options = options || {};
-  // Clear a potential previously mounted component
-  clearComponent(selector);
-  var targetDOMContainer = document.querySelector(selector);
-  if (!targetDOMContainer) {
-    throw new Error("You are trying to render a component in a DOM element which is not existing, your selector is  " + selector);
-  }
-  // Render the component
-  var mountedComponent = React.render(React.createElement(component, options.props, options.data), targetDOMContainer);
-  //Save the fact that a component is mounted.
-  mountedComponents[selector] = mountedComponent;
-  console.info("Mounted components : ", keys(mountedComponents));
-  return mountedComponent;
+    options = options || {};
+    // Clear a potential previously mounted component
+    clearComponent(selector);
+    var targetDOMContainer = document.querySelector(selector);
+    if (!targetDOMContainer) {
+        throw new Error("You are trying to render a component in a DOM element which is not existing, your selector is  " + selector);
+    }
+    // Render the component
+    var mountedComponent = React.render(React.createElement(component, options.props, options.data), targetDOMContainer);
+    //Save the fact that a component is mounted.
+    mountedComponents[selector] = mountedComponent;
+    console.info("Mounted components : ", keys(mountedComponents));
+    return mountedComponent;
 };
 /*
-  Exemple
-  var render = Focus.application.render;
-  var MyComponent = require('./my-component');
-  render(MyComponent, 'div.component-container', {props: {id: '12'}});
- */
+Exemple
+var render = Focus.application.render;
+var MyComponent = require('./my-component');
+render(MyComponent, 'div.component-container', {props: {id: '12'}});
+*/
 
 },{"./clear":315,"./mounted-components":317,"lodash/object/keys":295}],319:[function(require,module,exports){
 "use strict";
+
 var React = window.React;
 var assign = require("object-assign");
 //var isObject = require('lodash/lang/isObject');
 //var isFunction = require('lodash/lang/isFunction');
 
 /**
- * Create a component with a mixin except id the component is mixin only.
- * @param {object}  mixin - The component mixin.
- * @param {Boolean} isMixinOnly - define if the component is a mixin only.
- * @return {object} - {component} the built react component.
- */
+* Create a component with a mixin except id the component is mixin only.
+* @param {object}  mixin - The component mixin.
+* @param {Boolean} isMixinOnly - define if the component is a mixin only.
+* @return {object} - {component} the built react component.
+*/
 function createComponent(mixin, isMixinOnly) {
-  if (isMixinOnly) {
-    return undefined; //Error('Your class publish a mixin only...');
-  }
-  return { component: React.createClass(mixin) };
+    if (isMixinOnly) {
+        return null;
+    }
+    return { component: React.createClass(mixin) };
 }
 
 /**
- * Build a module with a mixin and a React component.
- * @param  {object} componentMixin - Mixin of the component.
- * @param {boolean} isMixinOnly - Bolean to set .
- * @return {object} {mixin: 'the component mixin', component: 'the react instanciated component'}
- */
-module.exports = function (componentMixin, isMixinOnly) {
-
-  return assign({
-    mixin: componentMixin
-    /*extend: function extendMixin(properties){
-      if(isFunction(componentMixin)){
-        throw new Error('You cannot extend a mixin function');
-      }
-      if(!isObject(properties)){
-        throw new Error('properties should be an object');
-      }
-      return assign({}, componentMixin, properties);
-    },*/
-  }, createComponent(componentMixin, isMixinOnly));
+* Build a module with a mixin and a React component.
+* @param  {object} componentMixin - Mixin of the component.
+* @param {boolean} isMixinOnly - Bolean to set .
+* @return {object} {mixin: 'the component mixin', component: 'the react instanciated component'}
+*/
+module.exports = function builder(componentMixin, isMixinOnly) {
+    return assign({ mixin: componentMixin }, createComponent(componentMixin, isMixinOnly));
 };
 
 },{"object-assign":309}],320:[function(require,module,exports){
 "use strict";
+
 module.exports = {
   builder: require("./builder"),
   types: require("./types")
 };
 
 },{"./builder":319,"./types":321}],321:[function(require,module,exports){
-"use strict";
 //Dependencies.
+"use strict";
+
 var React = window.React;
 var isString = require("lodash/lang/isString");
 var isArray = require("lodash/lang/isArray");
 
 /**
- * Expose a React type validation for the component properties validation.
- * @see http://facebook.github.io/react/docs/reusable-components.html
- * @param   {string} type - String or array of the types to use.
- * @param   {boolean} isRequired - Defines if the props is mandatory.
- * @returns {object} The corresponding react type.
- */
-module.exports = function (type, isRequired) {
-  var isStringType = isString(type);
-  if (!isStringType && !isArray(type)) {
-    throw new Error("The type should be a string or an array");
-  }
-  //Container for the propTypes.
-  var propTypeToReturn;
-  //Array case.
-  if (isStringType) {
-    propTypeToReturn = React.PropTypes[type];
-  } else {
-    propTypeToReturn = React.PropTypes.oneOfType(type.map(function (type) {
-      return React.PropTypes[type];
-    }));
-  }
-  //Mandatory case
-  if (isRequired) {
-    propTypeToReturn = propTypeToReturn.isRequired;
-  }
-  return propTypeToReturn;
+* Expose a React type validation for the component properties validation.
+* @see http://facebook.github.io/react/docs/reusable-components.html
+* @param   {string} type - String or array of the types to use.
+* @param   {boolean} isRequired - Defines if the props is mandatory.
+* @return {object} The corresponding react type.
+*/
+module.exports = function types(type, isRequired) {
+    var isStringType = isString(type);
+    if (!isStringType && !isArray(type)) {
+        throw new Error("The type should be a string or an array");
+    }
+    //Container for the propTypes.
+    var propTypeToReturn = undefined;
+    //Array case.
+    if (isStringType) {
+        propTypeToReturn = React.PropTypes[type];
+    } else {
+        propTypeToReturn = React.PropTypes.oneOfType(type.map(function (t) {
+            return React.PropTypes[t];
+        }));
+    }
+    //Mandatory case
+    if (isRequired) {
+        propTypeToReturn = propTypeToReturn.isRequired;
+    }
+    return propTypeToReturn;
 };
 
 },{"lodash/lang/isArray":267,"lodash/lang/isString":284}],322:[function(require,module,exports){
@@ -18037,34 +18055,33 @@ var intersection = _require.intersection;
 var uniq = _require.uniq;
 var difference = _require.difference;
 
-module.exports = function (entityDef, domains) {
-  domains = Object.keys(domains);
-  var arr = [];
-  for (var node in entityDef) {
-    for (var sub in entityDef[node]) {
-      arr.push(entityDef[node][sub].domain);
+module.exports = function checkDomain(entityDef, domains) {
+    domains = keys(domains);
+    var arr = [];
+    for (var node in entityDef) {
+        for (var sub in entityDef[node]) {
+            arr.push(entityDef[node][sub].domain);
+        }
     }
-  }
-  var appDomains = uniq(arr);
-  console.info("########################## DOMAINS ##############################");
-  console.info("Entity definitions domains: ", appDomains);
-  console.info("Domains with a definition", domains);
-  var missingDomains = difference(appDomains, intersection(appDomains, domains));
-  if (missingDomains.length > 0) {
-    console.warn("Missing domain's definition", missingDomains);
-  }
-  var useLessDomains = difference(domains, _.intersection(appDomains, domains));
-  if (useLessDomains > 0) {
-    console.warn("Useless domain's definition", useLessDomains);
-  }
-
-  console.info("####################################################################");
+    var appDomains = uniq(arr);
+    console.info("########################## DOMAINS ##############################");
+    console.info("Entity definitions domains: ", appDomains);
+    console.info("Domains with a definition", domains);
+    var missingDomains = difference(appDomains, intersection(appDomains, domains));
+    if (0 < missingDomains.length) {
+        console.warn("Missing domain's definition", missingDomains);
+    }
+    var useLessDomains = difference(domains, intersection(appDomains, domains));
+    if (0 < useLessDomains) {
+        console.warn("Useless domain definition", useLessDomains);
+    }
+    console.info("####################################################################");
 };
 
 },{"lodash/array":8,"lodash/object/keys":295}],323:[function(require,module,exports){
+//Dependencies.
 "use strict";
 
-//Dependencies.
 var Immutable = require("immutable");
 var isObject = require("lodash/lang/isObject");
 var isString = require("lodash/lang/isString");
@@ -18073,63 +18090,66 @@ var checkIsString = require("../../util/string/check");
 var checkIsObject = require("../../util/object/check");
 
 /**
- * Container for the application domains.
- * @type {object}
- */
+* Container for the application domains.
+* @type {object}
+*/
 var domainsMap = Immutable.Map({});
 
 /**
- * Get all domains in a JS Structure.
+ * Get all domains in a js object.
+ * @return {object} - All domains.
  */
 function getDomains() {
-  return domainsMap.toJS();
+    return domainsMap.toJS();
 }
 
 /**
- * Set new domains.
- * @param {object} newDomains - New domains to set.
- */
+* Set new domains.
+* @param {object} newDomains - New domains to set.
+* à
+*/
 function setDomains(newDomains) {
-  if (!isObject(newDomains)) {
-    throw new InvalidException("newDomains should be an object", newDomains);
-  }
-  domainsMap = domainsMap.merge(newDomains);
+    if (!isObject(newDomains)) {
+        throw new InvalidException("newDomains should be an object", newDomains);
+    }
+    domainsMap = domainsMap.merge(newDomains);
 }
 
 /**
- * Set a domain.
- * @param {object} domain - Object structure of the domain.
- */
+* Set a domain.
+* @param {object} domain - Object structure of the domain.
+*/
 function setDomain(domain) {
-  checkIsObject("domain", domain);
-  checkIsString("doamin.name", domain.name);
-  //test domain, domain.name
-  domainsMap = domainsMap.set(domain.name, domain);
+    checkIsObject("domain", domain);
+    checkIsString("doamin.name", domain.name);
+    //test domain, domain.name
+    domainsMap = domainsMap.set(domain.name, domain);
 }
 
 /**
- * Get a domain given a name.
- * @param {string} domainName - name of the domain.
- */
+* Get a domain given a name.
+* @param {string} domainName - name of the domain.
+* @return {object} - The domain object.
+*/
 function getDomain(domainName) {
-  if (!isString(domainName)) {
-    throw new InvalidException("domaiName should extists and be a string", domainName);
-  }
-  if (!domainsMap.has(domainName)) {
-    console.warn("You are trying to access a non existing domain: " + domainName);
-    return Immutable.Map({});
-  }
-  return domainsMap.get(domainName);
+    if (!isString(domainName)) {
+        throw new InvalidException("domaiName should extists and be a string", domainName);
+    }
+    if (!domainsMap.has(domainName)) {
+        console.warn("You are trying to access a non existing domain: " + domainName);
+        return Immutable.Map({});
+    }
+    return domainsMap.get(domainName);
 }
 
 module.exports = {
-  getAll: getDomains,
-  setAll: setDomains,
-  set: setDomain,
-  get: getDomain
+    getAll: getDomains,
+    setAll: setDomains,
+    set: setDomain,
+    get: getDomain
 };
 
-},{"../../util/object/check":404,"../../util/string/check":407,"immutable":6,"lodash/lang/isObject":281,"lodash/lang/isString":284}],324:[function(require,module,exports){
+},{"../../util/object/check":399,"../../util/string/check":402,"immutable":6,"lodash/lang/isObject":281,"lodash/lang/isString":284}],324:[function(require,module,exports){
 /**
  * Application domain gestion.
  * @type {Object}
@@ -18150,9 +18170,9 @@ var checkIsNotNull = require("../../util/object/checkIsNotNull");
 var SEPARATOR = ".";
 
 /**
- * Pointer to the domain contaier.
- * @type {Object}
- */
+* Pointer to the domain contaier.
+* @type {Object}
+*/
 var domainContainer = require("../domain/container");
 var entityContainer = require("./container");
 var computedEntityContainer = Immutable.Map({});
@@ -18168,144 +18188,154 @@ isValidationOff
 label
 required
 domain
+*/
+
+/**
+ * Build all entity information from entity name.
+ * @param  {string} entityName - The entity name.
  */
-
-//Interface
-//
-//
-
 function _buildEntityInformation(entityName) {
-  var entityDomainInfos = entityContainer.getEntityConfiguration(entityName);
-  checkIsNotNull("entityDomainInfos", entityDomainInfos);
-  var container = {};
-  //Populate the domain values i
-  for (var key in entityDomainInfos) {
-    container[key] = _buildFieldInformation("" + entityName + "" + SEPARATOR + "" + key);
-  }
-  //Update the computed information map.
-  computedEntityContainer = computedEntityContainer.set(entityName, Immutable.Map(container));
+    var entityDomainInfos = entityContainer.getEntityConfiguration(entityName);
+    checkIsNotNull("entityDomainInfos", entityDomainInfos);
+    var container = {};
+    //Populate the domain values i
+    for (var key in entityDomainInfos) {
+        container[key] = _buildFieldInformation("" + entityName + "" + SEPARATOR + "" + key);
+    }
+    //Update the computed information map.
+    computedEntityContainer = computedEntityContainer.set(entityName, Immutable.Map(container));
 }
 
+/**
+ * Build the field informations.
+ * @param  {string} fieldPath - The field path.
+ * @return {Immutable.Map} - The immutable field description.
+ */
 function _buildFieldInformation(fieldPath) {
-  var fieldConf = entityContainer.getFieldConfiguration(fieldPath);
-  var immutableFieldConf = Immutable.Map(fieldConf);
-  //Maybe add a domain check existance
-  var domain = fieldConf.domain;
+    var fieldConf = entityContainer.getFieldConfiguration(fieldPath);
+    var immutableFieldConf = Immutable.Map(fieldConf);
+    //Maybe add a domain check existance
+    var domain = fieldConf.domain;
 
-  return domainContainer.get(domain).mergeDeep(immutableFieldConf);
+    return domainContainer.get(domain).mergeDeep(immutableFieldConf);
 }
 
 /**
- * Get the entity information from the entity name and given the extended informations.
- * @param {string} entityName - The name of the entity.
- * @param {object} complementaryInformation - Additional .
- */
+* Get the entity information from the entity name and given the extended informations.
+* @param {string} entityName - The name of the entity.
+* @param {object} complementaryInformation - Additional information on the entity.
+* @return {object} - The entity informations from the entity  name.
+*/
 function getEntityInformations(entityName, complementaryInformation) {
-  checkIsString("entityName", entityName);
-  checkIsObject("complementaryInformation", complementaryInformation);
-  var key = entityName.split(SEPARATOR);
-  if (!computedEntityContainer.hasIn(key)) {
-    _buildEntityInformation(entityName);
-  }
-  return computedEntityContainer.get(entityName).mergeDeep(complementaryInformation).toJS();
+    checkIsString("entityName", entityName);
+    checkIsObject("complementaryInformation", complementaryInformation);
+    var key = entityName.split(SEPARATOR);
+    if (!computedEntityContainer.hasIn(key)) {
+        _buildEntityInformation(entityName);
+    }
+    return computedEntityContainer.get(entityName).mergeDeep(complementaryInformation).toJS();
 }
 
 /**
- * Get the field informations.
- * @param {string} fieldName - name or path of the field.
- * @param {object} complementaryInformation - Additional informations to extend the domain informations.
- */
+* Get the field informations.
+* @param {string} fieldName - name or path of the field.
+* @param {object} complementaryInformation - Additional informations to extend the domain informations.
+* @return {object} - The builded field informations.
+*/
 function getFieldInformations(fieldName, complementaryInformation) {
-  checkIsString("fieldName", fieldName);
-  checkIsObject("complementaryInformation", complementaryInformation);
-  var fieldPath = fieldName.split(SEPARATOR);
-  if (computedEntityContainer.hasIn(fieldPath)) {
-    return computedEntityContainer.getIn(fieldPath).toJS();
-  }
-  return _buildFieldInformation(fieldPath).mergeDeep(complementaryInformation).toJS();
+    checkIsString("fieldName", fieldName);
+    checkIsObject("complementaryInformation", complementaryInformation);
+    var fieldPath = fieldName.split(SEPARATOR);
+    if (computedEntityContainer.hasIn(fieldPath)) {
+        return computedEntityContainer.getIn(fieldPath).toJS();
+    }
+    return _buildFieldInformation(fieldPath).mergeDeep(complementaryInformation).toJS();
 }
 
 module.exports = {
-  getEntityInformations: getEntityInformations,
-  getFieldInformations: getFieldInformations
+    getEntityInformations: getEntityInformations,
+    getFieldInformations: getFieldInformations
 };
 
-},{"../../util/object/check":404,"../../util/object/checkIsNotNull":405,"../../util/string/check":407,"../domain/container":323,"./container":326,"immutable":6}],326:[function(require,module,exports){
+},{"../../util/object/check":399,"../../util/object/checkIsNotNull":400,"../../util/string/check":402,"../domain/container":323,"./container":326,"immutable":6}],326:[function(require,module,exports){
+//Dependencies.
 "use strict";
 
-//Dependencies.
 var Immutable = require("immutable");
-var InvalidException = Error;
 var checkIsString = require("../../util/string/check");
 var checkIsObject = require("../../util/object/check");
 /**
- * Separator for the configuration
- * @type {String}
- */
+* Separator for the configuration
+* @type {String}
+*/
 var SEPARATOR = ".";
 
 /**
- * Container for the application entities.
- * @type {object}
- */
+* Container for the application entities.
+* @type {object}
+*/
 var entitiesMap = Immutable.Map({});
 
 /**
- * Get all entityDefinition in a JS Structure.
- * @param {object} extendedEntityConfiguration - The object to extend the config.
- */
+* Get all entityDefinition in a JS Structure.
+* @param {string} - The node path (with .).
+* @param {object} extendedEntityConfiguration - The object to extend the config.
+* @return {object} - The entity configuration from a given path.
+*/
 function getEntityConfiguration(nodePath, extendedEntityConfiguration) {
-  //If a node is specified get the direct sub conf.
-  if (nodePath) {
-    return _getNode(nodePath, extendedEntityConfiguration).toJS();
-  }
-  return entitiesMap.toJS();
+    //If a node is specified get the direct sub conf.
+    if (nodePath) {
+        return _getNode(nodePath, extendedEntityConfiguration).toJS();
+    }
+    return entitiesMap.toJS();
 }
 
 /**
- * Set new entities in the map or extend existing one.
- * @param {object} newEntities - new entities description
- */
+* Set new entities in the map or extend existing one.
+* @param {object} newEntities - new entities description
+*/
 function setEntityConfiguration(newEntities) {
-  checkIsObject("newEntities", newEntities);
-  entitiesMap = entitiesMap.mergeDeep(newEntities);
+    checkIsObject("newEntities", newEntities);
+    entitiesMap = entitiesMap.mergeDeep(newEntities);
 }
 
 /**
- * Get a node configuration given a node path "obj.prop.subProp".
- * @param {string} nodePath - The node path you want to get.
- * @param {object} extendedConfiguration - The object to extend the config.
- */
+* Get a node configuration given a node path "obj.prop.subProp".
+* @param {string} nodePath - The node path you want to get.
+* @param {object} extendedConfiguration - The object to extend the config.
+* @return {object} - The node configuration.
+*/
 function _getNode(nodePath, extendedConfiguration) {
-  checkIsString("nodePath", nodePath);
-  if (!entitiesMap.hasIn(nodePath.split(SEPARATOR))) {
-    console.warn("\n      It seems the definition your are trying to use does not exists in the entity definitions of your project.\n      The definition you want is " + nodePath + " and the definition map is:\n    ", entitiesMap.toJS());
-    throw new Error("Wrong definition path given, see waning for more details");
-  }
-  var conf = entitiesMap.getIn(nodePath.split(SEPARATOR));
-  if (extendedConfiguration) {
-    checkIsObject(extendedConfiguration);
-    conf = conf.mergeDeep(extendedConfiguration);
-  }
-  return conf;
+    checkIsString("nodePath", nodePath);
+    if (!entitiesMap.hasIn(nodePath.split(SEPARATOR))) {
+        console.warn("\n            It seems the definition your are trying to use does not exists in the entity definitions of your project.\n            The definition you want is " + nodePath + " and the definition map is:\n            ", entitiesMap.toJS());
+        throw new Error("Wrong definition path given, see waning for more details");
+    }
+    var conf = entitiesMap.getIn(nodePath.split(SEPARATOR));
+    if (extendedConfiguration) {
+        checkIsObject(extendedConfiguration);
+        conf = conf.mergeDeep(extendedConfiguration);
+    }
+    return conf;
 }
 
 /**
- * Get a field configuration given a path.
- * @param {string} fieldPath - The field path in the map.
- * @param {object} customFieldConf - The object to extend the config.
- */
+* Get a field configuration given a path.
+* @param {string} fieldPath - The field path in the map.
+* @param {object} customFieldConf - The object to extend the config.
+* @return {object} - The field configuration.
+*/
 function getFieldConfiguration(fieldPath, customFieldConf) {
-  return _getNode(fieldPath, customFieldConf).toJS();
+    return _getNode(fieldPath, customFieldConf).toJS();
 }
 
 module.exports = {
-  getEntityConfiguration: getEntityConfiguration,
-  setEntityConfiguration: setEntityConfiguration,
-  getFieldConfiguration: getFieldConfiguration
+    getEntityConfiguration: getEntityConfiguration,
+    setEntityConfiguration: setEntityConfiguration,
+    getFieldConfiguration: getFieldConfiguration
 };
 
-},{"../../util/object/check":404,"../../util/string/check":407,"immutable":6}],327:[function(require,module,exports){
+},{"../../util/object/check":399,"../../util/string/check":402,"immutable":6}],327:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -18328,6 +18358,12 @@ var numeral = require("numeral");
 var DEFAULT_FORMAT = "0,0";
 
 module.exports = {
+    /**
+     * Format a number using a given format.
+     * @param  {number} number - The number to format.
+     * @param  {string} format - The format to transform.
+     * @return {string} - The formated number.
+     */
     format: (function (_format) {
         var _formatWrapper = function format(_x, _x2) {
             return _format.apply(this, arguments);
@@ -18356,14 +18392,20 @@ module.exports = {
 };
 
 },{"./check-domains":322,"./domain":324,"./entity":327,"./formatter":328,"./validator":333}],331:[function(require,module,exports){
+/**
+* Validate a date.
+* @param  {string | date} dateToValidate - The date to validate.
+* @param  {object} options   - The validator options.
+* @return {boolean} - True if the date is valide , false otherwise.
+*/
 "use strict";
 
 module.exports = function dateValidation(dateToValidate, options) {
-  var moment = window.moment;
-  if (!moment) {
-    console.warn("Moment library is not a part of your project, please download it : http://momentjs.com/");
-  }
-  return moment(dateToValidate).isValid();
+    var moment = window.moment;
+    if (!moment) {
+        console.warn("Moment library is not a part of your project, please download it : http://momentjs.com/");
+    }
+    return moment(dateToValidate, options).isValid();
 };
 
 },{}],332:[function(require,module,exports){
@@ -18371,9 +18413,12 @@ module.exports = function dateValidation(dateToValidate, options) {
 
 var EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-//Function to test an email.
-module.exports = function emailValidation(emailToValidate, options) {
-  options = options || {};
+/**
+ * Email validator using a Regex.
+ * @param  {string} emailToValidate - The email to validate.
+ * @return {boolean} - True if the email is valide , false otherwise.
+ */
+module.exports = function emailValidation(emailToValidate) {
   return EMAIL_REGEX.test(emailToValidate);
 };
 
@@ -18390,8 +18435,6 @@ module.exports = {
 
 },{"./date":331,"./email":332,"./number":334,"./string-length":335,"./validate":336}],334:[function(require,module,exports){
 "use strict";
-
-var NUMBER_REGEX = /^-?\d+(?:\.d*)?(?:e[+\-]?\d+)?$/i;
 
 var _require = require("lodash/lang");
 
@@ -18424,167 +18467,190 @@ module.exports = function numberValidation(numberToValidate) {
 };
 
 },{"lodash/lang":260}],335:[function(require,module,exports){
-//Function to test the length of a string.
 "use strict";
 
-module.exports = function stringLength(stringToTest, options) {
-  if ("string" !== typeof stringToTest) {
-    return false;
-  }
-  options = options || {};
-  //console.log(options);
-  options.minLength = options.minLength || 0;
-  var isMinLength = options.minLength !== undefined ? stringToTest.length >= options.minLength : true;
-  var isMaxLength = options.maxLength !== undefined ? stringToTest.length <= options.maxLength : true;
-  return isMinLength && isMaxLength;
+var _require = require("lodash/lang");
+
+var isString = _require.isString;
+
+/**
+ * Validate a string given options.
+ * @param  {string} stringToTest - The string to test.
+ * @param  {object} options - Validators options, supports minLength and maxLength both optionals.
+ * @return {boolean} - True if the string is valid , false otherwise.
+ */
+module.exports = function stringLength(stringToTest) {
+    var options = arguments[1] === undefined ? {} : arguments[1];
+
+    if (!isString(stringToTest)) {
+        return false;
+    }
+    options.minLength = options.minLength || 0;
+    var isMinLength = options.minLength !== undefined ? stringToTest.length >= options.minLength : true;
+    var isMaxLength = options.maxLength !== undefined ? stringToTest.length <= options.maxLength : true;
+    return isMinLength && isMaxLength;
 };
 
-},{}],336:[function(require,module,exports){
+},{"lodash/lang":260}],336:[function(require,module,exports){
 //Dependency
 "use strict";
 
 var DependencyException = require("../../exception").DependencyException;
 var assign = require("object-assign");
-
 //Focus validators
 var emailValidation = require("./email");
 var numberValidation = require("./number");
 var stringLength = require("./string-length");
 var dateValidation = require("./date");
 
-//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
-var validate = function validate(property, validators) {
-  //console.log("validate", property, validators);
-  var errors, res, validator, _i, _len;
-  errors = [];
-  if (validators) {
-    for (_i = 0, _len = validators.length; _i < _len; _i++) {
-      validator = validators[_i];
-      res = validateProperty(property, validator);
-      if (res !== null && res !== undefined) {
-        errors.push(res);
-      }
-    }
-  }
-  //Check what's the good type to return.
-  return {
-    name: property.name,
-    value: property.value,
-    isValid: errors.length === 0,
-    errors: errors
-  };
-};
+var _require = require("lodash/lang");
 
+var isNull = _require.isNull;
+var isUndefined = _require.isUndefined;
+
+/**
+* Validae a property given validators.
+* @param  {object} property   - Property to validate which should be as follows: `{name: "field_name",value: "field_value", validators: [{...}] }`.
+* @param  {array} validators - The validators to apply on the property.
+* @return {object} - The validation status.
+*/
+function validate(property, validators) {
+    //console.log("validate", property, validators);
+    var errors = [],
+        res = undefined,
+        validator = undefined;
+    if (validators) {
+        for (var i = 0, _len = validators.length; i < _len; i++) {
+            validator = validators[i];
+            res = validateProperty(property, validator);
+            if (!isNull(res) && !isUndefined(res)) {
+                errors.push(res);
+            }
+        }
+    }
+    //Check what's the good type to return.
+    return {
+        name: property.name,
+        value: property.value,
+        isValid: 0 === errors.length,
+        errors: errors
+    };
+}
+
+/**
+* Validate a property.
+* @param  {object} property  - The property to validate.
+* @param  {function} validator - The validator to apply.
+* @return {object} - The property validation status.
+*/
 function validateProperty(property, validator) {
-  var isValid;
-  if (!validator) {
-    return void 0;
-  }
-  if (!property) {
-    return void 0;
-  }
-  isValid = (function () {
-    switch (validator.type) {
-      case "required":
-        var prevalidString = property.value === "" ? false : true;
-        var prevalidDate = true;
-        return validator.value === true ? property.value !== null && property.value !== undefined && prevalidString && prevalidDate : true;
-      case "regex":
-        if (property.value === undefined || property.value === null) {
-          return true;
-        }
-        return validator.value.test(property.value);
-      case "email":
-        if (property.value === undefined || property.value === null) {
-          return true;
-        }
-        return emailValidation(property.value, validator.options);
-      case "number":
-        return numberValidation(property.value, validator.options);
-      case "string":
-        var stringToValidate = property.value || "";
-        return stringLength(stringToValidate, validator.options);
-      case "date":
-        return dateValidation(property.value, validator.options);
-      case "function":
-        return validator.value(property.value, validator.options);
-      default:
+    var isValid = undefined;
+    if (!validator) {
         return void 0;
     }
-  })();
-  if (isValid === undefined || isValid === null) {
-    console.warn("The validator of type: " + validator.type + " is not defined"); //Todo: call the logger.
-  } else if (isValid === false) {
+    if (!property) {
+        return void 0;
+    }
+    var value = { property: property };
+    var options = validator.options;
 
-    //Add the name of the property.
-    return getErrorLalel(validator.type, property.modelName + "." + property.name, validator.options); //"The property " + property.name + " is invalid.";
-  }
-};
+    var isValueNullOrUndefined = isNull(value) || isUndefined(value);
+    isValid = (function () {
+        switch (validator.type) {
+            case "required":
+                var prevalidString = "" === property.value ? false : true;
+                var prevalidDate = true;
+                return true === validator.value ? !isNull(property.value) && !isUndefined(property.value) && prevalidString && prevalidDate : true;
+            case "regex":
+                if (isValueNullOrUndefined) {
+                    return true;
+                }
+                return validator.value.test(property.value);
+            case "email":
+                if (isValueNullOrUndefined) {
+                    return true;
+                }
+                return emailValidation(value, options);
+            case "number":
+                return numberValidation(value, options);
+            case "string":
+                var stringToValidate = property.value || "";
+                return stringLength(stringToValidate, options);
+            case "date":
+                return dateValidation(property.value, options);
+            case "function":
+                return validator.value(property.value, options);
+            default:
+                return void 0;
+        }
+    })();
+    if (isUndefined(isValid) || isNull(isValid)) {
+        console.warn("The validator of type: " + validator.tye + " is not defined");
+    } else if (false === isValid) {
+        //Add the name of the property.
+        return getErrorLalel(validator.type, property.modelName + "." + property.name, options); //"The property " + property.name + " is invalid.";
+    }
+}
+/**
+ * Get the error label from a type and a field name.
+ * @param  {string} type      - The type name.
+ * @param  {string} fieldName - The field name.
+ * @param  {object} options - The options to put such as the translationKey which could be defined in the domain.
+ * @return {string} The formatted error.
+ */
+function getErrorLalel(type, fieldName) {
+    var options = arguments[2] === undefined ? {} : arguments[2];
 
-function getErrorLalel(type, fieldName, options) {
-  options = options || {};
-  var i18n = window.i18n;
-  if (!i18n) {
-    throw new DependencyException("Dependency not resolved: i18n.js");
-  }
-  var translationKey = options.translationKey ? options.translationKey : "domain.validation." + type;
-  var opts = assign({ fieldName: i18n.t(fieldName) }, options);
-  return i18n.t(translationKey, opts);
+    options = options || {};
+    var i18n = window.i18n;
+    if (!i18n) {
+        throw new DependencyException("Dependency not resolved: i18n.js");
+    }
+    var translationKey = options.translationKey ? options.translationKey : "domain.validation." + type;
+    var opts = assign({ fieldName: i18n.t(fieldName) }, options);
+    return i18n.t(translationKey, opts);
 }
 
 module.exports = validate;
 
-},{"../../exception":345,"./date":331,"./email":332,"./number":334,"./string-length":335,"object-assign":309}],337:[function(require,module,exports){
-//By default use the facebook flux dispatcher.
+},{"../../exception":343,"./date":331,"./email":332,"./number":334,"./string-length":335,"lodash/lang":260,"object-assign":309}],337:[function(require,module,exports){
 "use strict";
 
 var Dispatcher = require("flux").Dispatcher;
-/**
- * Core Dispatcher.
- * @type {Object}
- */
-module.exports = Dispatcher;
-
-},{"flux":3}],338:[function(require,module,exports){
-"use strict";
-
-var Dispatcher = require("./Dispatcher");
 var assign = require("object-assign");
 
-var AppDispaytcher = assign(new Dispatcher(), {
-
-  /**
-   * @param {object} action The details of the action, including the action's
-   * type and additional data coming from the server.
-   */
-  handleServerAction: function handleServerAction(action) {
-    var payload = {
-      source: "SERVER_ACTION",
-      action: action
-    };
-    this.dispatch(payload);
-  },
-
-  /**
-   * @param {object} action The details of the action, including the action's
-   * type and additional data coming from the view.
-   */
-  handleViewAction: function handleViewAction(action) {
-    var payload = {
-      source: "VIEW_ACTION",
-      action: action
-    };
-    this.dispatch(payload);
-  }
+/**
+* Application dispatcher.
+* @type {Object}
+*/
+var AppDispatcher = assign(new Dispatcher(), {
+    /**
+    * @param {object} action The details of the action, including the action's
+    * type and additional data coming from the server.
+    */
+    handleServerAction: function handleServerAction(action) {
+        var payload = {
+            source: "SERVER_ACTION",
+            action: action
+        };
+        this.dispatch(payload);
+    },
+    /**
+    * @param {object} action The details of the action, including the action's
+    * type and additional data coming from the view.
+    */
+    handleViewAction: function handleViewAction(action) {
+        var payload = {
+            source: "VIEW_ACTION",
+            action: action
+        };
+        this.dispatch(payload);
+    }
 });
 
-/**
- * Application dispatcher.
- * @type {Object}
- */
-module.exports = AppDispaytcher;
+module.exports = AppDispatcher;
 
-},{"./Dispatcher":337,"object-assign":309}],339:[function(require,module,exports){
+},{"flux":3,"object-assign":309}],338:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -18593,17 +18659,17 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== "fun
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var CustomException = require("./CustomException");
-/** 
- * Class standing for the NotImplemented exceptions.
- */
+var CustomException = require("./custom-exception");
+/**
+* Class standing for the NotImplemented exceptions.
+*/
 
 var ArgumentInvalidException = (function (_CustomException) {
 	/**
-  * Exception constructor..
-  * @param messgae {string} - Exception message.
-  * @param options {object} - Object to add to the exception.
-  */
+ * Exception constructor.
+ * @param {string} message  - Exception message.
+ * @param {object} options  - Object to add to the exception.
+ */
 
 	function ArgumentInvalidException(message, options) {
 		_classCallCheck(this, ArgumentInvalidException);
@@ -18618,7 +18684,7 @@ var ArgumentInvalidException = (function (_CustomException) {
 
 module.exports = ArgumentInvalidException;
 
-},{"./CustomException":341}],340:[function(require,module,exports){
+},{"./custom-exception":340}],339:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -18627,32 +18693,32 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== "fun
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var CustomException = require("./CustomException");
+var CustomException = require("./custom-exception");
 /**
- * Class standing for the NotImplemented exceptions.
- */
+* Class standing for the NotImplemented exceptions.
+*/
 
 var ArgumentNullException = (function (_CustomException) {
-  /**
-   * Exception constructor..
-   * @param messgae {string} - Exception message.
-   * @param options {object} - Object to add to the exception.
-   */
+    /**
+    * Exception constructor..
+    * @param message {string} - Exception message.
+    * @param options {object} - Object to add to the exception.
+    */
 
-  function ArgumentNullException(message, options) {
-    _classCallCheck(this, ArgumentNullException);
+    function ArgumentNullException(message, options) {
+        _classCallCheck(this, ArgumentNullException);
 
-    _get(Object.getPrototypeOf(ArgumentNullException.prototype), "constructor", this).call(this, "ArgumentNullException", message, options);
-  }
+        _get(Object.getPrototypeOf(ArgumentNullException.prototype), "constructor", this).call(this, "ArgumentNullException", message, options);
+    }
 
-  _inherits(ArgumentNullException, _CustomException);
+    _inherits(ArgumentNullException, _CustomException);
 
-  return ArgumentNullException;
+    return ArgumentNullException;
 })(CustomException);
 
 module.exports = ArgumentNullException;
 
-},{"./CustomException":341}],341:[function(require,module,exports){
+},{"./custom-exception":340}],340:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -18664,62 +18730,69 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== "fun
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 /**
- * Classe standing for custom exception.
- * @see https://gist.github.com/daliwali/09ca19032ab192524dc6
- */
+* Classe standing for custom exception.
+* @see https://gist.github.com/daliwali/09ca19032ab192524dc6
+*/
 
 var CustomException = (function (_Error) {
-  function CustomException(name, message, options) {
-    _classCallCheck(this, CustomException);
+    function CustomException(name, message, options) {
+        _classCallCheck(this, CustomException);
 
-    _get(Object.getPrototypeOf(CustomException.prototype), "constructor", this).call(this);
-    if (Error.hasOwnProperty("captureStackTrace")) {
-      Error.captureStackTrace(this, this.constructor);
-    } else {
-      Object.defineProperty(this, "stack", {
-        value: new Error().stack
-      });
+        _get(Object.getPrototypeOf(CustomException.prototype), "constructor", this).call(this);
+        if (Error.hasOwnProperty("captureStackTrace")) {
+            Error.captureStackTrace(this, this.constructor);
+        } else {
+            Object.defineProperty(this, "stack", {
+                value: new Error().stack
+            });
+        }
+        Object.defineProperty(this, "message", {
+            value: message
+        });
+        this.options = options;
     }
-    Object.defineProperty(this, "message", {
-      value: message
+
+    _inherits(CustomException, _Error);
+
+    _createClass(CustomException, {
+        name: {
+            get: function () {
+                return this.constructor.name;
+            }
+        },
+        log: {
+            /**
+            * Log the exception in the js console.
+            */
+
+            value: function log() {
+                console.error("name", this.name, "message", this.message, "options", this.options);
+            }
+        },
+        toJSON: {
+            /**
+             * Jsonify the exception.
+             * @return {object} - The json exception.
+             */
+
+            value: function toJSON() {
+                var _ref = this;
+
+                var name = _ref.name;
+                var message = _ref.message;
+                var options = _ref.options;
+
+                return { name: name, message: message, options: options };
+            }
+        }
     });
-    this.options = options;
-  }
 
-  _inherits(CustomException, _Error);
-
-  _createClass(CustomException, {
-    name: {
-      get: function () {
-        return this.constructor.name;
-      }
-    },
-    log: {
-      /**
-       * Log the exception in the js console.
-       */
-
-      value: function log() {
-        console.error("name", this.name, "message", this.message, "options", this.options);
-      }
-    },
-    toJSON: {
-      /**
-       * JSONify the exception.
-       */
-
-      value: function toJSON() {
-        return { name: this.name, message: this.message, options: this.options };
-      }
-    }
-  });
-
-  return CustomException;
+    return CustomException;
 })(Error);
 
 module.exports = CustomException;
 
-},{}],342:[function(require,module,exports){
+},{}],341:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -18728,32 +18801,32 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== "fun
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var CustomException = require("./CustomException");
+var CustomException = require("./custom-exception");
 /**
- * Class standing for the NotImplemented exceptions.
- */
+* Class standing for the NotImplemented exceptions.
+*/
 
 var DependencyException = (function (_CustomException) {
-  /**
-   * Exception constructor..
-   * @param messgae {string} - Exception message.
-   * @param options {object} - Object to add to the exception.
-   */
+    /**
+    * Exception constructor..
+    * @param message {string} - Exception message.
+    * @param options {object} - Object to add to the exception.
+    */
 
-  function DependencyException(message, options) {
-    _classCallCheck(this, DependencyException);
+    function DependencyException(message, options) {
+        _classCallCheck(this, DependencyException);
 
-    _get(Object.getPrototypeOf(DependencyException.prototype), "constructor", this).call(this, "DependencyException", message, options);
-  }
+        _get(Object.getPrototypeOf(DependencyException.prototype), "constructor", this).call(this, "DependencyException", message, options);
+    }
 
-  _inherits(DependencyException, _CustomException);
+    _inherits(DependencyException, _CustomException);
 
-  return DependencyException;
+    return DependencyException;
 })(CustomException);
 
 module.exports = DependencyException;
 
-},{"./CustomException":341}],343:[function(require,module,exports){
+},{"./custom-exception":340}],342:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -18762,17 +18835,17 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== "fun
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var CustomException = require("./CustomException");
+var CustomException = require("./custom-exception");
 /**
- * Class standing for the FocusException exceptions.
- */
+* Class standing for the FocusException exceptions.
+*/
 
 var FocusException = (function (_CustomException) {
 	/**
-  * Exception constructor..
-  * @param messgae {string} - Exception message.
-  * @param options {object} - Object to add to the exception.
-  */
+ * Exception constructor..
+ * @param messgae {string} - Exception message.
+ * @param options {object} - Object to add to the exception.
+ */
 
 	function FocusException(message, options) {
 		_classCallCheck(this, FocusException);
@@ -18787,7 +18860,19 @@ var FocusException = (function (_CustomException) {
 
 module.exports = FocusException;
 
-},{"./CustomException":341}],344:[function(require,module,exports){
+},{"./custom-exception":340}],343:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+	ArgumentInvalidException: require("./argument-invalid-exception"),
+	ArgumentNullException: require("./argument-null-exception"),
+	CustomException: require("./custom-exception"),
+	DependencyException: require("./dependency-exception"),
+	FocusException: require("./focus-exception"),
+	NotImplementedException: require("./not-implemented-exception")
+};
+
+},{"./argument-invalid-exception":338,"./argument-null-exception":339,"./custom-exception":340,"./dependency-exception":341,"./focus-exception":342,"./not-implemented-exception":344}],344:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -18796,44 +18881,32 @@ var _inherits = function (subClass, superClass) { if (typeof superClass !== "fun
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var CustomException = require("./CustomException");
+var CustomException = require("./custom-exception");
 /**
- * Class standing for the NotImplemented exceptions.
- */
+* Class standing for the NotImplemented exceptions.
+*/
 
 var NotImplementedException = (function (_CustomException) {
-  /**
-   * Exception constructor..
-   * @param messgae {string} - Exception message.
-   * @param options {object} - Object to add to the exception.
-   */
+    /**
+    * Exception constructor.
+    * @param message {string} - Exception message.
+    * @param options {object} - Object to add to the exception.
+    */
 
-  function NotImplementedException(message, options) {
-    _classCallCheck(this, NotImplementedException);
+    function NotImplementedException(message, options) {
+        _classCallCheck(this, NotImplementedException);
 
-    _get(Object.getPrototypeOf(NotImplementedException.prototype), "constructor", this).call(this, "NotImplementedException", message, options);
-  }
+        _get(Object.getPrototypeOf(NotImplementedException.prototype), "constructor", this).call(this, "NotImplementedException", message, options);
+    }
 
-  _inherits(NotImplementedException, _CustomException);
+    _inherits(NotImplementedException, _CustomException);
 
-  return NotImplementedException;
+    return NotImplementedException;
 })(CustomException);
 
 module.exports = NotImplementedException;
 
-},{"./CustomException":341}],345:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-	ArgumentInvalidException: require("./ArgumentInvalidException"),
-	ArgumentNullException: require("./ArgumentNullException"),
-	CustomException: require("./CustomException"),
-	DependencyException: require("./DependencyException"),
-	FocusException: require("./FocusException"),
-	NotImplementedException: require("./NotImplementedException")
-};
-
-},{"./ArgumentInvalidException":339,"./ArgumentNullException":340,"./CustomException":341,"./DependencyException":342,"./FocusException":343,"./NotImplementedException":344}],346:[function(require,module,exports){
+},{"./custom-exception":340}],345:[function(require,module,exports){
 "use strict";
 
 var dispatcher = require("../dispatcher");
@@ -18891,7 +18964,7 @@ module.exports = function (config) {
   };
 };
 
-},{"../dispatcher":338,"./load-action":349}],347:[function(require,module,exports){
+},{"../dispatcher":337,"./load-action":348}],346:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -18899,7 +18972,7 @@ module.exports = {
     loadAction: require("./load-action")
 };
 
-},{"./action-builder":346,"./load-action":349}],348:[function(require,module,exports){
+},{"./action-builder":345,"./load-action":348}],347:[function(require,module,exports){
 "use strict";
 
 var keys = require("lodash/object/keys");
@@ -18949,7 +19022,7 @@ module.exports = {
     orderAndSort: _buildOrderAndSort
 };
 
-},{"lodash/lang/isArray":267,"lodash/object/keys":295}],349:[function(require,module,exports){
+},{"lodash/lang/isArray":267,"lodash/object/keys":295}],348:[function(require,module,exports){
 //Dependencies.
 "use strict";
 
@@ -19009,7 +19082,7 @@ module.exports = function loadActionFn(config) {
     };
 };
 
-},{"./builder":348,"./parser":350,"object-assign":309}],350:[function(require,module,exports){
+},{"./builder":347,"./parser":349,"object-assign":309}],349:[function(require,module,exports){
 "use strict";
 
 var _toConsumableArray = function (arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } };
@@ -19029,23 +19102,17 @@ module.exports = function (data, context) {
     };
 };
 
-},{}],351:[function(require,module,exports){
+},{}],350:[function(require,module,exports){
 "use strict";
 
 var MessageStore = require("../store/message");
-var instanciatedMessageStore;
 /**
  * Built the store in order to the .
  * @return {MessageStore} - An instanciated reference store.
  */
-module.exports = function builtInStore() {
-  if (!instanciatedMessageStore) {
-    instanciatedMessageStore = new MessageStore();
-  }
-  return instanciatedMessageStore;
-};
+module.exports = new MessageStore();
 
-},{"../store/message":382}],352:[function(require,module,exports){
+},{"../store/message":381}],351:[function(require,module,exports){
 "use strict";
 
 var dispatcher = require("../dispatcher");
@@ -19127,23 +19194,17 @@ module.exports = {
   builtInStore: require("./built-in-store")
 };
 
-},{"../dispatcher":338,"./built-in-store":351,"lodash/lang/isString":284}],353:[function(require,module,exports){
+},{"../dispatcher":337,"./built-in-store":350,"lodash/lang/isString":284}],352:[function(require,module,exports){
 "use strict";
 
 var RequestStore = require("../store/request");
-var instanciatedRequestStore;
 /**
  * Built the store in order to the .
  * @return {RequestStore} - An instanciated application store.
  */
-module.exports = function builtInStore() {
-  if (!instanciatedRequestStore) {
-    instanciatedRequestStore = new RequestStore();
-  }
-  return instanciatedRequestStore;
-};
+module.exports = new RequestStore();
 
-},{"../store/request":388}],354:[function(require,module,exports){
+},{"../store/request":387}],353:[function(require,module,exports){
 /**
  * Check if the given argument is a function.
  * @param {Function} functionToCheck
@@ -19187,7 +19248,7 @@ function cancellablePromiseBuilder(promiseFn, cancelHandler) {
 
 module.exports = cancellablePromiseBuilder;
 
-},{}],355:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 "use strict";
 
 var merge = require("lodash/object/merge");
@@ -19223,7 +19284,7 @@ module.exports = {
   }
 };
 
-},{"lodash/lang":260,"lodash/object/merge":297}],356:[function(require,module,exports){
+},{"lodash/lang":260,"lodash/object/merge":297}],355:[function(require,module,exports){
 "use strict";
 /*global XMLHttpRequest, XDomainRequest*/
 /**
@@ -19271,7 +19332,7 @@ module.exports = function createCORSRequest(method, url, options) {
   return xhr;
 };
 
-},{}],357:[function(require,module,exports){
+},{}],356:[function(require,module,exports){
 "use strict";
 
 var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
@@ -19510,7 +19571,7 @@ module.exports = {
     manageResponseErrors: manageResponseErrors
 };
 
-},{"../dispatcher":338,"../message":352,"lodash/lang":260}],358:[function(require,module,exports){
+},{"../dispatcher":337,"../message":351,"lodash/lang":260}],357:[function(require,module,exports){
 /**
 * Dependency on the CORS module.
 * @type {object}
@@ -19645,7 +19706,7 @@ function fetch(obj, options) {
 
 module.exports = fetch;
 
-},{"../dispatcher":338,"./cancellable-promise-builder":354,"./config":355,"./cors":356,"lodash/lang/isObject":281,"uuid":311}],359:[function(require,module,exports){
+},{"../dispatcher":337,"./cancellable-promise-builder":353,"./config":354,"./cors":355,"lodash/lang/isObject":281,"uuid":311}],358:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -19657,7 +19718,7 @@ module.exports = {
   errorParsing: require("./error-parsing")
 };
 
-},{"./built-in-store":353,"./cancellable-promise-builder":354,"./config":355,"./cors":356,"./error-parsing":357,"./fetch":358}],360:[function(require,module,exports){
+},{"./built-in-store":352,"./cancellable-promise-builder":353,"./config":354,"./cors":355,"./error-parsing":356,"./fetch":357}],359:[function(require,module,exports){
 /*global Promise,  _*/
 "use strict";
 
@@ -19750,7 +19811,7 @@ module.exports = {
     getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
 };
 
-},{"../network/fetch":358,"../util/string/check":407,"./config":363}],361:[function(require,module,exports){
+},{"../network/fetch":357,"../util/string/check":402,"./config":362}],360:[function(require,module,exports){
 "use strict";
 
 var loadManyReferenceList = require("./builder").loadMany;
@@ -19782,23 +19843,18 @@ function builtInReferenceAction(referenceNames) {
 
 module.exports = builtInReferenceAction;
 
-},{"../dispatcher":338,"./builder":360}],362:[function(require,module,exports){
+},{"../dispatcher":337,"./builder":359}],361:[function(require,module,exports){
 "use strict";
 
 var ReferenceStore = require("../store/reference");
-var instanciatedRefStore;
+
 /**
  * Built the store in order to the .
  * @return {ReferenceStore} - An instanciated reference store.
  */
-module.exports = function builtInStore() {
-  if (!instanciatedRefStore) {
-    instanciatedRefStore = new ReferenceStore();
-  }
-  return instanciatedRefStore;
-};
+module.exports = new ReferenceStore();
 
-},{"../store/reference":385}],363:[function(require,module,exports){
+},{"../store/reference":384}],362:[function(require,module,exports){
 "use strict";
 
 var Immutable = require("immutable");
@@ -19842,23 +19898,25 @@ module.exports = {
   set: setConfig
 };
 
-},{"../util/object/check":404,"../util/string/check":407,"immutable":6}],364:[function(require,module,exports){
+},{"../util/object/check":399,"../util/string/check":402,"immutable":6}],363:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   config: require("./config"),
   builder: require("./builder"),
-  builtInStore: require("./built-in-store"),
-  builtInAction: require("./built-in-action")
+  builtInAction: require("./built-in-action"),
+  getStore: function () {
+    return require("./built-in-store");
+  }
 };
 
-},{"./builder":360,"./built-in-action":361,"./built-in-store":362,"./config":363}],365:[function(require,module,exports){
+},{"./builder":359,"./built-in-action":360,"./built-in-store":361,"./config":362}],364:[function(require,module,exports){
 "use strict";
 
 var _slice = Array.prototype.slice;
 var render = require("../application/render");
 var Backbone = window.Backbone;
-var ArgumentNullException = require("../exception/ArgumentNullException");
+var ArgumentNullException = require("../exception/argument-null-exception");
 var message = require("../message");
 var userHelper = require("../user");
 var dispatcher = require("../dispatcher");
@@ -19869,7 +19927,7 @@ var isFunction = require("lodash/lang/isFunction");
  */
 function _beforeRouting(newRoute) {
   //application.changeRoute(newRoute);
-  application.clearCartridge();
+  application.clearHeader();
 }
 module.exports = Backbone.Router.extend({
   noRoleRoute: "home",
@@ -19924,7 +19982,7 @@ module.exports = Backbone.Router.extend({
   }
 });
 
-},{"../application":316,"../application/render":318,"../dispatcher":338,"../exception/ArgumentNullException":340,"../message":352,"../user":398,"lodash/lang/isFunction":275}],366:[function(require,module,exports){
+},{"../application":316,"../application/render":318,"../dispatcher":337,"../exception/argument-null-exception":339,"../message":351,"../user":397,"lodash/lang/isFunction":275}],365:[function(require,module,exports){
 "use strict";
 
 var dispatcher = require("../dispatcher");
@@ -19982,7 +20040,7 @@ module.exports = function (config) {
   };
 };
 
-},{"../dispatcher":338,"./search-action":370}],367:[function(require,module,exports){
+},{"../dispatcher":337,"./search-action":369}],366:[function(require,module,exports){
 "use strict";
 
 var AdvancedSearchStore = require("../store/search/advanced-search");
@@ -19993,7 +20051,7 @@ module.exports = {
     advancedSearchStore: new AdvancedSearchStore()
 };
 
-},{"../store/search/advanced-search":390,"../store/search/quick-search":392}],368:[function(require,module,exports){
+},{"../store/search/advanced-search":389,"../store/search/quick-search":391}],367:[function(require,module,exports){
 "use strict";
 
 var dispatcher = require("../dispatcher");
@@ -20012,7 +20070,7 @@ module.exports = {
     }
 };
 
-},{"../dispatcher":338,"./action-builder":366,"./built-in-store":367}],369:[function(require,module,exports){
+},{"../dispatcher":337,"./action-builder":365,"./built-in-store":366}],368:[function(require,module,exports){
 "use strict";
 
 var keys = require("lodash/object/keys");
@@ -20064,7 +20122,7 @@ module.exports = {
   facets: _buildFacets
 };
 
-},{"lodash/object/keys":295}],370:[function(require,module,exports){
+},{"lodash/object/keys":295}],369:[function(require,module,exports){
 //Dependencies.
 "use strict";
 
@@ -20137,7 +20195,7 @@ module.exports = function (config) {
     };
 };
 
-},{"./builder":369,"./parser":371,"object-assign":309}],371:[function(require,module,exports){
+},{"./builder":368,"./parser":370,"object-assign":309}],370:[function(require,module,exports){
 "use strict";
 
 var _toConsumableArray = function (arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } };
@@ -20189,7 +20247,7 @@ module.exports = {
     scopedResponse: _parseScopedResponse
 };
 
-},{"lodash/object/keys":295}],372:[function(require,module,exports){
+},{"lodash/object/keys":295}],371:[function(require,module,exports){
 "use strict";
 
 var _require = require("lodash/collection");
@@ -20367,7 +20425,7 @@ module.exports = {
   routeToRegExp: routeToRegExp
 };
 
-},{"../user":398,"./reader":374,"lodash/collection":52,"lodash/lang/clone":261}],373:[function(require,module,exports){
+},{"../user":397,"./reader":373,"lodash/collection":52,"lodash/lang/clone":261}],372:[function(require,module,exports){
 "use strict";
 
 var _builder = require("./builder");
@@ -20386,7 +20444,7 @@ module.exports = {
   getUserSiteStructure: getUserSiteStructure
 };
 
-},{"./builder":372,"./reader":374}],374:[function(require,module,exports){
+},{"./builder":371,"./reader":373}],373:[function(require,module,exports){
 "use strict";
 
 var ArgumentNullException = require("../exception").ArgumentNullException;
@@ -20495,7 +20553,7 @@ var siteDescriptionHelper = {
 
 module.exports = siteDescriptionHelper;
 
-},{"../exception":345,"lodash/array/intersection":25,"lodash/collection/contains":57,"lodash/lang":260,"lodash/object/keys":295}],375:[function(require,module,exports){
+},{"../exception":343,"lodash/array/intersection":25,"lodash/collection/contains":57,"lodash/lang":260,"lodash/object/keys":295}],374:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -20575,9 +20633,9 @@ var CoreStore = (function (_EventEmitter) {
         },
         getValue: {
             /**
-             * Get the whole value of the
-             * @return {[type]} [description]
-             */
+            * Get the whole value of the
+            * @return {[type]} [description]
+            */
 
             value: function getValue() {
                 return this.data ? this.data.toJS() : {};
@@ -20808,7 +20866,7 @@ var CoreStore = (function (_EventEmitter) {
 
 module.exports = CoreStore;
 
-},{"../definition/entity/builder":325,"../dispatcher":338,"events":2,"immutable":6,"lodash/function":93,"lodash/lang":260,"lodash/string/capitalize":300,"object-assign":309}],376:[function(require,module,exports){
+},{"../definition/entity/builder":325,"../dispatcher":337,"events":2,"immutable":6,"lodash/function":93,"lodash/lang":260,"lodash/string/capitalize":300,"object-assign":309}],375:[function(require,module,exports){
 /**
 * Build the cartridge store definition.
 * @return {object} - The cartridge component.
@@ -20822,12 +20880,12 @@ module.exports = function () {
     }, {});
 };
 
-},{}],377:[function(require,module,exports){
+},{}],376:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":378}],378:[function(require,module,exports){
+},{"./store":377}],377:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -20880,7 +20938,7 @@ var ApplicationStore = (function (_CoreStore) {
 
 module.exports = ApplicationStore;
 
-},{"../CoreStore":375,"./definition":376,"immutable":6}],379:[function(require,module,exports){
+},{"../CoreStore":374,"./definition":375,"immutable":6}],378:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -20894,7 +20952,7 @@ module.exports = {
     RequestStore: require("./request")
 };
 
-},{"./CoreStore":375,"./application":377,"./list":380,"./message":382,"./reference":385,"./request":388,"./search":391,"./user":395}],380:[function(require,module,exports){
+},{"./CoreStore":374,"./application":376,"./list":379,"./message":381,"./reference":384,"./request":387,"./search":390,"./user":394}],379:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -20941,7 +20999,7 @@ var ListStore = (function (_CoreStore) {
 
 module.exports = ListStore;
 
-},{"../CoreStore":375}],381:[function(require,module,exports){
+},{"../CoreStore":374}],380:[function(require,module,exports){
 /**
  * Build the cartridge store definition.
  * @return {object} - The error store component.
@@ -20954,12 +21012,12 @@ module.exports = function () {
   };
 };
 
-},{}],382:[function(require,module,exports){
+},{}],381:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":383}],383:[function(require,module,exports){
+},{"./store":382}],382:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -21121,7 +21179,7 @@ var MessageStore = (function (_CoreStore) {
 
 module.exports = MessageStore;
 
-},{"../../dispatcher":338,"../CoreStore":375,"./definition":381,"uuid":311}],384:[function(require,module,exports){
+},{"../../dispatcher":337,"../CoreStore":374,"./definition":380,"uuid":311}],383:[function(require,module,exports){
 "use strict";
 
 var refConfigAccessor = require("../../reference/config");
@@ -21145,12 +21203,12 @@ function buildReferenceDefinition() {
 
 module.exports = buildReferenceDefinition;
 
-},{"../../reference/config":363,"keymirror":7,"lodash/lang/isEmpty":271}],385:[function(require,module,exports){
+},{"../../reference/config":362,"keymirror":7,"lodash/lang/isEmpty":271}],384:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":386}],386:[function(require,module,exports){
+},{"./store":385}],385:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -21203,7 +21261,7 @@ var ReferenceStore = (function (_CoreStore) {
 
 module.exports = ReferenceStore;
 
-},{"../CoreStore":375,"./definition":384}],387:[function(require,module,exports){
+},{"../CoreStore":374,"./definition":383}],386:[function(require,module,exports){
 /**
  * Build the cartridge store definition.
  * @return {object} - The error store component.
@@ -21219,12 +21277,12 @@ module.exports = function () {
   };
 };
 
-},{}],388:[function(require,module,exports){
+},{}],387:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":389}],389:[function(require,module,exports){
+},{"./store":388}],388:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -21401,7 +21459,7 @@ var RequestStore = (function (_CoreStore) {
 
 module.exports = RequestStore;
 
-},{"../../dispatcher":338,"../CoreStore":375,"./definition":387,"immutable":6,"uuid":311}],390:[function(require,module,exports){
+},{"../../dispatcher":337,"../CoreStore":374,"./definition":386,"immutable":6,"uuid":311}],389:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -21443,7 +21501,7 @@ var AdvancedSearchStore = (function (_SearchStore) {
 
 module.exports = AdvancedSearchStore;
 
-},{"../search-store":393}],391:[function(require,module,exports){
+},{"../search-store":392}],390:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21451,7 +21509,7 @@ module.exports = {
   AdvancedSearch: require("./advanced-search")
 };
 
-},{"./advanced-search":390,"./quick-search":392}],392:[function(require,module,exports){
+},{"./advanced-search":389,"./quick-search":391}],391:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -21489,7 +21547,7 @@ var QuickSearchStore = (function (_SearchStore) {
 
 module.exports = QuickSearchStore;
 
-},{"../search-store":393}],393:[function(require,module,exports){
+},{"../search-store":392}],392:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -21528,7 +21586,7 @@ var SearchStore = (function (_CoreStore) {
 
 module.exports = SearchStore;
 
-},{"../CoreStore":375}],394:[function(require,module,exports){
+},{"../CoreStore":374}],393:[function(require,module,exports){
 /**
  * Build the user store definition from the login and profile.
  * @return {[type]} [description]
@@ -21537,18 +21595,18 @@ module.exports = SearchStore;
 
 module.exports = function () {
   return {
-    login: require("../../user/login/definition"),
-    profile: require("../../user/profile/definition"),
+    login: "login",
+    profile: "profile",
     roles: "roles"
   };
 };
 
-},{"../../user/login/definition":399,"../../user/profile/definition":401}],395:[function(require,module,exports){
+},{}],394:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./store");
 
-},{"./store":396}],396:[function(require,module,exports){
+},{"./store":395}],395:[function(require,module,exports){
 "use strict";
 
 var _get = function get(object, property, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc && desc.writable) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -21580,73 +21638,86 @@ var UserStore = (function (_CoreStore) {
 
 module.exports = UserStore;
 
-},{"../CoreStore":375,"./definition":394}],397:[function(require,module,exports){
+},{"../CoreStore":374,"./definition":393}],396:[function(require,module,exports){
 "use strict";
 
 var UserStore = require("../store/user");
 module.exports = new UserStore();
 
-},{"../store/user":395}],398:[function(require,module,exports){
+},{"../store/user":394}],397:[function(require,module,exports){
 "use strict";
 
-var userBuiltInStore = require("./built-in-store");
+var _defineProperty = function (obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); };
 
+var userBuiltInStore = require("./built-in-store");
 var isArray = require("lodash/lang/isArray");
 var intersection = require("lodash/array/intersection");
 var dispatcher = require("../dispatcher");
+
+/**
+ * Set the a node in the store.
+ * @param {string} name  node name
+ * @param {string} value node value to be set
+ */
+function _setUserNode(name, value) {
+    dispatcher.handleViewAction({ data: _defineProperty({}, name, value), type: "update" });
+}
 module.exports = {
-  login: require("./login"),
-  profile: require("./profile"),
-  builtInStore: userBuiltInStore,
-  hasRole: function hasRole(role) {
-    role = isArray(role) ? role : [role];
-    return intersection(role, userBuiltInStore.getRoles()).length > 0;
-  },
-  setRoles: function setRoles(roles) {
-    dispatcher.handleViewAction({ data: { roles: roles }, type: "update" });
-  },
-  getRoles: function getRoles() {
-    return userBuiltInStore.getRoles();
-  }
+    builtInStore: userBuiltInStore,
+    /**
+    * Check if a user has the givent role or roles.
+    * @param  {string | array}  role - Check if the user has one or many roles.
+    * @return {Boolean} - True if the user has at least on of the givent roles.
+    */
+    hasRole: function hasRole(role) {
+        role = isArray(role) ? role : [role];
+        return 0 < intersection(role, userBuiltInStore.getRoles()).length;
+    },
+    /**
+    * Set the user roles.
+    * @param {array} roles - User role list.
+    */
+    setRoles: function setRoles(roles) {
+        _setUserNode("roles", roles);
+    },
+    /**
+    * Get the user roles.
+    * @return {array} - The user role list.
+    */
+    getRoles: function getRoles() {
+        return userBuiltInStore.getRoles();
+    },
+    /**
+    * Set the user profile.
+    * @param {object} profile User profile.
+    */
+    setProfile: function setProfile(profile) {
+        _setUserNode("profile", profile);
+    },
+    /**
+    * Get the user profile.
+    * @return {object} profile User profile.
+    */
+    getProfile: function getProfile() {
+        return userBuiltInStore.getProfile();
+    },
+    /**
+    * Set user profile.
+    * @param {object} login - user login.
+    */
+    setLogin: function setLogin(login) {
+        _setUserNode("login", login);
+    },
+    /**
+    * Get the user login.
+    * @return {object} - The user login.
+    */
+    getLogin: function getLogin() {
+        return userBuiltInStore.getLogin();
+    }
 };
 
-},{"../dispatcher":338,"./built-in-store":397,"./login":400,"./profile":402,"lodash/array/intersection":25,"lodash/lang/isArray":267}],399:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-    userName: "userName",
-    password: "password"
-};
-
-},{}],400:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-  definition: require("./definition")
-};
-
-},{"./definition":399}],401:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-  id: "id",
-  provider: "provider",
-  displayName: "displayName",
-  culture: "culture",
-  email: "email",
-  photo: "photo",
-  firstName: "firstName",
-  lastName: "lastName"
-};
-
-},{}],402:[function(require,module,exports){
-"use strict";
-
-module.exports = {
-  definition: require("./definition")
-};
-
-},{"./definition":401}],403:[function(require,module,exports){
+},{"../dispatcher":337,"./built-in-store":396,"lodash/array/intersection":25,"lodash/lang/isArray":267}],398:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21655,10 +21726,10 @@ module.exports = {
 	url: require("./url")
 };
 
-},{"./object":406,"./string":408,"./url":410}],404:[function(require,module,exports){
+},{"./object":401,"./string":403,"./url":405}],399:[function(require,module,exports){
 "use strict";
 
-var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
+var ArgumentInvalidException = require("../../exception/argument-invalid-exception");
 var isObject = require("lodash/lang/isObject");
 
 /**
@@ -21673,10 +21744,10 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":339,"lodash/lang/isObject":281}],405:[function(require,module,exports){
+},{"../../exception/argument-invalid-exception":338,"lodash/lang/isObject":281}],400:[function(require,module,exports){
 "use strict";
 
-var ArgumentNullException = require("../../exception/ArgumentNullException");
+var ArgumentNullException = require("../../exception/argument-null-exception");
 
 var _require = require("lodash/lang");
 
@@ -21696,7 +21767,7 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentNullException":340,"lodash/lang":260}],406:[function(require,module,exports){
+},{"../../exception/argument-null-exception":339,"lodash/lang":260}],401:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21704,10 +21775,10 @@ module.exports = {
 	checkIsNotNull: require("./checkIsNotNull")
 };
 
-},{"./check":404,"./checkIsNotNull":405}],407:[function(require,module,exports){
+},{"./check":399,"./checkIsNotNull":400}],402:[function(require,module,exports){
 "use strict";
 
-var ArgumentInvalidException = require("../../exception/ArgumentInvalidException");
+var ArgumentInvalidException = require("../../exception/argument-invalid-exception");
 var isString = require("lodash/lang/isString");
 
 /**
@@ -21722,14 +21793,14 @@ module.exports = function (name, data) {
   }
 };
 
-},{"../../exception/ArgumentInvalidException":339,"lodash/lang/isString":284}],408:[function(require,module,exports){
+},{"../../exception/argument-invalid-exception":338,"lodash/lang/isString":284}],403:[function(require,module,exports){
 "use strict";
 
 module.exports = {
 	check: require("./check")
 };
 
-},{"./check":407}],409:[function(require,module,exports){
+},{"./check":402}],404:[function(require,module,exports){
 "use strict";
 
 var urlProcessor = require("./processor");
@@ -21757,7 +21828,7 @@ module.exports = function (url, method) {
   };
 };
 
-},{"./processor":411}],410:[function(require,module,exports){
+},{"./processor":406}],405:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -21765,7 +21836,7 @@ module.exports = {
   preprocessor: require("./processor")
 };
 
-},{"./builder":409,"./processor":411}],411:[function(require,module,exports){
+},{"./builder":404,"./processor":406}],406:[function(require,module,exports){
 "use strict";
 
 var compile = require("lodash/string/template");

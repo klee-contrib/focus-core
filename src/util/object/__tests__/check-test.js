@@ -2,7 +2,7 @@
 // __tests__/container-test.js
 jest.dontMock('../check.js');
 require('../../../test/dontMock');
-var ArgumentInvalidException = require('../../../exception/ArgumentInvalidException');
+var ArgumentInvalidException = require('../../../exception/argument-invalid-exception');
 
 describe('### object check test', function() {
   it('The domain', function() {

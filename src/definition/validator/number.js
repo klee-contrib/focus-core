@@ -1,4 +1,3 @@
-const NUMBER_REGEX = /^-?\d+(?:\.d*)?(?:e[+\-]?\d+)?$/i;
 let {isUndefined, isNull, isNaN, isNumber} = require('lodash/lang');
 
 /* Function to  validate that an input is a number.

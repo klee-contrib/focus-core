@@ -1,12 +1,7 @@
-var ReferenceStore = require('../store/reference');
-var instanciatedRefStore;
+const ReferenceStore = require('../store/reference');
+
 /**
  * Built the store in order to the .
  * @return {ReferenceStore} - An instanciated reference store.
  */
-module.exports = function builtInStore(){
-  if(!instanciatedRefStore){
-    instanciatedRefStore = new ReferenceStore();
-  }
-  return instanciatedRefStore;
-};
+module.exports = new ReferenceStore();

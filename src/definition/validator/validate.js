@@ -1,91 +1,108 @@
 //Dependency
-let DependencyException = require("../../exception").DependencyException;
-let assign = require('object-assign');
-
+const DependencyException = require('../../exception').DependencyException;
+const assign = require('object-assign');
 //Focus validators
-let emailValidation = require('./email');
-let numberValidation = require('./number');
-let stringLength = require('./string-length');
-let dateValidation = require('./date');
-
-//Validate a property, a property shoul be as follow: `{name: "field_name",value: "field_value", validators: [{...}] }`
-var validate = function validate(property, validators) {
-  //console.log("validate", property, validators);
-  var errors, res, validator, _i, _len;
-  errors = [];
-  if (validators) {
-    for (_i = 0, _len = validators.length; _i < _len; _i++) {
-      validator = validators[_i];
-      res = validateProperty(property, validator);
-      if (res !== null && res !== undefined) {
-        errors.push(res);
-      }
+const emailValidation = require('./email');
+const numberValidation = require('./number');
+const stringLength = require('./string-length');
+const dateValidation = require('./date');
+const {isNull, isUndefined} = require('lodash/lang');
+/**
+* Validae a property given validators.
+* @param  {object} property   - Property to validate which should be as follows: `{name: "field_name",value: "field_value", validators: [{...}] }`.
+* @param  {array} validators - The validators to apply on the property.
+* @return {object} - The validation status.
+*/
+function validate(property, validators) {
+    //console.log("validate", property, validators);
+    let errors = [], res, validator;
+    if (validators) {
+        for (let i = 0, _len = validators.length; i < _len; i++) {
+            validator = validators[i];
+            res = validateProperty(property, validator);
+            if (!isNull(res) && !isUndefined(res)) {
+                errors.push(res);
+            }
+        }
     }
-  }
-  //Check what's the good type to return.
-  return {
-    name: property.name,
-    value: property.value,
-    isValid: errors.length === 0,
-    errors: errors
-  };
-};
+    //Check what's the good type to return.
+    return {
+        name: property.name,
+        value: property.value,
+        isValid: 0 === errors.length,
+        errors: errors
+    };
+}
 
+/**
+* Validate a property.
+* @param  {object} property  - The property to validate.
+* @param  {function} validator - The validator to apply.
+* @return {object} - The property validation status.
+*/
 function validateProperty(property, validator) {
-  var isValid;
-  if (!validator) {
-    return void 0;
-  }
-  if (!property) {
-    return void 0;
-  }
-  isValid = (function () {
-    switch (validator.type) {
-      case "required":
-        var prevalidString = property.value === "" ? false : true;
-        var prevalidDate = true;
-        return validator.value === true ? (property.value !== null && property.value !== undefined && prevalidString && prevalidDate) : true;
-      case "regex":
-        if (property.value === undefined || property.value === null) {
-          return true;
-        }
-        return validator.value.test(property.value);
-      case "email":
-        if (property.value === undefined || property.value === null) {
-          return true;
-        }
-        return emailValidation(property.value, validator.options);
-      case "number":
-        return numberValidation(property.value, validator.options);
-      case "string":
-        var stringToValidate = property.value || "";
-        return stringLength(stringToValidate, validator.options);
-      case "date":
-        return dateValidation(property.value, validator.options);
-      case "function":
-        return validator.value(property.value, validator.options);
-      default:
+    let isValid;
+    if (!validator) {
         return void 0;
     }
-  })();
-  if (isValid === undefined || isValid === null) {
-    console.warn('The validator of type: ' + validator.type + ' is not defined'); //Todo: call the logger.
-  } else if (isValid === false) {
-
-    //Add the name of the property.
-    return getErrorLalel(validator.type, property.modelName + '.' + property.name, validator.options); //"The property " + property.name + " is invalid.";
-  }
-};
-
-function getErrorLalel(type, fieldName, options) {
-  options = options || {};
-  let i18n = require('i18n');
-  if (!i18n) {
-    throw new DependencyException("Dependency not resolved: i18n.js");
-  }
-  var translationKey = options.translationKey ? options.translationKey : "domain.validation." + type;
-  var opts = assign({fieldName: i18n.t(fieldName)}, options);
-  return i18n.t(translationKey, opts);
+    if (!property) {
+        return void 0;
+    }
+    const value = {property};
+    const {options} = validator;
+    const isValueNullOrUndefined =  isNull(value) || isUndefined(value );
+    isValid = (()=>{
+        switch (validator.type) {
+            case 'required':
+                const prevalidString = '' === property.value ? false : true;
+                const prevalidDate = true;
+                return true === validator.value ? (!isNull(property.value) && !isUndefined(property.value ) && prevalidString && prevalidDate) : true;
+            case 'regex':
+                if (isValueNullOrUndefined) {
+                    return true;
+                }
+                return validator.value.test(property.value);
+            case 'email':
+                if (isValueNullOrUndefined) {
+                    return true;
+                }
+                return emailValidation(value, options);
+            case 'number':
+                return numberValidation(value, options);
+            case 'string':
+                const stringToValidate = property.value || '';
+                return stringLength(stringToValidate, options);
+            case 'date':
+                return dateValidation(property.value, options);
+            case 'function':
+                return validator.value(property.value, options);
+            default:
+                return void 0;
+        }
+    })();
+    if (isUndefined(isValid) || isNull(isValid)) {
+        console.warn(`The validator of type: ${validator.tye} is not defined`);
+    } else if (false === isValid) {
+        //Add the name of the property.
+        return getErrorLalel(validator.type, property.modelName + '.' + property.name, options); //"The property " + property.name + " is invalid.";
+    }
+}
+/**
+ * Get the error label from a type and a field name.
+ * @param  {string} type      - The type name.
+ * @param  {string} fieldName - The field name.
+ * @param  {object} options - The options to put such as the translationKey which could be defined in the domain.
+ * @return {string} The formatted error.
+ */
+function getErrorLalel(type, fieldName, options = {}) {
+    options = options || {};
+    const i18n = require('i18n');
+    if (!i18n) {
+        throw new DependencyException('Dependency not resolved: i18n.js');
+    }
+    const translationKey = options.translationKey ? options.translationKey : `domain.validation.${type}`;
+    const opts = assign({fieldName: i18n.t(fieldName)}, options);
+    return i18n.t(translationKey, opts);
 }
 
 module.exports = validate;

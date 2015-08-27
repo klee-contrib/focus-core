@@ -1,5 +1,5 @@
-let React = require('react');
-var mountedComponents = require('./mounted-components');
+const React = require('react');
+let mountedComponents = require('./mounted-components');
 
 /**
  * Clear a react component.

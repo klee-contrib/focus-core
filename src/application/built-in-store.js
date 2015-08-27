@@ -1,12 +1,7 @@
-var ApplicationStore = require('../store/application');
-var instanciatedApplicationStore;
+const ApplicationStore = require('../store/application');
+
 /**
  * Built the store in order to the .
  * @return {ApplicationStore} - An instanciated application store.
  */
-module.exports = function builtInStore(){
-  if(!instanciatedApplicationStore){
-    instanciatedApplicationStore = new ApplicationStore();
-  }
-  return instanciatedApplicationStore;
-};
+module.exports = new ApplicationStore();
