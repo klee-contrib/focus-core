@@ -1029,7 +1029,7 @@ module.exports = invariant;
       var array = this._array;
       var maxIndex = array.length - 1;
       var ii = 0;
-      return new src_Iterator__Iterator(function()
+      return new src_Iterator__Iterator(function() 
         {return ii > maxIndex ?
           iteratorDone() :
           iteratorValue(type, ii, array[reverse ? maxIndex - ii++ : ii++])}
@@ -1858,7 +1858,7 @@ module.exports = invariant;
         return flipSequence;
       };
     }
-    reversedSequence.get = function(key, notSetValue)
+    reversedSequence.get = function(key, notSetValue) 
       {return iterable.get(useKeys ? key : -1 - key, notSetValue)};
     reversedSequence.has = function(key )
       {return iterable.has(useKeys ? key : -1 - key)};
@@ -2042,7 +2042,7 @@ module.exports = invariant;
         return this.cacheResult().__iterate(fn, reverse);
       }
       var iterations = 0;
-      iterable.__iterate(function(v, k, c)
+      iterable.__iterate(function(v, k, c) 
         {return predicate.call(context, v, k, c) && ++iterations && fn(v, k, this$0)}
       );
       return iterations;
@@ -2233,7 +2233,7 @@ module.exports = invariant;
     interposedSequence.size = iterable.size && iterable.size * 2 -1;
     interposedSequence.__iterateUncached = function(fn, reverse) {var this$0 = this;
       var iterations = 0;
-      iterable.__iterate(function(v, k)
+      iterable.__iterate(function(v, k) 
         {return (!iterations || fn(separator, iterations++, this$0) !== false) &&
         fn(v, iterations++, this$0) !== false},
         reverse
@@ -3121,7 +3121,7 @@ module.exports = invariant;
   }
 
   function deepMerger(merger) {
-    return function(existing, value, key)
+    return function(existing, value, key) 
       {return existing && existing.mergeDeepWith && isIterable(value) ?
         existing.mergeDeepWith(merger, value) :
         merger ? merger(existing, value, key) : value};
@@ -4807,7 +4807,7 @@ module.exports = invariant;
 
     Repeat.prototype.__iterator = function(type, reverse) {var this$0 = this;
       var ii = 0;
-      return new src_Iterator__Iterator(function()
+      return new src_Iterator__Iterator(function() 
         {return ii < this$0.size ? iteratorValue(type, ii++, this$0._value) : iteratorDone()}
       );
     };
@@ -16728,7 +16728,7 @@ module.exports = property;
         var power = Math.pow(10, precision),
             optionalsRegExp,
             output;
-
+            
         //roundingFunction = (roundingFunction !== undefined ? roundingFunction : Math.round);
         // Multiply up by precision, round accurately, then divide and use native toFixed():
         output = (roundingFunction(value * power) / power).toFixed(precision);
@@ -16873,7 +16873,7 @@ module.exports = property;
         }
 
         output = formatNumber(value, format, roundingFunction);
-
+        
         if (output.indexOf(')') > -1 ) {
             output = output.split('');
             output.splice(-1, 0, space + '%');
@@ -17118,7 +17118,7 @@ module.exports = property;
 
         return numeral;
     };
-
+    
     // This function provides access to the loaded language data.  If
     // no arguments are passed in, it will simply return the current
     // global language object.
@@ -17126,11 +17126,11 @@ module.exports = property;
         if (!key) {
             return languages[currentLanguage];
         }
-
+        
         if (!languages[key]) {
             throw new Error('Unknown language : ' + key);
         }
-
+        
         return languages[key];
     };
 
@@ -17187,14 +17187,14 @@ module.exports = property;
     if ('function' !== typeof Array.prototype.reduce) {
         Array.prototype.reduce = function (callback, opt_initialValue) {
             'use strict';
-
+            
             if (null === this || 'undefined' === typeof this) {
                 // At the moment all modern browsers, that support strict mode, have
                 // native implementation of Array.prototype.reduce. For instance, IE8
                 // does not support strict mode, so this check is actually useless.
                 throw new TypeError('Array.prototype.reduce called on null or undefined');
             }
-
+            
             if ('function' !== typeof callback) {
                 throw new TypeError(callback + ' is not a function');
             }
@@ -17228,7 +17228,7 @@ module.exports = property;
         };
     }
 
-
+    
     /**
      * Computes the multiplier necessary to make x >= 1,
      * effectively eliminating miscalculations caused by
@@ -17254,7 +17254,7 @@ module.exports = property;
                 mn = multiplier(next);
         return mp > mn ? mp : mn;
         }, -Infinity);
-    }
+    }        
 
 
     /************************************
@@ -17269,15 +17269,15 @@ module.exports = property;
         },
 
         format : function (inputString, roundingFunction) {
-            return formatNumeral(this,
-                  inputString ? inputString : defaultFormat,
+            return formatNumeral(this, 
+                  inputString ? inputString : defaultFormat, 
                   (roundingFunction !== undefined) ? roundingFunction : Math.round
               );
         },
 
         unformat : function (inputString) {
-            if (Object.prototype.toString.call(inputString) === '[object Number]') {
-                return inputString;
+            if (Object.prototype.toString.call(inputString) === '[object Number]') { 
+                return inputString; 
             }
             return unformatNumeral(this, inputString ? inputString : defaultFormat);
         },
@@ -17309,7 +17309,7 @@ module.exports = property;
             function cback(accum, curr, currI, O) {
                 return accum - corrFactor * curr;
             }
-            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;
+            this._value = [value].reduce(cback, this._value * corrFactor) / corrFactor;            
             return this;
         },
 
@@ -17328,7 +17328,7 @@ module.exports = property;
                 var corrFactor = correctionFactor(accum, curr);
                 return (accum * corrFactor) / (curr * corrFactor);
             }
-            this._value = [this._value, value].reduce(cback);
+            this._value = [this._value, value].reduce(cback);            
             return this;
         },
 
@@ -17614,7 +17614,7 @@ module.exports = uuid;
 },{"./rng":310}],312:[function(require,module,exports){
 module.exports={
     "name": "focusjs",
-    "version": "0.9.0",
+    "version": "0.9.0-1",
     "description": "Technical stack in order to build single page application.",
     "main": "lib/index.js",
     "directories": {
@@ -18551,7 +18551,7 @@ function validateProperty(property, validator) {
     if (!property) {
         return void 0;
     }
-    var value = { property: property };
+    var value = property.value;
     var options = validator.options;
 
     var isValueNullOrUndefined = isNull(value) || isUndefined(value);
@@ -18560,12 +18560,12 @@ function validateProperty(property, validator) {
             case "required":
                 var prevalidString = "" === property.value ? false : true;
                 var prevalidDate = true;
-                return true === validator.value ? !isNull(property.value) && !isUndefined(property.value) && prevalidString && prevalidDate : true;
+                return true === validator.value ? !isNull(value) && !isUndefined(value) && prevalidString && prevalidDate : true;
             case "regex":
                 if (isValueNullOrUndefined) {
                     return true;
                 }
-                return validator.value.test(property.value);
+                return validator.value.test(value);
             case "email":
                 if (isValueNullOrUndefined) {
                     return true;
@@ -18574,12 +18574,12 @@ function validateProperty(property, validator) {
             case "number":
                 return numberValidation(value, options);
             case "string":
-                var stringToValidate = property.value || "";
+                var stringToValidate = value || "";
                 return stringLength(stringToValidate, options);
             case "date":
-                return dateValidation(property.value, options);
+                return dateValidation(value, options);
             case "function":
-                return validator.value(property.value, options);
+                return validator.value(value, options);
             default:
                 return void 0;
         }
