@@ -48,20 +48,20 @@ function validateProperty(property, validator) {
     if (!property) {
         return void 0;
     }
-    const value = {property};
+    const {value} = property;
     const {options} = validator;
-    const isValueNullOrUndefined =  isNull(value) || isUndefined(value );
-    isValid = (()=>{
+    const isValueNullOrUndefined = isNull(value) || isUndefined(value );
+    isValid = (() => {
         switch (validator.type) {
             case 'required':
                 const prevalidString = '' === property.value ? false : true;
                 const prevalidDate = true;
-                return true === validator.value ? (!isNull(property.value) && !isUndefined(property.value ) && prevalidString && prevalidDate) : true;
+                return true === validator.value ? (!isNull(value) && !isUndefined(value) && prevalidString && prevalidDate) : true;
             case 'regex':
                 if (isValueNullOrUndefined) {
                     return true;
                 }
-                return validator.value.test(property.value);
+                return validator.value.test(value);
             case 'email':
                 if (isValueNullOrUndefined) {
                     return true;
@@ -70,12 +70,12 @@ function validateProperty(property, validator) {
             case 'number':
                 return numberValidation(value, options);
             case 'string':
-                const stringToValidate = property.value || '';
+                const stringToValidate = value || '';
                 return stringLength(stringToValidate, options);
             case 'date':
-                return dateValidation(property.value, options);
+                return dateValidation(value, options);
             case 'function':
-                return validator.value(property.value, options);
+                return validator.value(value, options);
             default:
                 return void 0;
         }
