@@ -25,4 +25,4 @@ out
 checkstyle-result.xml
 
 dist
-list
+lib
