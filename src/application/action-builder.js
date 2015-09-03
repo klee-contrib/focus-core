@@ -1,41 +1,36 @@
 const dispatcher = require('../dispatcher');
 const {manageResponseErrors} = require('../network/error-parsing');
-const {clone, isArray} = require('lodash/lang');
+const {isArray} = require('lodash/lang');
+const {identity} = require('lodash/utility');
 
 /**
  * Method call before the service.
  * @param  {Object} config - The action builder config.
  */
-function _preServiceCall(config = {}){
+function _preServiceCall({node, type, preStatus, callerId, shouldDumpStoreOnActionCall}, payload){
     //There is a problem if the node is empty. //Node should be an array
-    const {node, type, preStatus, callerId} = config;
     let data = {};
     let status = {};
+    const STATUS = {name: preStatus, isLoading: true};
     // When there is a multi node update it should be an array.
     if(isArray(node)){
         node.forEach((nd)=>{
-            data[nd] = null;
-            status[nd] = {name: preStatus, isLoading: true};
+            data[nd] = shouldDumpStoreOnActionCall ? null : (payload && payload[nd]) || null;
+            status[nd] = STATUS;
         });
     }else{
-        data[node] = null;
-        status[node] = {name: preStatus, isLoading: true};
+        data[node] = shouldDumpStoreOnActionCall ? null : (payload || null);
+        status[node] = STATUS;
     }
     //Dispatch store cleaning.
-    dispatcher.handleViewAction({
-        data: data,
-        type: type,
-        status: status,
-        callerId: callerId
-    });
+    dispatcher.handleViewAction({data, type, status, callerId});
 }
 /**
  * Method call after the service call.
  * @param  {Object} config - Action builder config.
  * @param  {object} json   - The data return from the service call.
  */
-function _postServiceCall(config = {}, json){
-    const {node, type, status, callerId} = config;
+function _dispatchServiceResponse({node, type, status, callerId}, json){
     const isMultiNode = isArray(node);
     const data = isMultiNode ? json : {[node]: json};
     const postStatus = {name: status, isLoading: false};
@@ -46,10 +41,10 @@ function _postServiceCall(config = {}, json){
         newStatus[node] = postStatus;
     }
     dispatcher.handleServerAction({
-        data: data,
-        type: type,
+        data,
+        type,
         status: newStatus,
-        callerId: callerId
+        callerId
     });
 }
 
@@ -73,10 +68,10 @@ function _errorOnCall(config, err){
  *                         - status(:string)} The status after the action.
  * @return {function} - The build action from the configuration. This action dispatch the preStatus, call the service and dispatch the result from the server.
  */
-module.exports = function actionBuilder(config){
-    config = config || {};
+module.exports = function actionBuilder(config = {}){
     config.type = config.type || 'update';
     config.preStatus = config.preStatus || 'loading';
+    config.shouldDumpStoreOnActionCall = config.shouldDumpStoreOnActionCall || false;
     if(!config.service){
         throw new Error('You need to provide a service to call');
     }
@@ -86,17 +81,12 @@ module.exports = function actionBuilder(config){
     if(!config.node){
         throw new Error('You shoud specify the store node name impacted by the action');
     }
-  /*if(!config.data){
-    throw new Error('You need to provide an action data');
-  }*/
-  //Exposes a function consumes by the compoennt.
-    return function actionBuilderFn(criteria) {
-        let conf = clone(config);
-        //It the callerId is not defined in the config, it is overriden with the form identifier.
-        conf.callerId = conf.callerId || this._identifier;
-        _preServiceCall(conf);
-        return conf.service(criteria).then((jsonData)=>{
-            return _postServiceCall(conf, jsonData);
+    return function actionBuilderFn(payload) {
+        const conf = {callerId: this._identifier, postService: identity, ...config};
+        const {postService} = conf;
+        _preServiceCall(conf, payload);
+        return conf.service(payload).then(postService).then((jsonData)=>{
+            return _dispatchServiceResponse(conf, jsonData);
         }, (err)=>{
             return _errorOnCall(conf, err);
         });
