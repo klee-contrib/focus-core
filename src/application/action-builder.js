@@ -71,7 +71,7 @@ function _errorOnCall(config, err){
 module.exports = function actionBuilder(config = {}){
     config.type = config.type || 'update';
     config.preStatus = config.preStatus || 'loading';
-    config.shouldDumpStoreOnActionCall = false;
+    config.shouldDumpStoreOnActionCall = config.shouldDumpStoreOnActionCall || false;
     if(!config.service){
         throw new Error('You need to provide a service to call');
     }
