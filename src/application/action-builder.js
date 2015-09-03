@@ -7,19 +7,20 @@ const {identity} = require('lodash/utility');
  * Method call before the service.
  * @param  {Object} config - The action builder config.
  */
-function _preServiceCall({node, type, preStatus, callerId}){
+function _preServiceCall({node, type, preStatus, callerId, shouldDumpStoreOnActionCall}, payload){
     //There is a problem if the node is empty. //Node should be an array
     let data = {};
     let status = {};
+    const STATUS = {name: preStatus, isLoading: true};
     // When there is a multi node update it should be an array.
     if(isArray(node)){
         node.forEach((nd)=>{
-            data[nd] = null;
-            status[nd] = {name: preStatus, isLoading: true};
+            data[nd] = shouldDumpStoreOnActionCall ? null : (payload && payload[nd]) || null;
+            status[nd] = STATUS;
         });
     }else{
-        data[node] = null;
-        status[node] = {name: preStatus, isLoading: true};
+        data[node] = shouldDumpStoreOnActionCall ? null : (payload || null);
+        status[node] = STATUS;
     }
     //Dispatch store cleaning.
     dispatcher.handleViewAction({data, type, status, callerId});
@@ -70,6 +71,7 @@ function _errorOnCall(config, err){
 module.exports = function actionBuilder(config = {}){
     config.type = config.type || 'update';
     config.preStatus = config.preStatus || 'loading';
+    config.shouldDumpStoreOnActionCall = false;
     if(!config.service){
         throw new Error('You need to provide a service to call');
     }
@@ -79,11 +81,11 @@ module.exports = function actionBuilder(config = {}){
     if(!config.node){
         throw new Error('You shoud specify the store node name impacted by the action');
     }
-    return function actionBuilderFn(criteria) {
+    return function actionBuilderFn(payload) {
         const conf = {callerId: this._identifier, postService: identity, ...config};
         const {postService} = conf;
-        _preServiceCall(conf);
-        return conf.service(criteria).then(postService).then((jsonData)=>{
+        _preServiceCall(conf, payload);
+        return conf.service(payload).then(postService).then((jsonData)=>{
             return _dispatchServiceResponse(conf, jsonData);
         }, (err)=>{
             return _errorOnCall(conf, err);
