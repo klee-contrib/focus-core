@@ -2,7 +2,7 @@
 // __tests__/container-test.js
 
 const actionBuilder = require('../action-builder');
-describe.only('### action-builder', ()=>{
+describe('### action-builder', ()=>{
     it('Config must have a service', ()=>{
         expect(()=>actionBuilder({}))
         .to.throw('You need to provide a service to call');
