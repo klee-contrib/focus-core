@@ -1,26 +1,24 @@
-/*global jest, expect, it, describe*/
+/*global expect, it, describe*/
 // __tests__/container-test.js
-jest.dontMock('../action-builder');
-jest.autoMockOff();
-require('../../test/dontMock');
-let actionBuilder = require('../action-builder');
-describe('### action-builder', ()=>{
+
+const actionBuilder = require('../action-builder');
+describe.only('### action-builder', ()=>{
     it('Config must have a service', ()=>{
         expect(()=>actionBuilder({}))
-        .toThrow('You need to provide a service to call');
+        .to.throw('You need to provide a service to call');
     });
     it('Config must have a status', ()=>{
         expect(()=>actionBuilder({service: ()=>{}}))
-        .toThrow('You need to provide a status to your action');
+        .to.throw('You need to provide a status to your action');
     });
 
     it('Config must have a node', ()=>{
         expect(()=>actionBuilder({service: ()=>{}, status: 'superStatus'}))
-        .toThrow('You shoud specify the store node name impacted by the action');
+        .to.throw('You shoud specify the store node name impacted by the action');
     });
     it('builded action should be a function', ()=>{
         let action = actionBuilder({status: 'test', service: ()=>{}, node: 'test'});
-        expect(typeof action).toEqual('function');
+        expect(action).to.be.a('function');
     });
     it('Builded action call should result to a store update', (done)=>{
         let CoreStore = require('../../store/CoreStore');
@@ -35,7 +33,6 @@ describe('### action-builder', ()=>{
         };
         let nbCall = 0;
         store.addNameChangeListener((e)=>{
-            console.warn('EVT CHANGE', e.callerId);
             expect('lopeez' === e.callerId);
             nbCall++;
             if(2 === nbCall){
@@ -49,7 +46,7 @@ describe('### action-builder', ()=>{
             callerId: 'lopez',
             node: 'name'
         };
-        let action = actionBuilder(actionConf);
+        let action = actionBuilder(actionConf).bind({_identifier: 'champ'});
         action(actionConf);
     });
 });
