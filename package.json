@@ -15,7 +15,8 @@
     "lodash": "^3.9.1",
     "numeral": "^1.5.3",
     "object-assign": "^2.0.0",
-    "react": "^0.13.3",
+    "react": "^0.14.0-rc1",
+    "react-dom": "^0.14.0-rc1",
     "uuid": "^2.0.1"
   },
   "scripts": {

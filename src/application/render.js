@@ -1,6 +1,7 @@
 /*global document*/
 //dependencies
 const React = require('react');
+const ReactDOM = require('react-dom');
 const keys = require('lodash/object/keys');
 const mountedComponents = require('./mounted-components');
 const clearComponent = require('./clear');
@@ -20,7 +21,7 @@ module.exports = function renderComponent(component, selector, options){
         throw new Error(`You are trying to render a component in a DOM element which is not existing, your selector is  ${selector}`);
     }
     // Render the component
-    const mountedComponent = React.render(
+    const mountedComponent = ReactDOM.render(
         React.createElement(component, options.props, options.data),
         targetDOMContainer
     );
