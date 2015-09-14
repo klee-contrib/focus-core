@@ -1,7 +1,7 @@
 /*global document*/
 //dependencies
 const React = require('react');
-const ReactDOM = ReactDOM = require('react-dom');
+const ReactDOM = require('react-dom');
 const keys = require('lodash/object/keys');
 const mountedComponents = require('./mounted-components');
 const clearComponent = require('./clear');
