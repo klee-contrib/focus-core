@@ -1,89 +1,78 @@
 {
-    "name": "focusjs",
-    "version": "0.10.1",
-    "description": "Technical stack in order to build single page application.",
-    "main": "lib/index.js",
-    "directories": {
-        "example": "example",
-        "test": "test"
-    },
-    "dependencies": {
-        "backbone": "^1.2.0",
-        "flux": "^2.0.3",
-        "immutable": "^3.7.3",
-        "keymirror": "^0.1.1",
-        "lodash": "^3.9.1",
-        "numeral": "^1.5.3",
-        "object-assign": "^2.0.0",
-        "react": "^0.13.3",
-        "uuid": "^2.0.1",
-        "babel-eslint": "4.0.5",
-        "eslint": "0.24.1",
-        "eslint-plugin-filenames": "0.1.1",
-        "eslint-plugin-react": "2.7.1",
-        "eslint-plugin-require-jsdoc-focus": "0.1.0",
-        "eslint-plugin-require-jsdoc": "git+https://github.com/Bernardstanislas/eslint-plugin-require-jsdoc.git"
-    },
-    "scripts": {
-        "prepublish": "npm run build",
-        "test": "jest",
-        "build": "npm run build:node && npm run build:browser",
-        "build:browser": "node ./node_modules/gulp/bin/gulp.js build",
-        "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
-        "watch": "node ./node_modules/gulp/bin/gulp.js watch",
-        "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
-        "ci-lint": "node ./node_modules/eslint/bin/eslint.js index.js application component definition dispatcher exception helper network router reference search site-description store util user message -f checkstyle > checkstyle-result.xml"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/KleeGroup/focus.git"
-    },
-    "keywords": [
-        "spa",
-        "react",
-        "es6"
-    ],
-    "author": "Pierre Besson <pierre.besson@kleegroup.com>",
-    "documentation": "http://kleegroup.github.io/focus-docs/",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/KleeGroup/focus/issues"
-    },
-    "homepage": "https://github.com/KleeGroup/focus",
-    "devDependencies": {
-        "babel": "^5.8.21",
-        "babel-jest": "^5.3.0",
-        "babelify": "^6.3.0",
-        "browser-sync": "^2.2.1",
-        "browserify": "^9.0.3",
-        "eslint-config-focus": "0.2.0",
-        "express": "^4.12.2",
-        "gulp": "^3.8.11",
-        "gulp-babel": "^4.0.0",
-        "gulp-concat": "^2.5.2",
-        "gulp-eslint": "^0.5.0",
-        "gulp-if": "^1.2.5",
-        "gulp-react": ">2.1.0",
-        "jest-cli": "^0.4.15",
-        "literalify": "^0.4.0",
-        "react-tools": "^0.12.2",
-        "vinyl-source-stream": "^1.0.0"
-    },
-    "jest": {
-        "scriptPreprocessor": "./node_modules/babel-jest",
-        "testFileExtensions": [
-            "es6",
-            "js"
-        ],
-        "moduleFileExtensions": [
-            "js",
-            "json",
-            "es6"
-        ],
-        "unmockedModulePathPatterns": [
-            "react",
-            "lodash",
-            "immutable"
-        ]
-    }
+  "name": "focusjs",
+  "version": "0.10.1",
+  "description": "Technical stack in order to build single page application.",
+  "main": "lib/index.js",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "dependencies": {
+    "backbone": "^1.2.0",
+    "flux": "^2.0.3",
+    "immutable": "^3.7.3",
+    "keymirror": "^0.1.1",
+    "lodash": "^3.9.1",
+    "numeral": "^1.5.3",
+    "object-assign": "^2.0.0",
+    "react": "^0.13.3",
+    "uuid": "^2.0.1"
+  },
+  "scripts": {
+    "prepublish": "npm run build",
+    "test": "node ./node_modules/mocha/bin/mocha src/**/__tests__/**/*.js",
+    "test:debug": "node-debug _mocha --debug-brk",
+    "build": "npm run build:node && npm run build:browser",
+    "build:browser": "node ./node_modules/gulp/bin/gulp.js build",
+    "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
+    "watch": "node ./node_modules/gulp/bin/gulp.js watch",
+    "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
+    "ci-lint": "node ./node_modules/eslint/bin/eslint.js src -f checkstyle > checkstyle-result.xml"
+  },
+  "devDependencies": {
+    "babel": "^5.8.21",
+    "babel-core": "^5.8.24",
+    "babel-eslint": "4.0.5",
+    "babel-jest": "^5.3.0",
+    "babel-plugin-runtime": "^1.0.7",
+    "babel-runtime": "^5.8.20",
+    "babelify": "^6.3.0",
+    "browser-sync": "^2.2.1",
+    "browserify": "^9.0.3",
+    "chai": "^3.2.0",
+    "chai-subset": "^1.1.0",
+    "eslint": "0.24.1",
+    "eslint-config-focus": "0.2.0",
+    "eslint-plugin-filenames": "0.1.1",
+    "eslint-plugin-react": "2.7.1",
+    "eslint-plugin-require-jsdoc": "git+https://github.com/Bernardstanislas/eslint-plugin-require-jsdoc.git",
+    "eslint-plugin-require-jsdoc-focus": "0.1.0",
+    "express": "^4.12.2",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^4.0.0",
+    "gulp-concat": "^2.5.2",
+    "gulp-eslint": "^0.5.0",
+    "gulp-if": "^1.2.5",
+    "gulp-react": ">2.1.0",
+    "literalify": "^0.4.0",
+    "mocha": "^2.3.2",
+    "react-tools": "^0.12.2",
+    "vinyl-source-stream": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KleeGroup/focus.git"
+  },
+  "keywords": [
+    "spa",
+    "react",
+    "es6"
+  ],
+  "author": "Pierre Besson <pierre.besson@kleegroup.com>",
+  "documentation": "http://kleegroup.github.io/focus-docs/",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KleeGroup/focus/issues"
+  },
+  "homepage": "https://github.com/KleeGroup/focus"
 }

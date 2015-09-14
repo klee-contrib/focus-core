@@ -1,3 +1,5 @@
---compilers coffee:coffee-script/register
+--compilers js:babel/register
+--require test/mocha-bootload
+--require chai
 --reporter spec
 --ui bdd
