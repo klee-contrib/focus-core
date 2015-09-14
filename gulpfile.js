@@ -122,6 +122,7 @@ gulp.task('browserify', function(){
         {global:true},
         literalify.configure({
         react: 'window.React',
+        'react-dom': 'window.ReactDOM',
         backbone: 'window.Backbone',
         moment: 'window.moment',
         i18n: 'window.i18n'
