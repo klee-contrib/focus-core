@@ -30,10 +30,10 @@ __util //Utility functions
 
 ## Unit tests
 All unit tests are written with mocha, and can be launched using the `npm run test` command.
-It uses **jest**.
+It uses **mocha**.
 
 debug unit tests
-`node-debug --nodejs --harmony ./node_modules/jest-cli/bin/jest.js --runInBand`
+`npm run test:debug`
 
 
 ## Dependencies
@@ -48,18 +48,19 @@ See our [documentation](https://kleegroup.github.io/focus-docs)
 
 
 ## How to build the lib
-The build system is made with `gulp` which is a node base build system. `npm install -g gulp`
+The build system is made with `gulp` which is a node base build system. 
 Then you have to launch the following command: `npm run build` which generates two outputs: one for the browser, one for node js (expecially for unit tests purpose).
-All build dependencies are listed into the **devDepandencies** of the `package.json` file.
+All build dependencies are listed into the **devDependencies** of the `package.json` file.
 
 ## Lint
-`gulp eslint` in order to see your errors.
+`npm run eslint` in order to see your errors.
 
 ## Dependencies
 
 In order to install all your dependencies: `npm install --no-optional`
 
 ### Browser
+
 The browser build is inside the `dist/focus.js`
 
 ### Node js
