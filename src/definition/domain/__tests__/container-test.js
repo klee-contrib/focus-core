@@ -5,7 +5,7 @@
 describe('### domain container', ()=>{
     it('domain should be empty by default', ()=>{
         const domainContainer = require('../container');
-        expect(domainContainer.getAll()).to.equal({});
+        expect(domainContainer.getAll()).to.deep.equal({});
     });
     it('domain set should add a domain', ()=>{
         const domainContainer = require('../container');
