@@ -1,7 +1,6 @@
-/*global jest, expect*/
+/*global expect*/
 // __tests__/container-test.js
-jest.dontMock('../number');
-require('../../../test/dontMock');
+
 
 describe('### validator number', function() {
   it('number should be valid', function() {
