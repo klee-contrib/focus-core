@@ -21,6 +21,7 @@
   "scripts": {
     "prepublish": "npm run build",
     "test": "node ./node_modules/mocha/bin/mocha src/**/__tests__/**/*.js",
+    "test:debug": "node-debug _mocha --debug-brk",
     "build": "npm run build:node && npm run build:browser",
     "build:browser": "node ./node_modules/gulp/bin/gulp.js build",
     "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
