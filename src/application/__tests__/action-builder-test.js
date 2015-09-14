@@ -17,18 +17,18 @@ describe('### action-builder', ()=>{
         .to.throw('You shoud specify the store node name impacted by the action');
     });
     it('builded action should be a function', ()=>{
-        let action = actionBuilder({status: 'test', service: ()=>{}, node: 'test'});
+        const action = actionBuilder({status: 'test', service: ()=>{}, node: 'test'});
         expect(action).to.be.a('function');
     });
     it('Builded action call should result to a store update', (done)=>{
-        let CoreStore = require('../../store/CoreStore');
-        let store = new CoreStore({
+        const CoreStore = require('../../store/CoreStore');
+        const store = new CoreStore({
             definition: {
             name: 'name'
         }});
 
         //Creates a mock service.
-        let service = ()=>{
+        const service = ()=>{
             return Promise.resolve({name: 'roberto'});
         };
         let nbCall = 0;
@@ -39,14 +39,14 @@ describe('### action-builder', ()=>{
                 done();
             }
         });
-        let actionConf = {
+        const actionConf = {
             service,
             preStatus: 'loading',
             status: 'saved',
             callerId: 'lopez',
             node: 'name'
         };
-        let action = actionBuilder(actionConf).bind({_identifier: 'champ'});
+        const action = actionBuilder(actionConf).bind({_identifier: 'champ'});
         action(actionConf);
     });
 });
