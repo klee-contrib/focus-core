@@ -166,11 +166,12 @@ class CoreStore extends EventEmitter {
             }(definition);
             //Create an update method.
             currentStore[`updateError${capitalizeDefinition}`] = function(def){
-                return function (dataNode) {
+                return function (dataNode, status, informations) {
                     //CheckIsObject
                     const immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
                     currentStore.error = currentStore.error.set(def, immutableNode);
-                    currentStore.willEmit(`${def}:error`);
+                    currentStore.status = currentStore.status.set(def, status);
+                    currentStore.willEmit(`${def}:error`, {property: def, status: status, informations: informations});
                 }
             }(definition);
             //Create a get method.
