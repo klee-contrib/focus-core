@@ -126,7 +126,7 @@ function _treatEntityExceptions(responseJSON, options) {
   dispatcher.handleServerAction({
     data: {[options.node]: responseJSON}, //maybe err[options.node]
     type: 'updateError',
-    status: {[options.node]: {name: options.status}, isLoading: false}
+    status: {[options.node]: {name: options.status, isLoading: false}}
   });
 }
 
@@ -137,7 +137,7 @@ function _treatEntityExceptions(responseJSON, options) {
  * @return {object} The constructed object from the error response.
  */
 function _treatCollectionExceptions(responseJSON, options) {
-    console.warn('Not yet implemented as collection are not savable.')
+    console.error('Not yet implemented as collection are not savable.')
 }
 
 /**
@@ -146,7 +146,8 @@ function _treatCollectionExceptions(responseJSON, options) {
  * @param  {object} options      - Options for the exceptions teratement such as the {model: modelVar}.
  * @return {object}              - The parsed error response.
  */
-function _treatBadRequestExceptions(responseJSON, options) {
+function _treatBadRequestExceptions(responseJSON = {}, options) {
+    responseJSON.type = responseJSON.type || errorTypes.entity;
     if (responseJSON.type !== undefined) {
         switch (responseJSON.type) {
             case errorTypes.entity:
