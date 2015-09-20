@@ -1,7 +1,7 @@
 {
-  "name": "focusjs",
-  "version": "0.10.1",
-  "description": "Technical stack in order to build single page application.",
+  "name": "focus-core",
+  "version": "0.11.0-beta",
+  "description": "Focus library core part.",
   "main": "lib/index.js",
   "directories": {
     "example": "example",
