@@ -1,4 +1,12 @@
- language: node_js
- node_js:
-   - "0.12"
-   - "4.0"
+language: node_js
+node_js:
+- '0.12'
+- '4.0'
+deploy:
+  provider: npm
+  email: pierre.besson7+npm@gmail.com
+  api_key:
+    secure: dXLVThdNse9zbaGrmiXgNo2F+LAdvxHQsXgRnw0t/CcX3OGVDqLtCYB6WkhJcP0xWdxKxTLDhVZ6QGgwbnUSeluNO7Jzc5lkpfnWDuRvqWvO0KjAQ5qEoZm4Hk9ov8QK+3M1x3+mZE/gOr0pVWXB0P00POCG564lTFuyApi/IOU=
+  skip_cleanup: true
+  on:
+    branch: develop
