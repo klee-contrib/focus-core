@@ -96,7 +96,7 @@ function validateProperty(property, validator) {
  */
 function getErrorLalel(type, fieldName, options = {}) {
     options = options || {};
-    const i18n = require('i18next');
+    const i18n = require('i18next-client');
     if (!i18n) {
         throw new DependencyException('Dependency not resolved: i18n.js');
     }
