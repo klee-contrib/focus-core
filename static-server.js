@@ -1,4 +1,4 @@
-var port = "3001";
+var port = "3002";
 
 
 //Creates a static server for each components example.
