@@ -10,6 +10,7 @@
   "dependencies": {
     "backbone": "^1.2.0",
     "flux": "^2.0.3",
+    "i18next": "^1.10.4",
     "immutable": "^3.7.3",
     "keymirror": "^0.1.1",
     "lodash": "^3.9.1",

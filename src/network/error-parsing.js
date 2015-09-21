@@ -87,7 +87,7 @@ function _treatGlobalMessagesPerType(messages, type) {
         }
         message.addMessage({
             type: type,
-            content: require('i18n').t(element, options),
+            content: require('i18next').t(element, options),
             creationDate: Date.now()
         });
     });
