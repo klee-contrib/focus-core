@@ -10,10 +10,12 @@
   "dependencies": {
     "backbone": "^1.2.0",
     "flux": "^2.0.3",
-    "i18next": "^1.10.4",
+    "i18next-client": "^1.10.2",
     "immutable": "^3.7.3",
+    "jquery": "^2.1.4",
     "keymirror": "^0.1.1",
     "lodash": "^3.9.1",
+    "moment": "^2.10.6",
     "numeral": "^1.5.3",
     "object-assign": "^2.0.0",
     "react": "^0.14.0-rc1",
@@ -29,7 +31,8 @@
     "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
     "watch": "node ./node_modules/gulp/bin/gulp.js watch",
     "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
-    "ci-lint": "node ./node_modules/eslint/bin/eslint.js src -f checkstyle > checkstyle-result.xml"
+    "ci-lint": "node ./node_modules/eslint/bin/eslint.js src -f checkstyle > checkstyle-result.xml",
+    "webpack": "node server.js"
   },
   "devDependencies": {
     "babel": "^5.8.21",
