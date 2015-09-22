@@ -2,7 +2,7 @@
 let assign = require('object-assign');
 let _builder = require('./builder');
 let _parser = require('./parser');
-
+const dispatcher = require('../../../dispatcher');
 /**
 * Search action generated from the config.
 * @param  {object} config - Action configuration.
@@ -14,7 +14,7 @@ module.exports = function loadActionFn(config){
     * @param  {object} data - The data to dispatch.
     */
     let _dispatchResult = (data) => {
-        Focus.dispatcher.handleServerAction({
+        dispatcher.handleServerAction({
             data,
             type: 'update',
             identifier: config.identifier
