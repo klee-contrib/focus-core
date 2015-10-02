@@ -8,7 +8,7 @@ const NODES_OPTS = {node: ['field1', 'field2']};
 import errorJSONResponse from './fixture/global-and-entity-error-fixture';
 import errorGlobalJSONResponse from './fixture/global-error-fixture';
 import errorEntityJSONResponse from './fixture/entity-error-fixture';
-describe.only('# error parser ', ()=>{
+describe('# error parser ', ()=>{
     it('should return null when there is no error', ()=>{
         expect(errorParser({})).to.equal(null);
     });
