@@ -1,5 +1,6 @@
 /* global it, describe, expect */
 import errorParsing from '../error-parsing';
+import {omit} from 'lodash/object';
 const {manageResponseErrors: errorParser} = errorParsing;
 const NODE_OPTS = {node: 'field1'};
 const NODES_OPTS = {node: ['field1', 'field2']};
@@ -34,6 +35,17 @@ describe.only('# error parser ', ()=>{
             responseJSON: errorEntityJSONResponse
         };
         expect(errorParser(response, NODE_OPTS)).to.eql({globals: [], fields: errorEntityJSONResponse.fieldErrors });
+    });
+    it('should return the field error when multi node ard passed', ()=>{
+        const response = {
+            status: 422,
+            responseJSON: {
+                fieldErrors: {
+                    n1: {f11: 'f11E'}, n2: {f21: 'f21'}, n3: {f31: 'f31'}
+                }
+            }
+        };
+        expect(errorParser(response, {node: ['n1', 'n2']})).to.eql({globals: [], fields: omit(response.responseJSON.fieldErrors, 'n3') });
     });
     it.skip('shoud deal with field errors only when the http code is correct', ()=>{
         const response = {
