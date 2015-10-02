@@ -50,11 +50,11 @@ function _dispatchServiceResponse({node, type, status, callerId}, json){
 /**
  * The main objective of this function is to cancel the loading state on all the nodes concerned by the service call.
  */
-function _dispatchErrors({node, type, callerId}, errorResult){
+function _dispatchFieldErrors({node, callerId}, errorResult){
     const isMultiNode = isArray(node);
-    const data = isMultiNode ? errorResult : {[node]: errorResult};
+    const data = errorResult;
     const errorStatus = {
-        name: 'updateError',
+        name: 'error',
         isLoading: false
     };
     let newStatus = {};
@@ -65,10 +65,14 @@ function _dispatchErrors({node, type, callerId}, errorResult){
     }
     dispatcher.handleServerAction({
         data,
-        type,
+        type: 'updateError',
         status: errorStatus,
         callerId
     });
+}
+
+function _dispatchGlobalErrors(conf , errors){
+    //console.warn('NOT IMPLEMENTED', conf, errors);
 }
 
 /**
@@ -78,9 +82,9 @@ function _dispatchErrors({node, type, callerId}, errorResult){
  * @return {object}     - The data from the manageResponseErrors function.
  */
 function _errorOnCall(config, err){
-    console.warn('Error in action', err);
     const errorResult = manageResponseErrors(err, config);
-    _dispatchErrors(config, errorResult);
+    _dispatchGlobalErrors(config, errorResult.globals);
+    _dispatchFieldErrors(config, errorResult.fields);
 }
 
 /**
