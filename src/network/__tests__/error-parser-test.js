@@ -1,6 +1,9 @@
 /* global it, describe, expect */
 import errorParsing from '../error-parsing';
 const {manageResponseErrors: errorParser} = errorParsing;
+const NODE_OPTS = {node: 'field1'};
+const NODES_OPTS = {node: ['field1', 'field2']};
+
 import errorJSONResponse from './fixture/global-and-entity-error-fixture';
 import errorGlobalJSONResponse from './fixture/global-error-fixture';
 import errorEntityJSONResponse from './fixture/entity-error-fixture';
@@ -14,32 +17,30 @@ describe.only('# error parser ', ()=>{
                 ...errorGlobalJSONResponse
             }
         };
-        expect(errorParser(response)).to.equal(null);
+        expect(errorParser(response, NODE_OPTS)).to.equal(null);
     });
-    it.skip('should return the global error when there is one', ()=>{
+    it('should return the global error when there is one', ()=>{
         const response = {
             status: 422,
             responseJSON: {
                 ...errorGlobalJSONResponse
             }
         };
-        expect(errorParser(response)).to.equal();
+        expect(errorParser(response, NODE_OPTS).globals).to.eql(errorGlobalJSONResponse.globalErrors);
     });
     it('should return the field error when thhey are set', ()=>{
         const response = {
             status: 422,
             responseJSON: errorEntityJSONResponse
         };
-        expect(errorParser(response)).to.equal({fields: errorEntityJSONResponse.fieldErrors});
+        expect(errorParser(response, NODE_OPTS)).to.eql({globals: [], fields: errorEntityJSONResponse.fieldErrors });
     });
-    it('shoud deal with field errors only when the http code is correct', ()=>{
+    it.skip('shoud deal with field errors only when the http code is correct', ()=>{
         const response = {
-            status: 622,
+            status: 1111,
             responseJSON: errorEntityJSONResponse
         };
-        expect(errorParser(response.fields)).to.equal(null);
-    });
-    it('should return the field error when thhey are set', ()=>{
-
+        const filds = errorParser(response, NODE_OPTS).fields;
+        expect(filds).to.equal(null);
     });
 });

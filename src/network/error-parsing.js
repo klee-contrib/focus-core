@@ -1,7 +1,5 @@
 const message = require('../message');
-const dispatcher = require('../dispatcher');
-const {isObject, isArray} = require('lodash/lang');
-const assign = require('object-assign');
+const {isObject, isArray, isString} = require('lodash/lang');
 /**
 * Define all the error types of the exceptions which are defined.
 * @type {object}
@@ -134,8 +132,10 @@ function _treatEntityExceptions(responseJSON = {}, options) {
     let fieldErrors = {};
     if(isArray(node)){
         node.forEach((nd)=>{fieldErrors[nd] = fieldJSONError[nd] || null; });
+    }else if(isString(node)){
+        fieldErrors = fieldJSONError;
     }else {
-        fieldErrors[node] = fieldJSONError;
+        fieldErrors = fieldJSONError;
     }
     return fieldErrors;
 }
@@ -217,7 +217,7 @@ function manageResponseErrors(response, options) {
                     case 422:
                         return _treatBadRequestExceptions(resErrors, opts);
                     default:
-                    break;
+                        return null;
                 }
                 return null;
             }(responseErrors, options))
