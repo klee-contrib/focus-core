@@ -49,4 +49,40 @@ describe('### action-builder', ()=>{
         const action = actionBuilder(actionConf).bind({_identifier: 'champ'});
         action(actionConf);
     });
+    it('Error service shoud trigger a store error uodate', (done)=>{
+        const CoreStore = require('../../store/CoreStore');
+        const store = new CoreStore({
+            definition: {
+            name: 'name'
+        }});
+        const lopezErrors = {
+            lopezDavid: 'David is so powerfull...',
+            lopezJoe: 'Jo is even more powerfull...'
+        };
+        //Creates a mock service.
+        const service = () =>{
+            const mockErrorResponse = {
+                status: 422,
+                responseJSON: {
+                    fieldErrors: {
+                        name: lopezErrors
+                    }
+                }
+            };
+            return Promise.reject(mockErrorResponse);
+        };
+        store.addNameErrorListener(()=>{
+            expect(store.getErrorName()).to.eql(lopezErrors);
+            done();
+        });
+        const actionConf = {
+            service,
+            preStatus: 'loading',
+            status: 'saved',
+            callerId: 'lopez',
+            node: 'name'
+        };
+        const action = actionBuilder(actionConf).bind({_identifier: 'champ'});
+        action(actionConf);
+    });
 });
