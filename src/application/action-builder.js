@@ -47,6 +47,29 @@ function _dispatchServiceResponse({node, type, status, callerId}, json){
         callerId
     });
 }
+/**
+ * The main objective of this function is to cancel the loading state on all the nodes concerned by the service call.
+ */
+function _dispatchErrors({node, type, callerId}, errorResult){
+    const isMultiNode = isArray(node);
+    const data = isMultiNode ? errorResult : {[node]: errorResult};
+    const errorStatus = {
+        name: 'updateError',
+        isLoading: false
+    };
+    let newStatus = {};
+    if(isMultiNode){
+        node.forEach((nd)=>{newStatus[nd] = errorStatus; });
+    }else {
+        newStatus[node] = errorStatus;
+    }
+    dispatcher.handleServerAction({
+        data,
+        type,
+        status: errorStatus,
+        callerId
+    });
+}
 
 /**
  * Method call when there is an error.
@@ -56,7 +79,8 @@ function _dispatchServiceResponse({node, type, status, callerId}, json){
  */
 function _errorOnCall(config, err){
     console.warn('Error in action', err);
-    return manageResponseErrors(err, config);
+    const errorResult = manageResponseErrors(err, config);
+    _dispatchErrors(config, errorResult);
 }
 
 /**
@@ -87,8 +111,8 @@ module.exports = function actionBuilder(config = {}){
         _preServiceCall(conf, payload);
         return conf.service(payload).then(postService).then((jsonData)=>{
             return _dispatchServiceResponse(conf, jsonData);
-        }, (err)=>{
-            return _errorOnCall(conf, err);
+        }, (err) => {
+            _errorOnCall(conf, err);
         });
     };
 };
