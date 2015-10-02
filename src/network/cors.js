@@ -13,9 +13,8 @@ var ArgumentInvalidException = Error;
  * @param {object} options - The cors options.
  * @returns {XMLHttpRequest} - The CORS http request.
  */
-module.exports = function createCORSRequest(method, url, options) {
-  options = options || {};
-  var isCORS = true;
+module.exports = function createCORSRequest(method, url, options = {}) {
+  const isCORS = options.isCORS || false;
   if (typeof method !== "string") {
     throw new ArgumentInvalidException('The method should be a string in GET/POST/PUT/DELETE', method);
   }
