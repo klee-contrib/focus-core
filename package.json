@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.11.0-rc1",
+  "version": "0.11.0-rc2",
   "description": "Focus library core part.",
   "main": "lib/index.js",
   "directories": {
@@ -26,13 +26,14 @@
     "prepublish": "npm run build",
     "test": "node ./node_modules/mocha/bin/mocha src/**/__tests__/**/*.js",
     "test:debug": "node-debug _mocha --debug-brk",
-    "build": "npm run build:node && npm run build:browser",
-    "build:browser": "node ./node_modules/gulp/bin/gulp.js build",
+    "build": "npm run build:node && npm run webpack:production",
     "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
     "watch": "node ./node_modules/gulp/bin/gulp.js watch",
     "serve": "node ./node_modules/gulp/bin/gulp.js build && node static-server.js",
     "ci-lint": "node ./node_modules/eslint/bin/eslint.js src -f checkstyle > checkstyle-result.xml",
-    "webpack": "node server.js"
+    "webpack:dev": "npm run showcase:components && node server.js",
+    "webpack:build": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js",
+    "webpack:production": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.production.js"
   },
   "devDependencies": {
     "babel": "^5.8.21",
@@ -47,6 +48,7 @@
     "browserify": "^9.0.3",
     "chai": "^3.2.0",
     "chai-subset": "^1.1.0",
+    "css-loader": "^0.19.0",
     "eslint": "0.24.1",
     "eslint-config-focus": "0.2.0",
     "eslint-plugin-filenames": "0.1.1",
@@ -54,6 +56,8 @@
     "eslint-plugin-require-jsdoc": "git+https://github.com/Bernardstanislas/eslint-plugin-require-jsdoc.git",
     "eslint-plugin-require-jsdoc-focus": "0.1.0",
     "express": "^4.12.2",
+    "extract-text-webpack-plugin": "^0.8.2",
+    "file-loader": "^0.8.4",
     "gulp": "^3.8.11",
     "gulp-babel": "^4.0.0",
     "gulp-concat": "^2.5.2",
@@ -63,10 +67,16 @@
     "json-loader": "^0.5.3",
     "literalify": "^0.4.0",
     "mocha": "^2.3.2",
+    "node-sass": "^3.3.3",
+    "react-hot-loader": "^1.3.0",
     "react-tools": "^0.12.2",
+    "sass-loader": "^3.0.0",
+    "style-loader": "^0.12.4",
+    "url-loader": "^0.5.6",
     "vinyl-source-stream": "^1.0.0",
     "webpack": "^1.12.2",
-    "webpack-dev-server": "^1.11.0"
+    "webpack-dev-server": "^1.11.0",
+    "webpack-focus": "^0.6.0"
   },
   "repository": {
     "type": "git",
