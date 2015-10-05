@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.11.0-rc2",
+  "version": "0.11.0-rc3",
   "description": "Focus library core part.",
   "main": "lib/index.js",
   "directories": {
@@ -76,7 +76,7 @@
     "vinyl-source-stream": "^1.0.0",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.11.0",
-    "webpack-focus": "^0.6.0"
+    "webpack-focus": "^0.6.1"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
 const prodConfBuilder = require('webpack-focus').productionConfig;
-const focusFileConf = require('./focus-core-webpack.config');
-focusFileConf.externals = {
+const focusCoreConf = require('./focus-core-webpack.config');
+focusCoreConf.externals = {
     react: 'React',
     'react-dom': 'ReactDOM',
     backbone: 'Backbone',
@@ -9,5 +9,6 @@ focusFileConf.externals = {
     numeral: 'numeral',
     'i18next-client': 'i18n'
 };
-const prodConf = prodConfBuilder(focusFileConf);
+const prodConf = prodConfBuilder(focusCoreConf);
+console.log(prodConf.externals);
 module.exports = prodConf;
