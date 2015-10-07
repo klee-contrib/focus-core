@@ -18,8 +18,8 @@
     "moment": "^2.10.6",
     "numeral": "^1.5.3",
     "object-assign": "^2.0.0",
-    "react": "^0.14.0-rc1",
-    "react-dom": "^0.14.0-rc1",
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0",
     "uuid": "^2.0.1"
   },
   "scripts": {
