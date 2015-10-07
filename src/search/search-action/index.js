@@ -1,10 +1,10 @@
 //Dependencies.
-let assign = require('object-assign');
-let _builder = require('./builder');
-let _parser = require('./parser');
+const assign = require('object-assign');
+const _builder = require('./builder');
+const _parser = require('./parser');
 const ALL = 'ALL';
 const STAR = '*';
-
+const dispatcher = require('../../../dispatcher');
 
 /**
 * Search action generated from the config.
@@ -16,8 +16,8 @@ module.exports = function(config){
     * Dispatch the results on the search store
     * @param  {object} data - The data to dispatch.
     */
-    let _dispatchResult = (data) => {
-        Focus.dispatcher.handleServerAction({
+    const _dispatchResult = (data) => {
+        dispatcher.handleServerAction({
             data,
             type: 'update',
             identifier: config.identifier
