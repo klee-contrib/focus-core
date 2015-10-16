@@ -4,7 +4,7 @@ const _builder = require('./builder');
 const _parser = require('./parser');
 const ALL = 'ALL';
 const STAR = '*';
-const dispatcher = require('../../../dispatcher');
+const dispatcher = require('../../dispatcher');
 
 /**
 * Search action generated from the config.
