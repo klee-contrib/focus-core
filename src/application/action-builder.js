@@ -109,8 +109,12 @@ module.exports = function actionBuilder(config = {}){
     if(!config.node){
         throw new Error('You shoud specify the store node name impacted by the action');
     }
-    return function actionBuilderFn(payload) {
-        const conf = {callerId: this._identifier, postService: identity, ...config};
+    return function actionBuilderFn(payload, context) {
+        context = context || this;
+        const conf = {
+            callerId: context._identifier,
+            postService: identity, ...config
+        };
         const {postService} = conf;
         _preServiceCall(conf, payload);
         return conf.service(payload).then(postService).then((jsonData)=>{
