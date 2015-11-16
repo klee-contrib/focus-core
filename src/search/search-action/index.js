@@ -43,7 +43,7 @@ module.exports = function searchActionBuilder(config){
     */
     return function searchAction(isScroll){
         //Read search options from the accessor define in the config.
-        const {
+        let {
             scope, query, selectedFacets,
             groupingKey, sortBy, sortAsc,
             results, totalCount
