@@ -49,7 +49,7 @@ function jsonParser(req){
             globalErrors: [{
                 message: `${req.status} error when calling ${req.responseURL}`
             }]
-        }
+        };
     }
     if(!isObject(parsedObject)){
         //Maybe this check should read the header content-type
@@ -64,8 +64,7 @@ function jsonParser(req){
 * @param  {object} options - The options object.
 * @return {CancellablePromise} The promise of the execution of the HTTP request.
 */
-function fetch(obj, options) {
-    options = options || {};
+function fetch(obj, options = {}) {
     options.parser = options.parser || jsonParser;
     options.errorParser = options.errorParser || jsonParser;
     let request = createCORSRequest(obj.method, obj.url, options);
