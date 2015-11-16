@@ -10,8 +10,10 @@ const should  = chai.should();
 global.expect = require('chai').expect;
 /*eslint-enable */
 
-const React = require('react/addons');
-const TestUtils = React.addons.TestUtils;
+global.React = require('react');
+global.ReactDOM = require('react-dom');
+global.expect = chai.expect;
+global.TestUtils = require('react-addons-test-utils');
 /*eslint-disable */
 //let {shallowRenderer} = TestUtils;
 /*eslint-enable */
