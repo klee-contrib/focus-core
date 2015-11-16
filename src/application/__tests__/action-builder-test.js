@@ -64,9 +64,7 @@ describe('### action-builder', ()=>{
             const mockErrorResponse = {
                 status: 422,
                 responseJSON: {
-                    fieldErrors: {
-                        name: lopezErrors
-                    }
+                    fieldErrors: lopezErrors
                 }
             };
             return Promise.reject(mockErrorResponse);
