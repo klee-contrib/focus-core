@@ -52,7 +52,7 @@ function _dispatchServiceResponse({node, type, status, callerId}, json){
  */
 function _dispatchFieldErrors({node, callerId}, errorResult){
     const isMultiNode = isArray(node);
-    const data = errorResult || {[node] : null};
+    const data = isMultiNode ? errorResult : {[node]: errorResult};
     const errorStatus = {
         name: 'error',
         isLoading: false
