@@ -1,8 +1,11 @@
 //Dependencies.
-let assign = require('object-assign');
-let _builder = require('./builder');
-let _parser = require('./parser');
-const dispatcher = require('../../dispatcher');
+import assign from 'object-assign';
+import _builder from './builder';
+import _parser from './parser';
+import dispatcher from '../../dispatcher';
+import {manageResponseErrors} from '../network/error-parsing';
+
+
 /**
 * Search action generated from the config.
 * @param  {object} config - Action configuration.
@@ -13,13 +16,23 @@ module.exports = function loadActionFn(config){
     * Dispatch the results on the search store
     * @param  {object} data - The data to dispatch.
     */
-    let _dispatchResult = (data) => {
+    const _dispatchResult = (data) => {
         dispatcher.handleServerAction({
             data,
             type: 'update',
             identifier: config.identifier
         });
     };
+    /**
+     * Method call when there is an error.
+     * @param  {object} config -  The action builder configuration.
+     * @param  {object} err    - The error from the API call.
+     * @return {object}     - The data from the manageResponseErrors function.
+     */
+    function _errorOnCall( err){
+        manageResponseErrors(err, config);
+        //_dispatchGlobalError shoud be separated.
+    }
 
     /**
     * Build search action.
@@ -28,23 +41,23 @@ module.exports = function loadActionFn(config){
     return function listLoader(isScroll){
         //Read search options from the accessor define in the config.
         // TODO: see if results should be named results.
-        let {
+        const {
             criteria,
             groupingKey, sortBy, sortAsc,
             dataList, totalCount
         } = config.getListOptions();
 
         //Number of element to search on each search.
-        let nbElement = config.nbElement;
+        const nbElement = config.nbElement;
         //Process the query if empty.
 
         //Build URL data.
-        let urlData = assign(
+        const urlData = assign(
             _builder.pagination({dataList, totalCount, isScroll, nbElement}),
             _builder.orderAndSort({sortBy, sortAsc})
         );
         //Build body data.
-        let postData = {
+        const postData = {
             criteria: criteria,
             group: groupingKey || ''
         };
@@ -55,6 +68,7 @@ module.exports = function loadActionFn(config){
                     {isScroll, dataList}
                 );
         })
-        .then(_dispatchResult);
+        .then(_dispatchResult)
+        .catch(_errorOnCall);
     };
 };
