@@ -3,7 +3,7 @@ import assign from 'object-assign';
 import _builder from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
-import {manageResponseErrors} from '../network/error-parsing';
+import {manageResponseErrors} from '../../network/error-parsing';
 const ALL = 'ALL';
 const STAR = '*';
 
