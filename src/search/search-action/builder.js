@@ -17,7 +17,7 @@ let _buildFacets = (facets) => {
 let _buildOrderAndSort = (sortConf) => {
     return {
       sortFieldName: sortConf.sortBy,
-      sortDesc: !sortConf.sortAsc
+      sortDesc: sortConf.sortAsc===undefined?false:!sortConf.sortAsc
     }
 };
 
