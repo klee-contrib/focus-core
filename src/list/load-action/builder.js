@@ -8,7 +8,7 @@ let isArray = require('lodash/lang/isArray');
 function _buildOrderAndSort(sortConf){
     return {
         sortFieldName: sortConf.sortBy,
-        sortDesc: !sortConf.sortAsc
+        sortDesc: sortConf.sortAsc===undefined?false:!sortConf.sortAsc
     };
 }
 
