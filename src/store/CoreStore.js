@@ -181,6 +181,35 @@ class CoreStore extends EventEmitter {
                     return hasData ? currentStore.error.get(def).toJS() : undefined;
                 };
             }(definition);
+
+
+            // status
+            currentStore[`add${capitalizeDefinition}StatusListener`] = function(def){
+                return function (cb) {
+                    currentStore.addListener(`${def}:status`, cb);
+                }
+            }(definition);
+            //Remove the change listener
+            currentStore[`remove${capitalizeDefinition}StatusListener`] = function(def){
+                return function (cb) {
+                    currentStore.removeListener(`${def}:status`, cb);
+                }
+            }(definition);
+            //Create an update method.
+            currentStore[`updateStatus${capitalizeDefinition}`] = function(def){
+                return function updateStatus(dataNode, status, informations) {
+                    //CheckIsObject
+                    currentStore.status = currentStore.status.set(def, status);
+                    currentStore.willEmit(`${def}:status`, {property: def, status: status, informations: informations});
+                }
+            }(definition);
+            //Create a get method.
+            currentStore[`getStatus${capitalizeDefinition}`] = function(def){
+                return function getStatus(){
+                    const hasData = currentStore.status.has(def);
+                    return hasData ? currentStore.status.get(def).toJS() : undefined;
+                };
+            }(definition);
         }
     }
 
