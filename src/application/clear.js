@@ -1,4 +1,4 @@
-const React = require('react');
+const ReactDOM = require('react-dom');
 let mountedComponents = require('./mounted-components');
 
 /**
@@ -7,7 +7,7 @@ let mountedComponents = require('./mounted-components');
  */
 module.exports = function clearComponent(targetSelector) {
     if(mountedComponents[targetSelector]){
-        React.unmountComponentAtNode(document.querySelector(targetSelector));
+        ReactDOM.unmountComponentAtNode(document.querySelector(targetSelector));
         delete mountedComponents[targetSelector];
         console.info('Component ' + targetSelector + ' unmounted.');
     }
