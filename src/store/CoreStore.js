@@ -257,6 +257,9 @@ class CoreStore extends EventEmitter {
                         currentStore.customHandler[node][type].call(currentStore, rawData[node], status[node], otherInformations);
                     }else {
                         //Update the data for the given node. and emit the change/.
+                        if(!isFunction(currentStore[`${type}${capitalize(node)}`])){
+                            throw new Error(`The listener you try to call is unavailable : ${type}${capitalize(node)}` );
+                        }
                         currentStore[`${type}${capitalize(node)}`](rawData[node], status[node], otherInformations);
                     }
                 }
