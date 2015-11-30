@@ -34,7 +34,7 @@ describe('# The core store', ()=>{
                 expect(testStore.removeAddressStatusListener).to.be.a.function;
             });
         });
-        describe('onChange should call handler', () => {
+        describe('Handlers should be called on dispatch', () => {
             it('sould call on change listener on dispatch', (done) => {
                 const PERSON = {nom: 'david'}
                 const onChange = d => {
@@ -64,18 +64,39 @@ describe('# The core store', ()=>{
             it('sould call on status listener on dispatch', (done) => {
                 const PERSON_STATUS = {nom: 'status'}
                 const onChange = d => {
-                   expect(testStore.getErrorPerson()).be.deep.equal(PERSON_STATUS);
-                   testStore.removePersonErrorListener(onChange);
+                   expect(testStore.getStatusPerson()).be.deep.equal(PERSON_STATUS);
+                   testStore.removePersonStatusListener(onChange);
                    done();
                 }
-                 testStore.addPersonErrorListener(onChange);
+                 testStore.addPersonStatusListener(onChange);
                  dispatch({
                      data: {person: PERSON_STATUS},
-                     type: 'updateStatus'
+                     type: 'updateStatus',
+                     status: {person: PERSON_STATUS}
                  })
             });
 
         });
 
+    });
+    describe('getters setters', () => {
+        const testStore = new CoreStore({definition: {person: 'person', address: 'address'}});
+        describe('should create getters functions', () =>{
+            it('should add  getData function', () => {
+                expect(testStore.getPerson).to.be.a.function;
+                expect(testStore.getAddress).to.be.a.function;
+            });
+            it('should add getError function', ()=>{
+                expect(testStore.getErrorPerson).to.be.a.function;
+                expect(testStore.getErrorAddress).to.be.a.function;
+            });
+            it('should add getStatus function', ()=>{
+                expect(testStore.getStatusPerson).to.be.a.function;
+                expect(testStore.getStatusAddress).to.be.a.function;
+            });
+        });
+        describe('should create setters functions', () =>{
+
+        });
     });
 });

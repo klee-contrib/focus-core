@@ -117,6 +117,7 @@ class CoreStore extends EventEmitter {
                 }
             }(definition);
             //Create an update method.
+            //Should be named updateData to be more explicit
             if(currentStore[`update${capitalizeDefinition}`] === undefined){
                 currentStore[`update${capitalizeDefinition}`] = function(def){
                     return function (dataNode, status, informations) {
@@ -199,7 +200,9 @@ class CoreStore extends EventEmitter {
             currentStore[`updateStatus${capitalizeDefinition}`] = function(def){
                 return function updateStatus(dataNode, status, informations) {
                     //CheckIsObject
-                    currentStore.status = currentStore.status.set(def, status);
+                    //console.log(`status  ${JSON.stringify(status)}`);
+                    const statusNode =  Immutable.fromJS(status); // mMaybe it is a part of the status only.
+                    currentStore.status = currentStore.status.set(def, statusNode);
                     currentStore.willEmit(`${def}:status`, {property: def, status: status, informations: informations});
                 }
             }(definition);
