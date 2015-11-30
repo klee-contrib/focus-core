@@ -3,7 +3,7 @@
 
 import CoreStore from '../CoreStore';
 import {handleViewAction as dispatch} from '../../dispatcher'
-describe.only('# The core store', ()=>{
+describe('# The core store', ()=>{
     describe('listeners ', () => {
         const testStore = new CoreStore({definition: {person: 'person', address: 'address'}});
         describe(' should create listeners functions', ()=>{
