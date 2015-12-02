@@ -117,6 +117,7 @@ class CoreStore extends EventEmitter {
                 }
             }(definition);
             //Create an update method.
+            //Should be named updateData to be more explicit
             if(currentStore[`update${capitalizeDefinition}`] === undefined){
                 currentStore[`update${capitalizeDefinition}`] = function(def){
                     return function (dataNode, status, informations) {
@@ -181,6 +182,37 @@ class CoreStore extends EventEmitter {
                     return hasData ? currentStore.error.get(def).toJS() : undefined;
                 };
             }(definition);
+
+
+            // status
+            currentStore[`add${capitalizeDefinition}StatusListener`] = function(def){
+                return function (cb) {
+                    currentStore.addListener(`${def}:status`, cb);
+                }
+            }(definition);
+            //Remove the change listener
+            currentStore[`remove${capitalizeDefinition}StatusListener`] = function(def){
+                return function (cb) {
+                    currentStore.removeListener(`${def}:status`, cb);
+                }
+            }(definition);
+            //Create an update method.
+            currentStore[`updateStatus${capitalizeDefinition}`] = function(def){
+                return function updateStatus(dataNode, status, informations) {
+                    //CheckIsObject
+                    //console.log(`status  ${JSON.stringify(status)}`);
+                    const statusNode =  Immutable.fromJS(status); // mMaybe it is a part of the status only.
+                    currentStore.status = currentStore.status.set(def, statusNode);
+                    currentStore.willEmit(`${def}:status`, {property: def, status: status, informations: informations});
+                }
+            }(definition);
+            //Create a get method.
+            currentStore[`getStatus${capitalizeDefinition}`] = function(def){
+                return function getStatus(){
+                    const hasData = currentStore.status.has(def);
+                    return hasData ? currentStore.status.get(def).toJS() : undefined;
+                };
+            }(definition);
         }
     }
 
@@ -228,6 +260,9 @@ class CoreStore extends EventEmitter {
                         currentStore.customHandler[node][type].call(currentStore, rawData[node], status[node], otherInformations);
                     }else {
                         //Update the data for the given node. and emit the change/.
+                        if(!isFunction(currentStore[`${type}${capitalize(node)}`])){
+                            throw new Error(`The listener you try to call is unavailable : ${type}${capitalize(node)}` );
+                        }
                         currentStore[`${type}${capitalize(node)}`](rawData[node], status[node], otherInformations);
                     }
                 }

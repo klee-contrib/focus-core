@@ -12,6 +12,7 @@ function _preServiceCall({node, type, preStatus, callerId, shouldDumpStoreOnActi
     let data = {};
     let status = {};
     const STATUS = {name: preStatus, isLoading: true};
+    type = shouldDumpStoreOnActionCall ? 'update' : 'updateStatus';
     // When there is a multi node update it should be an array.
     if(isArray(node)){
         node.forEach((nd)=>{
