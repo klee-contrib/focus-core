@@ -20,6 +20,7 @@ describe('### action-builder', ()=>{
         const action = actionBuilder({status: 'test', service: ()=>{}, node: 'test'});
         expect(action).to.be.a('function');
     });
+
     it('Builded action call should result to a store update', (done)=>{
         const CoreStore = require('../../store/CoreStore');
         const store = new CoreStore({
