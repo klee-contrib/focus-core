@@ -1,5 +1,6 @@
 const React = require('react');
 const dispatcher = require('../dispatcher');
+import confirm from './confirm';
 //Empty compoennt.
 const Empty = React.createClass({
     /** @inheritdoc */
@@ -46,5 +47,6 @@ module.exports = {
             },
             type: 'update'
         });
-    }
+    },
+    confirm
 };
