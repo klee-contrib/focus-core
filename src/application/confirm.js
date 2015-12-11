@@ -11,15 +11,15 @@ export default function confirm(ContentComponent){
             data: {
                 confirmConfig:{
                     isVisible: true,
-                    ConfirmContentComponent: ContentComponent,
+                    Content: ContentComponent,
                     handleCancel(data){
-                        dispatch({data: {confirmConfig: {isVsible: false}}, type: 'update'});
+                        dispatch({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
                         //Maybe there is a little async problem.
                         // We could listen to the store once on the change it is time to call resolve.
                         resolve(data);
                     },
                     handleConfirm(err){
-                        dispatch({data: {confirmConfig: {isVsible: false}}, type: 'update'});
+                        dispatch({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
                         reject(err);
                     }
                 }
