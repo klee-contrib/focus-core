@@ -12,7 +12,6 @@ export default function confirm(ContentComponent, props) {
                 confirmConfig: {
                     isVisible: true,
                     Content: ContentComponent,
-                    contentProps: props,
                     handleCancel(err) {
                         dispatch({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
                         //Maybe there is a little async problem.
@@ -22,7 +21,8 @@ export default function confirm(ContentComponent, props) {
                     handleConfirm(data) {
                         dispatch({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
                         resolve(data);
-                    }
+                    },
+                    ...props
                 }
             },
             type: 'update'
