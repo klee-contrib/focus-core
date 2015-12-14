@@ -12,7 +12,7 @@ let isObject = require('lodash/lang/isObject');
 * Create a pending status.
 * @return {object} The instanciated request status.
 */
-function createRequestStatus(){
+function createRequestStatus() {
     return {
         id: uuid(),
         status: 'pending'
@@ -23,8 +23,8 @@ function createRequestStatus(){
 * @param  {object} request - The request to treat.
 * @return {object} - The request to dispatch.
 */
-function updateRequestStatus(request){
-    if(!request || !request.id || !request.status){return; }
+function updateRequestStatus(request) {
+    if(!request || !request.id || !request.status) {return; }
     dispatcher.handleViewAction({
         data: {request: request},
         type: 'update'
@@ -36,8 +36,8 @@ function updateRequestStatus(request){
 * @param  {object} req - The requets object send back from the xhr.
 * @return {object}     - The parsed object.
 */
-function jsonParser(req){
-    if(null === req.responseText || null === req.responseText || '' === req.responseText){
+function jsonParser(req) {
+    if(null === req.responseText || null === req.responseText || '' === req.responseText) {
         console.warn('The response of your request was empty');
         return null;
     }
@@ -51,7 +51,7 @@ function jsonParser(req){
             }]
         };
     }
-    if(!isObject(parsedObject)){
+    if(!isObject(parsedObject)) {
         //Maybe this check should read the header content-type
         console.warn('The response did not sent a JSON object');
     }
@@ -67,26 +67,26 @@ function jsonParser(req){
 function fetch(obj, options = {}) {
     options.parser = options.parser || jsonParser;
     options.errorParser = options.errorParser || jsonParser;
-    let request = createCORSRequest(obj.method, obj.url, options);
-    let requestStatus = createRequestStatus();
     let config = require('./config').get();
+    let request = createCORSRequest(obj.method, obj.url, {...config, ...options});
+    let requestStatus = createRequestStatus();
     if (!request) {
         throw new Error('You cannot perform ajax request on other domains.');
     }
 
     return cancellablePromiseBuilder(function promiseFn(success, failure) {
         //Request error handler
-        request.onerror = function (error) {
+        request.onerror = error => {
             updateRequestStatus({id: requestStatus.id, status: 'error'});
             failure(error);
         };
         //Request success handler
-        request.onload = function () {
+        request.onload = () => {
             let status = request.status;
             if (status < 200 || status >= 300 ) {
                 let err = options.errorParser(request);
                 err.status = status;
-                if(config.xhrErrors[status]){
+                if(config.xhrErrors[status]) {
                     config.xhrErrors[status](request.response);
                 }
                 updateRequestStatus({id: requestStatus.id, status: 'error'});
