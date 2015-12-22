@@ -3,7 +3,7 @@
 * @return {object} - The cartridge component.
 */
 module.exports = () => {
-    return ['summaryComponent', 'barContentLeftComponent', 'barContentRightComponent', 'cartridgeComponent', 'actions', 'mode', 'route', 'confirmConfig']
+    return ['summaryComponent', 'barContentLeftComponent', 'barContentRightComponent', 'cartridgeComponent', 'actions', 'mode', 'route', 'confirmConfig', 'headerSize']
     .reduce((def, node) => {
         def[node] = node;
         return def;
