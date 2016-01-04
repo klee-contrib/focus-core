@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.12.2-beta1",
+  "version": "0.12.2-beta2",
   "description": "Focus library core part.",
   "main": "lib/index.js",
   "repository": {
@@ -16,17 +16,24 @@
   "documentation": "http://kleegroup.github.io/focus-docs/",
   "license": "MIT",
   "homepage": "https://github.com/KleeGroup/focus-core",
+  "bugs": {
+    "url": "https://github.com/KleeGroup/focus-core/issues"
+  },
   "scripts": {
     "prepublish": "npm run build",
     "babelify": "better-npm-run babelify",
     "bundle": "better-npm-run bundle",
+    "copy-sass": "better-npm-run copy-sass",
     "test": "mocha src/**/__tests__/**/*.js",
     "test:watch": "mocha src/**/__tests__/**/*.js -w",
-    "build": "better-npm-run babelify && better-npm-run bundle"
+    "build": "better-npm-run babelify && better-npm-run copy-sass && better-npm-run bundle"
   },
   "betterScripts": {
     "babelify": {
       "command": "babel src --out-dir lib --source-maps inline"
+    },
+    "copy-sass": {
+      "command": "cd src && find . -name \\*.scss -exec cp --parents {} ../lib ; && cd .."
     },
     "bundle": {
       "command": "webpack --progress",
