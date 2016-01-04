@@ -3,35 +3,48 @@
   "version": "0.12.1",
   "description": "Focus library core part.",
   "main": "lib/index.js",
-  "directories": {
-    "example": "example",
-    "test": "test"
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/KleeGroup/focus-core.git"
   },
-  "dependencies": {
-    "backbone": "^1.2.0",
-    "flux": "^2.0.3",
-    "i18next-client": "^1.10.2",
-    "immutable": "^3.7.3",
-    "jquery": "^2.1.4",
-    "keymirror": "^0.1.1",
-    "lodash": "^3.9.1",
-    "moment": "^2.10.6",
-    "numeral": "^1.5.3",
-    "object-assign": "^2.0.0",
-    "react": "^0.14.4",
-    "react-dom": "^0.14.4",
-    "uuid": "^2.0.1"
-  },
+  "keywords": [
+      "spa",
+      "react",
+      "es6"
+  ],
+  "author": "focus@kleegroup.com",
+  "documentation": "http://kleegroup.github.io/focus-docs/",
+  "license": "MIT",
+  "homepage": "https://github.com/KleeGroup/focus-core",
   "scripts": {
     "prepublish": "npm run build",
-    "test": "node ./node_modules/mocha/bin/mocha src/**/__tests__/**/*.js",
-    "test:debug": "node-debug _mocha --debug-brk",
-    "build": "npm run build:node && npm run webpack:production",
-    "build:node": "node ./node_modules/babel/bin/babel.js src --out-dir lib",
-    "ci-lint": "node ./node_modules/eslint/bin/eslint.js src -f checkstyle > checkstyle-result.xml",
-    "webpack:dev": "node server.js",
-    "webpack:build": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js",
-    "webpack:production": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.production.js"
+    "babelify": "better-npm-run babelify",
+    "bundle": "better-npm-run bundle",
+    "test": "mocha src/**/__tests__/**/*.js",
+    "test:watch": "mocha src/**/__tests__/**/*.js -w",
+    "build": "better-npm-run babelify && better-npm-run bundle"
+  },
+  "betterScripts": {
+    "babelify": {
+      "command": "babel src --out-dir lib --source-maps inline"
+    },
+    "bundle": {
+      "command": "webpack --progress",
+      "env": {
+        "DEV": false,
+        "NODE_ENV": "production",
+        "LIBRARY_NAME": "FocusCore",
+        "MINIMIFY": false
+      }
+    }
+  },
+  "dependencies": {
+    "flux": "^2.0.3",
+    "immutable": "^3.7.3",
+    "keymirror": "^0.1.1",
+    "lodash": "^3.9.1",
+    "object-assign": "^2.0.0",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
     "babel": "^5.8.21",
@@ -40,6 +53,8 @@
     "babel-loader": "^5.3.2",
     "babel-plugin-runtime": "^1.0.7",
     "babel-runtime": "^5.8.20",
+    "backbone": "^1.2.0",
+    "better-npm-run": "0.0.5",
     "chai": "^3.2.0",
     "chai-subset": "^1.1.0",
     "css-loader": "^0.19.0",
@@ -50,32 +65,22 @@
     "express": "^4.12.2",
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
+    "i18next-client": "^1.10.2",
+    "jquery": "^2.1.4",
     "json-loader": "^0.5.3",
     "mocha": "^2.3.2",
+    "moment": "^2.10.6",
     "node-sass": "^3.3.3",
+    "numeral": "^1.5.3",
+    "react": "^0.14.4",
+    "react-addons-test-utils": "^0.14.4",
+    "react-dom": "^0.14.4",
     "react-hot-loader": "^1.3.0",
-    "react-addons-test-utils": "^0.14.3",
     "sass-loader": "^3.0.0",
     "style-loader": "^0.12.4",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.11.0",
-    "webpack-focus": "^0.6.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/KleeGroup/focus.git"
-  },
-  "keywords": [
-    "spa",
-    "react",
-    "es6"
-  ],
-  "author": "Pierre Besson <pierre.besson@kleegroup.com>",
-  "documentation": "http://kleegroup.github.io/focus-docs/",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/KleeGroup/focus/issues"
-  },
-  "homepage": "https://github.com/KleeGroup/focus"
+    "webpack-focus": "^0.8.1"
+  }
 }
