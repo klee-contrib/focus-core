@@ -33,7 +33,7 @@
       "command": "babel src --out-dir lib --source-maps inline"
     },
     "copy-sass": {
-      "command": "cd src && find . -name \\*.scss -exec cp --parents {} ../lib ; && cd .."
+      "command": "cd src && find . -name \\*.scss -exec cp --parents {} ../lib ;"
     },
     "bundle": {
       "command": "webpack --progress",
