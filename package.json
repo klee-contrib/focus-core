@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.12.2-beta1",
+  "version": "0.12.2-beta2",
   "description": "Focus library core part.",
   "main": "lib/index.js",
   "repository": {
@@ -16,6 +16,9 @@
   "documentation": "http://kleegroup.github.io/focus-docs/",
   "license": "MIT",
   "homepage": "https://github.com/KleeGroup/focus-core",
+  "bugs": {
+    "url": "https://github.com/KleeGroup/focus-core/issues"
+  },
   "scripts": {
     "prepublish": "npm run build",
     "babelify": "better-npm-run babelify",
