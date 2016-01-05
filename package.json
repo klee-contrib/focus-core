@@ -1,8 +1,8 @@
 {
   "name": "focus-core",
-  "version": "0.12.2-beta2",
+  "version": "0.12.2-beta3",
   "description": "Focus library core part.",
-  "main": "lib/index.js",
+  "main": "index.js",
   "repository": {
       "type": "git",
       "url": "https://github.com/KleeGroup/focus-core.git"
@@ -29,7 +29,7 @@
   },
   "betterScripts": {
     "babelify": {
-      "command": "babel src --out-dir lib --source-maps inline"
+      "command": "babel src --out-dir ./ --source-maps inline"
     },
     "bundle": {
       "command": "webpack --progress",
