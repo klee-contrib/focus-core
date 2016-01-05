@@ -23,17 +23,13 @@
     "prepublish": "npm run build",
     "babelify": "better-npm-run babelify",
     "bundle": "better-npm-run bundle",
-    "copy-sass": "better-npm-run copy-sass",
     "test": "mocha src/**/__tests__/**/*.js",
     "test:watch": "mocha src/**/__tests__/**/*.js -w",
-    "build": "better-npm-run babelify && better-npm-run copy-sass && better-npm-run bundle"
+    "build": "better-npm-run babelify && better-npm-run bundle"
   },
   "betterScripts": {
     "babelify": {
       "command": "babel src --out-dir lib --source-maps inline"
-    },
-    "copy-sass": {
-      "command": "cd src && find . -name \\*.scss -exec cp --parents {} ../lib ;"
     },
     "bundle": {
       "command": "webpack --progress",
