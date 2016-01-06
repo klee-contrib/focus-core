@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.12.2-beta3",
+  "version": "0.12.2-beta4",
   "description": "Focus library core part.",
   "main": "index.js",
   "repository": {
@@ -37,7 +37,8 @@
         "DEV": false,
         "NODE_ENV": "production",
         "LIBRARY_NAME": "FocusCore",
-        "MINIMIFY": false
+        "MINIMIFY": false,
+        "BUNDLING": true
       }
     }
   },
@@ -84,6 +85,6 @@
     "url-loader": "^0.5.6",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.11.0",
-    "webpack-focus": "^0.8.1"
+    "webpack-focus": "0.8.2"
   }
 }
