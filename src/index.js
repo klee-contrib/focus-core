@@ -1,25 +1,24 @@
 //http://www.ascii-fr.com/Generateur-de-texte.html
-const infos = require('../package.json');
-console.log(
-  `
-  _____   _____   _____   _   _   _____
- |  ___| /  _  \\ /  ___| | | | | /  ___/
- | |__   | | | | | |     | | | | | |___
- |  __|  | | | | | |     | | | | \\___  \\
- | |     | |_| | | |___  | |_| |  ___| |
- |_|     \\_____/ \\_____| \\_____/ /_____/
 
- version: ${infos.version}
- focus: ${infos.homepage}
- documentation: ${infos.documentation}
- issues: ${infos.bugs.url}
-`
+// Check if we are bundling. If yes, package.json is found in ../ If no, then we are babelifying so it is in ./
+const packageJsonPath = process.env.BUNDLING ? '..' : '.'
+const infos = require(`${packageJsonPath}/package.json`);
+
+console.log(
+    `
+        FOCUS CORE
+
+        version: ${infos.version}
+        focus: ${infos.homepage}
+        documentation: ${infos.documentation}
+        issues: ${infos.bugs.url}
+    `
 );
 /**
- * Focus library.
- * This file requires all submodules.
- * @type {Object}
- */
+* Focus library.
+* This file requires all submodules.
+* @type {Object}
+*/
 module.exports = {
     application: require('./application'),
     component: require('./component'),
