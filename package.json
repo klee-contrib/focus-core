@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.12.2-beta4",
+  "version": "0.12.2-beta5",
   "description": "Focus library core part.",
   "main": "index.js",
   "repository": {
@@ -38,7 +38,7 @@
         "NODE_ENV": "production",
         "LIBRARY_NAME": "FocusCore",
         "MINIMIFY": false,
-        "BUNDLING": true
+        "PACKAGE_JSON_PATH": "../"
       }
     }
   },
