@@ -38,7 +38,7 @@
         "NODE_ENV": "production",
         "LIBRARY_NAME": "FocusCore",
         "MINIMIFY": false,
-        "BUNDLING": true
+        "PACKAGE_JSON_PATH": "../"
       }
     }
   },
