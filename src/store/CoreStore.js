@@ -87,7 +87,12 @@ class CoreStore extends EventEmitter {
     * @param  data {object} - The event's associated data.
     */
     willEmit(eventName, data){
-        this.pendingEvents.push({name: eventName, data: data});
+        this.pendingEvents = this.pendingEvents.reduce((result, current)=>{
+          if(current.name !== eventName){
+            result.push(current);
+          }
+          return result;
+        }, [{name: eventName, data: data}]);
     }
 
     /**
