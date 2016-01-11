@@ -1,16 +1,26 @@
 {
   "name": "focus-core",
-  "version": "0.12.2-beta5",
+  "version": "0.12.2-beta6",
   "description": "Focus library core part.",
   "main": "index.js",
+  "babel": {
+    "presets": [
+      "stage-0",
+      "react",
+      "es2015"
+    ],
+    "plugins": [
+      "transform-class-properties"
+    ]
+  },
   "repository": {
-      "type": "git",
-      "url": "https://github.com/KleeGroup/focus-core.git"
+    "type": "git",
+    "url": "https://github.com/KleeGroup/focus-core.git"
   },
   "keywords": [
-      "spa",
-      "react",
-      "es6"
+    "spa",
+    "react",
+    "es6"
   ],
   "author": "focus@kleegroup.com",
   "documentation": "http://kleegroup.github.io/focus-docs/",
@@ -20,7 +30,7 @@
     "url": "https://github.com/KleeGroup/focus-core/issues"
   },
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublish": "in-publish && npm run build || exit 0",
     "babelify": "better-npm-run babelify",
     "bundle": "better-npm-run bundle",
     "test": "mocha src/**/__tests__/**/*.js",
@@ -29,7 +39,7 @@
   },
   "betterScripts": {
     "babelify": {
-      "command": "babel src --out-dir ./ --source-maps inline"
+      "command": "babel src --out-dir ./ --ignore \"example/index.js,__tests__\" --source-maps inline"
     },
     "bundle": {
       "command": "webpack --progress",
@@ -51,12 +61,17 @@
     "uuid": "^2.0.1"
   },
   "devDependencies": {
-    "babel": "^5.8.21",
-    "babel-core": "^5.8.24",
-    "babel-eslint": "4.0.5",
-    "babel-loader": "^5.3.2",
+    "babel": "^6.3.26",
+    "babel-core": "^6.4.0",
+    "babel-eslint": "4.1.3",
+    "babel-loader": "^6.2.1",
     "babel-plugin-runtime": "^1.0.7",
-    "babel-runtime": "^5.8.20",
+    "babel-plugin-transform-class-properties": "^6.4.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "babel-runtime": "^6.3.19",
     "backbone": "^1.2.0",
     "better-npm-run": "0.0.5",
     "chai": "^3.2.0",
@@ -70,6 +85,7 @@
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
     "i18next-client": "^1.10.2",
+    "in-publish": "^2.0.0",
     "jquery": "^2.1.4",
     "json-loader": "^0.5.3",
     "mocha": "^2.3.2",
@@ -81,10 +97,11 @@
     "react-dom": "^0.14.4",
     "react-hot-loader": "^1.3.0",
     "sass-loader": "^3.0.0",
+    "source-map-loader": "^0.1.5",
     "style-loader": "^0.12.4",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.2",
     "webpack-dev-server": "^1.11.0",
-    "webpack-focus": "0.8.2"
+    "webpack-focus": "^0.8.8"
   }
 }
