@@ -1,9 +1,12 @@
-let SearchStore = require('../search-store');
+import SearchStore from '../search-store';
+
+const LISTENED_NODES = ['query', 'scope', 'selected-facets', 'grouping-key', 'sort-by', 'sort-asc'];
+
 /**
  * Class standing for all advanced search information.
  * The state should be the complete state of the page.
  */
-class AdvancedSearchStore extends SearchStore{
+class AdvancedSearchStore extends SearchStore {
   constructor(conf){
     conf = conf || {};
     conf.definition = {
@@ -20,5 +23,16 @@ class AdvancedSearchStore extends SearchStore{
     conf.identifier = 'ADVANCED_SEARCH';
     super(conf);
   }
+
+  emitPendingEvents(){
+        if(this.pendingEvents.find(ev => LISTENED_NODES.includes(ev.name.split(':change')[0]))) {
+            this.emit('advanced-search-criterias:change', {status: 'update'});
+        }
+        this.pendingEvents.map((evtToEmit)=>{
+            let {name, data} = evtToEmit;
+            this.emit(name, data);
+        });
+    }
+
 }
 module.exports = AdvancedSearchStore;
