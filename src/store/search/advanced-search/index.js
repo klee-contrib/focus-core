@@ -1,6 +1,6 @@
 import SearchStore from '../search-store';
 
-const listenedNodes = ['query', 'scope', 'selected-facets', 'grouping-key', 'sort-by', 'sort-asc'];
+const LISTENED_NODES = ['query', 'scope', 'selected-facets', 'grouping-key', 'sort-by', 'sort-asc'];
 
 /**
  * Class standing for all advanced search information.
@@ -25,7 +25,7 @@ class AdvancedSearchStore extends SearchStore {
   }
 
   emitPendingEvents(){
-        if(this.pendingEvents.find(ev => listenedNodes.includes(ev.name.split(':change')[0]))) {
+        if(this.pendingEvents.find(ev => LISTENED_NODES.includes(ev.name.split(':change')[0]))) {
             this.emit('advanced-search-criterias:change', {status: 'update'});
         }
         this.pendingEvents.map((evtToEmit)=>{
