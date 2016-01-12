@@ -1,6 +1,6 @@
 import SearchStore from '../search-store';
 
-const LISTENED_NODES = ['query', 'scope', 'selected-facets', 'grouping-key', 'sort-by', 'sort-asc'];
+const LISTENED_NODES = ['query', 'scope', 'selectedFacets', 'groupingKey', 'sortBy', 'sortAsc'];
 
 /**
  * Class standing for all advanced search information.
