@@ -2,6 +2,7 @@ sudo: false
 language: node_js
 node_js:
 - '4.2'
+before_deploy: 'npm run build'
 deploy:
   provider: npm
   email: pierre.besson7+npm@gmail.com
@@ -10,3 +11,6 @@ deploy:
   skip_cleanup: true
   on:
     branch: develop
+cache:
+  directories:
+    - node_modules

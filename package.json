@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.12.2-beta7",
+  "version": "0.12.2-beta8",
   "description": "Focus library core part.",
   "main": "index.js",
   "babel": {
@@ -30,7 +30,6 @@
     "url": "https://github.com/KleeGroup/focus-core/issues"
   },
   "scripts": {
-    "prepublish": "in-publish && npm run build || exit 0",
     "babelify": "better-npm-run babelify",
     "bundle": "better-npm-run bundle",
     "test": "mocha src/**/__tests__/**/*.js",
@@ -85,7 +84,6 @@
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
     "i18next-client": "^1.10.2",
-    "in-publish": "^2.0.0",
     "jquery": "^2.1.4",
     "json-loader": "^0.5.3",
     "mocha": "^2.3.2",
