@@ -210,7 +210,7 @@ function manageResponseErrors(response, options) {
     if (responseErrors.status) {
         return {
             globals: _treatGlobalErrors(responseErrors),
-            fields: ((resErrors, opts)=>{
+            fields: ((resErrors, opts) => {
                 switch (responseErrors.status) {
                     case 400:
                     case 401:
@@ -220,7 +220,7 @@ function manageResponseErrors(response, options) {
                         return null;
                 }
                 return null;
-            }(responseErrors, options))
+            })(responseErrors, options)
         };
     }
     return null;
