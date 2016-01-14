@@ -206,7 +206,7 @@ class CoreStore extends EventEmitter {
                 return function updateStatus(dataNode, status, informations) {
                     //CheckIsObject
                     //console.log(`status  ${JSON.stringify(status)}`);
-                    const statusNode =  Immutable.fromJS(status); // mMaybe it is a part of the status only.
+                    const statusNode = status;//Immutable.fromJS(status); // mMaybe it is a part of the status only.
                     currentStore.status = currentStore.status.set(def, statusNode);
                     currentStore.willEmit(`${def}:status`, {property: def, status: status, informations: informations});
                 }
