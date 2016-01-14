@@ -1,4 +1,4 @@
-import {handleViewAction as dispatch} from '../dispatcher';
+import dispatcher from '../dispatcher';
 
 /**
  * This function aims to have the same behaviour as JS confirm.
@@ -7,19 +7,19 @@ import {handleViewAction as dispatch} from '../dispatcher';
  */
 export default function confirm(ContentComponent, props) {
     return new Promise((resolve, reject) => {
-        dispatch({
+        dispatcher.handleViewAction({
             data: {
                 confirmConfig: {
                     isVisible: true,
                     Content: ContentComponent,
                     handleCancel(err) {
-                        dispatch({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
+                        dispatcher.handleViewAction({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
                         //Maybe there is a little async problem.
                         // We could listen to the store once on the change it is time to call resolve.
                         reject(err);
                     },
                     handleConfirm(data) {
-                        dispatch({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
+                        dispatcher.handleViewAction({data: {confirmConfig: {isVsible: false, Content: null}}, type: 'update'});
                         resolve(data);
                     },
                     ...props
