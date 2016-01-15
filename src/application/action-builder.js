@@ -67,7 +67,7 @@ function _dispatchFieldErrors({node, callerId}, errorResult){
     dispatcher.handleServerAction({
         data,
         type: 'updateError',
-        status: errorStatus,
+        status: newStatus,
         callerId
     });
 }
