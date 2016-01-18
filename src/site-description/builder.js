@@ -1,6 +1,6 @@
 let {find, some} = require('lodash/collection');
 let clone = require('lodash/lang/clone');
-let Backbone = require('backbone');
+import Backbone from 'backbone';
 
 let userHelper = require('../user');
 let siteDescriptionReader = require('./reader');
