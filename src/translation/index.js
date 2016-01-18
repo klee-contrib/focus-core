@@ -1,4 +1,4 @@
-import {t, init} from 'i18next';
+import {t, init} from 'i18next-client';
 
 export default {
     translate: t,
