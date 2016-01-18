@@ -33,6 +33,7 @@ module.exports = {
     store: require('./store'),
     util: require('./util'),
     user: require('./user'),
+    translation: require('./translation'),
     message: require('./message'),
     VERSION: infos.version,
     AUTHOR: infos.author,
