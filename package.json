@@ -1,6 +1,6 @@
 {
   "name": "focus-core",
-  "version": "0.12.4-beta1",
+  "version": "0.12.4-beta2",
   "description": "Focus library core part.",
   "main": "index.js",
   "babel": {
@@ -55,6 +55,7 @@
   "dependencies": {
     "backbone": "^1.2.0",
     "flux": "^2.0.3",
+    "i18next": "^2.0.22",
     "immutable": "^3.7.3",
     "keymirror": "^0.1.1",
     "lodash": "^3.9.1",
@@ -86,7 +87,6 @@
     "express": "^4.12.2",
     "extract-text-webpack-plugin": "^0.8.2",
     "file-loader": "^0.8.4",
-    "i18next-client": "^1.10.2",
     "jquery": "^2.1.4",
     "json-loader": "^0.5.3",
     "mocha": "^2.3.2",
