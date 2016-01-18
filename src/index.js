@@ -19,6 +19,7 @@ console.log(
 */
 module.exports = {
     application: require('./application'),
+    history: require('./history'),
     component: require('./component'),
     definition: require('./definition'),
     dispatcher: require('./dispatcher'),

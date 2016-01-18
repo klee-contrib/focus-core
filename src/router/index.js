@@ -1,5 +1,5 @@
 var render = require('../application/render');
-var Backbone = require('backbone');
+import Backbone from 'backbone';
 var ArgumentNullException = require('../exception/argument-null-exception');
 var message = require('../message');
 var userHelper = require('../user');
