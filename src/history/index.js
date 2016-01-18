@@ -1,3 +1,3 @@
-import Backbone from 'backbone';
+import {history} from 'backbone';
 
-export default Backbone.history;
+export default history;
