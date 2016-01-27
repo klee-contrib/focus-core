@@ -39,7 +39,7 @@
   },
   "betterScripts": {
     "babelify": {
-      "command": "babel src --out-dir ./ --ignore \"example/index.js,__tests__\" --source-maps inline"
+      "command": "node scripts/babelify.js"
     },
     "bundle": {
       "command": "webpack --progress",
