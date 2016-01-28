@@ -3,7 +3,6 @@ const EventEmitter = require('events').EventEmitter;
 const assign = require('object-assign');
 const {isArray, isEmpty, isObject, isFunction} = require('lodash/lang');
 const {defer} = require('lodash/function');
-const getEntityInformations = require('../definition/entity/builder').getEntityInformations;
 const capitalize = require('lodash/string/capitalize');
 const Immutable = require('immutable');
 const AppDispatcher = require('../dispatcher');
@@ -41,10 +40,10 @@ class CoreStore extends EventEmitter {
         * Build the definitions for the entity (may be a subject.)
         * @type {object}
         */
-        this.definition = this.config.definition || getEntityInformations(
-            this.config.definitionPath,
-            this.config.customDefinition
-        );
+        if(!this.config.definition){
+            throw new Error('Core Store: missing definition', this.config);
+        }
+        this.definition = this.config.definition;
         return this.definition;
     }
     /**
@@ -88,10 +87,10 @@ class CoreStore extends EventEmitter {
     */
     willEmit(eventName, data){
         this.pendingEvents = this.pendingEvents.reduce((result, current)=>{
-          if(current.name !== eventName){
-            result.push(current);
-          }
-          return result;
+            if(current.name !== eventName){
+                result.push(current);
+            }
+            return result;
         }, [{name: eventName, data: data}]);
     }
 
