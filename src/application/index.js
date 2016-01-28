@@ -1,15 +1,10 @@
 const React = require('react');
 const dispatcher = require('../dispatcher');
+import {isUndefined} from 'lodash/lang';
 import confirm from './confirm';
 //Empty compoennt.
-const Empty = React.createClass({
-    /** @inheritdoc */
-    displayName: 'Empty',
-    /** @inheritdoc */
-    render() {
-        return <div></div>;
-    }
-});
+const Empty = props => <div data-focus='empty'></div>;
+Empty.displayName = 'Empty';
 
 module.exports = {
     render: require('./render'),
@@ -32,6 +27,31 @@ module.exports = {
      */
     changeRoute(newRoute){
         dispatcher.handleViewAction({data: {route: newRoute}, type: 'update'});
+    },
+    /**
+     * Set component to application's header.
+     * @param {ReactComponent} cartridge     component injected in the cartridge
+     * @param {ReactComponent} summary       component injected in the summary bar
+     * @param {ReactComponent} actions       arrays of cartridge actions
+     * @param {ReactComponent} barLeft       component injected in the left bar
+     * @param {ReactComponent} canDeploy     indicates wether the cartridge can deploy or not
+     * @param {ReactComponent} barRight      component injected in the right bar
+     * @param {ReactComponent} EmptyComponent Empty component
+     */
+    setHeader({cartridge, summary, actions, barLeft, canDeploy, barRight, EmptyComponent = Empty}) {
+        const data = {
+            cartridgeComponent: cartridge || {component: EmptyComponent},
+            summaryComponent: summary || {component: EmptyComponent},
+            actions: actions || {primary: [], secondary: []},
+            barContentLeftComponent: barLeft || {component: EmptyComponent},
+            canDeploy: isUndefined(canDeploy) ? true : canDeploy
+        };
+
+        if (barRight) {
+            data.barContentRightComponent = barRight;
+        }
+
+        dispatcher.handleViewAction({data, type: 'update'});
     },
     /**
      * Clear the application's header.

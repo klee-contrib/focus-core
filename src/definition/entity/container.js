@@ -2,6 +2,7 @@
 const Immutable = require('immutable');
 const checkIsString = require('../../util/string/check');
 const checkIsObject = require('../../util/object/check');
+
 /**
 * Separator for the configuration
 * @type {String}
