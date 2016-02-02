@@ -4,6 +4,8 @@ import _builder from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
 import {manageResponseErrors} from '../../network/error-parsing';
+import {isString} from 'lodash/lang';
+
 const ALL = 'ALL';
 const STAR = '*';
 
@@ -67,7 +69,7 @@ module.exports = function searchActionBuilder(config){
             group: groupingKey || ''
         };
         //Different call depending on the scope.
-        if(scope && scope.toUpperCase() === ALL) {
+        if(isString(scope) && scope.toUpperCase() === ALL) {
             //Call the search action.
             config.service.unscoped({urlData: urlData, data: postData})
             .then(_parser.unscopedResponse)
