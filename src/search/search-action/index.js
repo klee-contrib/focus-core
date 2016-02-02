@@ -4,7 +4,7 @@ import _builder from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
 import {manageResponseErrors} from '../../network/error-parsing';
-import {isString} from 'lodash/lang';
+import isString from 'lodash/lang/isString';
 
 const ALL = 'ALL';
 const STAR = '*';
