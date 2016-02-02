@@ -67,13 +67,13 @@ module.exports = function searchActionBuilder(config){
             group: groupingKey || ''
         };
         //Different call depending on the scope.
-        if(scope === ALL){
+        if(scope && scope.toUpperCase() === ALL) {
             //Call the search action.
             config.service.unscoped({urlData: urlData, data: postData})
             .then(_parser.unscopedResponse)
             .then(_dispatchResult)
             .catch(_errorOnCall);
-        }else{
+        } else {
             //The component which call the serice should be know if it has all the data.
             config.service.scoped({urlData: urlData, data: postData})
             .then((response)=>{
