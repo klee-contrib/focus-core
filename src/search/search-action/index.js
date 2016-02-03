@@ -48,7 +48,8 @@ module.exports = function searchActionBuilder(config){
         let {
             scope, query, selectedFacets,
             groupingKey, sortBy, sortAsc,
-            results, totalCount
+            results, totalCount, 
+            ...otherProps
         } = config.getSearchOptions();
 
         //Number of element to search on each search.
@@ -66,7 +67,8 @@ module.exports = function searchActionBuilder(config){
         const postData = {
             criteria: {scope, query},
             facets: selectedFacets ? _builder.facets(selectedFacets) : [],
-            group: groupingKey || ''
+            group: groupingKey || '', 
+            ...otherProps
         };
         //Different call depending on the scope.
         if(isString(scope) && scope.toUpperCase() === ALL) {
