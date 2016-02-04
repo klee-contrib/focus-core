@@ -65,10 +65,11 @@ module.exports = function searchActionBuilder(config){
         );
         //Build body data.
         const postData = {
+            ...otherProps,
             criteria: {scope, query},
             facets: selectedFacets ? _builder.facets(selectedFacets) : [],
-            group: groupingKey || '', 
-            ...otherProps
+            group: groupingKey || ''
+            
         };
         //Different call depending on the scope.
         if(isString(scope) && scope.toUpperCase() === ALL) {
