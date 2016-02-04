@@ -9,13 +9,13 @@ let _parseFacets = (facets) => {
         formattedFacets[serverFacetKey] = keys(serverFacetData).reduce((facetData, serverFacetItemKey) => {
             let serverFacetItemValue = serverFacetData[serverFacetItemKey];
             
-			/* Case {key: count}*/
-			let key = serverFacetItemKey;
+            /* Case {key: count}*/
+            let key = serverFacetItemKey;
             let label = serverFacetItemKey;
             let count = serverFacetItemValue;
             if(isObject(serverFacetItemValue) && serverFacetItemValue.hasOwnProperty('label')){
                 /* Case {key: {label: label, count: count}}*/
-				({label, count} = serverFacetItemValue);
+                ({label, count} = serverFacetItemValue);
             }			
             facetData[key] = {
                 label,
