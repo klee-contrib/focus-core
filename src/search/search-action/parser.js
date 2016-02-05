@@ -1,15 +1,25 @@
 //Requirements
 
-let keys = require('lodash/object/keys');
+const keys = require('lodash/object/keys');
+const isObject = require('lodash/lang/isObject');
 
 let _parseFacets = (facets) => {
     return keys(facets).reduce((formattedFacets, serverFacetKey) => {
         let serverFacetData = facets[serverFacetKey];
         formattedFacets[serverFacetKey] = keys(serverFacetData).reduce((facetData, serverFacetItemKey) => {
             let serverFacetItemValue = serverFacetData[serverFacetItemKey];
-            facetData[serverFacetItemKey] = {
-                label: serverFacetItemKey,
-                count: serverFacetItemValue
+            
+            /* Case {key: count}*/
+            let key = serverFacetItemKey;
+            let label = serverFacetItemKey;
+            let count = serverFacetItemValue;
+            if(isObject(serverFacetItemValue) && serverFacetItemValue.hasOwnProperty('label')){
+                /* Case {key: {label: label, count: count}}*/
+                ({label, count} = serverFacetItemValue);
+            }			
+            facetData[key] = {
+                label,
+                count
             };
             return facetData;
         }, {});
