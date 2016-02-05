@@ -6,8 +6,7 @@ const customConfig = {
         moment: 'moment',
         jquery: 'jQuery',
         backbone: 'Backbone',
-        numeral: 'numeral',
-        'i18next-client': 'i18n'
+        numeral: 'numeral'
     }
 };
 
