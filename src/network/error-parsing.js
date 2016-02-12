@@ -1,5 +1,6 @@
-const message = require('../message');
-const {isObject, isArray, isString} = require('lodash/lang');
+import message from '../message';
+import {isObject, isArray, isString} from 'lodash/lang';
+import {translate} from '../translation';
 /**
 * Define all the error types of the exceptions which are defined.
 * @type {object}
@@ -137,7 +138,15 @@ function _treatEntityExceptions(responseJSON = {}, options) {
     }else {
         fieldErrors = fieldJSONError;
     }
-    return fieldErrors;
+
+    return Object.keys(fieldErrors)
+        .reduce(
+            (res, field) => {
+                res[field] = translate(fieldErrors[field]);
+                return res;
+            }
+            , {}
+        );
 }
 
 /**
