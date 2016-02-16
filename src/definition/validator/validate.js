@@ -1,12 +1,14 @@
 //Dependency
-const DependencyException = require('../../exception').DependencyException;
-const assign = require('object-assign');
+import {DependencyException} from '../../exception';
+import assign from 'object-assign';
+import {translate} from '../../translation';
 //Focus validators
-const emailValidation = require('./email');
-const numberValidation = require('./number');
-const stringLength = require('./string-length');
-const dateValidation = require('./date');
-const {isNull, isUndefined} = require('lodash/lang');
+import emailValidation from './email';
+import numberValidation from './number';
+import stringLength from './string-length';
+import dateValidation from './date';
+import {isNull, isUndefined} from 'lodash/lang';
+
 /**
 * Validae a property given validators.
 * @param  {object} property   - Property to validate which should be as follows: `{name: "field_name",value: "field_value", validators: [{...}] }`.
@@ -84,7 +86,7 @@ function validateProperty(property, validator) {
         console.warn(`The validator of type: ${validator.tye} is not defined`);
     } else if (false === isValid) {
         //Add the name of the property.
-        return getErrorLalel(validator.type, property.modelName + '.' + property.name, options); //"The property " + property.name + " is invalid.";
+        return getErrorLabel(validator.type, property.modelName + '.' + property.name, options); //"The property " + property.name + " is invalid.";
     }
 }
 /**
@@ -94,15 +96,11 @@ function validateProperty(property, validator) {
  * @param  {object} options - The options to put such as the translationKey which could be defined in the domain.
  * @return {string} The formatted error.
  */
-function getErrorLalel(type, fieldName, options = {}) {
+function getErrorLabel(type, fieldName, options = {}) {
     options = options || {};
-    const i18n = require('i18next-client');
-    if (!i18n) {
-        throw new DependencyException('Dependency not resolved: i18n.js');
-    }
     const translationKey = options.translationKey ? options.translationKey : `domain.validation.${type}`;
-    const opts = assign({fieldName: i18n.t(fieldName)}, options);
-    return i18n.t(translationKey, opts);
+    const opts = {fieldName: translate(fieldName), ...options};
+    return translate(translationKey, opts);
 }
 
-module.exports = validate;
+export default validate;
