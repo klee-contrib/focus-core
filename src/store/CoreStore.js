@@ -31,12 +31,12 @@ class CoreStore extends EventEmitter {
         this.buildDefinition();
         this.buildEachNodeChangeEventListener();
         this.registerDispatcher();
-        if(!!!__DEV__){
+        if(!!__DEV__){
           this._registerDevTools();
         }
     }
     // Get all the instances of core store.
-    get getInstances(){
+    get _instances(){
       return [..._instances];
     }
     // register the instances saving
