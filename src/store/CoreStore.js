@@ -6,6 +6,8 @@ const {defer} = require('lodash/function');
 const capitalize = require('lodash/string/capitalize');
 const Immutable = require('immutable');
 const AppDispatcher = require('../dispatcher');
+const _instances = [];
+
 /**
 * @class CoreStore
 */
@@ -29,8 +31,18 @@ class CoreStore extends EventEmitter {
         this.buildDefinition();
         this.buildEachNodeChangeEventListener();
         this.registerDispatcher();
+        if(!!__DEV__){
+          this._registerDevTools();
+        }
     }
-
+    // Get all the instances of core store.
+    get _instances(){
+      return [..._instances];
+    }
+    // register the instances saving
+    _registerDevTools(){
+        _instances.push(this);
+    }
     /**
     * Initialize the store configuration.
     * @param {object} storeConfiguration - The store configuration for the initialization.
