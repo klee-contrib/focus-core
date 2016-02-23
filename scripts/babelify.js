@@ -3,15 +3,18 @@ var path = require('path');
 var babel = require('babel-core');
 
 var babelOptions = {
-    presets: [
-        "stage-0",
-        "react",
-        "es2015"
+  "presets": [
+      "stage-0",
+      "react",
+      "es2015"
     ],
-    plugins: [
-        "transform-class-properties",
-        "transform-decorators-legacy",
-        "add-module-exports"
+    "plugins": [
+      "transform-class-properties",
+      "transform-decorators-legacy",
+      "add-module-exports",
+      "transform-proto-to-assign",
+      ["transform-es2015-classes", {"loose": true}]
+
     ],
     sourceMaps: 'inline'
 }
