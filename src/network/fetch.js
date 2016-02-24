@@ -97,7 +97,7 @@ function fetch(obj, options = {}) {
                 updateRequestStatus({id: requestStatus.id, status: 'success'});
                 return success(data);
             }
-            let contentType = request.getResponseHeader('content-type');
+            let contentType = request.contentType ? request.contentType : request.getResponseHeader('content-type');
             let data;
             if (contentType && contentType.indexOf('application/json') !== -1) {
                 data = options.parser(request);

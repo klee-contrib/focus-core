@@ -36,6 +36,8 @@ module.exports = function createCORSRequest(method, url, options = {}) {
         } else if (typeof XDomainRequest !== 'undefined') {
             // XDomainRequest for IE.
             xhr = new XDomainRequest();
+            xhr.onprogress = () => {}; // Needs to be set to get it work on IE9 :/
+            xhr.ontimeout = () => {}; // Needs to be set to get it work on IE9 :/
             xhr.open(method, url);
         } else {
             // CORS not supported.
@@ -43,7 +45,7 @@ module.exports = function createCORSRequest(method, url, options = {}) {
         }
     }
     map({'Content-Type': 'application/json', ...options.headers}, (value, key) => {
-        xhr.setRequestHeader(key, value);
+        if (xhr.setRequestHeader) xhr.setRequestHeader(key, value);
     });
     return xhr;
 };
