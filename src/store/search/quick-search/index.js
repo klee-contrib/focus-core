@@ -16,7 +16,7 @@ class QuickSearchStore extends SearchStore{
             facets: 'facets',
             totalCount: 'totalCount'
         };
-        conf.identifier = 'QUICK_SEARCH';
+        conf.identifier = conf.identifier || 'QUICK_SEARCH';
         super(conf);
     }
 
