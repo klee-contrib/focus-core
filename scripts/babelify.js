@@ -3,18 +3,21 @@ var path = require('path');
 var babel = require('babel-core');
 
 var babelOptions = {
-    presets: [
+    "presets": [
+        "es2015",
         "stage-0",
-        "react",
-        "es2015"
+        "react"
     ],
-    plugins: [
+    "plugins": [
+        "add-module-exports",
         "transform-class-properties",
         "transform-decorators-legacy",
-        "add-module-exports"
+        "transform-proto-to-assign",
+        ["transform-es2015-classes", {"loose": true}]
+
     ],
     sourceMaps: 'inline'
-}
+};
 
 var walk = function(dir) {
     var files = [];
