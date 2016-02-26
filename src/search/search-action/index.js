@@ -28,11 +28,11 @@ module.exports = function searchActionBuilder(config){
     };
 
     /**
-     * Method call when there is an error.
-     * @param  {object} config -  The action builder configuration.
-     * @param  {object} err    - The error from the API call.
-     * @return {object}     - The data from the manageResponseErrors function.
-     */
+    * Method call when there is an error.
+    * @param  {object} config -  The action builder configuration.
+    * @param  {object} err    - The error from the API call.
+    * @return {object}     - The data from the manageResponseErrors function.
+    */
     function _errorOnCall(err){
         manageResponseErrors(err, config);
         //_dispatchGlobalError shoud be separated.
@@ -41,6 +41,14 @@ module.exports = function searchActionBuilder(config){
 
     /**
     * Build search action.
+    *
+    * Expected server data format :
+    * -----------------------------
+    * {
+    * 	"criteria": "*",
+    *  	"facets": {FCT_MOVIE_TYPE: "Télefilm", FCT_MOVIE_TITLE: "g-m"}
+    * }
+    *
     * @param  {Boolean} isScroll - Is the action result from a scrolling.
     */
     return function searchAction(isScroll){
@@ -66,8 +74,8 @@ module.exports = function searchActionBuilder(config){
         //Build body data.
         const postData = {
             ...otherProps,
-            criteria: {scope, query},
-            facets: selectedFacets ? _builder.facets(selectedFacets) : [],
+            criteria: {query, scope},
+            facets: selectedFacets ? _builder.facets(selectedFacets) : {},
             group: groupingKey || ''
         };
         //Different call depending on the scope.
