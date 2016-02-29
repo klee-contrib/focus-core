@@ -1,11 +1,23 @@
-let keys = require('lodash/object/keys');
-let _buildFacets = (facets) => {
-    return keys(facets).map((selectedFacetKey) => {
-        let selectedFacet = facets[selectedFacetKey];
-        return {
-            key: selectedFacetKey,
-            value: selectedFacet.key
-        };
+import keys from 'lodash/object/keys';
+import mapValues from 'lodash/object/mapValues';
+
+/**
+ * Build facets for server expected format.
+ *
+ * Expected format :
+ * -----------------
+ * {
+ * 	  "criteria": "*",
+ *   "facets": {FCT_MOVIE_TYPE: "Télefilm", FCT_MOVIE_TITLE: "g-m"}
+ * }
+ *
+ *
+ * @param  {[type]} facets [description]
+ * @return {[type]}        [description]
+ */
+const _buildFacets = facets => {
+    return mapValues(facets, facetData => {
+        return facetData.key;
     });
 };
 
@@ -14,20 +26,20 @@ let _buildFacets = (facets) => {
  * @param  {object} sortConf - The sort configuration.
  * @return {object} - The builded sort configuration.
  */
-let _buildOrderAndSort = (sortConf) => {
+const _buildOrderAndSort = sortConf => {
     return {
       sortFieldName: sortConf.sortBy,
-      sortDesc: sortConf.sortAsc===undefined?false:!sortConf.sortAsc
+      sortDesc: sortConf.sortAsc === undefined?false:!sortConf.sortAsc
     }
 };
 
 
 
-let _buildPagination = (opts) => {
-    let resultsKeys = keys(opts.results);
+const _buildPagination = opts => {
+    const resultsKeys = keys(opts.results);
     if(opts.isScroll && resultsKeys.length === 1){
-      let key = resultsKeys[0];
-      let previousRes = opts.results[key];
+      const key = resultsKeys[0];
+      const previousRes = opts.results[key];
       if(previousRes.length < opts.totalCount){
         return {
           top: opts.nbSearchElement,
@@ -43,6 +55,8 @@ let _buildPagination = (opts) => {
       }
     }
 };
+
+
 module.exports = {
   pagination: _buildPagination,
   orderAndSort: _buildOrderAndSort,
