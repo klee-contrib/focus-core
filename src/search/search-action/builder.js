@@ -15,7 +15,7 @@ import mapValues from 'lodash/object/mapValues';
  * @param  {[type]} facets [description]
  * @return {[type]}        [description]
  */
-const _buildFacets = (facets) => {
+const _buildFacets = facets => {
     return mapValues(facets, (facetData) => {
         return facetData.key;
     });
@@ -26,7 +26,7 @@ const _buildFacets = (facets) => {
  * @param  {object} sortConf - The sort configuration.
  * @return {object} - The builded sort configuration.
  */
-const _buildOrderAndSort = (sortConf) => {
+const _buildOrderAndSort = sortConf => {
     return {
       sortFieldName: sortConf.sortBy,
       sortDesc: sortConf.sortAsc===undefined?false:!sortConf.sortAsc
@@ -35,7 +35,7 @@ const _buildOrderAndSort = (sortConf) => {
 
 
 
-const _buildPagination = (opts) => {
+const _buildPagination = opts => {
     const resultsKeys = keys(opts.results);
     if(opts.isScroll && resultsKeys.length === 1){
       const key = resultsKeys[0];
