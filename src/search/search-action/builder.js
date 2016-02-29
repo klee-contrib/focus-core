@@ -16,7 +16,7 @@ import mapValues from 'lodash/object/mapValues';
  * @return {[type]}        [description]
  */
 const _buildFacets = facets => {
-    return mapValues(facets, (facetData) => {
+    return mapValues(facets, facetData => {
         return facetData.key;
     });
 };
@@ -29,7 +29,7 @@ const _buildFacets = facets => {
 const _buildOrderAndSort = sortConf => {
     return {
       sortFieldName: sortConf.sortBy,
-      sortDesc: sortConf.sortAsc===undefined?false:!sortConf.sortAsc
+      sortDesc: sortConf.sortAsc === undefined?false:!sortConf.sortAsc
     }
 };
 
