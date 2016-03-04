@@ -111,7 +111,7 @@ module.exports = function actionBuilder(config = {}){
         throw new Error('You shoud specify the store node name impacted by the action');
     }
     return function actionBuilderFn(...payload) {
-        if (payload[payload.length - 1]._identifier) {
+        if (payload.length > 0 && payload[payload.length - 1]._identifier) {
             console.warn('Passing the context as last parameter to an action is deprecated. Use action.call(context, ...parameters) instead.');
         }
         const conf = {
