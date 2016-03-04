@@ -3,7 +3,7 @@ import numeral from 'numeral';
 const DEFAULT_FORMAT = '0,0';
 
 //TODO change numeral lib and regroup initializers
-export function language(key, conf) {
+function language(key, conf) {
     return numeral.language(key, conf);
 };
 
@@ -13,9 +13,14 @@ export function language(key, conf) {
 * @param  {string} format - The format to transform.
 * @return {string} - The formated number.
 */
-export function format(number, format) {
+function format(number, format) {
     format = format || DEFAULT_FORMAT;
     return numeral(number).format(format);
+}
+
+module.export {
+    format,
+    language
 }
 
 
