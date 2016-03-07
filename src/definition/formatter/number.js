@@ -16,11 +16,9 @@ function language(key, conf) {
 function format(number, format) {
     format = format || DEFAULT_FORMAT;
     return numeral(number).format(format);
-}
+};
 
-module.export {
+module.exports = {
     format,
     language
-}
-
-
+};
