@@ -110,15 +110,17 @@ export default function actionBuilder(config = {}){
     if(!config.node){
         throw new Error('You shoud specify the store node name impacted by the action');
     }
-    return function actionBuilderFn(payload, context) {
-        context = context || this;
+    return function actionBuilderFn(...payload) {
+        if (payload && payload.length > 0 && payload[payload.length - 1]._identifier) {
+            console.warn('Passing the context as last parameter to an action is deprecated. Use action.call(context, ...parameters) instead.');
+        }
         const conf = {
-            callerId: context._identifier,
+            callerId: this._identifier,
             postService: identity, ...config
         };
         const {postService} = conf;
-        _preServiceCall(conf, payload);
-        return conf.service(payload).then(postService).then((jsonData)=>{
+        _preServiceCall(conf, payload[0]);
+        return conf.service(...payload).then(postService).then((jsonData)=>{
             return _dispatchServiceResponse(conf, jsonData);
         }, (err) => {
             _errorOnCall(conf, err);
@@ -126,8 +128,9 @@ export default function actionBuilder(config = {}){
     };
 };
 
+
 export {
     _errorOnCall as errorOnCall,
     _dispatchServiceResponse as dispatchServiceResponse,
     _preServiceCall as preServiceCall
-    };
+};
