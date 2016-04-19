@@ -1,5 +1,6 @@
 //Dependencies.
 import assign from 'object-assign';
+import {isObject} from 'lodash/lang';
 import _builder from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
@@ -26,7 +27,7 @@ module.exports = function searchActionBuilder(config){
             identifier: config.identifier
         });
     };
-
+    const parser = config.parser && isObject(config.parser) ? {..._parser, ...config.parser} : _parser;
     /**
     * Method call when there is an error.
     * @param  {object} config -  The action builder configuration.
@@ -82,14 +83,14 @@ module.exports = function searchActionBuilder(config){
         if(isString(scope) && scope.toUpperCase() === ALL) {
             //Call the search action.
             config.service.unscoped({urlData: urlData, data: postData})
-            .then(_parser.unscopedResponse)
+            .then(parser.unscopedResponse)
             .then(_dispatchResult)
             .catch(_errorOnCall);
         } else {
             //The component which call the serice should be know if it has all the data.
             config.service.scoped({urlData: urlData, data: postData})
             .then((response)=>{
-                return _parser.scopedResponse(
+                return parser.scopedResponse(
                     response,
                     {isScroll, scope, results}
                 );
