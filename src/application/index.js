@@ -54,6 +54,39 @@ module.exports = {
         dispatcher.handleViewAction({data, type: 'update'});
     },
     /**
+     * Set component to application's header with only the component gived in parameter.
+     * @param {ReactComponent} cartridge     component injected in the cartridge
+     * @param {ReactComponent} summary       component injected in the summary bar
+     * @param {ReactComponent} actions       arrays of cartridge actions
+     * @param {ReactComponent} barLeft       component injected in the left bar
+     * @param {ReactComponent} canDeploy     indicates wether the cartridge can deploy or not
+     * @param {ReactComponent} barRight      component injected in the right bar
+     * @param {ReactComponent} EmptyComponent Empty component
+     */
+    const setPartialHeader = function setPartialHeader({cartridge, summary, actions, barLeft, barRight, canDeploy}) {
+        const data = {
+            canDeploy: isUndefined(canDeploy) ? true : canDeploy
+        };
+    
+        if(cartridge) {
+            data.cartridgeComponent = cartridge;
+        }
+        if(summary) {
+            data.summaryComponent = summary;
+        }
+        if(actions) {
+            data.actions = actions;
+        }
+        if(barLeft) {
+            data.barContentLeftComponent = barLeft;
+        }
+        if(barRight) {
+            data.barContentRightComponent = barRight;
+        }
+    
+        dispatcher.handleViewAction({data, type: 'update'});
+    }
+    /**
      * Clear the application's header.
      * @return {[type]} [description]
      */
