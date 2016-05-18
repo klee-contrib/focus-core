@@ -67,7 +67,7 @@ module.exports = {
         const data = {
             canDeploy: isUndefined(canDeploy) ? true : canDeploy
         };
-    
+
         if(cartridge) {
             data.cartridgeComponent = cartridge;
         }
@@ -83,9 +83,9 @@ module.exports = {
         if(barRight) {
             data.barContentRightComponent = barRight;
         }
-    
+
         dispatcher.handleViewAction({data, type: 'update'});
-    }
+    },
     /**
      * Clear the application's header.
      * @return {[type]} [description]
