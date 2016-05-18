@@ -63,7 +63,7 @@ module.exports = {
      * @param {ReactComponent} barRight      component injected in the right bar
      * @param {ReactComponent} EmptyComponent Empty component
      */
-    const setPartialHeader = function setPartialHeader({cartridge, summary, actions, barLeft, barRight, canDeploy}) {
+    setPartialHeader({cartridge, summary, actions, barLeft, barRight, canDeploy}) {
         const data = {
             canDeploy: isUndefined(canDeploy) ? true : canDeploy
         };
