@@ -18,7 +18,7 @@ module.exports = function(url, method){
     return {
       url: urlProcessor(url, param.urlData),
       method: method,
-      data: param.data
+      data: param.data || param.bodyData
     };
   };
 };
