@@ -6,8 +6,13 @@ function navigate(url) {
     browserHistory.push(url);
 }
 
+function goBack() {
+    browserHistory.goBack();
+}
+
 export default {
     navigate,
-    Link,
-    history
+    goBack,
+    history,
+    Link
 }
