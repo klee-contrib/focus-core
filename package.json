@@ -68,7 +68,8 @@
         "keymirror": "^0.1.1",
         "lodash": "^3.9.1",
         "object-assign": "^2.0.0",
-        "uuid": "^2.0.1"
+        "uuid": "^2.0.1",
+        "react-router": "^2.4.0"
     },
     "devDependencies": {
         "babel": "^6.3.26",
