@@ -1,18 +1,23 @@
-import {history} from 'backbone';
-import React from 'react';
-import {browserHistory, Link} from 'react-router';
+ let _navigate, _back;
 
-function navigate(url) {
-    browserHistory.push(url);
+// Define the navigation functions depending on backbone or react-router
+export const setNavigationFunctions = (navigate, back) => {
+    _navigate = navigate;
+    _back = back;
 }
 
-function goBack() {
-    browserHistory.goBack();
+
+export const navigate = () => {
+
+    if(!_navigate){
+        throw new Error('An error...')
+    }
+    _navigate.call(arguments);
 }
 
-export default {
-    navigate,
-    goBack,
-    history,
-    Link
+export const back = () => {
+    if(!_back){
+        throw new Error('An error...')
+    }
+    _back.call(arguments);
 }
