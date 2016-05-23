@@ -6,7 +6,6 @@ export const setNavigationFunctions = (navigate, back) => {
     _back = back;
 }
 
-
 export const navigate = (...args) => {
 
     if(!_navigate){
