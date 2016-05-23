@@ -1,3 +1,5 @@
+import {history} from 'backbone';
+
 let _navigate, _back;
 
 // Define the navigation functions depending on backbone or react-router
@@ -20,3 +22,5 @@ export const back = (...args) => {
     }
     _back(...args);
 }
+
+export {history};
