@@ -1,4 +1,4 @@
- let _navigate, _back;
+let _navigate, _back;
 
 // Define the navigation functions depending on backbone or react-router
 export const setNavigationFunctions = (navigate, back) => {
@@ -7,17 +7,17 @@ export const setNavigationFunctions = (navigate, back) => {
 }
 
 
-export const navigate = () => {
+export const navigate = (...args) => {
 
     if(!_navigate){
         throw new Error('An error...')
     }
-    _navigate.call(arguments);
+    _navigate(...args);
 }
 
-export const back = () => {
+export const back = (...args) => {
     if(!_back){
         throw new Error('An error...')
     }
-    _back.call(arguments);
+    _back(...args);
 }
