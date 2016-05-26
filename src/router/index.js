@@ -1,11 +1,11 @@
-var render = require('../application/render');
+import render from '../application/render';
 import {getRouterFunction} from './router';
-var ArgumentNullException = require('../exception/argument-null-exception');
-var message = require('../message');
-var userHelper = require('../user');
-var dispatcher = require('../dispatcher');
-var application = require('../application');
-var isFunction = require('lodash/lang/isFunction');
+import ArgumentNullException from '../exception/argument-null-exception';
+import message from '../message';
+import userHelper from '../user';
+import dispatcher from '../dispatcher';
+import application from '../application';
+import isFunction from 'lodash/lang/isFunction';
 
 /**
 * Function call before each route.
