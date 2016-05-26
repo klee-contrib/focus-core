@@ -6,7 +6,6 @@ var userHelper = require('../user');
 var dispatcher = require('../dispatcher');
 var application = require('../application');
 var isFunction = require('lodash/lang/isFunction');
-import Backbone from 'backbone';
 
 /**
 * Function call before each route.
