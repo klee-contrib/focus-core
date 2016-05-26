@@ -2,6 +2,7 @@ let _Router;
 
 export const setRouterFunction =(Router) => {
     _Router = Router;
+    window._Router = Router;
 };
 
 export const getRouterFunction = (...args) => {
