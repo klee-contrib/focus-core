@@ -1,11 +1,12 @@
 var render = require('../application/render');
-import Backbone from 'backbone';
+import {getRouterFunction} from './router';
 var ArgumentNullException = require('../exception/argument-null-exception');
 var message = require('../message');
 var userHelper = require('../user');
 var dispatcher = require('../dispatcher');
 var application = require('../application');
 var isFunction = require('lodash/lang/isFunction');
+
 /**
  * Function call before each route.
  */
@@ -13,7 +14,7 @@ function _beforeRouting(newRoute){
   //application.changeRoute(newRoute);
   application.clearHeader();
 }
-module.exports = Backbone.Router.extend({
+module.exports = getRouterFunction().extend({
   noRoleRoute: 'home',
   route : function (urlRoute, name, callback) {
     var router = this;
