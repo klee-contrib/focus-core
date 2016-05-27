@@ -7,16 +7,14 @@ export const setNavigationFunctions = (navigate, back) => {
 }
 
 export const navigate = (...args) => {
-    if(!_navigate){
-        if(!window.Backbone) {
-            throw new Error('react-router or backbone URL Navigation was badly given in the setNavigationFunctions()')
-        }
-        else {
-            window.Backbone.history.navigate(...args);
-        }
+    if(window.Backbone) {
+        window.Backbone.history.navigate(...args);
+    }
+    else if (!window.Backbone && _navigate){
+        _navigate(...args);
     }
     else {
-        _navigate(...args);
+        throw new Error('react-router or backbone URL Navigation was badly given in the setNavigationFunctions()')
     }
 }
 

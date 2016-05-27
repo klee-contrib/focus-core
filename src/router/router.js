@@ -24,3 +24,7 @@ export const getRouterFunction = (...args) => {
         return _Router
     }
 };
+
+export const start = (...args) => {
+    window.Backbone.history.start();
+};
