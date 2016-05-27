@@ -115,7 +115,7 @@ export default function actionBuilder(config = {}){
             console.warn('Passing the context as last parameter to an action is deprecated. Use action.call(context, ...parameters) instead.');
         }
         const conf = {
-            callerId: this._identifier,
+            callerId: this && this._identifier,
             postService: identity, ...config
         };
         const {postService} = conf;
