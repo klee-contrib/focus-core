@@ -1,6 +1,5 @@
 let {find, some} = require('lodash/collection');
 let clone = require('lodash/lang/clone');
-import Backbone from 'backbone';
 
 let userHelper = require('../user');
 let siteDescriptionReader = require('./reader');
@@ -95,7 +94,10 @@ function _processElement(siteDescElt, prefix, options) {
 // _routeToTest_ : Route to test.
 // *return* : The handler route name.
 function findRouteName(routeToTest) {
-    var handlers = Backbone.history.handlers;
+    if(!window.Backbone){
+        throw new Error('Dependency: Backbone is missing.');
+    }
+    var handlers = window.Backbone.history.handlers;
     //console.log('handlers', )
     var h = find(handlers, function(handler){
       return handler.route.test(routeToTest);
