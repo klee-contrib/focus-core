@@ -1,6 +1,6 @@
 {
     "name": "focus-core",
-    "version": "0.15.1-beta0",
+    "version": "0.14.0",
     "description": "Focus library core part.",
     "main": "index.js",
     "babel": {
@@ -61,7 +61,6 @@
         }
     },
     "dependencies": {
-        "backbone": "^1.2.0",
         "flux": "^2.0.3",
         "i18next-client": "^1.11.4",
         "immutable": "^3.7.3",
