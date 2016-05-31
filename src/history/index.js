@@ -20,3 +20,10 @@ export const back = (...args) => {
     }
     _back(...args);
 }
+
+export const start = (...args) => {
+    if(!_start) {
+        throw new Error('Backbone start router was badly given in the setNavigationFunctions()')
+    }
+    _start(...args);
+}
