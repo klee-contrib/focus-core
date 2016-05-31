@@ -1,21 +1,17 @@
-let _navigate, _back;
+let _navigate, _back, _start;
 
 // Define the navigation functions depending on backbone or react-router
-export const setNavigationFunctions = (navigate, back) => {
+export const setNavigationFunctions = (navigate, back, start) => {
     _navigate = navigate;
     _back = back;
+    _start = start;
 }
 
 export const navigate = (...args) => {
-    if(window.Backbone) {
-        window.Backbone.history.navigate(...args);
-    }
-    else if (!window.Backbone && _navigate){
-        _navigate(...args);
-    }
-    else {
+    if(!_navigate) {
         throw new Error('react-router or backbone URL Navigation was badly given in the setNavigationFunctions()')
     }
+    _navigate(...args);
 }
 
 export const back = (...args) => {

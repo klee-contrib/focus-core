@@ -14,7 +14,17 @@ function _beforeRouting(newRoute){
     //application.changeRoute(newRoute);
     application.clearHeader();
 }
-module.exports = getRouterFunction().extend({
+
+
+// Creates a router from the router argument given to this function
+// Example
+// create a file in your project `default-[yourProjectName]-router.js`
+//import createRouter from 'focus-core/router';
+//export default createRouter(window.Backbone.Router);
+// in each router file
+// import DefaultProjectRouter from './default-project-router'
+// export default DefaultProjectRouter.extend(...)
+const createRouter = Router => Router.extend({
     noRoleRoute: 'home',
     route : function (urlRoute, name, callback) {
         var router = this;
@@ -73,3 +83,5 @@ module.exports = getRouterFunction().extend({
         }
     }
 );
+
+export default createRouter;
