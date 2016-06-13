@@ -3,9 +3,6 @@
 * Error.
 * @type {Error}
 */
-
-import {map} from 'lodash/collection';
-
 const ArgumentInvalidException = Error;
 
 /**
@@ -17,6 +14,8 @@ const ArgumentInvalidException = Error;
 */
 module.exports = function createCORSRequest(method, url, options = {}) {
     const isCORS = options.isCORS || false;
+    const noContentType = options.noContentType || false;
+    
     if (typeof method !== 'string') {
         throw new ArgumentInvalidException('The method should be a string in GET/POST/PUT/DELETE', method);
     }
@@ -44,8 +43,21 @@ module.exports = function createCORSRequest(method, url, options = {}) {
             xhr = null;
         }
     }
-    map({'Content-Type': 'application/json', ...options.headers}, (value, key) => {
-        if (xhr.setRequestHeader) xhr.setRequestHeader(key, value);
-    });
+    
+    const headers = options.headers || {};
+    // Setting 'Content-Type' header only if not in options
+    // Also handling noContentType options
+    if(!noContentType && !headers['Content-Type']){
+        if (xhr.setRequestHeader) {
+            xhr.setRequestHeader('Content-Type', 'application/json');
+        }
+    }
+    // Adding the other headers
+    for(let prop in headers) {
+        if (xhr.setRequestHeader) {
+            xhr.setRequestHeader(prop, headers[prop]);
+        }
+    }
+
     return xhr;
 };
