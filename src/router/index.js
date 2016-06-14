@@ -1,5 +1,4 @@
 import render from '../application/render';
-import {getRouterFunction} from './router';
 import ArgumentNullException from '../exception/argument-null-exception';
 import message from '../message';
 import userHelper from '../user';
