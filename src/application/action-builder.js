@@ -127,7 +127,7 @@ export default function actionBuilder(config = {}){
 };
 
 export {
-    _errorOnCall as ErrorOnCall,
-    _dispatchServiceResponse as DispatchServiceResponse,
-    _preServiceCall as PreServiceCall
+    _errorOnCall as errorOnCall,
+    _dispatchServiceResponse as dispatchServiceResponse,
+    _preServiceCall as preServiceCall
     };
