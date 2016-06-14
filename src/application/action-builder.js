@@ -97,7 +97,7 @@ function _errorOnCall(config, err){
  *                         - status(:string)} The status after the action.
  * @return {function} - The build action from the configuration. This action dispatch the preStatus, call the service and dispatch the result from the server.
  */
-module.exports = function actionBuilder(config = {}){
+export default function actionBuilder(config = {}){
     config.type = config.type || 'update';
     config.preStatus = config.preStatus || 'loading';
     config.shouldDumpStoreOnActionCall = config.shouldDumpStoreOnActionCall || false;
@@ -125,3 +125,9 @@ module.exports = function actionBuilder(config = {}){
         });
     };
 };
+
+export {
+    _errorOnCall as errorOnCall,
+    _dispatchServiceResponse as dispatchServiceResponse,
+    _preServiceCall as preServiceCall
+    };
