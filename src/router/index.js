@@ -23,7 +23,7 @@ function _beforeRouting(newRoute){
 // in each router file
 // import DefaultProjectRouter from './default-project-router'
 // export default DefaultProjectRouter.extend(...)
-const createRouter = Router => Router.extend({
+const createRouter = Backbone => Backbone.Router.extend({
     noRoleRoute: 'home',
     route : function (urlRoute, name, callback) {
         var router = this;
