@@ -8,5 +8,5 @@ declare let Router: {
     extend<T>(config: T & RouterConfig): {new(): {}}
 };
 
-export = Backbone => typeof Router
-
+declare function createRouter(Backbone: {}): typeof Router;
+export = createRouter;
