@@ -4,9 +4,9 @@ interface RouterConfig {
     routes: {[x: string]: string};
 }
 
-declare let router: {
+declare let Router: {
     extend<T>(config: T & RouterConfig): {new(): {}}
 };
 
-export = router
+export = (router: typeof Router) => typeof Router
 
