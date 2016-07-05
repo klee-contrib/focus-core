@@ -11,17 +11,6 @@ export interface Action {
     identifier?: string;
 }
 
-/**
- * Action builder config parameter
- */
-export interface ActionBuilderSpec<S> {
-    node: string;
-    preStatus?: string;
-    service: S;
-    status: string;
-    shouldDumpStoreOnActionCall?: boolean;
-}
-
 export interface CartridgeComponent {
     component: React.ComponentClass<{}> | ((props: {}) => JSX.Element);
     props?: {};
@@ -54,12 +43,6 @@ export let builtInStore: ApplicationStore;
  * Contains all selectors from the mounted components
  */
 export let mountedComponent: MountedComponentSpec;
-
-/**
- * Action builder function. The built action dispatch the preStatus, call the service and dispatch the result from the server.
- * @param config The action builder config
- */
-export function actionBuilder<S>(config: ActionBuilderSpec<S>): S
 
 /**
  * Clear a React component.
