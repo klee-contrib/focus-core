@@ -33,7 +33,7 @@ import keys from 'lodash/object/keys';
 * Returned format :
 * -----------------
 * {
-* 	  FCT_MOVIE_TYPE: {
+* 	  FCT_MOVIE_TYPE: [
 * 	  	{
 * 	  		label: 'Long-métrage',
 *      		count: 52
@@ -41,13 +41,13 @@ import keys from 'lodash/object/keys';
 *        	label: 'court-métrage',
 * 	  	    count: 12
 * 	     }
-*    },
-*    FCT_MOVIE_YEAR: {
+*    ],
+*    FCT_MOVIE_YEAR: [
 *    	 {
 *    	 	label: '1990-2000',
 *    	 	count: 8
 *    	 }
-*    }
+*    ]
 * }
 *
 */
@@ -64,12 +64,13 @@ const _parseFacets = (serverFacets) => {
             const serverFacetItemPopertyNames = keys(serverFacetItem);
             const facetItemName = serverFacetItemPopertyNames[0];
             const facetItemValue = serverFacetItem[facetItemName];
-            facetData[facetItemName] = {
+            // The facet content is now an array instead of an object to preserve sorting.
+            facetData.push( {
                 label: facetItemName,
                 count: facetItemValue
-            };
+            });
             return facetData;
-        }, {});
+        }, []);
         return formattedFacets;
     }, {});
 };
