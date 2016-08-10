@@ -83,7 +83,7 @@ function validateProperty(property, validator) {
         }
     })();
     if (isUndefined(isValid) || isNull(isValid)) {
-        console.warn(`The validator of type: ${validator.tye} is not defined`);
+        console.warn(`The validator of type: ${validator.type} is not defined`);
     } else if (false === isValid) {
         //Add the name of the property.
         return getErrorLabel(validator.type, property.modelName + '.' + property.name, options); //"The property " + property.name + " is invalid.";
