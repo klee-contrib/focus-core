@@ -52,27 +52,28 @@ import keys from 'lodash/object/keys';
 *
 */
 const _parseFacets = (serverFacets) => {
-    return keys(serverFacets).reduce((formattedFacets, serverFacetKey) => {
+    return _.keys(serverFacets).reduce((formattedFacets, serverFacetKey) => {
         //read facet keys
         const serverFacet = serverFacets[serverFacetKey];
-        const serverFacetPopertyNames = keys(serverFacet);
+        const serverFacetPopertyNames = _.keys(serverFacet);
         const facetName = serverFacetPopertyNames[0];
         const serverFacetData = serverFacet[facetName];
-        formattedFacets[facetName] = keys(serverFacetData).reduce((facetData, serverFacetItemKey) => {
+        const facetList = _.keys(serverFacetData).reduce((facetData, serverFacetItemKey) => {
             //read facet values
             const serverFacetItem = serverFacetData[serverFacetItemKey];
-            const serverFacetItemPopertyNames = keys(serverFacetItem);
+            const serverFacetItemPopertyNames = _.keys(serverFacetItem);
             const facetItemName = serverFacetItemPopertyNames[0];
             const facetItemValue = serverFacetItem[facetItemName];
             // The facet content is now an array instead of an object to preserve sorting.
-            facetData.push( {
+            return [...facetData, {
+                code: facetItemName,
                 label: facetItemName,
                 count: facetItemValue
-            });
-            return facetData;
+            }];
         }, []);
-        return formattedFacets;
-    }, {});
+
+        return [...formattedFacets, {code: facetName, label: facetName, values: facetList}];
+    }, []);
 };
 
 
