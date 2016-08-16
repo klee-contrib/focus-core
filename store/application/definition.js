@@ -1,0 +1,13 @@
+'use strict';
+
+/**
+* Build the cartridge store definition.
+* @return {object} - The cartridge component.
+*/
+module.exports = function () {
+    return ['summaryComponent', 'barContentLeftComponent', 'barContentRightComponent', 'cartridgeComponent', 'actions', 'mode', 'route', 'confirmConfig', 'canDeploy'].reduce(function (def, node) {
+        def[node] = node;
+        return def;
+    }, {});
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7O0FBSUEsT0FBTyxPQUFQLEdBQWlCLFlBQU07QUFDbkIsV0FBTyxDQUFDLGtCQUFELEVBQXFCLHlCQUFyQixFQUFnRCwwQkFBaEQsRUFBNEUsb0JBQTVFLEVBQWtHLFNBQWxHLEVBQTZHLE1BQTdHLEVBQXFILE9BQXJILEVBQThILGVBQTlILEVBQStJLFdBQS9JLEVBQ04sTUFETSxDQUNDLFVBQUMsR0FBRCxFQUFNLElBQU4sRUFBZTtBQUNuQixZQUFJLElBQUosSUFBWSxJQUFaO0FBQ0EsZUFBTyxHQUFQO0FBQ0gsS0FKTSxFQUlKLEVBSkksQ0FBUDtBQUtILENBTkQiLCJmaWxlIjoicHJvY2Vzc29yLmpzIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXHJcbiogQnVpbGQgdGhlIGNhcnRyaWRnZSBzdG9yZSBkZWZpbml0aW9uLlxyXG4qIEByZXR1cm4ge29iamVjdH0gLSBUaGUgY2FydHJpZGdlIGNvbXBvbmVudC5cclxuKi9cclxubW9kdWxlLmV4cG9ydHMgPSAoKSA9PiB7XHJcbiAgICByZXR1cm4gWydzdW1tYXJ5Q29tcG9uZW50JywgJ2JhckNvbnRlbnRMZWZ0Q29tcG9uZW50JywgJ2JhckNvbnRlbnRSaWdodENvbXBvbmVudCcsICdjYXJ0cmlkZ2VDb21wb25lbnQnLCAnYWN0aW9ucycsICdtb2RlJywgJ3JvdXRlJywgJ2NvbmZpcm1Db25maWcnLCAnY2FuRGVwbG95J11cclxuICAgIC5yZWR1Y2UoKGRlZiwgbm9kZSkgPT4ge1xyXG4gICAgICAgIGRlZltub2RlXSA9IG5vZGU7XHJcbiAgICAgICAgcmV0dXJuIGRlZjtcclxuICAgIH0sIHt9KTtcclxufTtcclxuIl19

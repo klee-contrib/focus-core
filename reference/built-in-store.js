@@ -1,0 +1,12 @@
+'use strict';
+
+var ReferenceStore = require('../store/reference');
+
+/**
+* Built the store in order to the .
+* @return {ReferenceStore} - An instanciated reference store.
+*/
+module.exports = function () {
+    return new ReferenceStore();
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQU0saUJBQWlCLFFBQVEsb0JBQVIsQ0FBdkI7O0FBRUE7Ozs7QUFJQSxPQUFPLE9BQVAsR0FBaUIsWUFBVztBQUN4QixXQUFPLElBQUksY0FBSixFQUFQO0FBQ0gsQ0FGRCIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBSZWZlcmVuY2VTdG9yZSA9IHJlcXVpcmUoJy4uL3N0b3JlL3JlZmVyZW5jZScpO1xyXG5cclxuLyoqXHJcbiogQnVpbHQgdGhlIHN0b3JlIGluIG9yZGVyIHRvIHRoZSAuXHJcbiogQHJldHVybiB7UmVmZXJlbmNlU3RvcmV9IC0gQW4gaW5zdGFuY2lhdGVkIHJlZmVyZW5jZSBzdG9yZS5cclxuKi9cclxubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbigpIHtcclxuICAgIHJldHVybiBuZXcgUmVmZXJlbmNlU3RvcmUoKTtcclxufVxyXG4iXX0=

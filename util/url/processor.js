@@ -1,0 +1,10 @@
+'use strict';
+
+var compile = require('lodash/string/template');
+/**
+* Process an url in order to build them.
+*/
+module.exports = function (url, data) {
+  return compile(url)(data);
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksVUFBVSxRQUFRLHdCQUFSLENBQWQ7QUFDQTs7O0FBR0EsT0FBTyxPQUFQLEdBQWlCLFVBQVMsR0FBVCxFQUFjLElBQWQsRUFBbUI7QUFDbEMsU0FBTyxRQUFRLEdBQVIsRUFBYSxJQUFiLENBQVA7QUFDRCxDQUZEIiwiZmlsZSI6InByb2Nlc3Nvci5qcyIsInNvdXJjZXNDb250ZW50IjpbInZhciBjb21waWxlID0gcmVxdWlyZSgnbG9kYXNoL3N0cmluZy90ZW1wbGF0ZScpO1xyXG4vKipcclxuKiBQcm9jZXNzIGFuIHVybCBpbiBvcmRlciB0byBidWlsZCB0aGVtLlxyXG4qL1xyXG5tb2R1bGUuZXhwb3J0cyA9IGZ1bmN0aW9uKHVybCwgZGF0YSl7XHJcbiAgcmV0dXJuIGNvbXBpbGUodXJsKShkYXRhKTtcclxufTtcclxuIl19

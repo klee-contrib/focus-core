@@ -1,0 +1,13 @@
+'use strict';
+
+module.exports = {
+  id: 'id',
+  provider: 'provider',
+  displayName: 'displayName',
+  culture: 'culture',
+  email: 'email',
+  photo: 'photo',
+  firstName: 'firstName',
+  lastName: 'lastName'
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLE9BQU8sT0FBUCxHQUFpQjtBQUNmLE1BQUksSUFEVztBQUVmLFlBQVUsVUFGSztBQUdmLGVBQWEsYUFIRTtBQUlmLFdBQVMsU0FKTTtBQUtmLFNBQU8sT0FMUTtBQU1mLFNBQU8sT0FOUTtBQU9mLGFBQVcsV0FQSTtBQVFmLFlBQVU7QUFSSyxDQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHtcclxuICBpZDogJ2lkJyxcclxuICBwcm92aWRlcjogJ3Byb3ZpZGVyJyxcclxuICBkaXNwbGF5TmFtZTogJ2Rpc3BsYXlOYW1lJyxcclxuICBjdWx0dXJlOiAnY3VsdHVyZScsXHJcbiAgZW1haWw6ICdlbWFpbCcsXHJcbiAgcGhvdG86ICdwaG90bycsXHJcbiAgZmlyc3ROYW1lOiAnZmlyc3ROYW1lJyxcclxuICBsYXN0TmFtZTogJ2xhc3ROYW1lJ1xyXG59O1xyXG4iXX0=

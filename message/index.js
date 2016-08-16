@@ -1,0 +1,81 @@
+'use strict';
+
+var dispatcher = require('../dispatcher');
+var isString = require('lodash/lang/isString');
+
+/**
+ * Transform the message into objet if it is a string.
+ * @param {[string, object]} message - The message to display (object or string).
+ * @returns {object} - The well constructed message.
+ */
+function _parseString(message) {
+  if (isString(message)) {
+    message = { content: message };
+  }
+  return message;
+}
+
+/**
+ * Add a message.
+ * @param {object} message - The message object.
+ */
+function addMessage(message) {
+  dispatcher.handleServerAction({
+    data: { message: message },
+    type: 'push'
+  });
+}
+
+/**
+ * Add an error message.
+ * @param {object} message - The message content.
+ */
+function addErrorMessage(message) {
+  message = _parseString(message);
+  message.type = 'error';
+  addMessage(message);
+}
+/**
+ * Add a warning message.
+ * @param {object} message - The message content.
+ */
+function addWarningMessage(message) {
+  message = _parseString(message);
+  message.type = 'warning';
+  addMessage(message);
+}
+
+/**
+ * Add an information message.
+ * @param {object} message - The message content.
+ */
+function addInformationMessage(message) {
+  message = _parseString(message);
+  message.type = 'info';
+  addMessage(message);
+}
+
+/**
+ * Add a success message.
+ * @param {object} message - The message content.
+ */
+function addSuccessMessage(message) {
+  message = _parseString(message);
+  message.type = 'success';
+  addMessage(message);
+}
+
+function clearMessages() {
+  dispatcher.handleServerAction({ data: { messages: {} }, type: 'clear' });
+}
+
+module.exports = {
+  addMessage: addMessage,
+  addWarningMessage: addWarningMessage,
+  addInformationMessage: addInformationMessage,
+  addErrorMessage: addErrorMessage,
+  addSuccessMessage: addSuccessMessage,
+  clearMessages: clearMessages,
+  builtInStore: require('./built-in-store')
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksYUFBYSxRQUFRLGVBQVIsQ0FBakI7QUFDQSxJQUFJLFdBQVcsUUFBUSxzQkFBUixDQUFmOztBQUVBOzs7OztBQUtBLFNBQVMsWUFBVCxDQUFzQixPQUF0QixFQUErQjtBQUMzQixNQUFHLFNBQVMsT0FBVCxDQUFILEVBQXNCO0FBQ2xCLGNBQVUsRUFBQyxTQUFTLE9BQVYsRUFBVjtBQUNIO0FBQ0QsU0FBTyxPQUFQO0FBQ0g7O0FBRUQ7Ozs7QUFJQSxTQUFTLFVBQVQsQ0FBb0IsT0FBcEIsRUFBNEI7QUFDMUIsYUFBVyxrQkFBWCxDQUE4QjtBQUM1QixVQUFNLEVBQUMsU0FBUyxPQUFWLEVBRHNCO0FBRTVCLFVBQU07QUFGc0IsR0FBOUI7QUFJRDs7QUFFRDs7OztBQUlBLFNBQVMsZUFBVCxDQUF5QixPQUF6QixFQUFpQztBQUMvQixZQUFVLGFBQWEsT0FBYixDQUFWO0FBQ0EsVUFBUSxJQUFSLEdBQWUsT0FBZjtBQUNBLGFBQVcsT0FBWDtBQUNEO0FBQ0Q7Ozs7QUFJQSxTQUFTLGlCQUFULENBQTJCLE9BQTNCLEVBQW1DO0FBQ2pDLFlBQVUsYUFBYSxPQUFiLENBQVY7QUFDQSxVQUFRLElBQVIsR0FBZSxTQUFmO0FBQ0EsYUFBVyxPQUFYO0FBQ0Q7O0FBRUQ7Ozs7QUFJQSxTQUFTLHFCQUFULENBQStCLE9BQS9CLEVBQXVDO0FBQ3JDLFlBQVUsYUFBYSxPQUFiLENBQVY7QUFDQSxVQUFRLElBQVIsR0FBZSxNQUFmO0FBQ0EsYUFBVyxPQUFYO0FBQ0Q7O0FBRUQ7Ozs7QUFJQSxTQUFTLGlCQUFULENBQTJCLE9BQTNCLEVBQW1DO0FBQ2pDLFlBQVUsYUFBYSxPQUFiLENBQVY7QUFDQSxVQUFRLElBQVIsR0FBZSxTQUFmO0FBQ0EsYUFBVyxPQUFYO0FBQ0Q7O0FBRUQsU0FBUyxhQUFULEdBQXdCO0FBQ3RCLGFBQVcsa0JBQVgsQ0FBOEIsRUFBQyxNQUFNLEVBQUMsVUFBVSxFQUFYLEVBQVAsRUFBdUIsTUFBTSxPQUE3QixFQUE5QjtBQUNEOztBQUlELE9BQU8sT0FBUCxHQUFpQjtBQUNmLGNBQVksVUFERztBQUVmLHFCQUFtQixpQkFGSjtBQUdmLHlCQUF1QixxQkFIUjtBQUlmLG1CQUFpQixlQUpGO0FBS2YscUJBQW1CLGlCQUxKO0FBTWYsaUJBQWUsYUFOQTtBQU9mLGdCQUFjLFFBQVEsa0JBQVI7QUFQQyxDQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgZGlzcGF0Y2hlciA9IHJlcXVpcmUoJy4uL2Rpc3BhdGNoZXInKTtcclxudmFyIGlzU3RyaW5nID0gcmVxdWlyZSgnbG9kYXNoL2xhbmcvaXNTdHJpbmcnKTtcclxuXHJcbi8qKlxyXG4gKiBUcmFuc2Zvcm0gdGhlIG1lc3NhZ2UgaW50byBvYmpldCBpZiBpdCBpcyBhIHN0cmluZy5cclxuICogQHBhcmFtIHtbc3RyaW5nLCBvYmplY3RdfSBtZXNzYWdlIC0gVGhlIG1lc3NhZ2UgdG8gZGlzcGxheSAob2JqZWN0IG9yIHN0cmluZykuXHJcbiAqIEByZXR1cm5zIHtvYmplY3R9IC0gVGhlIHdlbGwgY29uc3RydWN0ZWQgbWVzc2FnZS5cclxuICovXHJcbmZ1bmN0aW9uIF9wYXJzZVN0cmluZyhtZXNzYWdlKSB7XHJcbiAgICBpZihpc1N0cmluZyhtZXNzYWdlKSkge1xyXG4gICAgICAgIG1lc3NhZ2UgPSB7Y29udGVudDogbWVzc2FnZX07XHJcbiAgICB9XHJcbiAgICByZXR1cm4gbWVzc2FnZTtcclxufVxyXG5cclxuLyoqXHJcbiAqIEFkZCBhIG1lc3NhZ2UuXHJcbiAqIEBwYXJhbSB7b2JqZWN0fSBtZXNzYWdlIC0gVGhlIG1lc3NhZ2Ugb2JqZWN0LlxyXG4gKi9cclxuZnVuY3Rpb24gYWRkTWVzc2FnZShtZXNzYWdlKXtcclxuICBkaXNwYXRjaGVyLmhhbmRsZVNlcnZlckFjdGlvbih7XHJcbiAgICBkYXRhOiB7bWVzc2FnZTogbWVzc2FnZX0sXHJcbiAgICB0eXBlOiAncHVzaCdcclxuICB9KTtcclxufVxyXG5cclxuLyoqXHJcbiAqIEFkZCBhbiBlcnJvciBtZXNzYWdlLlxyXG4gKiBAcGFyYW0ge29iamVjdH0gbWVzc2FnZSAtIFRoZSBtZXNzYWdlIGNvbnRlbnQuXHJcbiAqL1xyXG5mdW5jdGlvbiBhZGRFcnJvck1lc3NhZ2UobWVzc2FnZSl7XHJcbiAgbWVzc2FnZSA9IF9wYXJzZVN0cmluZyhtZXNzYWdlKTtcclxuICBtZXNzYWdlLnR5cGUgPSAnZXJyb3InO1xyXG4gIGFkZE1lc3NhZ2UobWVzc2FnZSk7XHJcbn1cclxuLyoqXHJcbiAqIEFkZCBhIHdhcm5pbmcgbWVzc2FnZS5cclxuICogQHBhcmFtIHtvYmplY3R9IG1lc3NhZ2UgLSBUaGUgbWVzc2FnZSBjb250ZW50LlxyXG4gKi9cclxuZnVuY3Rpb24gYWRkV2FybmluZ01lc3NhZ2UobWVzc2FnZSl7XHJcbiAgbWVzc2FnZSA9IF9wYXJzZVN0cmluZyhtZXNzYWdlKTtcclxuICBtZXNzYWdlLnR5cGUgPSAnd2FybmluZyc7XHJcbiAgYWRkTWVzc2FnZShtZXNzYWdlKTtcclxufVxyXG5cclxuLyoqXHJcbiAqIEFkZCBhbiBpbmZvcm1hdGlvbiBtZXNzYWdlLlxyXG4gKiBAcGFyYW0ge29iamVjdH0gbWVzc2FnZSAtIFRoZSBtZXNzYWdlIGNvbnRlbnQuXHJcbiAqL1xyXG5mdW5jdGlvbiBhZGRJbmZvcm1hdGlvbk1lc3NhZ2UobWVzc2FnZSl7XHJcbiAgbWVzc2FnZSA9IF9wYXJzZVN0cmluZyhtZXNzYWdlKTtcclxuICBtZXNzYWdlLnR5cGUgPSAnaW5mbyc7XHJcbiAgYWRkTWVzc2FnZShtZXNzYWdlKTtcclxufVxyXG5cclxuLyoqXHJcbiAqIEFkZCBhIHN1Y2Nlc3MgbWVzc2FnZS5cclxuICogQHBhcmFtIHtvYmplY3R9IG1lc3NhZ2UgLSBUaGUgbWVzc2FnZSBjb250ZW50LlxyXG4gKi9cclxuZnVuY3Rpb24gYWRkU3VjY2Vzc01lc3NhZ2UobWVzc2FnZSl7XHJcbiAgbWVzc2FnZSA9IF9wYXJzZVN0cmluZyhtZXNzYWdlKTtcclxuICBtZXNzYWdlLnR5cGUgPSAnc3VjY2Vzcyc7XHJcbiAgYWRkTWVzc2FnZShtZXNzYWdlKTtcclxufVxyXG5cclxuZnVuY3Rpb24gY2xlYXJNZXNzYWdlcygpe1xyXG4gIGRpc3BhdGNoZXIuaGFuZGxlU2VydmVyQWN0aW9uKHtkYXRhOiB7bWVzc2FnZXM6IHt9fSwgdHlwZTogJ2NsZWFyJ30pO1xyXG59XHJcblxyXG5cclxuXHJcbm1vZHVsZS5leHBvcnRzID0ge1xyXG4gIGFkZE1lc3NhZ2U6IGFkZE1lc3NhZ2UsXHJcbiAgYWRkV2FybmluZ01lc3NhZ2U6IGFkZFdhcm5pbmdNZXNzYWdlLFxyXG4gIGFkZEluZm9ybWF0aW9uTWVzc2FnZTogYWRkSW5mb3JtYXRpb25NZXNzYWdlLFxyXG4gIGFkZEVycm9yTWVzc2FnZTogYWRkRXJyb3JNZXNzYWdlLFxyXG4gIGFkZFN1Y2Nlc3NNZXNzYWdlOiBhZGRTdWNjZXNzTWVzc2FnZSxcclxuICBjbGVhck1lc3NhZ2VzOiBjbGVhck1lc3NhZ2VzLFxyXG4gIGJ1aWx0SW5TdG9yZTogcmVxdWlyZSgnLi9idWlsdC1pbi1zdG9yZScpXHJcbn07XHJcbiJdfQ==

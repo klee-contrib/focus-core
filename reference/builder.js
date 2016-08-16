@@ -1,0 +1,93 @@
+/*global Promise,  _*/
+'use strict';
+
+/* Filename: helpers/reference_helper.js  */
+//Dependency gestion depending on the fact that we are in the browser or in node.
+
+var fetch = require('../network/fetch');
+var checkIsString = require('../util/string/check');
+
+//Container for the list and
+var getConfigurationElement = require('./config').getElement;
+
+var CACHE_DURATION = 1000 * 60; //1 min
+var cache = {};
+
+function _getTimeStamp() {
+  return new Date().getTime();
+}
+/*
+* Serve the data from the cache.
+*/
+function _cacheData(key, value) {
+  cache[key] = { timeStamp: _getTimeStamp(), value: value };
+  return value;
+}
+
+/**
+ * Load a list from its description
+ * @param {object} listDesc - Description of the list to load
+ * @returns {Promise} - A promise of the loading.
+ * @example - refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
+ */
+function loadList(listDesc) {
+  return fetch({ url: listDesc.url, method: 'GET' });
+}
+
+// Load a reference with its list name.
+// It calls the service which must have been registered.
+/**
+ * Load a list by name.
+ * @param {string} listName - The name of the list to load.
+ * @param {object} args     - Argument to provide to the function.
+ */
+function loadListByName(listName, args) {
+  checkIsString('listName', listName);
+  var configurationElement = getConfigurationElement(listName);
+  if (typeof configurationElement !== 'function') {
+    throw new Error('You are trying to load the reference list: ' + listName + ' which does not have a list configure.');
+  }
+  var now = _getTimeStamp();
+  if (cache[listName] && now - cache[listName].timeStamp < CACHE_DURATION) {
+    //console.info('data served from cache', listName, cache[listName].value);
+    return Promise.resolve(cache[listName].value);
+  }
+  //Call the service, the service must return a promise.
+  return configurationElement(args).then(function (data) {
+    return _cacheData(listName, data);
+  });
+}
+
+//Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
+// Return an array of many promises for all the given lists.
+// Be carefull, if there is a problem for one list, the error callback is called.
+function loadMany(names) {
+  var promises = [];
+  //todo: add a _.isArray tests and throw an rxception.
+  if (names !== undefined) {
+    names.forEach(function (name) {
+      promises.push(loadListByName(name));
+    });
+  }
+  return promises;
+}
+/**
+ * Get a function to trigger in autocomplete case.
+ * The function will trigger a promise.
+ * @param {string} listName - Name of the list.
+ */
+function getAutoCompleteServiceQuery(listName) {
+  return function (query) {
+    loadListByName(listName, query.term).then(function (results) {
+      query.callback(results);
+    });
+  };
+}
+
+module.exports = {
+  loadListByName: loadListByName,
+  loadList: loadList,
+  loadMany: loadMany,
+  getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtBQUNBOztBQUVFO0FBQ0E7O0FBQ0EsSUFBSSxRQUFRLFFBQVEsa0JBQVIsQ0FBWjtBQUNBLElBQUksZ0JBQWdCLFFBQVEsc0JBQVIsQ0FBcEI7O0FBRUE7QUFDQSxJQUFJLDBCQUEwQixRQUFRLFVBQVIsRUFBb0IsVUFBbEQ7O0FBRUEsSUFBTSxpQkFBaUIsT0FBTyxFQUE5QixDLENBQWtDO0FBQ2xDLElBQUksUUFBUSxFQUFaOztBQUVBLFNBQVMsYUFBVCxHQUF3QjtBQUN0QixTQUFPLElBQUksSUFBSixHQUFXLE9BQVgsRUFBUDtBQUNEO0FBQ0Q7OztBQUdBLFNBQVMsVUFBVCxDQUFvQixHQUFwQixFQUF5QixLQUF6QixFQUErQjtBQUM3QixRQUFNLEdBQU4sSUFBYSxFQUFDLFdBQVcsZUFBWixFQUE2QixPQUFPLEtBQXBDLEVBQWI7QUFDQSxTQUFPLEtBQVA7QUFDRDs7QUFFRDs7Ozs7O0FBTUEsU0FBUyxRQUFULENBQWtCLFFBQWxCLEVBQTJCO0FBQ3ZCLFNBQU8sTUFBTSxFQUFFLEtBQUssU0FBUyxHQUFoQixFQUFxQixRQUFRLEtBQTdCLEVBQU4sQ0FBUDtBQUNIOztBQUVEO0FBQ0E7QUFDQTs7Ozs7QUFLQSxTQUFTLGNBQVQsQ0FBd0IsUUFBeEIsRUFBa0MsSUFBbEMsRUFBd0M7QUFDdEMsZ0JBQWMsVUFBZCxFQUEwQixRQUExQjtBQUNBLE1BQUksdUJBQXVCLHdCQUF3QixRQUF4QixDQUEzQjtBQUNBLE1BQUksT0FBTyxvQkFBUCxlQUFKLEVBQWdEO0FBQzVDLFVBQU0sSUFBSSxLQUFKLGlEQUF3RCxRQUF4RCw0Q0FBTjtBQUNIO0FBQ0QsTUFBSSxNQUFNLGVBQVY7QUFDQSxNQUFHLE1BQU0sUUFBTixLQUFvQixNQUFNLE1BQU0sUUFBTixFQUFnQixTQUF2QixHQUFvQyxjQUExRCxFQUF5RTtBQUN2RTtBQUNBLFdBQU8sUUFBUSxPQUFSLENBQWdCLE1BQU0sUUFBTixFQUFnQixLQUFoQyxDQUFQO0FBQ0Q7QUFDRDtBQUNBLFNBQU8scUJBQXFCLElBQXJCLEVBQ0MsSUFERCxDQUNNLFVBQUMsSUFBRCxFQUFRO0FBQ1osV0FBTyxXQUFXLFFBQVgsRUFBcUIsSUFBckIsQ0FBUDtBQUNBLEdBSEYsQ0FBUDtBQUlEOztBQUVEO0FBQ0E7QUFDQTtBQUNBLFNBQVMsUUFBVCxDQUFrQixLQUFsQixFQUF5QjtBQUNyQixNQUFJLFdBQVcsRUFBZjtBQUNBO0FBQ0EsTUFBSSxVQUFVLFNBQWQsRUFBeUI7QUFDckIsVUFBTSxPQUFOLENBQWMsVUFBVSxJQUFWLEVBQWdCO0FBQzFCLGVBQVMsSUFBVCxDQUFjLGVBQWUsSUFBZixDQUFkO0FBQ0gsS0FGRDtBQUdIO0FBQ0gsU0FBTyxRQUFQO0FBQ0Q7QUFDRDs7Ozs7QUFLQSxTQUFTLDJCQUFULENBQXFDLFFBQXJDLEVBQStDO0FBQzNDLFNBQU8sVUFBVSxLQUFWLEVBQWlCO0FBQ3BCLG1CQUFlLFFBQWYsRUFBeUIsTUFBTSxJQUEvQixFQUFxQyxJQUFyQyxDQUEwQyxVQUFVLE9BQVYsRUFBbUI7QUFDekQsWUFBTSxRQUFOLENBQWUsT0FBZjtBQUNILEtBRkQ7QUFHSCxHQUpEO0FBS0g7O0FBRUQsT0FBTyxPQUFQLEdBQWlCO0FBQ2Ysa0JBQWdCLGNBREQ7QUFFZixZQUFVLFFBRks7QUFHZixZQUFVLFFBSEs7QUFJZiwrQkFBNkI7QUFKZCxDQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyIvKmdsb2JhbCBQcm9taXNlLCAgXyovXHJcbid1c2Ugc3RyaWN0JztcclxuXHJcbiAgLyogRmlsZW5hbWU6IGhlbHBlcnMvcmVmZXJlbmNlX2hlbHBlci5qcyAgKi9cclxuICAvL0RlcGVuZGVuY3kgZ2VzdGlvbiBkZXBlbmRpbmcgb24gdGhlIGZhY3QgdGhhdCB3ZSBhcmUgaW4gdGhlIGJyb3dzZXIgb3IgaW4gbm9kZS5cclxuICB2YXIgZmV0Y2ggPSByZXF1aXJlKCcuLi9uZXR3b3JrL2ZldGNoJyk7XHJcbiAgdmFyIGNoZWNrSXNTdHJpbmcgPSByZXF1aXJlKCcuLi91dGlsL3N0cmluZy9jaGVjaycpO1xyXG5cclxuICAvL0NvbnRhaW5lciBmb3IgdGhlIGxpc3QgYW5kXHJcbiAgdmFyIGdldENvbmZpZ3VyYXRpb25FbGVtZW50ID0gcmVxdWlyZSgnLi9jb25maWcnKS5nZXRFbGVtZW50O1xyXG5cclxuICBjb25zdCBDQUNIRV9EVVJBVElPTiA9IDEwMDAgKiA2MDsgLy8xIG1pblxyXG4gIGxldCBjYWNoZSA9IHt9O1xyXG5cclxuICBmdW5jdGlvbiBfZ2V0VGltZVN0YW1wKCl7XHJcbiAgICByZXR1cm4gbmV3IERhdGUoKS5nZXRUaW1lKCk7XHJcbiAgfVxyXG4gIC8qXHJcbiAgKiBTZXJ2ZSB0aGUgZGF0YSBmcm9tIHRoZSBjYWNoZS5cclxuICAqL1xyXG4gIGZ1bmN0aW9uIF9jYWNoZURhdGEoa2V5LCB2YWx1ZSl7XHJcbiAgICBjYWNoZVtrZXldID0ge3RpbWVTdGFtcDogX2dldFRpbWVTdGFtcCgpLCB2YWx1ZTogdmFsdWV9O1xyXG4gICAgcmV0dXJuIHZhbHVlO1xyXG4gIH1cclxuXHJcbiAgLyoqXHJcbiAgICogTG9hZCBhIGxpc3QgZnJvbSBpdHMgZGVzY3JpcHRpb25cclxuICAgKiBAcGFyYW0ge29iamVjdH0gbGlzdERlc2MgLSBEZXNjcmlwdGlvbiBvZiB0aGUgbGlzdCB0byBsb2FkXHJcbiAgICogQHJldHVybnMge1Byb21pc2V9IC0gQSBwcm9taXNlIG9mIHRoZSBsb2FkaW5nLlxyXG4gICAqIEBleGFtcGxlIC0gcmVmSGVscGVyLmxvYWRMaXN0KHt1cmw6IFwiaHR0cDovL2xvY2FsaG9zdDo4MDgwL2FwaS9saXN0LzFcIn0pLnRoZW4oY29uc29sZS5sb2csY29uc29sZS5lcnJvcik7XHJcbiAgICovXHJcbiAgZnVuY3Rpb24gbG9hZExpc3QobGlzdERlc2Mpe1xyXG4gICAgICByZXR1cm4gZmV0Y2goeyB1cmw6IGxpc3REZXNjLnVybCwgbWV0aG9kOiAnR0VUJyB9KTtcclxuICB9XHJcblxyXG4gIC8vIExvYWQgYSByZWZlcmVuY2Ugd2l0aCBpdHMgbGlzdCBuYW1lLlxyXG4gIC8vIEl0IGNhbGxzIHRoZSBzZXJ2aWNlIHdoaWNoIG11c3QgaGF2ZSBiZWVuIHJlZ2lzdGVyZWQuXHJcbiAgLyoqXHJcbiAgICogTG9hZCBhIGxpc3QgYnkgbmFtZS5cclxuICAgKiBAcGFyYW0ge3N0cmluZ30gbGlzdE5hbWUgLSBUaGUgbmFtZSBvZiB0aGUgbGlzdCB0byBsb2FkLlxyXG4gICAqIEBwYXJhbSB7b2JqZWN0fSBhcmdzICAgICAtIEFyZ3VtZW50IHRvIHByb3ZpZGUgdG8gdGhlIGZ1bmN0aW9uLlxyXG4gICAqL1xyXG4gIGZ1bmN0aW9uIGxvYWRMaXN0QnlOYW1lKGxpc3ROYW1lLCBhcmdzKSB7XHJcbiAgICBjaGVja0lzU3RyaW5nKCdsaXN0TmFtZScsIGxpc3ROYW1lKTtcclxuICAgIHZhciBjb25maWd1cmF0aW9uRWxlbWVudCA9IGdldENvbmZpZ3VyYXRpb25FbGVtZW50KGxpc3ROYW1lKTtcclxuICAgIGlmICh0eXBlb2YgY29uZmlndXJhdGlvbkVsZW1lbnQgIT09IGBmdW5jdGlvbmApIHtcclxuICAgICAgICB0aHJvdyBuZXcgRXJyb3IoYFlvdSBhcmUgdHJ5aW5nIHRvIGxvYWQgdGhlIHJlZmVyZW5jZSBsaXN0OiAke2xpc3ROYW1lfSB3aGljaCBkb2VzIG5vdCBoYXZlIGEgbGlzdCBjb25maWd1cmUuYCk7XHJcbiAgICB9XHJcbiAgICBsZXQgbm93ID0gX2dldFRpbWVTdGFtcCgpO1xyXG4gICAgaWYoY2FjaGVbbGlzdE5hbWVdICYmIChub3cgLSBjYWNoZVtsaXN0TmFtZV0udGltZVN0YW1wKSA8IENBQ0hFX0RVUkFUSU9OKXtcclxuICAgICAgLy9jb25zb2xlLmluZm8oJ2RhdGEgc2VydmVkIGZyb20gY2FjaGUnLCBsaXN0TmFtZSwgY2FjaGVbbGlzdE5hbWVdLnZhbHVlKTtcclxuICAgICAgcmV0dXJuIFByb21pc2UucmVzb2x2ZShjYWNoZVtsaXN0TmFtZV0udmFsdWUpO1xyXG4gICAgfVxyXG4gICAgLy9DYWxsIHRoZSBzZXJ2aWNlLCB0aGUgc2VydmljZSBtdXN0IHJldHVybiBhIHByb21pc2UuXHJcbiAgICByZXR1cm4gY29uZmlndXJhdGlvbkVsZW1lbnQoYXJncylcclxuICAgICAgICAgICAudGhlbigoZGF0YSk9PntcclxuICAgICAgICAgICAgIHJldHVybiBfY2FjaGVEYXRhKGxpc3ROYW1lLCBkYXRhKVxyXG4gICAgICAgICAgICB9KTtcclxuICB9XHJcblxyXG4gIC8vTG9hZCBtYW55IGxpc3RzIGJ5IHRoZWlyIG5hbWVzLiBgcmVmSGVscGVyLmxvYWRNYW55KFsnbGlzdDEnLCAnbGlzdDInXSkudGhlbihzdWNjZXNzLCBlcnJvcilgXHJcbiAgLy8gUmV0dXJuIGFuIGFycmF5IG9mIG1hbnkgcHJvbWlzZXMgZm9yIGFsbCB0aGUgZ2l2ZW4gbGlzdHMuXHJcbiAgLy8gQmUgY2FyZWZ1bGwsIGlmIHRoZXJlIGlzIGEgcHJvYmxlbSBmb3Igb25lIGxpc3QsIHRoZSBlcnJvciBjYWxsYmFjayBpcyBjYWxsZWQuXHJcbiAgZnVuY3Rpb24gbG9hZE1hbnkobmFtZXMpIHtcclxuICAgICAgdmFyIHByb21pc2VzID0gW107XHJcbiAgICAgIC8vdG9kbzogYWRkIGEgXy5pc0FycmF5IHRlc3RzIGFuZCB0aHJvdyBhbiByeGNlcHRpb24uXHJcbiAgICAgIGlmIChuYW1lcyAhPT0gdW5kZWZpbmVkKSB7XHJcbiAgICAgICAgICBuYW1lcy5mb3JFYWNoKGZ1bmN0aW9uIChuYW1lKSB7XHJcbiAgICAgICAgICAgICAgcHJvbWlzZXMucHVzaChsb2FkTGlzdEJ5TmFtZShuYW1lKSk7XHJcbiAgICAgICAgICB9KTtcclxuICAgICAgfVxyXG4gICAgcmV0dXJuIHByb21pc2VzO1xyXG4gIH1cclxuICAvKipcclxuICAgKiBHZXQgYSBmdW5jdGlvbiB0byB0cmlnZ2VyIGluIGF1dG9jb21wbGV0ZSBjYXNlLlxyXG4gICAqIFRoZSBmdW5jdGlvbiB3aWxsIHRyaWdnZXIgYSBwcm9taXNlLlxyXG4gICAqIEBwYXJhbSB7c3RyaW5nfSBsaXN0TmFtZSAtIE5hbWUgb2YgdGhlIGxpc3QuXHJcbiAgICovXHJcbiAgZnVuY3Rpb24gZ2V0QXV0b0NvbXBsZXRlU2VydmljZVF1ZXJ5KGxpc3ROYW1lKSB7XHJcbiAgICAgIHJldHVybiBmdW5jdGlvbiAocXVlcnkpIHtcclxuICAgICAgICAgIGxvYWRMaXN0QnlOYW1lKGxpc3ROYW1lLCBxdWVyeS50ZXJtKS50aGVuKGZ1bmN0aW9uIChyZXN1bHRzKSB7XHJcbiAgICAgICAgICAgICAgcXVlcnkuY2FsbGJhY2socmVzdWx0cyk7XHJcbiAgICAgICAgICB9KTtcclxuICAgICAgfTtcclxuICB9XHJcblxyXG4gIG1vZHVsZS5leHBvcnRzID0ge1xyXG4gICAgbG9hZExpc3RCeU5hbWU6IGxvYWRMaXN0QnlOYW1lLFxyXG4gICAgbG9hZExpc3Q6IGxvYWRMaXN0LFxyXG4gICAgbG9hZE1hbnk6IGxvYWRNYW55LFxyXG4gICAgZ2V0QXV0b0NvbXBsZXRlU2VydmljZVF1ZXJ5OiBnZXRBdXRvQ29tcGxldGVTZXJ2aWNlUXVlcnlcclxuICB9O1xyXG4iXX0=

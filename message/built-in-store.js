@@ -1,0 +1,9 @@
+'use strict';
+
+var MessageStore = require('../store/message');
+/**
+ * Built the store in order to the .
+ * @return {MessageStore} - An instanciated reference store.
+ */
+module.exports = new MessageStore();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQU0sZUFBZSxRQUFRLGtCQUFSLENBQXJCO0FBQ0E7Ozs7QUFJQSxPQUFPLE9BQVAsR0FBaUIsSUFBSSxZQUFKLEVBQWpCIiwiZmlsZSI6InByb2Nlc3Nvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IE1lc3NhZ2VTdG9yZSA9IHJlcXVpcmUoJy4uL3N0b3JlL21lc3NhZ2UnKTtcclxuLyoqXHJcbiAqIEJ1aWx0IHRoZSBzdG9yZSBpbiBvcmRlciB0byB0aGUgLlxyXG4gKiBAcmV0dXJuIHtNZXNzYWdlU3RvcmV9IC0gQW4gaW5zdGFuY2lhdGVkIHJlZmVyZW5jZSBzdG9yZS5cclxuICovXHJcbm1vZHVsZS5leHBvcnRzID0gbmV3IE1lc3NhZ2VTdG9yZSgpO1xyXG4iXX0=

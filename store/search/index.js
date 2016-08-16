@@ -1,0 +1,7 @@
+'use strict';
+
+module.exports = {
+  QuickSearch: require('./quick-search'),
+  AdvancedSearch: require('./advanced-search')
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLE9BQU8sT0FBUCxHQUFpQjtBQUNmLGVBQWEsUUFBUSxnQkFBUixDQURFO0FBRWYsa0JBQWdCLFFBQVEsbUJBQVI7QUFGRCxDQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHtcclxuICBRdWlja1NlYXJjaDogcmVxdWlyZSgnLi9xdWljay1zZWFyY2gnKSxcclxuICBBZHZhbmNlZFNlYXJjaDogcmVxdWlyZSgnLi9hZHZhbmNlZC1zZWFyY2gnKVxyXG59O1xyXG4iXX0=

@@ -1,0 +1,78 @@
+'use strict';
+
+//Dependencies.
+var Immutable = require('immutable');
+var checkIsString = require('../../util/string/check');
+var checkIsObject = require('../../util/object/check');
+
+/**
+* Separator for the configuration
+* @type {String}
+*/
+var SEPARATOR = '.';
+
+/**
+* Container for the application entities.
+* @type {object}
+*/
+var entitiesMap = Immutable.Map({});
+
+/**
+* Get all entityDefinition in a JS Structure.
+* @param {string} - The node path (with .).
+* @param {object} extendedEntityConfiguration - The object to extend the config.
+* @return {object} - The entity configuration from a given path.
+*/
+function getEntityConfiguration(nodePath, extendedEntityConfiguration) {
+    //If a node is specified get the direct sub conf.
+    if (nodePath) {
+        return _getNode(nodePath, extendedEntityConfiguration).toJS();
+    }
+    return entitiesMap.toJS();
+}
+
+/**
+* Set new entities in the map or extend existing one.
+* @param {object} newEntities - new entities description
+*/
+function setEntityConfiguration(newEntities) {
+    checkIsObject('newEntities', newEntities);
+    entitiesMap = entitiesMap.mergeDeep(newEntities);
+}
+
+/**
+* Get a node configuration given a node path "obj.prop.subProp".
+* @param {string} nodePath - The node path you want to get.
+* @param {object} extendedConfiguration - The object to extend the config.
+* @return {object} - The node configuration.
+*/
+function _getNode(nodePath, extendedConfiguration) {
+    checkIsString('nodePath', nodePath);
+    if (!entitiesMap.hasIn(nodePath.split(SEPARATOR))) {
+        console.warn('\n            It seems the definition your are trying to use does not exists in the entity definitions of your project.\n            The definition you want is ' + nodePath + ' and the definition map is:\n            ', entitiesMap.toJS());
+        throw new Error('Wrong definition path given, see waning for more details');
+    }
+    var conf = entitiesMap.getIn(nodePath.split(SEPARATOR));
+    if (extendedConfiguration) {
+        checkIsObject(extendedConfiguration);
+        conf = conf.mergeDeep(extendedConfiguration);
+    }
+    return conf;
+}
+
+/**
+* Get a field configuration given a path.
+* @param {string} fieldPath - The field path in the map.
+* @param {object} customFieldConf - The object to extend the config.
+* @return {object} - The field configuration.
+*/
+function getFieldConfiguration(fieldPath, customFieldConf) {
+    return _getNode(fieldPath, customFieldConf).toJS();
+}
+
+module.exports = {
+    getEntityConfiguration: getEntityConfiguration,
+    setEntityConfiguration: setEntityConfiguration,
+    getFieldConfiguration: getFieldConfiguration
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBO0FBQ0EsSUFBTSxZQUFZLFFBQVEsV0FBUixDQUFsQjtBQUNBLElBQU0sZ0JBQWdCLFFBQVEseUJBQVIsQ0FBdEI7QUFDQSxJQUFNLGdCQUFnQixRQUFRLHlCQUFSLENBQXRCOztBQUVBOzs7O0FBSUEsSUFBTSxZQUFZLEdBQWxCOztBQUVBOzs7O0FBSUEsSUFBSSxjQUFjLFVBQVUsR0FBVixDQUFjLEVBQWQsQ0FBbEI7O0FBRUE7Ozs7OztBQU1BLFNBQVMsc0JBQVQsQ0FBZ0MsUUFBaEMsRUFBMEMsMkJBQTFDLEVBQXNFO0FBQ2xFO0FBQ0EsUUFBRyxRQUFILEVBQVk7QUFDUixlQUFPLFNBQVMsUUFBVCxFQUFtQiwyQkFBbkIsRUFBZ0QsSUFBaEQsRUFBUDtBQUNIO0FBQ0QsV0FBTyxZQUFZLElBQVosRUFBUDtBQUNIOztBQUVEOzs7O0FBSUEsU0FBUyxzQkFBVCxDQUFnQyxXQUFoQyxFQUE0QztBQUN4QyxrQkFBYyxhQUFkLEVBQTZCLFdBQTdCO0FBQ0Esa0JBQWMsWUFBWSxTQUFaLENBQXNCLFdBQXRCLENBQWQ7QUFDSDs7QUFHRDs7Ozs7O0FBTUEsU0FBUyxRQUFULENBQWtCLFFBQWxCLEVBQTRCLHFCQUE1QixFQUFrRDtBQUM5QyxrQkFBYyxVQUFkLEVBQTBCLFFBQTFCO0FBQ0EsUUFBRyxDQUFDLFlBQVksS0FBWixDQUFrQixTQUFTLEtBQVQsQ0FBZSxTQUFmLENBQWxCLENBQUosRUFBaUQ7QUFDN0MsZ0JBQVEsSUFBUixzS0FFaUMsUUFGakMsZ0RBR08sWUFBWSxJQUFaLEVBSFA7QUFLQSxjQUFNLElBQUksS0FBSixDQUFVLDBEQUFWLENBQU47QUFDSDtBQUNELFFBQUksT0FBTyxZQUFZLEtBQVosQ0FBa0IsU0FBUyxLQUFULENBQWUsU0FBZixDQUFsQixDQUFYO0FBQ0EsUUFBRyxxQkFBSCxFQUF5QjtBQUNyQixzQkFBYyxxQkFBZDtBQUNBLGVBQU8sS0FBSyxTQUFMLENBQWUscUJBQWYsQ0FBUDtBQUNIO0FBQ0QsV0FBTyxJQUFQO0FBQ0g7O0FBRUQ7Ozs7OztBQU1BLFNBQVMscUJBQVQsQ0FBK0IsU0FBL0IsRUFBMEMsZUFBMUMsRUFBMEQ7QUFDdEQsV0FBTyxTQUFTLFNBQVQsRUFBb0IsZUFBcEIsRUFBcUMsSUFBckMsRUFBUDtBQUNIOztBQUdELE9BQU8sT0FBUCxHQUFpQjtBQUNiLDRCQUF3QixzQkFEWDtBQUViLDRCQUF3QixzQkFGWDtBQUdiLDJCQUF1QjtBQUhWLENBQWpCIiwiZmlsZSI6InByb2Nlc3Nvci5qcyIsInNvdXJjZXNDb250ZW50IjpbIi8vRGVwZW5kZW5jaWVzLlxyXG5jb25zdCBJbW11dGFibGUgPSByZXF1aXJlKCdpbW11dGFibGUnKTtcclxuY29uc3QgY2hlY2tJc1N0cmluZyA9IHJlcXVpcmUoJy4uLy4uL3V0aWwvc3RyaW5nL2NoZWNrJyk7XHJcbmNvbnN0IGNoZWNrSXNPYmplY3QgPSByZXF1aXJlKCcuLi8uLi91dGlsL29iamVjdC9jaGVjaycpO1xyXG5cclxuLyoqXHJcbiogU2VwYXJhdG9yIGZvciB0aGUgY29uZmlndXJhdGlvblxyXG4qIEB0eXBlIHtTdHJpbmd9XHJcbiovXHJcbmNvbnN0IFNFUEFSQVRPUiA9ICcuJztcclxuXHJcbi8qKlxyXG4qIENvbnRhaW5lciBmb3IgdGhlIGFwcGxpY2F0aW9uIGVudGl0aWVzLlxyXG4qIEB0eXBlIHtvYmplY3R9XHJcbiovXHJcbmxldCBlbnRpdGllc01hcCA9IEltbXV0YWJsZS5NYXAoe30pO1xyXG5cclxuLyoqXHJcbiogR2V0IGFsbCBlbnRpdHlEZWZpbml0aW9uIGluIGEgSlMgU3RydWN0dXJlLlxyXG4qIEBwYXJhbSB7c3RyaW5nfSAtIFRoZSBub2RlIHBhdGggKHdpdGggLikuXHJcbiogQHBhcmFtIHtvYmplY3R9IGV4dGVuZGVkRW50aXR5Q29uZmlndXJhdGlvbiAtIFRoZSBvYmplY3QgdG8gZXh0ZW5kIHRoZSBjb25maWcuXHJcbiogQHJldHVybiB7b2JqZWN0fSAtIFRoZSBlbnRpdHkgY29uZmlndXJhdGlvbiBmcm9tIGEgZ2l2ZW4gcGF0aC5cclxuKi9cclxuZnVuY3Rpb24gZ2V0RW50aXR5Q29uZmlndXJhdGlvbihub2RlUGF0aCwgZXh0ZW5kZWRFbnRpdHlDb25maWd1cmF0aW9uKXtcclxuICAgIC8vSWYgYSBub2RlIGlzIHNwZWNpZmllZCBnZXQgdGhlIGRpcmVjdCBzdWIgY29uZi5cclxuICAgIGlmKG5vZGVQYXRoKXtcclxuICAgICAgICByZXR1cm4gX2dldE5vZGUobm9kZVBhdGgsIGV4dGVuZGVkRW50aXR5Q29uZmlndXJhdGlvbikudG9KUygpO1xyXG4gICAgfVxyXG4gICAgcmV0dXJuIGVudGl0aWVzTWFwLnRvSlMoKTtcclxufVxyXG5cclxuLyoqXHJcbiogU2V0IG5ldyBlbnRpdGllcyBpbiB0aGUgbWFwIG9yIGV4dGVuZCBleGlzdGluZyBvbmUuXHJcbiogQHBhcmFtIHtvYmplY3R9IG5ld0VudGl0aWVzIC0gbmV3IGVudGl0aWVzIGRlc2NyaXB0aW9uXHJcbiovXHJcbmZ1bmN0aW9uIHNldEVudGl0eUNvbmZpZ3VyYXRpb24obmV3RW50aXRpZXMpe1xyXG4gICAgY2hlY2tJc09iamVjdCgnbmV3RW50aXRpZXMnLCBuZXdFbnRpdGllcyk7XHJcbiAgICBlbnRpdGllc01hcCA9IGVudGl0aWVzTWFwLm1lcmdlRGVlcChuZXdFbnRpdGllcyk7XHJcbn1cclxuXHJcblxyXG4vKipcclxuKiBHZXQgYSBub2RlIGNvbmZpZ3VyYXRpb24gZ2l2ZW4gYSBub2RlIHBhdGggXCJvYmoucHJvcC5zdWJQcm9wXCIuXHJcbiogQHBhcmFtIHtzdHJpbmd9IG5vZGVQYXRoIC0gVGhlIG5vZGUgcGF0aCB5b3Ugd2FudCB0byBnZXQuXHJcbiogQHBhcmFtIHtvYmplY3R9IGV4dGVuZGVkQ29uZmlndXJhdGlvbiAtIFRoZSBvYmplY3QgdG8gZXh0ZW5kIHRoZSBjb25maWcuXHJcbiogQHJldHVybiB7b2JqZWN0fSAtIFRoZSBub2RlIGNvbmZpZ3VyYXRpb24uXHJcbiovXHJcbmZ1bmN0aW9uIF9nZXROb2RlKG5vZGVQYXRoLCBleHRlbmRlZENvbmZpZ3VyYXRpb24pe1xyXG4gICAgY2hlY2tJc1N0cmluZygnbm9kZVBhdGgnLCBub2RlUGF0aCk7XHJcbiAgICBpZighZW50aXRpZXNNYXAuaGFzSW4obm9kZVBhdGguc3BsaXQoU0VQQVJBVE9SKSkpe1xyXG4gICAgICAgIGNvbnNvbGUud2FybihgXHJcbiAgICAgICAgICAgIEl0IHNlZW1zIHRoZSBkZWZpbml0aW9uIHlvdXIgYXJlIHRyeWluZyB0byB1c2UgZG9lcyBub3QgZXhpc3RzIGluIHRoZSBlbnRpdHkgZGVmaW5pdGlvbnMgb2YgeW91ciBwcm9qZWN0LlxyXG4gICAgICAgICAgICBUaGUgZGVmaW5pdGlvbiB5b3Ugd2FudCBpcyAke25vZGVQYXRofSBhbmQgdGhlIGRlZmluaXRpb24gbWFwIGlzOlxyXG4gICAgICAgICAgICBgLCBlbnRpdGllc01hcC50b0pTKClcclxuICAgICAgICApO1xyXG4gICAgICAgIHRocm93IG5ldyBFcnJvcignV3JvbmcgZGVmaW5pdGlvbiBwYXRoIGdpdmVuLCBzZWUgd2FuaW5nIGZvciBtb3JlIGRldGFpbHMnKTtcclxuICAgIH1cclxuICAgIGxldCBjb25mID0gZW50aXRpZXNNYXAuZ2V0SW4obm9kZVBhdGguc3BsaXQoU0VQQVJBVE9SKSk7XHJcbiAgICBpZihleHRlbmRlZENvbmZpZ3VyYXRpb24pe1xyXG4gICAgICAgIGNoZWNrSXNPYmplY3QoZXh0ZW5kZWRDb25maWd1cmF0aW9uKTtcclxuICAgICAgICBjb25mID0gY29uZi5tZXJnZURlZXAoZXh0ZW5kZWRDb25maWd1cmF0aW9uKTtcclxuICAgIH1cclxuICAgIHJldHVybiBjb25mO1xyXG59XHJcblxyXG4vKipcclxuKiBHZXQgYSBmaWVsZCBjb25maWd1cmF0aW9uIGdpdmVuIGEgcGF0aC5cclxuKiBAcGFyYW0ge3N0cmluZ30gZmllbGRQYXRoIC0gVGhlIGZpZWxkIHBhdGggaW4gdGhlIG1hcC5cclxuKiBAcGFyYW0ge29iamVjdH0gY3VzdG9tRmllbGRDb25mIC0gVGhlIG9iamVjdCB0byBleHRlbmQgdGhlIGNvbmZpZy5cclxuKiBAcmV0dXJuIHtvYmplY3R9IC0gVGhlIGZpZWxkIGNvbmZpZ3VyYXRpb24uXHJcbiovXHJcbmZ1bmN0aW9uIGdldEZpZWxkQ29uZmlndXJhdGlvbihmaWVsZFBhdGgsIGN1c3RvbUZpZWxkQ29uZil7XHJcbiAgICByZXR1cm4gX2dldE5vZGUoZmllbGRQYXRoLCBjdXN0b21GaWVsZENvbmYpLnRvSlMoKTtcclxufVxyXG5cclxuXHJcbm1vZHVsZS5leHBvcnRzID0ge1xyXG4gICAgZ2V0RW50aXR5Q29uZmlndXJhdGlvbjogZ2V0RW50aXR5Q29uZmlndXJhdGlvbixcclxuICAgIHNldEVudGl0eUNvbmZpZ3VyYXRpb246IHNldEVudGl0eUNvbmZpZ3VyYXRpb24sXHJcbiAgICBnZXRGaWVsZENvbmZpZ3VyYXRpb246IGdldEZpZWxkQ29uZmlndXJhdGlvblxyXG59O1xyXG4iXX0=

@@ -1,0 +1,10 @@
+'use strict';
+
+var ApplicationStore = require('../store/application');
+
+/**
+ * Built the store in order to the .
+ * @return {ApplicationStore} - An instanciated application store.
+ */
+module.exports = new ApplicationStore();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQU0sbUJBQW1CLFFBQVEsc0JBQVIsQ0FBekI7O0FBRUE7Ozs7QUFJQSxPQUFPLE9BQVAsR0FBaUIsSUFBSSxnQkFBSixFQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBBcHBsaWNhdGlvblN0b3JlID0gcmVxdWlyZSgnLi4vc3RvcmUvYXBwbGljYXRpb24nKTtcclxuXHJcbi8qKlxyXG4gKiBCdWlsdCB0aGUgc3RvcmUgaW4gb3JkZXIgdG8gdGhlIC5cclxuICogQHJldHVybiB7QXBwbGljYXRpb25TdG9yZX0gLSBBbiBpbnN0YW5jaWF0ZWQgYXBwbGljYXRpb24gc3RvcmUuXHJcbiAqL1xyXG5tb2R1bGUuZXhwb3J0cyA9IG5ldyBBcHBsaWNhdGlvblN0b3JlKCk7XHJcbiJdfQ==

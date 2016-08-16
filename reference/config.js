@@ -1,0 +1,43 @@
+'use strict';
+
+var Immutable = require('immutable');
+var config = Immutable.Map({});
+var checkIsObject = require('../util/object/check');
+var checkIsString = require('../util/string/check');
+
+/**
+ * Set the reference configuration.
+ * @param {object}  newConf         - The new configuration to set.
+ * @param {Boolean} isClearPrevious - Does the config should be reset.
+ */
+function setConfig(newConf, isClearPrevious) {
+  checkIsObject(newConf);
+  config = isClearPrevious ? Immutable.fromJS(newConf) : config.merge(newConf);
+}
+
+/**
+ * Get a configuration copy.
+ * @returns {object} - A copy of the configuration.
+ */
+function getConfig() {
+  return config.toJS();
+}
+
+/**
+ * Get an element from the configuration using its name.
+ * @param {string} name - The key identifier of the configuration.
+ * @returns {object} - The configuration of the list element.
+ */
+function getConfigElement(name) {
+  checkIsString('name', name);
+  if (config.has(name)) {
+    return config.get(name);
+  }
+}
+
+module.exports = {
+  get: getConfig,
+  getElement: getConfigElement,
+  set: setConfig
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksWUFBWSxRQUFRLFdBQVIsQ0FBaEI7QUFDQSxJQUFJLFNBQVMsVUFBVSxHQUFWLENBQWMsRUFBZCxDQUFiO0FBQ0EsSUFBSSxnQkFBZ0IsUUFBUSxzQkFBUixDQUFwQjtBQUNBLElBQUksZ0JBQWdCLFFBQVEsc0JBQVIsQ0FBcEI7O0FBRUE7Ozs7O0FBS0EsU0FBUyxTQUFULENBQW1CLE9BQW5CLEVBQTRCLGVBQTVCLEVBQTRDO0FBQzFDLGdCQUFjLE9BQWQ7QUFDQSxXQUFTLGtCQUFrQixVQUFVLE1BQVYsQ0FBaUIsT0FBakIsQ0FBbEIsR0FBOEMsT0FBTyxLQUFQLENBQWEsT0FBYixDQUF2RDtBQUNEOztBQUVEOzs7O0FBSUEsU0FBUyxTQUFULEdBQW9CO0FBQ2xCLFNBQU8sT0FBTyxJQUFQLEVBQVA7QUFDRDs7QUFFRDs7Ozs7QUFLQSxTQUFTLGdCQUFULENBQTBCLElBQTFCLEVBQStCO0FBQzdCLGdCQUFjLE1BQWQsRUFBc0IsSUFBdEI7QUFDQSxNQUFHLE9BQU8sR0FBUCxDQUFXLElBQVgsQ0FBSCxFQUFvQjtBQUNsQixXQUFPLE9BQU8sR0FBUCxDQUFXLElBQVgsQ0FBUDtBQUNEO0FBQ0Y7O0FBR0QsT0FBTyxPQUFQLEdBQWlCO0FBQ2YsT0FBSyxTQURVO0FBRWYsY0FBWSxnQkFGRztBQUdmLE9BQUs7QUFIVSxDQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgSW1tdXRhYmxlID0gcmVxdWlyZSgnaW1tdXRhYmxlJyk7XHJcbnZhciBjb25maWcgPSBJbW11dGFibGUuTWFwKHt9KTtcclxudmFyIGNoZWNrSXNPYmplY3QgPSByZXF1aXJlKCcuLi91dGlsL29iamVjdC9jaGVjaycpO1xyXG52YXIgY2hlY2tJc1N0cmluZyA9IHJlcXVpcmUoJy4uL3V0aWwvc3RyaW5nL2NoZWNrJyk7XHJcblxyXG4vKipcclxuICogU2V0IHRoZSByZWZlcmVuY2UgY29uZmlndXJhdGlvbi5cclxuICogQHBhcmFtIHtvYmplY3R9ICBuZXdDb25mICAgICAgICAgLSBUaGUgbmV3IGNvbmZpZ3VyYXRpb24gdG8gc2V0LlxyXG4gKiBAcGFyYW0ge0Jvb2xlYW59IGlzQ2xlYXJQcmV2aW91cyAtIERvZXMgdGhlIGNvbmZpZyBzaG91bGQgYmUgcmVzZXQuXHJcbiAqL1xyXG5mdW5jdGlvbiBzZXRDb25maWcobmV3Q29uZiwgaXNDbGVhclByZXZpb3VzKXtcclxuICBjaGVja0lzT2JqZWN0KG5ld0NvbmYpO1xyXG4gIGNvbmZpZyA9IGlzQ2xlYXJQcmV2aW91cyA/IEltbXV0YWJsZS5mcm9tSlMobmV3Q29uZikgOiBjb25maWcubWVyZ2UobmV3Q29uZik7XHJcbn1cclxuXHJcbi8qKlxyXG4gKiBHZXQgYSBjb25maWd1cmF0aW9uIGNvcHkuXHJcbiAqIEByZXR1cm5zIHtvYmplY3R9IC0gQSBjb3B5IG9mIHRoZSBjb25maWd1cmF0aW9uLlxyXG4gKi9cclxuZnVuY3Rpb24gZ2V0Q29uZmlnKCl7XHJcbiAgcmV0dXJuIGNvbmZpZy50b0pTKCk7XHJcbn1cclxuXHJcbi8qKlxyXG4gKiBHZXQgYW4gZWxlbWVudCBmcm9tIHRoZSBjb25maWd1cmF0aW9uIHVzaW5nIGl0cyBuYW1lLlxyXG4gKiBAcGFyYW0ge3N0cmluZ30gbmFtZSAtIFRoZSBrZXkgaWRlbnRpZmllciBvZiB0aGUgY29uZmlndXJhdGlvbi5cclxuICogQHJldHVybnMge29iamVjdH0gLSBUaGUgY29uZmlndXJhdGlvbiBvZiB0aGUgbGlzdCBlbGVtZW50LlxyXG4gKi9cclxuZnVuY3Rpb24gZ2V0Q29uZmlnRWxlbWVudChuYW1lKXtcclxuICBjaGVja0lzU3RyaW5nKCduYW1lJywgbmFtZSk7XHJcbiAgaWYoY29uZmlnLmhhcyhuYW1lKSl7XHJcbiAgICByZXR1cm4gY29uZmlnLmdldChuYW1lKTtcclxuICB9XHJcbn1cclxuXHJcblxyXG5tb2R1bGUuZXhwb3J0cyA9IHtcclxuICBnZXQ6IGdldENvbmZpZyxcclxuICBnZXRFbGVtZW50OiBnZXRDb25maWdFbGVtZW50LFxyXG4gIHNldDogc2V0Q29uZmlnXHJcbn07XHJcbiJdfQ==

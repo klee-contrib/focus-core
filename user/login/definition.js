@@ -1,0 +1,7 @@
+'use strict';
+
+module.exports = {
+    login: 'login',
+    password: 'password'
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLE9BQU8sT0FBUCxHQUFpQjtBQUNiLFdBQU8sT0FETTtBQUViLGNBQVU7QUFGRyxDQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHtcclxuICAgIGxvZ2luOiAnbG9naW4nLFxyXG4gICAgcGFzc3dvcmQ6ICdwYXNzd29yZCdcclxufTtcclxuIl19

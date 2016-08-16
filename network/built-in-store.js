@@ -1,0 +1,9 @@
+'use strict';
+
+var RequestStore = require('../store/request');
+/**
+ * Built the store in order to the .
+ * @return {RequestStore} - An instanciated application store.
+ */
+module.exports = new RequestStore();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQU0sZUFBZSxRQUFRLGtCQUFSLENBQXJCO0FBQ0E7Ozs7QUFJQSxPQUFPLE9BQVAsR0FBaUIsSUFBSSxZQUFKLEVBQWpCIiwiZmlsZSI6InByb2Nlc3Nvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IFJlcXVlc3RTdG9yZSA9IHJlcXVpcmUoJy4uL3N0b3JlL3JlcXVlc3QnKTtcclxuLyoqXHJcbiAqIEJ1aWx0IHRoZSBzdG9yZSBpbiBvcmRlciB0byB0aGUgLlxyXG4gKiBAcmV0dXJuIHtSZXF1ZXN0U3RvcmV9IC0gQW4gaW5zdGFuY2lhdGVkIGFwcGxpY2F0aW9uIHN0b3JlLlxyXG4gKi9cclxubW9kdWxlLmV4cG9ydHMgPSBuZXcgUmVxdWVzdFN0b3JlKCk7XHJcbiJdfQ==

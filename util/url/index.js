@@ -1,0 +1,7 @@
+'use strict';
+
+module.exports = {
+  builder: require('./builder'),
+  preprocessor: require('./processor')
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLE9BQU8sT0FBUCxHQUFpQjtBQUNmLFdBQVMsUUFBUSxXQUFSLENBRE07QUFFZixnQkFBYyxRQUFRLGFBQVI7QUFGQyxDQUFqQiIsImZpbGUiOiJwcm9jZXNzb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJtb2R1bGUuZXhwb3J0cyA9IHtcclxuICBidWlsZGVyOiByZXF1aXJlKCcuL2J1aWxkZXInKSxcclxuICBwcmVwcm9jZXNzb3I6IHJlcXVpcmUoJy4vcHJvY2Vzc29yJylcclxufTtcclxuIl19

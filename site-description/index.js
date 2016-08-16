@@ -1,0 +1,18 @@
+'use strict';
+
+var _builder = require('./builder');
+/**
+ * @description Get th site structure processed with the user roles.
+ * @return {object} - The user site structure.
+ */
+function getUserSiteStructure() {
+  //Seems wiered looking like a ci
+  return _builder.getSiteStructure();
+}
+
+module.exports = {
+  builder: _builder,
+  reader: require('./reader'),
+  getUserSiteStructure: getUserSiteStructure
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInByb2Nlc3Nvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLElBQUksV0FBVyxRQUFRLFdBQVIsQ0FBZjtBQUNBOzs7O0FBSUEsU0FBUyxvQkFBVCxHQUErQjtBQUM3QjtBQUNBLFNBQU8sU0FBUyxnQkFBVCxFQUFQO0FBQ0Q7O0FBRUQsT0FBTyxPQUFQLEdBQWlCO0FBQ2YsV0FBUyxRQURNO0FBRWYsVUFBUSxRQUFRLFVBQVIsQ0FGTztBQUdmLHdCQUFzQjtBQUhQLENBQWpCIiwiZmlsZSI6InByb2Nlc3Nvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImxldCBfYnVpbGRlciA9IHJlcXVpcmUoJy4vYnVpbGRlcicpO1xyXG4vKipcclxuICogQGRlc2NyaXB0aW9uIEdldCB0aCBzaXRlIHN0cnVjdHVyZSBwcm9jZXNzZWQgd2l0aCB0aGUgdXNlciByb2xlcy5cclxuICogQHJldHVybiB7b2JqZWN0fSAtIFRoZSB1c2VyIHNpdGUgc3RydWN0dXJlLlxyXG4gKi9cclxuZnVuY3Rpb24gZ2V0VXNlclNpdGVTdHJ1Y3R1cmUoKXtcclxuICAvL1NlZW1zIHdpZXJlZCBsb29raW5nIGxpa2UgYSBjaVxyXG4gIHJldHVybiBfYnVpbGRlci5nZXRTaXRlU3RydWN0dXJlKCk7XHJcbn1cclxuXHJcbm1vZHVsZS5leHBvcnRzID0ge1xyXG4gIGJ1aWxkZXI6IF9idWlsZGVyLFxyXG4gIHJlYWRlcjogcmVxdWlyZSgnLi9yZWFkZXInKSxcclxuICBnZXRVc2VyU2l0ZVN0cnVjdHVyZTogZ2V0VXNlclNpdGVTdHJ1Y3R1cmVcclxufTtcclxuIl19
