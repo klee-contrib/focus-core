@@ -7,9 +7,8 @@
   var checkIsString = require('../util/string/check');
 
   //Container for the list and
-  var getConfigurationElement = require('./config').getElement;
+  var {getElement, getCacheDuration} = require('./config');
 
-  const CACHE_DURATION = 1000 * 60; //1 min
   let cache = {};
 
   function _getTimeStamp(){
@@ -42,12 +41,12 @@
    */
   function loadListByName(listName, args) {
     checkIsString('listName', listName);
-    var configurationElement = getConfigurationElement(listName);
+    var configurationElement = getElement(listName);
     if (typeof configurationElement !== `function`) {
         throw new Error(`You are trying to load the reference list: ${listName} which does not have a list configure.`);
     }
     let now = _getTimeStamp();
-    if(cache[listName] && (now - cache[listName].timeStamp) < CACHE_DURATION){
+    if(cache[listName] && (now - cache[listName].timeStamp) < getCacheDuration()){
       //console.info('data served from cache', listName, cache[listName].value);
       return Promise.resolve(cache[listName].value);
     }

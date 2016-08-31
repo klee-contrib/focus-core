@@ -3,6 +3,22 @@ var config = Immutable.Map({});
 var checkIsObject = require('../util/object/check');
 var checkIsString = require('../util/string/check');
 
+var cacheDuration = 1000 * 60;
+
+/**
+ * Sets the cache duration (defaults to 1 min).
+ */
+function setCacheDuration(newDuration) {
+  cacheDuration = newDuration;
+}
+
+/**
+ * Gets the cache duration.
+ */
+function getCacheDuration() {
+  return cacheDuration;
+}
+
 /**
  * Set the reference configuration.
  * @param {object}  newConf         - The new configuration to set.
@@ -37,5 +53,7 @@ function getConfigElement(name){
 module.exports = {
   get: getConfig,
   getElement: getConfigElement,
-  set: setConfig
+  set: setConfig,
+  getCacheDuration,
+  setCacheDuration
 };
