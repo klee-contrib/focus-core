@@ -1,6 +1,7 @@
 import {Action} from '../application';
+import {Dispatcher as FluxDispatcher} from 'flux';
 
-declare class Dispatcher extends Flux.Dispatcher<any> {
+declare class Dispatcher extends FluxDispatcher<any> {
 
     // Constructor override to hide the default doc
     constructor()
