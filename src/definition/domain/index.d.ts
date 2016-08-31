@@ -1,3 +1,5 @@
+import {ComponentClass} from 'react';
+
 export interface Domain {
     formatter?: (value: any) => string;
     unformatter?: (text: string) => any;
@@ -6,11 +8,11 @@ export interface Domain {
     type: string;
     validator?: (value: any) => boolean;
     listName?: string;
-    FieldComponent?: React.ComponentClass<{}>;
-    InputLabelComponent?: React.ComponentClass<{}>;
-    InputComponent?: React.ComponentClass<{}>;
-    SelectComponent?: React.ComponentClass<{}>;
-    TextComponent?: React.ComponentClass<{}>;
-    DisplayComponent?: React.ComponentClass<{}>;
+    FieldComponent?: ComponentClass<{}>;
+    InputLabelComponent?: ComponentClass<{}>;
+    InputComponent?: ComponentClass<{}>;
+    SelectComponent?: ComponentClass<{}>;
+    TextComponent?: ComponentClass<{}>;
+    DisplayComponent?: ComponentClass<{}>;
     options?: {};
 }

@@ -1,3 +1,5 @@
+import {EventEmitter} from 'events';
+
 /**
  *  Class standing for the cartridge store.
  */
@@ -19,7 +21,7 @@ export class ApplicationStore extends CoreStore<{route: string, mode: string, ca
 /**
  * Base class for all stores
  */
-export class CoreStore<T> implements NodeJS.EventEmitter {
+export class CoreStore<T> extends EventEmitter {
 
     /**
      * Getter on the definition property.
@@ -91,17 +93,6 @@ export class CoreStore<T> implements NodeJS.EventEmitter {
      * @param data      The event's associated data.
      */
     willEmit(eventName: string, data: {}): void
-
-    // EventEmitter methods not reimplemented
-    listenerCount(type: string): number
-    getMaxListeners(): number
-    on(event: string, listener: Function): this
-    once(event: string, listener: Function): this
-    removeListener(event: string, listener: Function): this
-    removeAllListeners(event?: string): this
-    setMaxListeners(n: number): this
-    listeners(event: string): Function[]
-    emit(event: string, ...args: any[]): boolean
 }
 
 /**

@@ -1,3 +1,4 @@
+import {ComponentClass} from 'react';
 import {ApplicationStore} from '../store';
 
 /**
@@ -23,7 +24,7 @@ export interface ActionBuilderSpec<S> {
 }
 
 export interface CartridgeComponent {
-    component: React.ComponentClass<{}> | ((props: {}) => JSX.Element);
+    component: ComponentClass<{}> | ((props: {}) => JSX.Element);
     props?: {};
 }
 
@@ -96,4 +97,4 @@ export function setHeader(config: CartridgeConfiguration): void
  * @param selector  A selector on a DOM node.
  * @param options   Options for the component rendering.
  */
-export function render(component: React.ComponentClass<{}>, selector: string, options?: {}): void
+export function render(component: ComponentClass<{}>, selector: string, options?: {}): void
