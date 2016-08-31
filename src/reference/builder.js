@@ -41,7 +41,7 @@
    */
   function loadListByName(listName, args) {
     checkIsString('listName', listName);
-    var configurationElement = getConfigurationElement(listName);
+    var configurationElement = getElement(listName);
     if (typeof configurationElement !== `function`) {
         throw new Error(`You are trying to load the reference list: ${listName} which does not have a list configure.`);
     }
