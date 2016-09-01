@@ -3,22 +3,22 @@
 
 /* Filename: helpers/reference_helper.js  */
 //Dependency gestion depending on the fact that we are in the browser or in node.
-var fetch = require('../network/fetch');
-var checkIsString = require('../util/string/check');
+import fetch from '../network/fetch';
+import checkIsString from '../util/string/check';
 
 //Container for the list and
-var {getElement, getCacheDuration} = require('./config');
+import {getElement, getCacheDuration} from './config';
 
 let cache = {};
 const promiseWaiting = new Set();
 
-function _getTimeStamp(){
+function _getTimeStamp() {
     return new Date().getTime();
 }
 /*
 * Serve the data from the cache.
 */
-function _cacheData(key, value){
+function _cacheData(key, value) {
     cache[key] = {timeStamp: _getTimeStamp(), value: value};
     promiseWaiting.delete(key);
     return value;
@@ -30,7 +30,7 @@ function _cacheData(key, value){
 * @returns {Promise} - A promise of the loading.
 * @example - refHelper.loadList({url: "http://localhost:8080/api/list/1"}).then(console.log,console.error);
 */
-function loadList(listDesc){
+function loadList(listDesc) {
     return fetch({ url: listDesc.url, method: 'GET' });
 }
 
@@ -43,19 +43,19 @@ function loadList(listDesc){
 */
 function loadListByName(listName, args) {
     checkIsString('listName', listName);
-    var configurationElement = getElement(listName);
+    const configurationElement = getElement(listName);
     if (typeof configurationElement !== `function`) {
         throw new Error(`You are trying to load the reference list: ${listName} which does not have a list configure.`);
     }
     let now = _getTimeStamp();
-    if(cache[listName] && (now - cache[listName].timeStamp) < getCacheDuration()){
+    if(cache[listName] && (now - cache[listName].timeStamp) < getCacheDuration()) {
         promiseWaiting.delete(listName);
         //console.info('data served from cache', listName, cache[listName].value);
         return Promise.resolve(cache[listName].value);
     }
     //Call the service, the service must return a promise.
     return configurationElement(args)
-    .then((data)=>{
+    .then((data) => {
         return _cacheData(listName, data)
     });
 }
@@ -64,12 +64,12 @@ function loadListByName(listName, args) {
 // Return an array of many promises for all the given lists.
 // Be carefull, if there is a problem for one list, the error callback is called.
 function loadMany(names) {
-    var promises = [];
+    const promises = [];
     //todo: add a _.isArray tests and throw an rxception.
     if (names !== undefined) {
-        names.filter(name => !promiseWaiting.has(name)).forEach(function (name) {
+        names.filter((name) => !promiseWaiting.has(name)).forEach((name) => {
             promiseWaiting.add(name);
-            promises.push(loadListByName(name)); 
+            promises.push(loadListByName(name));
         });
     }
     return promises;
@@ -80,8 +80,8 @@ function loadMany(names) {
 * @param {string} listName - Name of the list.
 */
 function getAutoCompleteServiceQuery(listName) {
-    return function (query) {
-        loadListByName(listName, query.term).then(function (results) {
+    return (query) => {
+        loadListByName(listName, query.term).then((results) => {
             query.callback(results);
         });
     };
