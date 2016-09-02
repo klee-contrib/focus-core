@@ -10,7 +10,14 @@ import checkIsString from '../util/string/check';
 import {getElement, getCacheDuration} from './config';
 
 let cache = {};
-const promiseWaiting = new Set();
+const promiseWaiting = [];
+
+function _deletePromiseWaiting(name){
+    const indexPrm = promiseWaiting.indexOf(key);
+    if(indexPrm !== -1){
+        promiseWaiting.splice(indexPrm, 1);
+    }
+}
 
 function _getTimeStamp() {
     return new Date().getTime();
@@ -20,7 +27,7 @@ function _getTimeStamp() {
 */
 function _cacheData(key, value) {
     cache[key] = {timeStamp: _getTimeStamp(), value: value};
-    promiseWaiting.delete(key);
+    _deletePromiseWaiting(key);
     return value;
 }
 
@@ -49,7 +56,7 @@ function loadListByName(listName, args) {
     }
     let now = _getTimeStamp();
     if(cache[listName] && (now - cache[listName].timeStamp) < getCacheDuration()) {
-        promiseWaiting.delete(listName);
+        _deletePromiseWaiting(listName);
         //console.info('data served from cache', listName, cache[listName].value);
         return Promise.resolve(cache[listName].value);
     }
@@ -64,15 +71,19 @@ function loadListByName(listName, args) {
 // Return an array of many promises for all the given lists.
 // Be carefull, if there is a problem for one list, the error callback is called.
 function loadMany(names) {
-    const promises = [];
-    //todo: add a _.isArray tests and throw an rxception.
-    if (names !== undefined) {
-        names.filter((name) => !promiseWaiting.has(name)).forEach((name) => {
-            promiseWaiting.add(name);
-            promises.push(loadListByName(name));
-        });
+    if(names === undefined){
+        return [];
     }
-    return promises;
+    if(!Array.isArray(names)){
+        throw new Error('LoadMany is expecting an array.');
+    }
+    return names.reduce((acc, name) => {
+        if(promiseWaiting.indexOf(name) !== -1){
+            return acc;
+        }
+        promiseWaiting.push(name);
+        return acc.concat([loadListByName(name)]);
+    }, []);
 }
 /**
 * Get a function to trigger in autocomplete case.
