@@ -226,7 +226,7 @@ class CoreStore extends EventEmitter {
             currentStore[`getStatus${capitalizeDefinition}`] = function(def){
                 return function getStatus(){
                     const hasData = currentStore.status.has(def);
-                    return hasData ? currentStore.status.get(def).toJS() : undefined;
+                    return hasData ? currentStore.status.get(def) : undefined;
                 };
             }(definition);
         }
