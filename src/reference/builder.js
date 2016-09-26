@@ -12,9 +12,9 @@ import {getElement, getCacheDuration} from './config';
 let cache = {};
 const promiseWaiting = [];
 
-function _deletePromiseWaiting(name){
-    const indexPrm = promiseWaiting.indexOf(key);
-    if(indexPrm !== -1){
+function _deletePromiseWaiting(name) {
+    const indexPrm = promiseWaiting.indexOf(name);
+    if(indexPrm !== -1) {
         promiseWaiting.splice(indexPrm, 1);
     }
 }
