@@ -82,7 +82,7 @@ function loadMany(names) {
             return acc;
         }
         promiseWaiting.push(name);
-        return acc.concat([loadListByName(name)]);
+        return acc.concat([loadListByName(name).then(dataList => ({name, dataList: dataList}))]);
     }, []);
 }
 /**
