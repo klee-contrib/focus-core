@@ -154,16 +154,11 @@ class CoreStore extends EventEmitter {
                         const hasData = currentStore.data.has(def);
                         if(hasData){
                             const rawData = currentStore.data.get(def);
-                            //If the store node isn't an object, immutable solution are non sens.
-                            if(isFunction(rawData) || !isObject(rawData)){
-                                return rawData;
-                            }
-                            else {
-                                const data = rawData.toJS();
-                                if(!isEmpty(data)){
-                                    return data;
-                                }
-                            }
+							if(rawData && rawData.toJS){
+								const data = rawData.toJS();
+								return isEmpty(data) ? undefined : data;
+							}
+							return rawData;
                         }
                         return undefined;
                     };
