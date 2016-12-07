@@ -11,6 +11,6 @@ export default function validatePropTypes(propTypes, props, componentName) {
 //
 // const props = {};
 // const customPropTypes = { truc: PropTypes.string.isRequired };
-// checkProps(customPropTypes, props, 'prop', 'test-function');
+// validatePropTypes(customPropTypes, props, 'test-function');
 
 // Warning: Failed prop type: The prop `truc` is marked as required in `test-function`, but its value is `undefined`.
