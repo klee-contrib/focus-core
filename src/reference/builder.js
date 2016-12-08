@@ -48,14 +48,14 @@ function loadList(listDesc) {
 * @param {string} listName - The name of the list to load.
 * @param {object} args     - Argument to provide to the function.
 */
-function loadListByName(listName, args) {
+function loadListByName(listName, args, skipCache) {
     checkIsString('listName', listName);
     const configurationElement = getElement(listName);
     if (typeof configurationElement !== `function`) {
         throw new Error(`You are trying to load the reference list: ${listName} which does not have a list configure.`);
     }
     let now = _getTimeStamp();
-    if(cache[listName] && (now - cache[listName].timeStamp) < getCacheDuration()) {
+    if(cache[listName] && (now - cache[listName].timeStamp) < getCacheDuration() && !skipCache) {
         _deletePromiseWaiting(listName);
         //console.info('data served from cache', listName, cache[listName].value);
         return Promise.resolve(cache[listName].value);
@@ -70,7 +70,7 @@ function loadListByName(listName, args) {
 //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
 // Return an array of many promises for all the given lists.
 // Be carefull, if there is a problem for one list, the error callback is called.
-function loadMany(names) {
+function loadMany(names, skipCache) {
     if(names === undefined){
         return [];
     }
@@ -82,7 +82,7 @@ function loadMany(names) {
             return acc;
         }
         promiseWaiting.push(name);
-        return acc.concat([loadListByName(name)]);
+        return acc.concat([loadListByName(name, null, skipCache).then(dataList => ({name, dataList: dataList}))]);
     }, []);
 }
 /**
