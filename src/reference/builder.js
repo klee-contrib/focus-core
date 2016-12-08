@@ -48,7 +48,7 @@ function loadList(listDesc) {
 * @param {string} listName - The name of the list to load.
 * @param {object} args     - Argument to provide to the function.
 */
-function loadListByName(listName, args, skipCache) {
+function loadListByName(listName, args, skipCache = false) {
     checkIsString('listName', listName);
     const configurationElement = getElement(listName);
     if (typeof configurationElement !== `function`) {
@@ -70,7 +70,7 @@ function loadListByName(listName, args, skipCache) {
 //Load many lists by their names. `refHelper.loadMany(['list1', 'list2']).then(success, error)`
 // Return an array of many promises for all the given lists.
 // Be carefull, if there is a problem for one list, the error callback is called.
-function loadMany(names, skipCache) {
+function loadMany(names, skipCache = false) {
     if(names === undefined){
         return [];
     }
