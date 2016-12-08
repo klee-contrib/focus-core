@@ -6,7 +6,7 @@ var dispatcher = require('../dispatcher');
  * @param {array} referenceNames - An array which contains the name of all the references to load.
  * @returns {Promise} - The promise of loading all the references.
  */
-function builtInReferenceAction(referenceNames, skipCache) {
+function builtInReferenceAction(referenceNames, skipCache = false) {
     return () => {
         if(!referenceNames) {
             return undefined;
