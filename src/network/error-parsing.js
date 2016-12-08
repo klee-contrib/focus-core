@@ -110,7 +110,7 @@ function _treatGlobalErrors(responseJSON, options) {
         allMessagesTypes.forEach((globalMessageConf)=>{
             //Treat all the gloabe
             let msgs = messages[globalMessageConf.name];
-            if (msgs !== undefined) {
+            if (msgs) {
                 globalMessagesContainer = [...globalMessagesContainer, ...msgs];
                 //To remove
                 _treatGlobalMessagesPerType(msgs, globalMessageConf.type);
