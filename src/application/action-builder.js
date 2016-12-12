@@ -1,7 +1,7 @@
-const dispatcher = require('../dispatcher');
-const {manageResponseErrors} = require('../network/error-parsing');
-const {isArray} = require('lodash/lang');
-const {identity} = require('lodash/utility');
+import dispatcher from '../dispatcher';
+import {manageResponseErrors} from '../network/error-parsing';
+import {isArray} from 'lodash/lang';
+import {identity} from 'lodash/utility';
 
 /**
  * Method call before the service.
@@ -53,15 +53,25 @@ function _dispatchServiceResponse({node, type, status, callerId}, json){
  */
 function _dispatchFieldErrors({node, callerId}, errorResult){
     const isMultiNode = isArray(node);
-    const data = isMultiNode ? errorResult : {[node]: errorResult};
+    const data = {};
+    if(isMultiNode){
+        node.forEach((nd) => {
+            data[nd] = (errorResult || {})[nd]; 
+        });
+    } else {
+        data[node] = errorResult;
+    }
+
     const errorStatus = {
         name: 'error',
         isLoading: false
     };
     let newStatus = {};
     if(isMultiNode){
-        node.forEach((nd)=>{newStatus[nd] = errorStatus; });
-    }else {
+        node.forEach((nd) => {
+            newStatus[nd] = errorStatus;
+        });
+    } else {
         newStatus[node] = errorStatus;
     }
     dispatcher.handleServerAction({
