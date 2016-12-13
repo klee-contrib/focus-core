@@ -1,6 +1,6 @@
 {
     "name": "focus-core",
-    "version": "2.1.0-rc1",
+    "version": "2.1.0-rc2",
     "description": "Focus library core part.",
     "main": "index.js",
     "babel": {
