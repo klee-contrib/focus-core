@@ -56,7 +56,7 @@ function _dispatchFieldErrors({node, callerId}, errorResult){
     const data = {};
     if(isMultiNode){
         node.forEach((nd) => {
-            data[nd] = (errorResult || {})[nd]; 
+            data[nd] = (errorResult || {})[nd] || null; 
         });
     } else {
         data[node] = errorResult;
