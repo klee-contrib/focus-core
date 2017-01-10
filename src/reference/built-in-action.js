@@ -1,5 +1,5 @@
-var loadManyReferenceList = require('./builder').loadMany;
-var dispatcher = require('../dispatcher');
+import {loadMany as loadManyReferenceList } from './builder';
+import dispatcher from '../dispatcher'
 
 /**
  * Focus reference action.
@@ -22,5 +22,4 @@ function builtInReferenceAction(referenceNames, skipCache = false) {
     };
 }
 
-
-module.exports = builtInReferenceAction;
+export default builtInReferenceAction;

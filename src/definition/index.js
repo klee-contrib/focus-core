@@ -1,7 +1,21 @@
-module.exports = {
-	domain: require('./domain'),
-	entity: require('./entity'),
-	validator: require('./validator'),
-	formatter: require('./formatter'),
-	checkDomains: require('./check-domains')
+import domain from './domain'
+import entity from './entity'
+import validator from './validator'
+import formatter from './formatter'
+import checkDomains from './check-domains'
+
+export {
+	domain,
+	entity,
+	validator,
+	formatter,
+	checkDomains
+};
+
+export default {
+    domain,
+    entity,
+    validator,
+    formatter,
+    checkDomains
 };

@@ -1,7 +1,12 @@
+import container from './container';
+
 /**
  * Application domain gestion.
  * @type {Object}
  */
-module.exports = {
-	container: require('./container')
-};
+export {
+    container
+}
+export default {
+    container
+}

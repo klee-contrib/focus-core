@@ -1,7 +1,9 @@
-var compile = require('lodash/string/template');
+import { template } from 'lodash';
 /**
 * Process an url in order to build them.
 */
-module.exports = function(url, data){
-  return compile(url)(data);
-};
+function processor(url, data) {
+    return template(url)(data);
+}
+
+export default processor;

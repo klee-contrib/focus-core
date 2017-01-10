@@ -2,10 +2,10 @@
  * Build the user store definition from the login and profile.
  * @return {[type]} [description]
  */
-module.exports = function(){
+export default function userDefinitionBuilder() {
     return {
-      login: 'login',
-      profile: 'profile',
-      roles: 'roles'
-  };
-};
+        login: 'login',
+        profile: 'profile',
+        roles: 'roles'
+    };
+}

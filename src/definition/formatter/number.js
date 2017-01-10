@@ -5,7 +5,7 @@ const DEFAULT_FORMAT = '0,0';
 //TODO change numeral lib and regroup initializers
 function language(key, conf) {
     return numeral.language(key, conf);
-};
+}
 
 /**
 * Format a number using a given format.
@@ -16,9 +16,14 @@ function language(key, conf) {
 function format(number, format) {
     format = format || DEFAULT_FORMAT;
     return numeral(number).format(format);
-};
+}
 
-module.exports = {
+export { 
     format,
     language
 };
+
+export default { 
+    format,
+    language
+}
