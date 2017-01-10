@@ -1,6 +1,5 @@
-var ArgumentInvalidException = require(
-	'../../exception/argument-invalid-exception');
-var isObject = require('lodash/lang/isObject');
+import ArgumentInvalidException from '../../exception/argument-invalid-exception';
+import { isObject } from 'lodash';
 
 /**
  * Assert an object is an objet.
@@ -8,8 +7,9 @@ var isObject = require('lodash/lang/isObject');
  * @param  {object} data - The data to validate.
  * @return {undefined} - Return nothing, throw an Exception if this is not valid.
  */
-module.exports = function(name, data) {
-	if (data !== undefined && !isObject(data)) {
-		throw new ArgumentInvalidException(`${name} should be an object`, data);
-	}
-};
+function checkIsObject(name, data) {
+    if (data !== undefined && !isObject(data)) {
+        throw new ArgumentInvalidException(`${name} should be an object`, data);
+    }
+}
+export default checkIsObject;

@@ -3,25 +3,6 @@
     "version": "2.1.1",
     "description": "Focus library core part.",
     "main": "index.js",
-    "babel": {
-        "presets": [
-            "stage-0",
-            "react",
-            "es2015"
-        ],
-        "plugins": [
-            "transform-class-properties",
-            "transform-decorators-legacy",
-            "add-module-exports",
-            "transform-proto-to-assign",
-            [
-                "transform-es2015-classes",
-                {
-                    "loose": true
-                }
-            ]
-        ]
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/KleeGroup/focus-core.git"
@@ -41,6 +22,7 @@
     "scripts": {
         "babelify": "better-npm-run babelify",
         "bundle": "better-npm-run bundle",
+        "watch": "better-npm-run watch",
         "test": "mocha src/**/__tests__/**/*.js",
         "test:watch": "mocha src/**/__tests__/**/*.js -w",
         "build": "better-npm-run babelify && better-npm-run bundle"
@@ -50,7 +32,17 @@
             "command": "node scripts/babelify.js"
         },
         "bundle": {
-            "command": "webpack --progress",
+            "command": "webpack --color --progress",
+            "env": {
+                "DEV": false,
+                "NODE_ENV": "production",
+                "LIBRARY_NAME": "FocusCore",
+                "MINIMIFY": false,
+                "PACKAGE_JSON_PATH": "../"
+            }
+        },
+        "watch": {
+            "command": "webpack --color --progress --watch",
             "env": {
                 "DEV": false,
                 "NODE_ENV": "production",
@@ -61,57 +53,28 @@
         }
     },
     "dependencies": {
-        "@types/flux": "^0.0.33",
-        "@types/node": "^6.0.38",
-        "flux": "^3.1.0",
-        "i18next-client": "^1.11.5",
-        "immutable": "^3.7.3",
-        "keymirror": "^0.1.1",
-        "lodash": "^3.10.1",
-        "object-assign": "^4.1.0",
-        "uuid": "^3.0.1"
+        "@types/flux": "0.0.34",
+        "@types/node": "6.0.58",
+        "flux": "3.1.2",
+        "i18next": "4.1.4",
+        "immutable": "3.8.1",
+        "keymirror": "0.1.1",
+        "lodash": "4.17.4",
+        "object-assign": "4.1.0",
+        "uuid": "3.0.1"
     },
     "devDependencies": {
-        "babel-cli": "^6.4.0",
-        "babel-core": "^6.4.0",
-        "babel-eslint": "7.1.1",
-        "babel-loader": "^6.2.1",
-        "babel-plugin-add-module-exports": "^0.2.1",
-        "babel-plugin-runtime": "^1.0.7",
-        "babel-plugin-transform-class-properties": "^6.4.0",
-        "babel-plugin-transform-decorators-legacy": "^1.3.4",
-        "babel-plugin-transform-es2015-classes": "^6.5.2",
-        "babel-plugin-transform-proto-to-assign": "^6.5.0",
-        "babel-preset-es2015": "^6.3.13",
-        "babel-preset-react": "^6.3.13",
-        "babel-preset-stage-0": "^6.3.13",
-        "babel-runtime": "^6.3.19",
+        "babel-preset-focus": "git://github.com/KleeGroup/babel-preset-focus.git#refreshing-updating",
         "better-npm-run": "0.0.13",
-        "chai": "^3.2.0",
-        "chai-subset": "^1.1.0",
-        "css-loader": "^0.26.1",
-        "eslint": "3.11.1",
-        "eslint-config-focus": "0.4.0",
-        "eslint-plugin-filenames": "1.1.0",
-        "eslint-plugin-react": "6.8.0",
-        "express": "^4.12.2",
-        "extract-text-webpack-plugin": "^1.0.1",
-        "file-loader": "^0.9.0",
-        "json-loader": "^0.5.3",
-        "mocha": "^3.2.0",
-        "moment": "^2.10.6",
-        "node-sass": "^3.3.3",
-        "numeral": "^1.5.3",
-        "react": "^15.4.1",
-        "react-addons-test-utils": "^15.4.1",
-        "react-dom": "^15.4.1",
-        "react-hot-loader": "^1.3.1",
-        "sass-loader": "^4.0.2",
-        "source-map-loader": "^0.1.5",
-        "style-loader": "^0.13.1",
-        "url-loader": "^0.5.7",
-        "webpack": "^1.13.3",
-        "webpack-dev-server": "^1.16.2",
-        "webpack-focus": "^0.12.2"
+        "chai": "3.5.0",
+        "chai-subset": "1.4.0",
+        "eslint-config-focus": "git://github.com/KleeGroup/eslint-config-focus.git#updating-refreshing",
+        "mocha": "3.2.0",
+        "moment": "2.17.1",
+        "numeral": "1.5.6",
+        "react": "15.4.2",
+        "react-addons-test-utils": "15.4.2",
+        "react-dom": "15.4.2",
+        "webpack-focus": "git://github.com/KleeGroup/webpack-focus.git#builder-archetype"
     }
 }

@@ -1,7 +1,6 @@
 //Dependencies.
-const React = require('react');
-const isString = require('lodash/lang/isString');
-const isArray = require('lodash/lang/isArray');
+import React from 'react';
+import { isString, isArray } from 'lodash';
 
 /**
 * Expose a React type validation for the component properties validation.
@@ -10,26 +9,28 @@ const isArray = require('lodash/lang/isArray');
 * @param   {boolean} isRequired - Defines if the props is mandatory.
 * @return {object} The corresponding react type.
 */
-module.exports = function types(type, isRequired){
+function types(type, isRequired) {
     const isStringType = isString(type);
-    if(!isStringType && !isArray(type)){
+    if (!isStringType && !isArray(type)) {
         throw new Error('The type should be a string or an array');
     }
     //Container for the propTypes.
     let propTypeToReturn;
     //Array case.
-    if(isStringType){
+    if (isStringType) {
         propTypeToReturn = React.PropTypes[type];
-    }else {
+    } else {
         propTypeToReturn = React.PropTypes.oneOfType(
             type.map(
-                (t)=>{
+                (t) => {
                     return React.PropTypes[t];
                 }));
     }
     //Mandatory case
-    if(isRequired){
+    if (isRequired) {
         propTypeToReturn = propTypeToReturn.isRequired;
     }
     return propTypeToReturn;
-};
+}
+
+export default types;

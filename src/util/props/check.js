@@ -1,10 +1,10 @@
 import checkProps from 'react/lib/checkReactTypeSpec';
 
 export default function validatePropTypes(propTypes, props, componentName) {
-    if (!!__DEV__) {
+    if (__DEV__) {
         checkProps(propTypes, props, 'prop', componentName);
     }
-};
+} 
 
 // Example
 // import checkProps from 'focus-core/util/props/check'

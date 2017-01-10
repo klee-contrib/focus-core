@@ -11,7 +11,7 @@ import {manageResponseErrors} from '../../network/error-parsing';
 * @param  {object} config - Action configuration.
 * @return {function} - The generated action from the congig.
 */
-module.exports = function loadActionFn(config){
+export default function loadActionFn(config) {
     /**
     * Dispatch the results on the search store
     * @param  {object} data - The data to dispatch.
@@ -29,7 +29,7 @@ module.exports = function loadActionFn(config){
      * @param  {object} err    - The error from the API call.
      * @return {object}     - The data from the manageResponseErrors function.
      */
-    function _errorOnCall( err){
+    function _errorOnCall( err) {
         manageResponseErrors(err, config);
         //_dispatchGlobalError shoud be separated.
     }
@@ -38,7 +38,7 @@ module.exports = function loadActionFn(config){
     * Build search action.
     * @param  {Boolean} isScroll - Is the action result from a scrolling.
     */
-    return function listLoader(isScroll){
+    return function listLoader(isScroll) {
         //Read search options from the accessor define in the config.
         // TODO: see if results should be named results.
         const {
@@ -62,7 +62,7 @@ module.exports = function loadActionFn(config){
             group: groupingKey || ''
         };
         config.service({urlData: urlData, data: postData})
-        .then((response)=>{
+        .then((response) => {
             return _parser(
                     response,
                     {isScroll, dataList}
@@ -71,4 +71,4 @@ module.exports = function loadActionFn(config){
         .then(_dispatchResult)
         .catch(_errorOnCall);
     };
-};
+}

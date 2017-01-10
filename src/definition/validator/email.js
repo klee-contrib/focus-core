@@ -5,6 +5,6 @@ const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+
  * @param  {string} emailToValidate - The email to validate.
  * @return {boolean} - True if the email is valide , false otherwise.
  */
-module.exports = function emailValidation(emailToValidate) {
+export default function emailValidation(emailToValidate) {
     return EMAIL_REGEX.test(emailToValidate);
-};
+}

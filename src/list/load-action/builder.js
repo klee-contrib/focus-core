@@ -1,14 +1,14 @@
-let keys = require('lodash/object/keys');
-let isArray = require('lodash/lang/isArray');
+import { isArray } from 'lodash';
+
 /**
  * Build sort infotmation.
  * @param  {object} sortConf - The sort configuration.
  * @return {object} - The builded sort configuration.
  */
-function _buildOrderAndSort(sortConf){
+function _buildOrderAndSort(sortConf) {
     return {
         sortFieldName: sortConf.sortBy,
-        sortDesc: sortConf.sortAsc===undefined?false:!sortConf.sortAsc
+        sortDesc: sortConf.sortAsc === undefined ? false : !sortConf.sortAsc
     };
 }
 
@@ -21,14 +21,14 @@ function _buildOrderAndSort(sortConf){
  *   nbSearchElement (:number) - The number of elements you want to get back from the search.
  * @return {object} - An object with {top, skip}.
  */
-function _buildPagination(opts){
+function _buildPagination(opts) {
     let {isScroll, dataList, totalCount, nbElement} = opts;
-    if(isScroll){
-        if(!isArray(dataList)){
+    if (isScroll) {
+        if (!isArray(dataList)) {
             throw new Error('The data list options sould exist and be an array')
         }
-        if(dataList.length < totalCount){
-            return {top: nbElement, skip: dataList.length};
+        if (dataList.length < totalCount) {
+            return { top: nbElement, skip: dataList.length };
         }
     }
     return {
@@ -37,7 +37,12 @@ function _buildPagination(opts){
     }
 }
 
-module.exports = {
+export default {
     pagination: _buildPagination,
     orderAndSort: _buildOrderAndSort
-};
+}
+
+export {
+    _buildPagination as pagination,
+    _buildOrderAndSort as orderAndSort
+}

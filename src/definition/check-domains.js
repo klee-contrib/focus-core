@@ -1,7 +1,6 @@
-const keys = require('lodash/object/keys');
-let {intersection, uniq, difference} = require('lodash/array');
+import { intersection, uniq, difference, keys } from 'lodash';
 
-module.exports = function checkDomain(entityDef, domains){
+export default function checkDomain(entityDef, domains) {
     domains = keys(domains);
     let arr = [];
     for (let node in entityDef) {
@@ -14,12 +13,12 @@ module.exports = function checkDomain(entityDef, domains){
     console.info('Entity definitions domains: ', appDomains);
     console.info('Domains with a definition', domains);
     const missingDomains = difference(appDomains, intersection(appDomains, domains));
-    if(0 < missingDomains.length){
+    if (0 < missingDomains.length) {
         console.warn('Missing domain\'s definition', missingDomains);
     }
     const useLessDomains = difference(domains, intersection(appDomains, domains));
-    if(0 < useLessDomains){
+    if (0 < useLessDomains) {
         console.warn('Useless domain definition', useLessDomains);
     }
     console.info('####################################################################');
-};
+}

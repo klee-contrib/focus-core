@@ -87,7 +87,11 @@ function getFieldInformations(fieldName, complementaryInformation) {
 }
 
 
-module.exports = {
-    getEntityInformations: getEntityInformations,
-    getFieldInformations: getFieldInformations
+export {
+    getEntityInformations,
+    getFieldInformations
+};
+export default {
+    getEntityInformations,
+    getFieldInformations
 };
