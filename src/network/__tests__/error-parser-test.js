@@ -4,6 +4,7 @@ import { manageResponseErrors as errorParser } from '../error-parsing';
 import { init } from '../../translation';
 init(); // Initialise i18n
 
+// NOTE : There are side effects in error handling, especially in treating errorEntityJSONResponse
 const NODE_OPTS = { node: 'field1' };
 const NODES_OPTS = { node: ['field1', 'field2'] };
 
@@ -34,7 +35,7 @@ describe('# error parser', () => {
     it('should return the field error when they are set', () => {
         const response = {
             status: 422,
-            responseJSON: errorEntityJSONResponse
+            responseJSON: { ...errorEntityJSONResponse }
         };
         expect(errorParser(response, NODE_OPTS)).to.eql({ globals: [], fields: errorEntityJSONResponse.fieldErrors });
     });
@@ -49,10 +50,10 @@ describe('# error parser', () => {
         };
         expect(errorParser(response, { node: ['n1', 'n2'] })).to.eql({ globals: [], fields: omit(response.responseJSON.fieldErrors, 'n3') });
     });
-    it.skip('shoud deal with field errors only when the http code is correct', () => {
+    it('shoud deal with field errors only when the http code is correct', () => {
         const response = {
             status: 1111,
-            responseJSON: errorEntityJSONResponse
+            responseJSON: { ...errorEntityJSONResponse }
         };
         const filds = errorParser(response, NODE_OPTS).fields;
         expect(filds).to.equal(null);

@@ -1,4 +1,4 @@
-import { isObject, isArray } from 'lodash';
+import { isObject, isArray, head, keys } from 'lodash';
 import { getAll as getDomains } from '../definition/domain/container';
 
 import { addMessage } from '../message';
@@ -123,10 +123,18 @@ function _treatGlobalErrors(responseJSON, options) {
     return null;
 }
 
+/**
+ * Treat an object of error by translating every error content.
+ * 
+ * @param {object} fieldErrors an object with key for fieldName, and values as error keys in i18n.
+ * @returns {object} a new object, with translated error
+ */
 function _treatEntityDetail(fieldErrors) {
-    return Object.keys(fieldErrors || {}).reduce(
+    return keys(fieldErrors || {}).reduce(
         (res, field) => {
-            res[field] = isArray(fieldErrors[field]) ? fieldErrors[field].map(item => translate(item)) : [translate(fieldErrors[field])];
+            // No reason to have several error on the same field, taking the first one
+            const error = fieldErrors[field];
+            res[field] = translate(isArray(error) ? head(error) : error);
             return res;
         }, {});
 }
@@ -181,6 +189,25 @@ function _treatBadRequestExceptions(responseJSON = {}, options) {
     return null;
 }
 
+
+/**
+ * Treat the field errors only if the status code is right (400, 401, 422).
+ * 
+ * @param {object} resErrors the errors to treat
+ * @param {object} opts the options for handling errors
+ * @returns {any} depends on the errors handled
+ */
+function _handleStatusError(resErrors, opts) {
+    switch (resErrors.status) {
+        case 400:
+        case 401:
+        case 422:
+            return _treatBadRequestExceptions(resErrors, opts);
+        default:
+            return null;
+    }
+}
+
 /**
 * Transform errors send by API to application errors. Dispatch depending on the response http code.
 * @param  {object} response - Object whic
@@ -220,16 +247,7 @@ function manageResponseErrors(response, options) {
     if (responseErrors.status) {
         return {
             globals: _treatGlobalErrors(responseErrors),
-            fields: ((resErrors, opts) => {
-                switch (responseErrors.status) {
-                    case 400:
-                    case 401:
-                    case 422:
-                        return _treatBadRequestExceptions(resErrors, opts);
-                    default:
-                        return null;
-                }
-            })(responseErrors, options)
+            fields: _handleStatusError(responseErrors, options)
         };
     }
     return null;
