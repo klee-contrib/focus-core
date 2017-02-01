@@ -1,4 +1,4 @@
-import keys from 'lodash/object/keys';
+import {keys} from 'lodash';
 
 /**
 * Parse server search result to build facet results.
@@ -87,7 +87,7 @@ const _parseUnscopedResponse = (data) => {
 
 const _parseScopedResponse = (data, context) => {
     //Scroll can only happen when there is an ungroupSearch
-    if(context.isScroll){
+    if(context.isScroll) {
         let resultsKeys = keys(context.results);
         let key = resultsKeys[0];
         //Concat previous data with incoming data.
@@ -100,8 +100,12 @@ const _parseScopedResponse = (data, context) => {
     });
 };
 
+export {
+    _parseUnscopedResponse as unscopedResponse,
+    _parseScopedResponse as scopedResponse
+}
 
-module.exports = {
+export default {
     unscopedResponse: _parseUnscopedResponse,
     scopedResponse: _parseScopedResponse
-};
+}

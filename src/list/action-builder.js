@@ -1,5 +1,5 @@
-let dispatcher = require('../dispatcher');
-let loadAction = require('./load-action');
+import dispatcher from '../dispatcher';
+import loadAction from './load-action';
 const NB_LIST_ELEMENT = 50;
 
  /**
@@ -18,37 +18,37 @@ const NB_LIST_ELEMENT = 50;
   * ```
   * @return {function} - The builded search action.
   */
-module.exports = function(config){
-  config = config || {};
-  if(!config.identifier){
-    console.warn('Your action should have an identifier');
-  }
-  if(!config.service){
-    console.warn('Your action should have a service');
-  }
-  if(!config.getListOptions){
-    console.warn('Your action should have a search options getter.');
-  }
-  if(!config.nbSearchElement){
-    config.nbElement = NB_LIST_ELEMENT;
-  }
-  return {
+export default function actionBuilder(config) {
+    config = config || {};
+    if(!config.identifier) {
+        console.warn('Your action should have an identifier');
+    }
+    if(!config.service) {
+        console.warn('Your action should have a service');
+    }
+    if(!config.getListOptions) {
+        console.warn('Your action should have a search options getter.');
+    }
+    if(!config.nbSearchElement) {
+        config.nbElement = NB_LIST_ELEMENT;
+    }
+    return {
     /**
      * Build the search for the identifier scope.
      * @return {function} The search function for the given identifier.
      */
-    load: loadAction(config),
+        load: loadAction(config),
     /**
      * Update the query for the identifier scope.
      * @param  {string} value - The query value
      * @return {function} The update query function for the given identifier.
      */
-    updateProperties(value){
-      return dispatcher.handleViewAction({
-        data: value,
-        type: 'update',
-        identifier: config.identifier
-      });
-    }
-  };
-};
+        updateProperties(value) {
+            return dispatcher.handleViewAction({
+                data: value, 
+                type: 'update',
+                identifier: config.identifier
+            }); 
+        }
+    };
+}

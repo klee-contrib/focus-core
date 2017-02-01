@@ -1,15 +1,39 @@
 //http://www.ascii-fr.com/Generateur-de-texte.html
 
+import application from './application'
+import history from './history'
+import component from './component'
+import definition from './definition'
+import dispatcher from './dispatcher'
+import list from './list'
+import exception from './exception'
+import network from './network'
+import router from './router'
+import reference from './reference'
+import search from './search'
+import siteDescription from './site-description'
+import store from './store'
+import util from './util'
+import user from './user'
+import translation from './translation'
+import message from './message'
+
 const infos = require(`${__PACKAGE_JSON_PATH__}/package.json`);
+const { version, author, homepage, documentation, bugs, repository } = infos;
+const DOCUMENTATION = () => {
+    console.log(`documentation: ${documentation}`);
+    console.log(`repository: ${repository.url}`);
+    console.log(`issues: ${bugs.url}`);
+}; 
 
 console.log(
     `
         FOCUS CORE
 
-        version: ${infos.version}
-        focus: ${infos.homepage}
-        documentation: ${infos.documentation}
-        issues: ${infos.bugs.url}
+        version: ${version}
+        focus: ${homepage}
+        documentation: ${documentation}
+        issues: ${bugs.url}
     `
 );
 /**
@@ -17,29 +41,49 @@ console.log(
 * This file requires all submodules.
 * @type {Object}
 */
-module.exports = {
-    application: require('./application'),
-    history: require('./history'),
-    component: require('./component'),
-    definition: require('./definition'),
-    dispatcher: require('./dispatcher'),
-    list: require('./list'),
-    exception: require('./exception'),
-    network: require('./network'),
-    router: require('./router'),
-    reference: require('./reference'),
-    search: require('./search'),
-    siteDescription: require('./site-description'),
-    store: require('./store'),
-    util: require('./util'),
-    user: require('./user'),
-    translation: require('./translation'),
-    message: require('./message'),
-    VERSION: infos.version,
-    AUTHOR: infos.author,
-    DOCUMENTATION(){
-        console.log(`documentation: ${infos.documentation}`);
-        console.log(`repository: ${infos.repository.url}`);
-        console.log(`issues: ${infos.bugs.url}`);
-    }
+export {
+    application,
+    history,
+    component,
+    definition,
+    dispatcher,
+    list,
+    exception,
+    network,
+    router,
+    reference,
+    search,
+    siteDescription,
+    store,
+    util,
+    user,
+    translation,
+    message,
+    DOCUMENTATION,
+    version as VERSION,
+    author as AUTHOR
+}
+
+export default {
+    application,
+    history,
+    component,
+    definition,
+    dispatcher,
+    list,
+    exception,
+    network,
+    router,
+    reference,
+    search,
+    siteDescription,
+    store,
+    util,
+    user,
+    translation,
+    message,
+    DOCUMENTATION,
+    VERSION: version,
+    AUTHOR: author
 };
+

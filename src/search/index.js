@@ -1,15 +1,22 @@
-let dispatcher = require('../dispatcher');
-module.exports = {
-    builtInStore: require('./built-in-store'),
-    /**
-     * Action builder
-     */
-    actionBuilder: require('./action-builder'),
-    log(){
-        let builtInStore = require('./built-in-store');
-        console.info('---------------------------');
-        console.info('QuickSearch', builtInStore.quickSearchStore.value);
-        console.info('AdvancedSearch', builtInStore.advancedSearchStore.value);
-        console.info('---------------------------');
-    }
-};
+import actionBuilder from './action-builder'
+import builtInStore, {quickSearchStore, advancedSearchStore} from './built-in-store'
+
+function log() {
+    console.info('---------------------------');
+    console.info('QuickSearch', quickSearchStore.value);
+    console.info('AdvancedSearch', advancedSearchStore.value);
+    console.info('---------------------------');
+
+}
+
+export {
+    builtInStore,
+    actionBuilder,
+    log
+}
+
+export default {
+    builtInStore,
+    actionBuilder,
+    log
+}

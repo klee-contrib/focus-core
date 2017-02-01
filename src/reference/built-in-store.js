@@ -1,14 +1,14 @@
-const ReferenceStore = require('../store/reference');
+import ReferenceStore from '../store/reference'
 
-let ref;
 
+let ref ;
 /**
 * Built the store in order to the .
 * @return {ReferenceStore} - An instanciated reference store.
 */
-module.exports = function () {
-    if (!ref) {
-        ref = new ReferenceStore();
-    }
-    return ref;
+export default () => {
+	if(!ref){
+		ref = new ReferenceStore();
+	}
+	return ref;
 };

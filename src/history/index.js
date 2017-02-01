@@ -15,7 +15,7 @@ export const navigate = (...args) => {
 }
 
 export const back = (...args) => {
-    if(!_back){
+    if(!_back) {
         throw new Error('react-router or backbone Previous Page Navigation was badly given in the setNavigationFunctions()')
     }
     _back(...args);
@@ -26,4 +26,11 @@ export const start = (...args) => {
         throw new Error('Backbone start router was badly given in the setNavigationFunctions()')
     }
     _start(...args);
+}
+ 
+export default {
+    setNavigationFunctions,
+    navigate,
+    back,
+    start
 }

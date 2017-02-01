@@ -1,15 +1,22 @@
-let _builder = require('./builder');
+import builder, {getSiteStructure} from './builder'
+import reader from './reader'
 /**
  * @description Get th site structure processed with the user roles.
  * @return {object} - The user site structure.
  */
-function getUserSiteStructure(){
+function getUserSiteStructure() {
   //Seems wiered looking like a ci
-  return _builder.getSiteStructure();
+    return getSiteStructure();
 }
 
-module.exports = {
-  builder: _builder,
-  reader: require('./reader'),
-  getUserSiteStructure: getUserSiteStructure
-};
+export {
+    builder,
+    reader,
+    getUserSiteStructure
+}
+
+export default {
+    builder,
+    reader,
+    getUserSiteStructure
+}

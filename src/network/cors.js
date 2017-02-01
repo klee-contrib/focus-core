@@ -12,7 +12,7 @@ const ArgumentInvalidException = Error;
 * @param {object} options - The cors options.
 * @returns {XMLHttpRequest} - The CORS http request.
 */
-module.exports = function createCORSRequest(method, url, options = {}) {
+export default function createCORSRequest(method, url, options = {}) {
     const isCORS = options.isCORS || false;
     const noContentType = options.noContentType || false;
     
@@ -47,7 +47,7 @@ module.exports = function createCORSRequest(method, url, options = {}) {
     const headers = options.headers || {};
     // Setting 'Content-Type' header only if not in options
     // Also handling noContentType options
-    if(!noContentType && !headers['Content-Type']){
+    if(!noContentType && !headers['Content-Type']) {
         if (xhr.setRequestHeader) {
             xhr.setRequestHeader('Content-Type', 'application/json');
         }
@@ -60,4 +60,4 @@ module.exports = function createCORSRequest(method, url, options = {}) {
     }
 
     return xhr;
-};
+}

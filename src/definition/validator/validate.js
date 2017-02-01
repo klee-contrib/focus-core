@@ -1,39 +1,24 @@
 //Dependency
-import {DependencyException} from '../../exception';
-import assign from 'object-assign';
-import {translate} from '../../translation';
+import { translate } from '../../translation';
 //Focus validators
 import emailValidation from './email';
 import numberValidation from './number';
 import stringLength from './string-length';
 import dateValidation from './date';
-import {isNull, isUndefined} from 'lodash/lang';
+import { isNull, isUndefined } from 'lodash';
 
 /**
-* Validae a property given validators.
-* @param  {object} property   - Property to validate which should be as follows: `{name: "field_name",value: "field_value", validators: [{...}] }`.
-* @param  {array} validators - The validators to apply on the property.
-* @return {object} - The validation status.
-*/
-function validate(property, validators) {
-    //console.log("validate", property, validators);
-    let errors = [], res, validator;
-    if (validators) {
-        for (let i = 0, _len = validators.length; i < _len; i++) {
-            validator = validators[i];
-            res = validateProperty(property, validator);
-            if (!isNull(res) && !isUndefined(res)) {
-                errors.push(res);
-            }
-        }
-    }
-    //Check what's the good type to return.
-    return {
-        name: property.name,
-        value: property.value,
-        isValid: 0 === errors.length,
-        errors: errors
-    };
+ * Get the error label from a type and a field name.
+ * @param  {string} type      - The type name.
+ * @param  {string} fieldName - The field name.
+ * @param  {object} options - The options to put such as the translationKey which could be defined in the domain.
+ * @return {string} The formatted error.
+ */
+function getErrorLabel(type, fieldName, options = {}) {
+    options = options || {};
+    const translationKey = options.translationKey ? options.translationKey : `domain.validation.${type}`;
+    const opts = { fieldName: translate(fieldName), ...options };
+    return translate(translationKey, opts);
 }
 
 /**
@@ -52,7 +37,7 @@ function validateProperty(property, validator) {
     }
     const {value} = property;
     const {options} = validator;
-    const isValueNullOrUndefined = isNull(value) || isUndefined(value );
+    const isValueNullOrUndefined = isNull(value) || isUndefined(value);
     isValid = (() => {
         switch (validator.type) {
             case 'required':
@@ -89,18 +74,32 @@ function validateProperty(property, validator) {
         return getErrorLabel(validator.type, property.modelName + '.' + property.name, options); //"The property " + property.name + " is invalid.";
     }
 }
+
 /**
- * Get the error label from a type and a field name.
- * @param  {string} type      - The type name.
- * @param  {string} fieldName - The field name.
- * @param  {object} options - The options to put such as the translationKey which could be defined in the domain.
- * @return {string} The formatted error.
- */
-function getErrorLabel(type, fieldName, options = {}) {
-    options = options || {};
-    const translationKey = options.translationKey ? options.translationKey : `domain.validation.${type}`;
-    const opts = {fieldName: translate(fieldName), ...options};
-    return translate(translationKey, opts);
+* Validae a property given validators.
+* @param  {object} property   - Property to validate which should be as follows: `{name: "field_name",value: "field_value", validators: [{...}] }`.
+* @param  {array} validators - The validators to apply on the property.
+* @return {object} - The validation status.
+*/
+function validate(property, validators) {
+    //console.log("validate", property, validators);
+    let errors = [], res, validator;
+    if (validators) {
+        for (let i = 0, _len = validators.length; i < _len; i++) {
+            validator = validators[i];
+            res = validateProperty(property, validator);
+            if (!isNull(res) && !isUndefined(res)) {
+                errors.push(res);
+            }
+        }
+    }
+    //Check what's the good type to return.
+    return {
+        name: property.name,
+        value: property.value,
+        isValid: 0 === errors.length,
+        errors: errors
+    };
 }
 
 export default validate;

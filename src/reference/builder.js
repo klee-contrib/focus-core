@@ -1,5 +1,3 @@
-/*global Promise,  _*/
-'use strict';
 
 /* Filename: helpers/reference_helper.js  */
 //Dependency gestion depending on the fact that we are in the browser or in node.
@@ -51,7 +49,7 @@ function loadList(listDesc) {
 function loadListByName(listName, args, skipCache = false) {
     checkIsString('listName', listName);
     const configurationElement = getElement(listName);
-    if (typeof configurationElement !== `function`) {
+    if (typeof configurationElement !== 'function') {
         throw new Error(`You are trying to load the reference list: ${listName} which does not have a list configure.`);
     }
     let now = _getTimeStamp();
@@ -71,14 +69,14 @@ function loadListByName(listName, args, skipCache = false) {
 // Return an array of many promises for all the given lists.
 // Be carefull, if there is a problem for one list, the error callback is called.
 function loadMany(names, skipCache = false) {
-    if(names === undefined){
+    if(names === undefined) {
         return [];
     }
-    if(!Array.isArray(names)){
+    if(!Array.isArray(names)) {
         throw new Error('LoadMany is expecting an array.');
     }
     return names.reduce((acc, name) => {
-        if(promiseWaiting.indexOf(name) !== -1){
+        if(promiseWaiting.indexOf(name) !== -1) {
             return acc;
         }
         promiseWaiting.push(name);
@@ -98,9 +96,16 @@ function getAutoCompleteServiceQuery(listName) {
     };
 }
 
-module.exports = {
-    loadListByName: loadListByName,
-    loadList: loadList,
-    loadMany: loadMany,
-    getAutoCompleteServiceQuery: getAutoCompleteServiceQuery
-};
+export {
+    loadListByName,
+    loadList,
+    loadMany,
+    getAutoCompleteServiceQuery
+}
+
+export default {
+    loadListByName,
+    loadList,
+    loadMany,
+    getAutoCompleteServiceQuery
+}
