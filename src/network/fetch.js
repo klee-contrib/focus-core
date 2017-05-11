@@ -9,11 +9,11 @@ import UuidStatic from 'uuid';
 import dispatcher from '../dispatcher';
 import isObject from 'lodash/lang/isObject';
 import ratelimiter from './ratelimiter';
-import config from './config';
+import configuration from './config';
 
 const uuid = UuidStatic.v4;
 
-const networkConfig = config.get();
+const networkConfig = configuration.get();
 const sendRequest = (request, obj) => request.send(JSON.stringify(obj.data));
 const sendRequestRateLimited = ratelimiter(sendRequest, networkConfig.burstNb, networkConfig.burstPeriod, networkConfig.cooldownNb, networkConfig.cooldownPeriod);
 
@@ -77,7 +77,7 @@ function jsonParser(req) {
 function fetch(obj, options = {}) {
     options.parser = options.parser || jsonParser;
     options.errorParser = options.errorParser || jsonParser;
-    let config = config.get();
+    let config = configuration.get();
     let request = createCORSRequest(obj.method, obj.url, {...config, ...options});
     let requestStatus = createRequestStatus();
     if (!request) {

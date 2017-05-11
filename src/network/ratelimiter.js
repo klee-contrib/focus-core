@@ -52,12 +52,12 @@ export default function ratelimiter(fn, burstNb, burstPeriod, cooldownNb, cooldo
         }
 
         if (burstMode && priorExecsBurst.length == burstNb) {
-            // We reach the number of call allowed in burst mode.
+            // We have reached the number of call allowed in burst mode.
             // Entering in cooldown mode.
             burstMode = false;
         } else if (!burstMode && priorExecsCooldown.length == 0) {
             // We have dequeued all the requests in cooldown mode.
-            // We are allowed to enter in burst mode.
+            // We are allowed to enter in burst mode again.
             burstMode = true;
         }
     }
