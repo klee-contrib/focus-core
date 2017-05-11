@@ -10,19 +10,26 @@ let configuration = {
     mode: 'cors', //cors, no-cors, same-origin
     credentials: 'same-origin', //omit, same-origin, include
     cache: 'no-cache', //default, no-store, reload, no-cache, force-cache, ou only-if-cached.
-    redirect: 'follow' // follow, manual, error
+    redirect: 'follow', // follow, manual, error
+	rateLimiter: {
+	  enableRateLimiter: true,
+	  burstNb: 14,
+	  burstPeriod: 1000,
+	  cooldownNb: 5,
+	  cooldownPeriod: 1000
+	}
 };
 
 /**
  * Function which overrides the configuration.
  * @param {object} conf configuration to merge with existing conf
  */
-function configure(conf) {
+function configure(conf){
     if (!isObject(conf)) {
         throw new Error('Network configuration should be an object')
     }
     merge(configuration, conf);
-}
+  }
 
 /**
  * Getter on the configuration, returning a clone of the configuration.

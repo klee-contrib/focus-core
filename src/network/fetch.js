@@ -3,6 +3,7 @@ import merge from 'lodash/object/merge';
 
 import dispatcher from '../dispatcher';
 import { get as configGetter } from './config';
+import ratelimiter from './ratelimiter';
 
 /**
 * Create a pending status.
@@ -79,6 +80,10 @@ function checkErrors(response, xhrErrors) {
     }
 }
 
+let networkConfig = require('./config').get();
+let sendRequest = (request, obj) => request.send(JSON.stringify(obj.data));
+let sendRequestRateLimited = ratelimiter(sendRequest, networkConfig.burstNb, networkConfig.burstPeriod, networkConfig.cooldownNb, networkConfig.cooldownPeriod);
+
 /**
 * Fetch function to ease http request.
 * @param  {object} obj - method: http verb, url: http url, data:The json to save.
@@ -100,6 +105,15 @@ function wrappingFetch({ url, method, data }, optionsArg) {
     // Set the requesting as pending
     updateRequestStatus({ id: requestStatus.id, status: 'pending' });
     // Do the request
+/*
+
+   //Execute the request.
+        if (config.enableRateLimiter) {
+            sendRequestRateLimited(request, obj);
+        } else {
+            request.send(JSON.stringify(obj.data));
+        }
+*/
     return fetch(url, reqOptions)
         // Catch the possible TypeError from fetch
         .catch(error => {
