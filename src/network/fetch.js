@@ -8,6 +8,8 @@ let uuid = require('uuid').v4;
 let dispatcher = require('../dispatcher');
 let isObject = require('lodash/lang/isObject');
 
+let ratelimiter = require('./ratelimiter');
+
 /**
 * Create a pending status.
 * @return {object} The instanciated request status.
@@ -57,6 +59,10 @@ function jsonParser(req) {
     }
     return parsedObject;
 }
+
+let networkConfig = require('./config').get();
+let sendRequest = (request, obj) => request.send(JSON.stringify(obj.data));
+let sendRequestRateLimited = ratelimiter(sendRequest, networkConfig.burstNb, networkConfig.burstPeriod, networkConfig.cooldownNb, networkConfig.cooldownPeriod);
 
 /**
 * Fetch function to ease http request.
@@ -108,8 +114,15 @@ function fetch(obj, options = {}) {
             return success(data);
         };
         updateRequestStatus({id: requestStatus.id, status: 'pending'});
+        
         //Execute the request.
-        request.send(JSON.stringify(obj.data));
+        if (config.enableRateLimiter) {
+            sendRequestRateLimited(request, obj);
+        } else {
+            request.send(JSON.stringify(obj.data));
+        }
+        
+        
     }, function cancelHandler() { // Promise cancel handler
         if (request.status === 0) { // request has not yet ended
             updateRequestStatus({id: requestStatus.id, status: 'cancelled'});

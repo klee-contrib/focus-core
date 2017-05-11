@@ -7,7 +7,12 @@ let {isObject, clone} = require('lodash/lang');
  */
 let configuration = {
   CORS: true,
-  xhrErrors: {}
+  xhrErrors: {},
+  enableRateLimiter: true,
+  burstNb: 14,
+  burstPeriod: 1000,
+  cooldownNb: 5,
+  cooldownPeriod: 1000
 };
 
 /**
