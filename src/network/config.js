@@ -4,19 +4,25 @@ import clone from 'lodash/lang/cloneDeep';
 
 /**
  * Configuration object. Except for xhrErrors, see https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch
+ * @type {{xhrErrors: Array}}
+ * @type {{enableRateLimiter: boolean}}
+ * @type {{burstNb: number}}
+ * @type {{burstPeriod: number}}
+ * @type {{cooldownNb: number}}
+ * @type {{cooldownPeriod: number}}
  */
 let configuration = {
-    xhrErrors: {},
+  xhrErrors: {},
     mode: 'cors', //cors, no-cors, same-origin
     credentials: 'same-origin', //omit, same-origin, include
     cache: 'no-cache', //default, no-store, reload, no-cache, force-cache, ou only-if-cached.
     redirect: 'follow', // follow, manual, error
 	rateLimiter: {
-	  enableRateLimiter: true,
-	  burstNb: 14,
-	  burstPeriod: 1000,
-	  cooldownNb: 5,
-	  cooldownPeriod: 1000
+  enableRateLimiter: true,
+  burstNb: 14,
+  burstPeriod: 1000,
+  cooldownNb: 5,
+  cooldownPeriod: 1000
 	}
 };
 
