@@ -2,13 +2,20 @@
 * Dependency on the CORS module.
 * @type {object}
 */
-let createCORSRequest = require('./cors');
-let cancellablePromiseBuilder = require('./cancellable-promise-builder');
-let uuid = require('uuid').v4;
-let dispatcher = require('../dispatcher');
-let isObject = require('lodash/lang/isObject');
 
-let ratelimiter = require('./ratelimiter');
+import createCORSRequest from './cors';
+import cancellablePromiseBuilder from './cancellable-promise-builder';
+import UuidStatic from 'uuid';
+import dispatcher from '../dispatcher';
+import isObject from 'lodash/lang/isObject';
+import ratelimiter from './ratelimiter';
+import config from './config';
+
+const uuid = UuidStatic.v4;
+
+const networkConfig = config.get();
+const sendRequest = (request, obj) => request.send(JSON.stringify(obj.data));
+const sendRequestRateLimited = ratelimiter(sendRequest, networkConfig.burstNb, networkConfig.burstPeriod, networkConfig.cooldownNb, networkConfig.cooldownPeriod);
 
 /**
 * Create a pending status.
@@ -60,9 +67,6 @@ function jsonParser(req) {
     return parsedObject;
 }
 
-let networkConfig = require('./config').get();
-let sendRequest = (request, obj) => request.send(JSON.stringify(obj.data));
-let sendRequestRateLimited = ratelimiter(sendRequest, networkConfig.burstNb, networkConfig.burstPeriod, networkConfig.cooldownNb, networkConfig.cooldownPeriod);
 
 /**
 * Fetch function to ease http request.
@@ -73,7 +77,7 @@ let sendRequestRateLimited = ratelimiter(sendRequest, networkConfig.burstNb, net
 function fetch(obj, options = {}) {
     options.parser = options.parser || jsonParser;
     options.errorParser = options.errorParser || jsonParser;
-    let config = require('./config').get();
+    let config = config.get();
     let request = createCORSRequest(obj.method, obj.url, {...config, ...options});
     let requestStatus = createRequestStatus();
     if (!request) {
@@ -114,15 +118,14 @@ function fetch(obj, options = {}) {
             return success(data);
         };
         updateRequestStatus({id: requestStatus.id, status: 'pending'});
-        
+
         //Execute the request.
         if (config.enableRateLimiter) {
             sendRequestRateLimited(request, obj);
         } else {
             request.send(JSON.stringify(obj.data));
         }
-        
-        
+
     }, function cancelHandler() { // Promise cancel handler
         if (request.status === 0) { // request has not yet ended
             updateRequestStatus({id: requestStatus.id, status: 'cancelled'});

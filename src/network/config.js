@@ -4,6 +4,12 @@ let {isObject, clone} = require('lodash/lang');
 /**
  * Configuration object.
  * @type {{CORS: boolean}}
+ * @type {{xhrErrors: Array}}
+ * @type {{enableRateLimiter: boolean}}
+ * @type {{burstNb: number}}
+ * @type {{burstPeriod: number}}
+ * @type {{cooldownNb: number}}
+ * @type {{cooldownPeriod: number}}
  */
 let configuration = {
   CORS: true,
