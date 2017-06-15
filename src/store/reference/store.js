@@ -10,7 +10,7 @@ class ReferenceStore extends CoreStore {
         conf = conf || {};
         conf.definition = conf.definition || buildDefinition();
         conf.identifier = conf.identifier || 'REFERENCE_LIST';
-        super(newConf);
+        super(conf);
     }
 
     getReference(names) {
