@@ -15,8 +15,7 @@ function builtInReferenceAction(referenceNames, skipCache = false) {
             .then(function successReferenceLoading(data) {
                 //Rebuilt a constructed information from the map.
                 const reconstructedData = data.reduce((acc, item) => { acc[item.name] = item.dataList; return acc; }, {})
-                // TODO : find a way to now the used identifier.
-                dispatcher.handleViewAction({ data: reconstructedData, type: 'update', subject: 'reference', identifier: 'REFERENCE_LIST' });
+                dispatcher.handleViewAction({ data: reconstructedData, type: 'update', subject: 'reference' });
             }, function errorReferenceLoading(err) {
                 dispatcher.handleViewAction({ data: err, type: 'error', identifier: 'REFERENCE_LIST' });
             });

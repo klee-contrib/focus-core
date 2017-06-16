@@ -9,7 +9,6 @@ class ReferenceStore extends CoreStore {
     constructor(conf) {
         conf = conf || {};
         conf.definition = conf.definition || buildDefinition();
-        conf.identifier = conf.identifier || 'REFERENCE_LIST';
         super(conf);
     }
 
