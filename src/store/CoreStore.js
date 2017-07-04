@@ -156,7 +156,7 @@ class CoreStore extends EventEmitter {
                             const rawData = currentStore.data.get(def);
 							if(rawData && rawData.toJS){
 								const data = rawData.toJS();
-								return isEmpty(data) ? undefined : data;
+								return data;
 							}
 							return rawData;
                         }
