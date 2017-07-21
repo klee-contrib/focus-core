@@ -3,9 +3,14 @@
 
 [![NPM](https://nodei.co/npm/focus-core.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/focus-core/)
 
-[![Join the chat at https://gitter.im/KleeGroup/focus](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/KleeGroup/focus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![master](https://travis-ci.org/KleeGroup/focus-core.svg?branch=master)](https://travis-ci.org/KleeGroup/focus-core)
+[![develop](https://travis-ci.org/KleeGroup/focus-core.svg?branch=develop)](https://travis-ci.org/KleeGroup/focus-core)
 
-![Build Status](https://travis-ci.org/KleeGroup/focus.svg)
+
+[![Dependencies Status](https://david-dm.org/KleeGroup/focus-core.svg)](https://david-dm.org/KleeGroup/focus-core)
+[![Dev Dependencies Status](https://david-dm.org/KleeGroup/focus-core/dev-status.svg)](https://david-dm.org/KleeGroup/focus-core?type=dev)
+[![Peer Dependencies Status](https://david-dm.org/KleeGroup/focus-core/peer-status.svg)](https://david-dm.org/KleeGroup/focus-core?type=peer)
+
 [![Package Quality](http://npm.packagequality.com/shield/focus-core.svg)](http://packagequality.com/#?package=focus-core)
 
 **Currently in dev**

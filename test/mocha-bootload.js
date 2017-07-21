@@ -19,6 +19,7 @@ const should  = chai.should();
 global.expect = require('chai').expect;
 /*eslint-enable */
 
+global.__DEV__ = process.env.DEV ? JSON.parse(process.env.DEV) : true;
 global.React = require('react');
 global.ReactDOM = require('react-dom');
 global.expect = chai.expect;
