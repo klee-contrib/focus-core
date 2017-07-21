@@ -40,24 +40,13 @@
     },
     "scripts": {
         "babelify": "better-npm-run babelify",
-        "bundle": "better-npm-run bundle",
         "test": "mocha src/**/__tests__/**/*.js",
         "test:watch": "mocha src/**/__tests__/**/*.js -w",
-        "build": "better-npm-run babelify && better-npm-run bundle"
+        "build": "better-npm-run babelify"
     },
     "betterScripts": {
         "babelify": {
             "command": "node scripts/babelify.js"
-        },
-        "bundle": {
-            "command": "webpack --progress",
-            "env": {
-                "DEV": false,
-                "NODE_ENV": "production",
-                "LIBRARY_NAME": "FocusCore",
-                "MINIMIFY": false,
-                "PACKAGE_JSON_PATH": "../"
-            }
         }
     },
     "dependencies": {
@@ -72,11 +61,9 @@
         "uuid": "^2.0.1"
     },
     "devDependencies": {
-        "babel": "^6.3.26",
         "babel-cli": "^6.4.0",
         "babel-core": "^6.4.0",
         "babel-eslint": "4.1.3",
-        "babel-loader": "^6.2.1",
         "babel-plugin-add-module-exports": "^0.1.2",
         "babel-plugin-runtime": "^1.0.7",
         "babel-plugin-transform-class-properties": "^6.4.0",
@@ -90,30 +77,18 @@
         "better-npm-run": "0.0.5",
         "chai": "^3.2.0",
         "chai-subset": "^1.1.0",
-        "css-loader": "^0.19.0",
         "eslint": "1.5.1",
         "eslint-config-focus": "0.3.0",
         "eslint-plugin-filenames": "0.1.1",
         "eslint-plugin-react": "3.5.0",
         "express": "^4.12.2",
         "extract-text-webpack-plugin": "^0.8.2",
-        "file-loader": "^0.8.4",
         "jquery": "^2.1.4",
-        "json-loader": "^0.5.3",
         "mocha": "^2.3.2",
         "moment": "^2.10.6",
-        "node-sass": "^3.3.3",
         "numeral": "^1.5.3",
         "react": "^15.2.1",
         "react-addons-test-utils": "^15.2.1",
-        "react-dom": "^15.2.1",
-        "react-hot-loader": "^1.3.0",
-        "sass-loader": "^3.0.0",
-        "source-map-loader": "^0.1.5",
-        "style-loader": "^0.12.4",
-        "url-loader": "^0.5.6",
-        "webpack": "^1.12.2",
-        "webpack-dev-server": "^1.11.0",
-        "webpack-focus": "^0.11.0"
+        "react-dom": "^15.2.1"
     }
 }
