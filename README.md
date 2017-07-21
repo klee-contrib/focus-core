@@ -3,8 +3,6 @@
 
 [![NPM](https://nodei.co/npm/focus-core.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/focus-core/)
 
-[![Join the chat at https://gitter.im/KleeGroup/focus](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/KleeGroup/focus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 [![master](https://travis-ci.org/KleeGroup/focus-core.svg?branch=master)](https://travis-ci.org/KleeGroup/focus-core)
 [![develop](https://travis-ci.org/KleeGroup/focus-core.svg?branch=develop)](https://travis-ci.org/KleeGroup/focus-core)
 
