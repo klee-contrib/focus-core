@@ -1,5 +1,5 @@
-var loadManyReferenceList = require('./builder').loadMany;
-var dispatcher = require('../dispatcher');
+import { loadMany as loadManyReferenceList } from './builder';
+import dispatcher from '../dispatcher';
 
 /**
  * Focus reference action.
@@ -8,19 +8,18 @@ var dispatcher = require('../dispatcher');
  */
 function builtInReferenceAction(referenceNames, skipCache = false) {
     return () => {
-        if(!referenceNames) {
+        if (!referenceNames) {
             return undefined;
         }
         return Promise.all(loadManyReferenceList(referenceNames, skipCache))
-        .then(function successReferenceLoading(data) {
-            //Rebuilt a constructed information from the map.
-            const reconstructedData = data.reduce((acc,item) => {acc[item.name] = item.dataList; return acc;}, {})
-            dispatcher.handleViewAction({data: reconstructedData, type: 'update', subject: 'reference'});
-        }, function errorReferenceLoading(err) {
-            dispatcher.handleViewAction({data: err, type: 'error'});
-        });
+            .then(function successReferenceLoading(data) {
+                //Rebuilt a constructed information from the map.
+                const reconstructedData = data.reduce((acc, item) => { acc[item.name] = item.dataList; return acc; }, {})
+                dispatcher.handleViewAction({ data: reconstructedData, type: 'update', subject: 'reference' });
+            }, function errorReferenceLoading(err) {
+                dispatcher.handleViewAction({ data: err, type: 'error' });
+            });
     };
 }
 
-
-module.exports = builtInReferenceAction;
+export default builtInReferenceAction;

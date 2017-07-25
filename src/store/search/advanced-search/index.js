@@ -7,7 +7,7 @@ const LISTENED_NODES = ['query', 'scope', 'selectedFacets', 'groupingKey', 'sort
 * The state should be the complete state of the page.
 */
 class AdvancedSearchStore extends SearchStore {
-    constructor(conf){
+    constructor(conf) {
         conf = conf || {};
         conf.definition = {
             query: 'query',
@@ -20,19 +20,20 @@ class AdvancedSearchStore extends SearchStore {
             results: 'results',
             totalCount: 'totalCount'
         };
-        conf.identifier = 'ADVANCED_SEARCH';
+        conf.identifier = conf.identifier || 'ADVANCED_SEARCH';
         super(conf);
     }
 
-    emitPendingEvents(){
-        if(this.pendingEvents.find(ev => LISTENED_NODES.includes(ev.name.split(':change')[0]))) {
-            this.emit('advanced-search-criterias:change', {status: 'update'});
+    emitPendingEvents() {
+        if (this.pendingEvents.find(ev => LISTENED_NODES.includes(ev.name.split(':change')[0]))) {
+            this.emit('advanced-search-criterias:change', { status: 'update' });
         }
-        this.pendingEvents.map((evtToEmit)=>{
-            let {name, data} = evtToEmit;
+        this.pendingEvents.map((evtToEmit) => {
+            let { name, data } = evtToEmit;
             this.emit(name, data);
         });
     }
 
 }
-module.exports = AdvancedSearchStore;
+
+export default AdvancedSearchStore;
