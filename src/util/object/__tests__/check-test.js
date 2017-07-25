@@ -9,9 +9,9 @@ describe('### object validation', () => {
         expect(checkObject('propertyName', {})).to.equal(undefined);
     });
     it('A string shoud be invalid', () => {
-        expect(() => { checkObject('propertyName', 'aaaaa'); }).to.throw(ArgumentInvalidException, 'propertyName should be an object');
+        expect(() => { checkObject('propertyName', 'aaaaa'); }).to.throw(/*ArgumentInvalidException,*/ 'propertyName should be an object');
     });
     it('A number shoud be invalid', () => {
-        expect(() => { checkObject('propertyName', 123); }).to.throw(ArgumentInvalidException, 'propertyName should be an object');
+        expect(() => { checkObject('propertyName', 123); }).to.throw(/*ArgumentInvalidException, */'propertyName should be an object');
     });
 });

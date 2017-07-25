@@ -1,7 +1,14 @@
 /*global expect, it, describe*/
 // __tests__/container-test.js
-import CoreStore from '../../store/CoreStore';
+
 import actionBuilder from '../action-builder';
+import CoreStore from '../../store/CoreStore';
+import { init } from '../../translation';
+init({
+    resStore: {},
+    lng: 'fr-FR'
+}); // Initialise i18n
+
 describe('### action-builder', () => {
     it('Config must have a service', () => {
         expect(() => actionBuilder({}))
@@ -16,7 +23,7 @@ describe('### action-builder', () => {
         expect(() => actionBuilder({ service: () => { }, status: 'superStatus' }))
             .to.throw('You shoud specify the store node name impacted by the action');
     });
-    it('builded action should be a function', () => {
+    it('Builded action should be a function', () => {
         const action = actionBuilder({ status: 'test', service: () => { }, node: 'test' });
         expect(action).to.be.a('function');
     });
@@ -36,7 +43,7 @@ describe('### action-builder', () => {
         store.addNameChangeListener((e) => {
             expect('lopeez' === e.callerId);
             nbCall++;
-            if (2 === nbCall) {
+            if (1 === nbCall) {
                 done();
             }
         });
@@ -50,7 +57,7 @@ describe('### action-builder', () => {
         const action = actionBuilder(actionConf).bind({ _identifier: 'champ' });
         action(actionConf);
     });
-    it('Error service shoud trigger a store error uodate', (done) => {
+    it('Error service should trigger a store error update', (done) => {
         const store = new CoreStore({
             definition: {
                 name: 'name'
