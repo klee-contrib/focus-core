@@ -4,4 +4,4 @@
  * @type {Object}
  */
 
-module.exports = {}; // Empty by default
+export default {}; // Empty by default
