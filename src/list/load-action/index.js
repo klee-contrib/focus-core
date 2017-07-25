@@ -3,7 +3,7 @@ import assign from 'object-assign';
 import _builder from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
-import {manageResponseErrors} from '../../network/error-parsing';
+import { manageResponseErrors } from '../../network/error-parsing';
 
 
 /**
@@ -11,7 +11,7 @@ import {manageResponseErrors} from '../../network/error-parsing';
 * @param  {object} config - Action configuration.
 * @return {function} - The generated action from the congig.
 */
-module.exports = function loadActionFn(config){
+export default function loadActionFn(config) {
     /**
     * Dispatch the results on the search store
     * @param  {object} data - The data to dispatch.
@@ -29,7 +29,7 @@ module.exports = function loadActionFn(config){
      * @param  {object} err    - The error from the API call.
      * @return {object}     - The data from the manageResponseErrors function.
      */
-    function _errorOnCall( err){
+    function _errorOnCall(err) {
         manageResponseErrors(err, config);
         //_dispatchGlobalError shoud be separated.
     }
@@ -38,7 +38,7 @@ module.exports = function loadActionFn(config){
     * Build search action.
     * @param  {Boolean} isScroll - Is the action result from a scrolling.
     */
-    return function listLoader(isScroll){
+    return function listLoader(isScroll) {
         //Read search options from the accessor define in the config.
         // TODO: see if results should be named results.
         const {
@@ -53,22 +53,22 @@ module.exports = function loadActionFn(config){
 
         //Build URL data.
         const urlData = assign(
-            _builder.pagination({dataList, totalCount, isScroll, nbElement}),
-            _builder.orderAndSort({sortBy, sortAsc})
+            _builder.pagination({ dataList, totalCount, isScroll, nbElement }),
+            _builder.orderAndSort({ sortBy, sortAsc })
         );
         //Build body data.
         const postData = {
             criteria: criteria,
             group: groupingKey || ''
         };
-        config.service({urlData: urlData, data: postData})
-        .then((response)=>{
-            return _parser(
+        config.service({ urlData: urlData, data: postData })
+            .then((response) => {
+                return _parser(
                     response,
-                    {isScroll, dataList}
+                    { isScroll, dataList }
                 );
-        })
-        .then(_dispatchResult)
-        .catch(_errorOnCall);
+            })
+            .then(_dispatchResult)
+            .catch(_errorOnCall);
     };
 };
