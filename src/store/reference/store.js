@@ -19,7 +19,7 @@ class ReferenceStore extends CoreStore {
             }
             return acc;
         }, {});
-        return { references: this.refs };
+        return { references: refs };
     }
 
     getAllReference() {
@@ -34,4 +34,4 @@ class ReferenceStore extends CoreStore {
 
 }
 
-module.exports = ReferenceStore;
+export default ReferenceStore;
