@@ -1,5 +1,5 @@
-const Dispatcher = require('flux').Dispatcher;
-const assign = require('object-assign');
+import { Dispatcher } from 'flux';
+import assign from 'object-assign';
 
 /**
 * Application dispatcher.
@@ -30,4 +30,4 @@ const AppDispatcher = assign(new Dispatcher(), {
     }
 });
 
-module.exports = AppDispatcher;
+export default AppDispatcher;
