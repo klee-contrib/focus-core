@@ -12,20 +12,20 @@ init({
 describe('### action-builder', () => {
     it('Config must have a service', () => {
         expect(() => actionBuilder({}))
-            .to.throw('You need to provide a service to call');
+            .toThrow('You need to provide a service to call');
     });
     it('Config must have a status', () => {
         expect(() => actionBuilder({ service: () => { } }))
-            .to.throw('You need to provide a status to your action');
+            .toThrow('You need to provide a status to your action');
     });
 
     it('Config must have a node', () => {
         expect(() => actionBuilder({ service: () => { }, status: 'superStatus' }))
-            .to.throw('You shoud specify the store node name impacted by the action');
+            .toThrow('You shoud specify the store node name impacted by the action');
     });
     it('Builded action should be a function', () => {
         const action = actionBuilder({ status: 'test', service: () => { }, node: 'test' });
-        expect(action).to.be.a('function');
+        expect(action).toBeInstanceOf(Function);
     });
 
     it('Builded action call should result to a store update', (done) => {
@@ -78,7 +78,7 @@ describe('### action-builder', () => {
             return Promise.reject(mockErrorResponse);
         };
         store.addNameErrorListener(() => {
-            expect(store.getErrorName()).to.eql(lopezErrors);
+            expect(store.getErrorName()).toEqual(lopezErrors);
             done();
         });
         const actionConf = {

@@ -2,16 +2,16 @@
 // __tests__/container-test.js
 
 
-describe('### domain container', ()=>{
-    it('domain should be empty by default', ()=>{
+describe('### domain container', () => {
+    it('domain should be empty by default', () => {
         const domainContainer = require('../container');
-        expect(domainContainer.getAll()).to.deep.equal({});
+        expect(domainContainer.getAll()).toEqual({});
     });
-    it('domain set should add a domain', ()=>{
+    it('domain set should add a domain', () => {
         const domainContainer = require('../container');
-        const doText = {name: 'DO_TEXT', type: 'string'};
+        const doText = { name: 'DO_TEXT', type: 'string' };
         domainContainer.set(doText);
-        expect(domainContainer.getAll().DO_TEXT).to.deep.equal(doText);
+        expect(domainContainer.getAll().DO_TEXT).toEqual(doText);
     });
 
 
