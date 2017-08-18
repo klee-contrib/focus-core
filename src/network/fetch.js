@@ -4,9 +4,10 @@
 */
 import createCORSRequest from './cors';
 import cancellablePromiseBuilder from './cancellable-promise-builder';
-let uuid = require('uuid').v4;
+import { v4 as uuid } from 'uuid';
 import dispatcher from '../dispatcher';
 import isObject from 'lodash/lang/isObject';
+import { get as configGetter } from './config';
 
 /**
 * Create a pending status.
@@ -67,7 +68,7 @@ function jsonParser(req) {
 function fetch(obj, options = {}) {
     options.parser = options.parser || jsonParser;
     options.errorParser = options.errorParser || jsonParser;
-    let config = require('./config').get();
+    let config = configGetter();
     let request = createCORSRequest(obj.method, obj.url, { ...config, ...options });
     let requestStatus = createRequestStatus();
     if (!request) {
@@ -92,13 +93,13 @@ function fetch(obj, options = {}) {
                 updateRequestStatus({ id: requestStatus.id, status: 'error' });
                 return failure(err);
             }
+            let data;
             if (204 === status) {
                 data = undefined;
                 updateRequestStatus({ id: requestStatus.id, status: 'success' });
                 return success(data);
             }
             let contentType = request.contentType ? request.contentType : request.getResponseHeader('content-type');
-            let data;
             if (contentType && contentType.indexOf('application/json') !== -1) {
                 data = options.parser(request);
             } else {
@@ -122,4 +123,4 @@ function fetch(obj, options = {}) {
     });
 }
 
-module.exports = fetch;
+export default fetch;

@@ -1,5 +1,4 @@
-let ArgumentNullException = require('../exception').ArgumentNullException;
-let ArgumentInvalidException = require('../exception').ArgumentInvalidException;
+import { ArgumentNullException, ArgumentInvalidException } from '../exception';
 
 import isObject from 'lodash/lang/isObject';
 import isFunction from 'lodash/lang/isFunction';
@@ -101,4 +100,4 @@ let siteDescriptionHelper = {
     }
 };
 
-module.exports = siteDescriptionHelper;
+export default siteDescriptionHelper;

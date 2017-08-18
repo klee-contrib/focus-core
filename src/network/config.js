@@ -22,10 +22,16 @@ function configure(conf) {
 
 }
 
+const get = () => {
+    return clone(configuration);
+}
 
-module.exports = {
-    configure: configure,
-    get() {
-        return clone(configuration);
-    }
+export {
+    configure,
+    get
+};
+
+export default {
+    configure,
+    get
 };

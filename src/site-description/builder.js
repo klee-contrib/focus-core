@@ -165,13 +165,24 @@ function regenerateRoutes() {
     _processElement(siteDescription);
 }
 
-module.exports = {
-    getRoute: getRoute,
-    getRoutes: getRoutes,
-    getSiteDescription: getSiteDescription,
-    regenerateRoutes: regenerateRoutes,
-    getSiteStructure: getSiteStructure,
-    processSiteDescription: processSiteDescription,
-    findRouteName: findRouteName,
-    routeToRegExp: routeToRegExp
+export {
+    getRoute,
+    getRoutes,
+    getSiteDescription,
+    regenerateRoutes,
+    getSiteStructure,
+    processSiteDescription,
+    findRouteName,
+    routeToRegExp
+};
+
+export default {
+    getRoute,
+    getRoutes,
+    getSiteDescription,
+    regenerateRoutes,
+    getSiteStructure,
+    processSiteDescription,
+    findRouteName,
+    routeToRegExp
 };

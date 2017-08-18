@@ -31,4 +31,4 @@ class ListStore extends CoreStore {
         super(conf);
     }
 }
-module.exports = ListStore;
+export default ListStore;

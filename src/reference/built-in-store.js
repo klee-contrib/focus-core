@@ -6,9 +6,9 @@ let ref;
 * Built the store in order to the .
 * @return {ReferenceStore} - An instanciated reference store.
 */
-module.exports = function () {
+export default function () {
     if (!ref) {
         ref = new ReferenceStore();
     }
     return ref;
-};
+}

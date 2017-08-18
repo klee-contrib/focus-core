@@ -31,4 +31,4 @@ class QuickSearchStore extends SearchStore {
     }
 
 }
-module.exports = QuickSearchStore;
+export default QuickSearchStore;

@@ -2,10 +2,10 @@
 import Immutable from 'immutable';
 import CoreStore from '../CoreStore';
 import getDefinition from './definition';
-let uuid = require('uuid').v4;
+import { v4 as uuid } from 'uuid';
 const CLEAR = 'clear';
 const UPDATE = 'update';
-import AppDispatcher from '../../dispatcher'; 
+import AppDispatcher from '../../dispatcher';
 
 /**
  * Class standing for the cartridge store.
@@ -103,10 +103,10 @@ class RequestStore extends CoreStore {
     }
     registerDispatcher() {
         let currentStore = this;
-        this.dispatch = AppDispatcher.register(function(transferInfo) {
+        this.dispatch = AppDispatcher.register(function (transferInfo) {
             let rawData = transferInfo.action.data;
             let type = transferInfo.action.type;
-            if (!rawData || !rawData.request) {return;}
+            if (!rawData || !rawData.request) { return; }
             switch (type) {
                 case 'update':
                     if (rawData.request) {
@@ -123,4 +123,4 @@ class RequestStore extends CoreStore {
     }
 }
 
-module.exports = RequestStore;
+export default RequestStore;

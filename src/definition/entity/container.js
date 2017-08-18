@@ -74,8 +74,14 @@ function getFieldConfiguration(fieldPath, customFieldConf) {
 }
 
 
-module.exports = {
-    getEntityConfiguration: getEntityConfiguration,
-    setEntityConfiguration: setEntityConfiguration,
-    getFieldConfiguration: getFieldConfiguration
+export default {
+    getEntityConfiguration,
+    setEntityConfiguration,
+    getFieldConfiguration
+};
+
+export {
+    getEntityConfiguration,
+    setEntityConfiguration,
+    getFieldConfiguration
 };

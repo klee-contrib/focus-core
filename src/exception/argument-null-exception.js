@@ -13,4 +13,4 @@ class ArgumentNullException extends CustomException {
     }
 }
 
-module.exports = ArgumentNullException;
+export default ArgumentNullException;

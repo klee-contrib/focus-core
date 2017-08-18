@@ -86,8 +86,13 @@ function getFieldInformations(fieldName, complementaryInformation) {
     return _buildFieldInformation(fieldPath).mergeDeep(complementaryInformation).toJS();
 }
 
-
-module.exports = {
-    getEntityInformations: getEntityInformations,
-    getFieldInformations: getFieldInformations
+export {
+    getEntityInformations,
+    getFieldInformations
 };
+
+export default {
+    getEntityInformations,
+    getFieldInformations
+};
+

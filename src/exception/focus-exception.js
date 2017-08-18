@@ -13,4 +13,4 @@ class FocusException extends CustomException {
     }
 }
 
-module.exports = FocusException;
+export default FocusException;

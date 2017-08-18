@@ -10,7 +10,7 @@ import isArray from 'lodash/lang/isArray';
 * @param   {boolean} isRequired - Defines if the props is mandatory.
 * @return {object} The corresponding react type.
 */
-module.exports = function types(type, isRequired) {
+export default function types(type, isRequired) {
     const isStringType = isString(type);
     if (!isStringType && !isArray(type)) {
         throw new Error('The type should be a string or an array');
@@ -32,4 +32,4 @@ module.exports = function types(type, isRequired) {
         propTypeToReturn = propTypeToReturn.isRequired;
     }
     return propTypeToReturn;
-};
+}

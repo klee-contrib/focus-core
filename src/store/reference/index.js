@@ -1,1 +1,2 @@
-module.exports = require('./store');
+import ReferenceStore from './store';
+export default ReferenceStore;

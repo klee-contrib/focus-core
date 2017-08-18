@@ -1,1 +1,2 @@
-module.exports = require('./store');
+import UserStore from './store';
+export default UserStore;

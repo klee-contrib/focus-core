@@ -1,5 +1,6 @@
 import dispatcher from '../dispatcher';
 import isString from 'lodash/lang/isString';
+import builtInStore from './built-in-store';
 
 /**
  * Transform the message into objet if it is a string.
@@ -67,13 +68,22 @@ function clearMessages() {
     dispatcher.handleServerAction({ data: { messages: {} }, type: 'clear' });
 }
 
+export {
+    addMessage,
+    addWarningMessage,
+    addInformationMessage,
+    addErrorMessage,
+    addSuccessMessage,
+    clearMessages,
+    builtInStore
+};
 
-module.exports = {
-    addMessage: addMessage,
-    addWarningMessage: addWarningMessage,
-    addInformationMessage: addInformationMessage,
-    addErrorMessage: addErrorMessage,
-    addSuccessMessage: addSuccessMessage,
-    clearMessages: clearMessages,
-    builtInStore: require('./built-in-store')
+export default {
+    addMessage,
+    addWarningMessage,
+    addInformationMessage,
+    addErrorMessage,
+    addSuccessMessage,
+    clearMessages,
+    builtInStore
 };

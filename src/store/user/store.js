@@ -13,4 +13,4 @@ class UserStore extends CoreStore {
 
 }
 
-module.exports = UserStore;
+export default UserStore;

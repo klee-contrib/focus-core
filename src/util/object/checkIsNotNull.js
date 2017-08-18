@@ -11,8 +11,8 @@ import isNull from 'lodash/lang/isNull';
  * @returns {undefined} - Return nothing, throw an Exception if this is not valid.
  * @example var objToTest = { papa : "singe"}; isNull('objToTest', objToTest);
  */
-module.exports = function (name, data) {
+export default function (name, data) {
     if (isNull(data) || isUndefined(data)) {
         throw new ArgumentNullException(`${name} should be defined`);
     }
-};
+}

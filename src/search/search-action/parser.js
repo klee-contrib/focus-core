@@ -65,7 +65,7 @@ const _parseFacets = (serverFacets) => {
             const facetItemName = serverFacetItemPopertyNames[0];
             const facetItemValue = serverFacetItem[facetItemName];
             // The facet content is now an array instead of an object to preserve sorting.
-            facetData.push( {
+            facetData.push({
                 label: facetItemName,
                 count: facetItemValue
             });
@@ -87,21 +87,25 @@ const _parseUnscopedResponse = (data) => {
 
 const _parseScopedResponse = (data, context) => {
     //Scroll can only happen when there is an ungroupSearch
-    if(context.isScroll){
+    if (context.isScroll) {
         let resultsKeys = keys(context.results);
         let key = resultsKeys[0];
         //Concat previous data with incoming data.
         data.list = [...context.results[key], ...data.list];
     }
     return ({
-        results: data.groups || {[context.scope]: data.list},
+        results: data.groups || { [context.scope]: data.list },
         facets: _parseFacets(data.facets),
         totalCount: data.totalCount
     });
 };
 
-
-module.exports = {
+export default {
     unscopedResponse: _parseUnscopedResponse,
     scopedResponse: _parseScopedResponse
+};
+
+export {
+    _parseUnscopedResponse as unscopedResponse,
+    _parseScopedResponse as scopedResponse
 };

@@ -1,7 +1,7 @@
 //Dependencies.
 import CoreStore from '../CoreStore';
 import getDefinition from './definition';
-let uuid = require('uuid').v4;
+import { v4 as uuid } from 'uuid';
 const PUSH = 'push';
 const CLEAR = 'clear';
 import AppDispatcher from '../../dispatcher';
@@ -90,7 +90,7 @@ class MessageStore extends CoreStore {
     }
     registerDispatcher() {
         let currentStore = this;
-        this.dispatch = AppDispatcher.register(function(transferInfo) {
+        this.dispatch = AppDispatcher.register(function (transferInfo) {
             let rawData = transferInfo.action.data;
             let type = transferInfo.action.type;
 
@@ -110,4 +110,4 @@ class MessageStore extends CoreStore {
     }
 }
 
-module.exports = MessageStore;
+export default MessageStore;

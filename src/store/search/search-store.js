@@ -9,4 +9,4 @@ class SearchStore extends CoreStore {
     }
 }
 
-module.exports = SearchStore;
+export default SearchStore;

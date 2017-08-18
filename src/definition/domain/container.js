@@ -60,9 +60,16 @@ function getDomain(domainName) {
     return domainsMap.get(domainName);
 }
 
-module.exports = {
+export default {
     getAll: getDomains,
     setAll: setDomains,
     set: setDomain,
     get: getDomain
+};
+
+export {
+    getDomains as getAll,
+    setDomains as setAll,
+    setDomain as set,
+    getDomain as get
 };

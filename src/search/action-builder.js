@@ -18,7 +18,7 @@ const NB_SEARCH_ELEMENT = 50;
   * ```
   * @return {function} - The builded search action.
   */
-module.exports = function(config) {
+export default function (config) {
     config = config || {};
     if (!config.identifier) {
         console.warn('Your action should have an identifier');
@@ -33,10 +33,10 @@ module.exports = function(config) {
         config.nbSearchElement = NB_SEARCH_ELEMENT;
     }
     return {
-    /**
-     * Build the search for the identifier scope.
-     * @return {function} The search function for the given identifier.
-     */
+        /**
+         * Build the search for the identifier scope.
+         * @return {function} The search function for the given identifier.
+         */
         search: searchAction(config),
         /**
      * Update the query for the identifier scope.
@@ -51,4 +51,4 @@ module.exports = function(config) {
             });
         }
     };
-};
+}

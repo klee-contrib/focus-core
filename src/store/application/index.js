@@ -1,1 +1,2 @@
-module.exports = require('./store');
+import ApplicationStore from './store';
+export default ApplicationStore;

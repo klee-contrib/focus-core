@@ -49,11 +49,19 @@ function getConfigElement(name) {
     }
 }
 
+export {
+    getConfig as get,
+    getConfigElement as getElement,
+    setConfig as set,
+    getCacheDuration,
+    setCacheDuration
+};
 
-module.exports = {
+export default {
     get: getConfig,
     getElement: getConfigElement,
     set: setConfig,
     getCacheDuration,
     setCacheDuration
+
 };

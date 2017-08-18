@@ -3,7 +3,7 @@ import intersection from 'lodash/array/intersection';
 import uniq from 'lodash/array/uniq';
 import difference from 'lodash/array/difference';
 
-module.exports = function checkDomain(entityDef, domains) {
+export default function checkDomain(entityDef, domains) {
     domains = keys(domains);
     let arr = [];
     for (let node in entityDef) {
@@ -24,4 +24,4 @@ module.exports = function checkDomain(entityDef, domains) {
         console.warn('Useless domain definition', useLessDomains);
     }
     console.info('####################################################################');
-};
+}

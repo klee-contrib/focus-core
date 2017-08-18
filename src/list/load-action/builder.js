@@ -1,17 +1,15 @@
-import keys from 'lodash/object/keys';
 import isArray from 'lodash/lang/isArray';
 /**
  * Build sort infotmation.
  * @param  {object} sortConf - The sort configuration.
  * @return {object} - The builded sort configuration.
  */
-function _buildOrderAndSort(sortConf) {
+function orderAndSort(sortConf) {
     return {
         sortFieldName: sortConf.sortBy,
         sortDesc: sortConf.sortAsc === undefined ? false : !sortConf.sortAsc
     };
 }
-
 
 /**
  * Build the pagination configuration given the options.
@@ -21,7 +19,7 @@ function _buildOrderAndSort(sortConf) {
  *   nbSearchElement (:number) - The number of elements you want to get back from the search.
  * @return {object} - An object with {top, skip}.
  */
-function _buildPagination(opts) {
+function pagination(opts) {
     let { isScroll, dataList, totalCount, nbElement } = opts;
     if (isScroll) {
         if (!isArray(dataList)) {
@@ -37,7 +35,11 @@ function _buildPagination(opts) {
     }
 }
 
-module.exports = {
-    pagination: _buildPagination,
-    orderAndSort: _buildOrderAndSort
+export {
+    pagination,
+    orderAndSort
+};
+export default {
+    pagination,
+    orderAndSort
 };

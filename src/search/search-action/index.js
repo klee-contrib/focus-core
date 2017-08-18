@@ -15,7 +15,7 @@ const STAR = '*';
 * @param  {object} config - Action configuration.
 * @return {function} - The generated action from the congig.
 */
-module.exports = function searchActionBuilder(config) {
+export default function searchActionBuilder(config) {
     /**
     * Dispatch the results on the search store
     * @param  {object} data - The data to dispatch.
@@ -99,4 +99,4 @@ module.exports = function searchActionBuilder(config) {
                 .catch(_errorOnCall);
         }
     };
-};
+}

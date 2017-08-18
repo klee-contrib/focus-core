@@ -1,7 +1,5 @@
 import React from 'react';
 import assign from 'object-assign';
-//var isObject = require('lodash/lang/isObject');
-//var isFunction = require('lodash/lang/isFunction');
 
 /**
 * Create a component with a mixin except id the component is mixin only.
@@ -22,9 +20,9 @@ function createComponent(mixin, isMixinOnly) {
 * @param {boolean} isMixinOnly - Bolean to set .
 * @return {object} {mixin: 'the component mixin', component: 'the react instanciated component'}
 */
-module.exports = function builder(componentMixin, isMixinOnly) {
+export default function builder(componentMixin, isMixinOnly) {
     return assign(
         { mixin: componentMixin },
         createComponent(componentMixin, isMixinOnly)
     );
-};
+}

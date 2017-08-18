@@ -5,7 +5,7 @@ import urlProcessor from './processor';
 * @param method - HTTP verb {GET, POST, PUT, DELETE}
 * @return {function}
 */
-module.exports = function (url, method) {
+export default function (url, method) {
     /**
      * Function returns by the module.
      * @param  {object} param - urlData: The JSON data to inject in the URL, data: The JSON data to give to the request.
@@ -21,4 +21,4 @@ module.exports = function (url, method) {
             data: param.data || param.bodyData
         };
     };
-};
+}

@@ -11,7 +11,7 @@ import clearComponent from './clear';
 * @param {string} selector  - A selector on a DOM node.
 * @param {object} options   - Options for the component rendering.
 */
-module.exports = function renderComponent(component, selector, options) {
+export default function renderComponent(component, selector, options) {
     options = options || {};
     // Clear a potential previously mounted component
     clearComponent(selector);
@@ -28,10 +28,4 @@ module.exports = function renderComponent(component, selector, options) {
     mountedComponents[selector] = mountedComponent;
     console.info('Mounted components : ', Object.keys(mountedComponents));
     return mountedComponent;
-};
-/*
-Exemple
-var render = Focus.application.render;
-var MyComponent = require('./my-component');
-render(MyComponent, 'div.component-container', {props: {id: '12'}});
-*/
+}
