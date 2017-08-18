@@ -1,4 +1,4 @@
-const ReferenceStore = require('../store/reference');
+import ReferenceStore from '../store/reference';
 
 let ref;
 

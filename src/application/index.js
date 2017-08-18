@@ -1,9 +1,9 @@
 import React from 'react';
 import dispatcher from '../dispatcher';
-import { isUndefined } from 'lodash/lang';
+import isUndefined from 'lodash/lang/isUndefined';
 import confirm from './confirm';
 //Empty compoennt.
-const Empty = props => <div data-focus='empty'></div>;
+const Empty = props => <div data-focus='empty' />;
 Empty.displayName = 'Empty';
 
 module.exports = {

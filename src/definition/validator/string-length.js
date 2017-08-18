@@ -1,4 +1,5 @@
-let {isString} = require('lodash/lang');
+import isString from 'lodash/lang/isString';
+
 /**
  * Validate a string given options.
  * @param  {string} stringToTest - The string to test.

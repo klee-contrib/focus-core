@@ -1,4 +1,6 @@
-import { isObject, isArray } from 'lodash';
+import isObject from 'lodash/lang/isObject';
+import isArray from 'lodash/lang/isArray';
+
 import { getAll as getDomains } from '../definition/domain/container';
 
 import { addMessage } from '../message';

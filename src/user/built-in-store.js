@@ -1,2 +1,2 @@
-var UserStore = require('../store/user');
+import UserStore from '../store/user';
 module.exports = new UserStore();

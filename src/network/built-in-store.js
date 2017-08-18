@@ -1,4 +1,4 @@
-const RequestStore = require('../store/request');
+import RequestStore from '../store/request';
 /**
  * Built the store in order to the .
  * @return {RequestStore} - An instanciated application store.

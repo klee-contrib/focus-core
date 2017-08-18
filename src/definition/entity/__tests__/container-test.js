@@ -1,7 +1,7 @@
 /*global  expect, describe, it*/
 // __tests__/container-test.js
 
-const entityConfigurationMock = require('./entityConfigurationMock.json');
+import entityConfigurationMock from './entityConfigurationMock.json';
 
 describe('### entity container', () => {
     it('getEntityConfiguration should be empty by default', () => {

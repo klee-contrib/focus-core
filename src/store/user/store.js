@@ -1,15 +1,15 @@
 //Dependencies.
-var CoreStore = require('../CoreStore');
-var buildDefinition = require('./definition');
+import CoreStore from '../CoreStore';
+import buildDefinition from './definition';
 /**
  * Class standing for the user store.
  */
 class UserStore extends CoreStore {
-  constructor(conf){
-    conf = conf || {};
-    conf.definition = conf.definition || buildDefinition();
-    super(conf);
-  }
+    constructor(conf) {
+        conf = conf || {};
+        conf.definition = conf.definition || buildDefinition();
+        super(conf);
+    }
 
 }
 

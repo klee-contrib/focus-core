@@ -1,15 +1,15 @@
-const userBuiltInStore = require('./built-in-store');
-const isArray = require('lodash/lang/isArray');
-const intersection = require('lodash/array/intersection');
-const dispatcher = require('../dispatcher');
+import userBuiltInStore from './built-in-store';
+import isArray from 'lodash/lang/isArray';
+import intersection from 'lodash/array/intersection';
+import dispatcher from '../dispatcher';
 
 /**
  * Set the a node in the store.
  * @param {string} name  node name
  * @param {string} value node value to be set
  */
-function _setUserNode(name, value){
-    dispatcher.handleViewAction({data: {[name]: value}, type: 'update'});
+function _setUserNode(name, value) {
+    dispatcher.handleViewAction({ data: { [name]: value }, type: 'update' });
 }
 module.exports = {
     builtInStore: userBuiltInStore,
@@ -18,7 +18,7 @@ module.exports = {
     * @param  {string | array}  role - Check if the user has one or many roles.
     * @return {Boolean} - True if the user has at least on of the givent roles.
     */
-    hasRole(role){
+    hasRole(role) {
         role = isArray(role) ? role : [role];
         return 0 < intersection(role, userBuiltInStore.getRoles()).length;
     },
@@ -26,42 +26,42 @@ module.exports = {
     * Set the user roles.
     * @param {array} roles - User role list.
     */
-    setRoles(roles){
+    setRoles(roles) {
         _setUserNode('roles', roles);
     },
     /**
     * Get the user roles.
     * @return {array} - The user role list.
     */
-    getRoles(){
+    getRoles() {
         return userBuiltInStore.getRoles();
     },
     /**
     * Set the user profile.
     * @param {object} profile User profile.
     */
-    setProfile(profile){
+    setProfile(profile) {
         _setUserNode('profile', profile);
     },
     /**
     * Get the user profile.
     * @return {object} profile User profile.
     */
-    getProfile(){
+    getProfile() {
         return userBuiltInStore.getProfile();
     },
     /**
     * Set user profile.
     * @param {object} login - user login.
     */
-    setLogin(login){
+    setLogin(login) {
         _setUserNode('login', login);
     },
     /**
     * Get the user login.
     * @return {object} - The user login.
     */
-    getLogin(){
+    getLogin() {
         return userBuiltInStore.getLogin();
     }
 };

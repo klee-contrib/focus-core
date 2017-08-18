@@ -1,5 +1,5 @@
-const React = require('react');
-const assign = require('object-assign');
+import React from 'react';
+import assign from 'object-assign';
 //var isObject = require('lodash/lang/isObject');
 //var isFunction = require('lodash/lang/isFunction');
 
@@ -9,11 +9,11 @@ const assign = require('object-assign');
 * @param {Boolean} isMixinOnly - define if the component is a mixin only.
 * @return {object} - {component} the built react component.
 */
-function createComponent(mixin, isMixinOnly){
-    if (isMixinOnly){
+function createComponent(mixin, isMixinOnly) {
+    if (isMixinOnly) {
         return null;
     }
-    return {component: React.createClass(mixin)};
+    return { component: React.createClass(mixin) };
 }
 
 /**
@@ -22,9 +22,9 @@ function createComponent(mixin, isMixinOnly){
 * @param {boolean} isMixinOnly - Bolean to set .
 * @return {object} {mixin: 'the component mixin', component: 'the react instanciated component'}
 */
-module.exports = function builder(componentMixin, isMixinOnly){
+module.exports = function builder(componentMixin, isMixinOnly) {
     return assign(
-        {mixin: componentMixin},
+        { mixin: componentMixin },
         createComponent(componentMixin, isMixinOnly)
     );
 };

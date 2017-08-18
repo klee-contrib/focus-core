@@ -1,6 +1,6 @@
 /* global it, describe, expect */
 import { manageResponseErrors as errorParser } from '../error-parsing';
-import { omit } from 'lodash/object';
+import omit from 'lodash/object/omit';
 
 const NODE_OPTS = { node: 'field1' };
 const NODES_OPTS = { node: ['field1', 'field2'] };

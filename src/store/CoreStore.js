@@ -1,13 +1,18 @@
+/* eslint-disable filenames/match-regex */
 import { EventEmitter } from 'events';
 import assign from 'object-assign';
-import { isArray, isEmpty, isObject, isFunction } from 'lodash/lang';
-import { defer } from 'lodash/function';
+
+import isArray from 'lodash/lang/isArray';
+import isFunction from 'lodash/lang/isFunction';
+
+import defer from 'lodash/function/defer';
+
 import intersection from 'lodash/array/intersection';
 import capitalize from 'lodash/string/capitalize';
 import Immutable from 'immutable';
 import AppDispatcher from '../dispatcher';
 
-const reservedNames = ["Error", "Status"];
+const reservedNames = ['Error', 'Status'];
 
 const _instances = [];
 
@@ -34,7 +39,7 @@ class CoreStore extends EventEmitter {
         this.buildDefinition();
         this.buildEachNodeChangeEventListener();
         this.registerDispatcher();
-        if (!!__DEV__) {
+        if (__DEV__) {
             this._registerDevTools();
         }
     }
@@ -130,21 +135,21 @@ class CoreStore extends EventEmitter {
         for (let definition in this.definition) {
             const capitalizeDefinition = capitalize(definition);
             //Creates the change listener
-            currentStore[`add${capitalizeDefinition}ChangeListener`] = function (def) {
+            currentStore[`add${capitalizeDefinition}ChangeListener`] = (function (def) {
                 return function (cb) {
                     currentStore.addListener(`${def}:change`, cb);
                 }
-            }(definition);
+            }(definition));
             //Remove the change listener
-            currentStore[`remove${capitalizeDefinition}ChangeListener`] = function (def) {
+            currentStore[`remove${capitalizeDefinition}ChangeListener`] = (function (def) {
                 return function (cb) {
                     currentStore.removeListener(`${def}:change`, cb);
                 }
-            }(definition);
+            }(definition));
             //Create an update method.
             //Should be named updateData to be more explicit
             if (currentStore[`update${capitalizeDefinition}`] === undefined) {
-                currentStore[`update${capitalizeDefinition}`] = function (def) {
+                currentStore[`update${capitalizeDefinition}`] = (function (def) {
                     return function (dataNode, status, informations) {
                         const immutableNode = isFunction(dataNode) ? dataNode : Immutable.fromJS(dataNode);
                         currentStore.data = currentStore.data.set(def, immutableNode);
@@ -153,12 +158,12 @@ class CoreStore extends EventEmitter {
 
                         currentStore.willEmit(`${def}:change`, { property: def, status: status, informations: informations });
                     }
-                }(definition);
+                }(definition));
             }
 
             //Create a get method.
             if (currentStore[`get${capitalizeDefinition}`] === undefined) {
-                currentStore[`get${capitalizeDefinition}`] = function (def) {
+                currentStore[`get${capitalizeDefinition}`] = (function (def) {
                     return function () {
                         const hasData = currentStore.data.has(def);
                         if (hasData) {
@@ -171,53 +176,53 @@ class CoreStore extends EventEmitter {
                         }
                         return undefined;
                     };
-                }(definition);
+                }(definition));
             }
             //Creates the error change listener
-            currentStore[`add${capitalizeDefinition}ErrorListener`] = function (def) {
+            currentStore[`add${capitalizeDefinition}ErrorListener`] = (function (def) {
                 return function (cb) {
                     currentStore.addListener(`${def}:error`, cb);
                 }
-            }(definition);
+            }(definition));
             //Remove the change listener
-            currentStore[`remove${capitalizeDefinition}ErrorListener`] = function (def) {
+            currentStore[`remove${capitalizeDefinition}ErrorListener`] = (function (def) {
                 return function (cb) {
                     currentStore.removeListener(`${def}:error`, cb);
                 }
-            }(definition);
+            }(definition));
             //Create an update method.
-            currentStore[`updateError${capitalizeDefinition}`] = function (def) {
+            currentStore[`updateError${capitalizeDefinition}`] = (function (def) {
                 return function (dataNode, status, informations) {
                     //CheckIsObject
-                    const immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+                    const immutableNode = Immutable[isArray(dataNode) ? 'List' : 'Map'](dataNode);
                     currentStore.error = currentStore.error.set(def, immutableNode);
                     currentStore.status = currentStore.status.set(def, status);
                     currentStore.willEmit(`${def}:error`, { property: def, status: status, informations: informations });
                 }
-            }(definition);
+            }(definition));
             //Create a get method.
-            currentStore[`getError${capitalizeDefinition}`] = function (def) {
+            currentStore[`getError${capitalizeDefinition}`] = (function (def) {
                 return function () {
                     const hasData = currentStore.error.has(def);
                     return hasData ? currentStore.error.get(def).toJS() : undefined;
                 };
-            }(definition);
+            }(definition));
 
 
             // status
-            currentStore[`add${capitalizeDefinition}StatusListener`] = function (def) {
+            currentStore[`add${capitalizeDefinition}StatusListener`] = (function (def) {
                 return function (cb) {
                     currentStore.addListener(`${def}:status`, cb);
                 }
-            }(definition);
+            }(definition));
             //Remove the change listener
-            currentStore[`remove${capitalizeDefinition}StatusListener`] = function (def) {
+            currentStore[`remove${capitalizeDefinition}StatusListener`] = (function (def) {
                 return function (cb) {
                     currentStore.removeListener(`${def}:status`, cb);
                 }
-            }(definition);
+            }(definition));
             //Create an update method.
-            currentStore[`updateStatus${capitalizeDefinition}`] = function (def) {
+            currentStore[`updateStatus${capitalizeDefinition}`] = (function (def) {
                 return function updateStatus(dataNode, status, informations) {
                     //CheckIsObject
                     //console.log(`status  ${JSON.stringify(status) }`);
@@ -225,15 +230,15 @@ class CoreStore extends EventEmitter {
                     currentStore.status = currentStore.status.set(def, statusNode);
                     currentStore.willEmit(`${def}:status`, { property: def, status: status, informations: informations });
                 }
-            }(definition);
+            }(definition));
             //Create a get method.
-            currentStore[`getStatus${capitalizeDefinition}`] = function (def) {
+            currentStore[`getStatus${capitalizeDefinition}`] = (function (def) {
                 return function getStatus() {
                     const hasData = currentStore.status.has(def);
                     const data = hasData ? currentStore.status.get(def) : undefined;
                     return data.toJS ? data.toJS() : data;
                 };
-            }(definition);
+            }(definition));
         }
     }
 
