@@ -2,100 +2,106 @@
 // __tests__/container-test.js
 
 import CoreStore from '../CoreStore';
-import {handleViewAction as dispatch} from '../../dispatcher'
-describe('# The core store', ()=>{
+import dispatcher from '../../dispatcher';
+
+const dispatch = (data) => dispatcher.handleViewAction(data);
+
+describe('# The core store', () => {
     describe('listeners ', () => {
-        const testStore = new CoreStore({definition: {person: 'person', address: 'address'}});
-        describe(' should create listeners functions', ()=>{
+        let testStore;
+        beforeEach(() => {
+            testStore = new CoreStore({ definition: { person: 'person', address: 'address' } });
+        });
+        describe(' should create listeners functions', () => {
             it('should add  onChange listeners', () => {
-                expect(testStore.addPersonChangeListener).to.be.a.function;
-                expect(testStore.addAddressnChangeListener).to.be.a.function;
+                expect(testStore.addPersonChangeListener).toBeInstanceOf(Function);
+                expect(testStore.addAddressChangeListener).toBeInstanceOf(Function);
             });
-            it('should add Error listeners', ()=>{
-                expect(testStore.addPersonErrorListener).to.be.a.function;
-                expect(testStore.addAddressErrorListener).to.be.a.function;
+            it('should add Error listeners', () => {
+                expect(testStore.addPersonErrorListener).toBeInstanceOf(Function);
+                expect(testStore.addAddressErrorListener).toBeInstanceOf(Function);
             });
-            it('should add status change listeners', ()=>{
-                expect(testStore.addPersonStatusListener).to.be.a.function;
-                expect(testStore.addAddressStatusListener).to.be.a.function;
+            it('should add status change listeners', () => {
+                expect(testStore.addPersonStatusListener).toBeInstanceOf(Function);
+                expect(testStore.addAddressStatusListener).toBeInstanceOf(Function);
             });
         });
-        describe(' should create remove listeners functions', ()=>{
+        describe(' should create remove listeners functions', () => {
             it('should add  onChange listeners', () => {
-                expect(testStore.removePersonChangeListener).to.be.a.function;
-                expect(testStore.removeAddressChangeListener).to.be.a.function;
+                expect(testStore.removePersonChangeListener).toBeInstanceOf(Function);
+                expect(testStore.removeAddressChangeListener).toBeInstanceOf(Function);
             });
-            it('should add Error listeners', ()=>{
-                expect(testStore.removePersonErrorListener).to.be.a.function;
-                expect(testStore.removeAddressErrorListener).to.be.a.function;
+            it('should add Error listeners', () => {
+                expect(testStore.removePersonErrorListener).toBeInstanceOf(Function);
+                expect(testStore.removeAddressErrorListener).toBeInstanceOf(Function);
             });
-            it('should add status change listeners', ()=>{
-                expect(testStore.removePersonStatusListener).to.be.a.function;
-                expect(testStore.removeAddressStatusListener).to.be.a.function;
+            it('should add status change listeners', () => {
+                expect(testStore.removePersonStatusListener).toBeInstanceOf(Function);
+                expect(testStore.removeAddressStatusListener).toBeInstanceOf(Function);
             });
         });
         describe('Handlers should be called on dispatch', () => {
-            it('sould call on change listener on dispatch', (done) => {
-                const PERSON = {nom: 'david'}
+            it('should call on change listener on dispatch', (done) => {
+                const PERSON = { nom: 'david' }
                 const onChange = d => {
-                   expect(testStore.getPerson()).be.deep.equal(PERSON);
-                   testStore.removePersonChangeListener(onChange);
-                   done();
+                    expect(testStore.getPerson()).toEqual(PERSON);
+                    testStore.removePersonChangeListener(onChange);
+                    done();
                 }
-                 testStore.addPersonChangeListener(onChange);
-                 dispatch({
-                     data: {person: PERSON},
-                     type: 'update'
-                 })
+                testStore.addPersonChangeListener(onChange);
+                dispatch({
+                    data: { person: PERSON },
+                    type: 'update'
+                })
             });
-            it('sould call on error listener on dispatch', (done) => {
-                const PERSON_ERROR = {nom: 'error'}
+            it('should call on error listener on dispatch', (done) => {
+                const PERSON_ERROR = { nom: 'error' }
                 const onChange = d => {
-                   expect(testStore.getErrorPerson()).be.deep.equal(PERSON_ERROR);
-                   testStore.removePersonErrorListener(onChange);
-                   done();
+                    expect(testStore.getErrorPerson()).toEqual(PERSON_ERROR);
+                    testStore.removePersonErrorListener(onChange);
+                    done();
                 }
-                 testStore.addPersonErrorListener(onChange);
-                 dispatch({
-                     data: {person: PERSON_ERROR},
-                     type: 'updateError'
-                 })
+                testStore.addPersonErrorListener(onChange);
+                dispatch({
+                    data: { person: PERSON_ERROR },
+                    type: 'updateError'
+                })
             });
-            it('sould call on status listener on dispatch', (done) => {
-                const PERSON_STATUS = {nom: 'status'}
+            it('should call on status listener on dispatch', (done) => {
+                const PERSON_STATUS = { nom: 'status' }
                 const onChange = d => {
-                   expect(testStore.getStatusPerson()).be.deep.equal(PERSON_STATUS);
-                   testStore.removePersonStatusListener(onChange);
-                   done();
+                    expect(testStore.getStatusPerson()).toEqual(PERSON_STATUS);
+                    testStore.removePersonStatusListener(onChange);
+                    done();
                 }
-                 testStore.addPersonStatusListener(onChange);
-                 dispatch({
-                     data: {person: PERSON_STATUS},
-                     type: 'updateStatus',
-                     status: {person: PERSON_STATUS}
-                 })
+                testStore.addPersonStatusListener(onChange);
+                dispatch({
+                    data: { person: PERSON_STATUS },
+                    type: 'updateStatus',
+                    status: { person: PERSON_STATUS }
+                })
             });
 
         });
 
     });
     describe('getters setters', () => {
-        const testStore = new CoreStore({definition: {person: 'person', address: 'address'}});
-        describe('should create getters functions', () =>{
+        const testStore = new CoreStore({ definition: { person: 'person', address: 'address' } });
+        describe('should create getters functions', () => {
             it('should add  getData function', () => {
-                expect(testStore.getPerson).to.be.a.function;
-                expect(testStore.getAddress).to.be.a.function;
+                expect(testStore.getPerson).toBeInstanceOf(Function);
+                expect(testStore.getAddress).toBeInstanceOf(Function);
             });
-            it('should add getError function', ()=>{
-                expect(testStore.getErrorPerson).to.be.a.function;
-                expect(testStore.getErrorAddress).to.be.a.function;
+            it('should add getError function', () => {
+                expect(testStore.getErrorPerson).toBeInstanceOf(Function);
+                expect(testStore.getErrorAddress).toBeInstanceOf(Function);
             });
-            it('should add getStatus function', ()=>{
-                expect(testStore.getStatusPerson).to.be.a.function;
-                expect(testStore.getStatusAddress).to.be.a.function;
+            it('should add getStatus function', () => {
+                expect(testStore.getStatusPerson).toBeInstanceOf(Function);
+                expect(testStore.getStatusAddress).toBeInstanceOf(Function);
             });
         });
-        describe('should create setters functions', () =>{
+        describe('should create setters functions', () => {
 
         });
     });

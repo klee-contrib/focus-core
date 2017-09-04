@@ -1,10 +1,9 @@
 /*global document*/
 //dependencies
-const React = require('react');
-const ReactDOM = require('react-dom');
-const keys = require('lodash/object/keys');
-const mountedComponents = require('./mounted-components');
-const clearComponent = require('./clear');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import mountedComponents from './mounted-components';
+import clearComponent from './clear';
 
 /**
 *  Render a react component in a DOM selector.
@@ -12,12 +11,12 @@ const clearComponent = require('./clear');
 * @param {string} selector  - A selector on a DOM node.
 * @param {object} options   - Options for the component rendering.
 */
-module.exports = function renderComponent(component, selector, options){
+export default function renderComponent(component, selector, options) {
     options = options || {};
     // Clear a potential previously mounted component
     clearComponent(selector);
     const targetDOMContainer = document.querySelector(selector);
-    if(!targetDOMContainer){
+    if (!targetDOMContainer) {
         throw new Error(`You are trying to render a component in a DOM element which is not existing, your selector is  ${selector}`);
     }
     // Render the component
@@ -27,12 +26,6 @@ module.exports = function renderComponent(component, selector, options){
     );
     //Save the fact that a component is mounted.
     mountedComponents[selector] = mountedComponent;
-    console.info('Mounted components : ', keys(mountedComponents));
+    console.info('Mounted components : ', Object.keys(mountedComponents));
     return mountedComponent;
-};
-/*
-Exemple
-var render = Focus.application.render;
-var MyComponent = require('./my-component');
-render(MyComponent, 'div.component-container', {props: {id: '12'}});
-*/
+}

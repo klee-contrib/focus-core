@@ -28,37 +28,42 @@ const _buildFacets = facets => {
  */
 const _buildOrderAndSort = sortConf => {
     return {
-      sortFieldName: sortConf.sortBy,
-      sortDesc: sortConf.sortAsc === undefined?false:!sortConf.sortAsc
+        sortFieldName: sortConf.sortBy,
+        sortDesc: sortConf.sortAsc === undefined ? false : !sortConf.sortAsc
     }
 };
-
 
 
 const _buildPagination = opts => {
     const resultsKeys = keys(opts.results);
-    if(opts.isScroll && resultsKeys.length === 1){
-      const key = resultsKeys[0];
-      const previousRes = opts.results[key];
-      if(previousRes.length < opts.totalCount){
-        return {
-          top: opts.nbSearchElement,
-          skip: previousRes.length
-        };
-        //Else should not be called.
-        console.warn('This should not happen.')
-      };
+    if (opts.isScroll && resultsKeys.length === 1) {
+        const key = resultsKeys[0];
+        const previousRes = opts.results[key];
+        if (previousRes.length < opts.totalCount) {
+            return {
+                top: opts.nbSearchElement,
+                skip: previousRes.length
+            };
+        } else {
+            //Else should not be called.
+            console.warn('This should not happen.')
+        }
     } else {
-      return {
-        skip: 0,
-        top: opts.nbSearchElement || 0
-      }
+        return {
+            skip: 0,
+            top: opts.nbSearchElement || 0
+        }
     }
 };
 
+export {
+    _buildPagination as pagination,
+    _buildOrderAndSort as orderAndSort,
+    _buildFacets as facets
+};
 
-module.exports = {
-  pagination: _buildPagination,
-  orderAndSort: _buildOrderAndSort,
-  facets: _buildFacets
+export default {
+    pagination: _buildPagination,
+    orderAndSort: _buildOrderAndSort,
+    facets: _buildFacets
 };

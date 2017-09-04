@@ -1,15 +1,15 @@
-const Immutable = require('immutable');
-const checkIsString = require('../../util/string/check');
-const checkIsObject = require('../../util/object/check');
-const checkIsNotNull = require('../../util/object/checkIsNotNull');
+import Immutable from 'immutable';
+import checkIsString from '../../util/string/check';
+import checkIsObject from '../../util/object/check';
+import checkIsNotNull from '../../util/object/checkIsNotNull';
 const SEPARATOR = '.';
 
 /**
 * Pointer to the domain contaier.
 * @type {Object}
 */
-const domainContainer = require('../domain/container');
-const entityContainer = require('./container');
+import domainContainer from '../domain/container';
+import entityContainer from './container';
 let computedEntityContainer = Immutable.Map({});
 
 /*
@@ -50,7 +50,7 @@ function _buildFieldInformation(fieldPath) {
     const fieldConf = entityContainer.getFieldConfiguration(fieldPath);
     const immutableFieldConf = Immutable.Map(fieldConf);
     //Maybe add a domain check existance
-    let {domain} = fieldConf;
+    let { domain } = fieldConf;
     return domainContainer.get(domain).mergeDeep(immutableFieldConf);
 }
 
@@ -86,8 +86,13 @@ function getFieldInformations(fieldName, complementaryInformation) {
     return _buildFieldInformation(fieldPath).mergeDeep(complementaryInformation).toJS();
 }
 
-
-module.exports = {
-    getEntityInformations: getEntityInformations,
-    getFieldInformations: getFieldInformations
+export {
+    getEntityInformations,
+    getFieldInformations
 };
+
+export default {
+    getEntityInformations,
+    getFieldInformations
+};
+

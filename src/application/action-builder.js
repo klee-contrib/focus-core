@@ -1,44 +1,44 @@
 import dispatcher from '../dispatcher';
-import {manageResponseErrors} from '../network/error-parsing';
-import {isArray} from 'lodash/lang';
-import {identity} from 'lodash/utility';
+import { manageResponseErrors } from '../network/error-parsing';
+import isArray from 'lodash/lang/isArray';
+import identity from 'lodash/utility/identity';
 
 /**
  * Method call before the service.
  * @param  {Object} config - The action builder config.
  */
-function _preServiceCall({node, type, preStatus, callerId, shouldDumpStoreOnActionCall}, payload){
+function _preServiceCall({ node, type, preStatus, callerId, shouldDumpStoreOnActionCall }, payload) {
     //There is a problem if the node is empty. //Node should be an array
     let data = {};
     let status = {};
-    const STATUS = {name: preStatus, isLoading: true};
+    const STATUS = { name: preStatus, isLoading: true };
     type = shouldDumpStoreOnActionCall ? 'update' : 'updateStatus';
     // When there is a multi node update it should be an array.
-    if(isArray(node)){
-        node.forEach((nd)=>{
+    if (isArray(node)) {
+        node.forEach((nd) => {
             data[nd] = shouldDumpStoreOnActionCall ? null : (payload && payload[nd]) || null;
             status[nd] = STATUS;
         });
-    }else{
+    } else {
         data[node] = shouldDumpStoreOnActionCall ? null : (payload || null);
         status[node] = STATUS;
     }
     //Dispatch store cleaning.
-    dispatcher.handleViewAction({data, type, status, callerId});
+    dispatcher.handleViewAction({ data, type, status, callerId });
 }
 /**
  * Method call after the service call.
  * @param  {Object} config - Action builder config.
  * @param  {object} json   - The data return from the service call.
  */
-function _dispatchServiceResponse({node, type, status, callerId}, json){
+function _dispatchServiceResponse({ node, type, status, callerId }, json) {
     const isMultiNode = isArray(node);
-    const data = isMultiNode ? json : {[node]: json};
-    const postStatus = {name: status, isLoading: false};
+    const data = isMultiNode ? json : { [node]: json };
+    const postStatus = { name: status, isLoading: false };
     let newStatus = {};
-    if(isMultiNode){
-        node.forEach((nd)=>{newStatus[nd] = postStatus; });
-    }else {
+    if (isMultiNode) {
+        node.forEach((nd) => { newStatus[nd] = postStatus; });
+    } else {
         newStatus[node] = postStatus;
     }
     dispatcher.handleServerAction({
@@ -51,12 +51,12 @@ function _dispatchServiceResponse({node, type, status, callerId}, json){
 /**
  * The main objective of this function is to cancel the loading state on all the nodes concerned by the service call.
  */
-function _dispatchFieldErrors({node, callerId}, errorResult){
+function _dispatchFieldErrors({ node, callerId }, errorResult) {
     const isMultiNode = isArray(node);
     const data = {};
-    if(isMultiNode){
+    if (isMultiNode) {
         node.forEach((nd) => {
-            data[nd] = (errorResult || {})[nd] || null; 
+            data[nd] = (errorResult || {})[nd] || null;
         });
     } else {
         data[node] = errorResult;
@@ -67,7 +67,7 @@ function _dispatchFieldErrors({node, callerId}, errorResult){
         isLoading: false
     };
     let newStatus = {};
-    if(isMultiNode){
+    if (isMultiNode) {
         node.forEach((nd) => {
             newStatus[nd] = errorStatus;
         });
@@ -82,7 +82,7 @@ function _dispatchFieldErrors({node, callerId}, errorResult){
     });
 }
 
-function _dispatchGlobalErrors(conf , errors){
+function _dispatchGlobalErrors(conf, errors) {
     //console.warn('NOT IMPLEMENTED', conf, errors);
 }
 
@@ -92,7 +92,7 @@ function _dispatchGlobalErrors(conf , errors){
  * @param  {object} err    - The error from the API call.
  * @return {object}     - The data from the manageResponseErrors function.
  */
-function _errorOnCall(config, err){
+function _errorOnCall(config, err) {
     const errorResult = manageResponseErrors(err, config);
     _dispatchGlobalErrors(config, errorResult.globals);
     _dispatchFieldErrors(config, errorResult.fields);
@@ -107,17 +107,17 @@ function _errorOnCall(config, err){
  *                         - status(:string)} The status after the action.
  * @return {function} - The build action from the configuration. This action dispatch the preStatus, call the service and dispatch the result from the server.
  */
-export default function actionBuilder(config = {}){
+export default function actionBuilder(config = {}) {
     config.type = config.type || 'update';
     config.preStatus = config.preStatus || 'loading';
     config.shouldDumpStoreOnActionCall = config.shouldDumpStoreOnActionCall || false;
-    if(!config.service){
+    if (!config.service) {
         throw new Error('You need to provide a service to call');
     }
-    if(!config.status){
+    if (!config.status) {
         throw new Error('You need to provide a status to your action');
     }
-    if(!config.node){
+    if (!config.node) {
         throw new Error('You shoud specify the store node name impacted by the action');
     }
     return function actionBuilderFn(payload, context) {
@@ -126,18 +126,18 @@ export default function actionBuilder(config = {}){
             callerId: context._identifier,
             postService: identity, ...config
         };
-        const {postService} = conf;
+        const { postService } = conf;
         _preServiceCall(conf, payload);
-        return conf.service(payload).then(postService).then((jsonData)=>{
+        return conf.service(payload).then(postService).then((jsonData) => {
             return _dispatchServiceResponse(conf, jsonData);
         }, (err) => {
             _errorOnCall(conf, err);
         });
     };
-};
+}
 
 export {
     _errorOnCall as errorOnCall,
     _dispatchServiceResponse as dispatchServiceResponse,
     _preServiceCall as preServiceCall
-    };
+};

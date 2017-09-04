@@ -1,7 +1,15 @@
-let AdvancedSearchStore = require('../store/search/advanced-search');
-let QuickSearchStore = require('../store/search/quick-search');
+import AdvancedSearchStore from '../store/search/advanced-search';
+import QuickSearchStore from '../store/search/quick-search';
 
-module.exports = {
-    quickSearchStore: new QuickSearchStore(),
-    advancedSearchStore: new AdvancedSearchStore()
+const quickSearchStore = new QuickSearchStore();
+const advancedSearchStore = new AdvancedSearchStore();
+
+export {
+    advancedSearchStore,
+    quickSearchStore
+};
+
+export default {
+    advancedSearchStore,
+    quickSearchStore
 };

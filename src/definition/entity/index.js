@@ -1,4 +1,12 @@
-module.exports = {
-	builder: require('./builder'),
-	container: require('./container')
-};
+import builder from './builder';
+import container from './container';
+
+export {
+    builder,
+    container
+}
+
+export default {
+    builder,
+    container
+}

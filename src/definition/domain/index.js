@@ -1,7 +1,9 @@
-/**
- * Application domain gestion.
- * @type {Object}
- */
-module.exports = {
-	container: require('./container')
+import container from './container';
+
+export {
+    container
+};
+
+export default {
+    container
 };

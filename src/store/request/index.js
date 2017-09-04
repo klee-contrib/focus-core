@@ -1,1 +1,2 @@
-module.exports = require('./store');
+import RequestStore from './store';
+export default RequestStore;

@@ -1,3 +1,9 @@
-module.exports = {
-    number: require('./number')
-};
+import number from './number';
+
+export {
+    number
+}
+
+export default {
+    number
+}
