@@ -200,7 +200,6 @@ function _treatBadRequestExceptions(responseJSON = {}, options) {
  * @returns {any} depends on the errors handled
  */
 function _handleStatusError(resErrors, opts) {
-    console.log('ici', resErrors, opts)
     switch (resErrors.status) {
         case 400:
         case 401:
