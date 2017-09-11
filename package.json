@@ -26,34 +26,33 @@
     },
     "scripts": {
         "build": "better-npm-run babelify",
-        "babelify": "better-npm-run babelify",
         "test": "better-npm-run test",
         "test:watch": "better-npm-run test-watch",
-        "prepublish": "npm run build",
+        "prepare": "npm run build",
         "lint": "eslint src --ext .js,.jsx --ignore-pattern __tests__ --ignore-pattern example --ignore-pattern awesomplete",
         "lint:error": "eslint src --ext .js,.jsx --ignore-pattern __tests__ --ignore-pattern example --ignore-pattern awesomplete --quiet",
-        "fix-lint": "eslint  src/** --ext .js,.jsx --fix --ignore-pattern __tests__ --ignore-pattern example --ignore-pattern awesomplete"
+        "fix-lint": "eslint src/** --ext .js,.jsx --fix --ignore-pattern __tests__ --ignore-pattern example --ignore-pattern awesomplete"
     },
     "betterScripts": {
         "babelify": {
             "env": {
-                "BABEL_ENV": "production"
+                "BABEL_ENV": "production",
+                "LEGACY_EXPORTS": "true"
             },
             "command": "node scripts/babelify.js"
-        },
-        "copy-sass": {
-            "command": "cd src && find . -name *.scss | xargs tar cvf - | tar xfp - -C ../"
         },
         "test": {
             "command": "jest --config jest-config.js --runInBand --no-cache",
             "env": {
-                "BABEL_ENV": "production"
+                "BABEL_ENV": "production",
+                "LEGACY_EXPORTS": "true"
             }
         },
         "test-watch": {
             "command": "jest --config jest-config.js --runInBand --watch ",
             "env": {
-                "BABEL_ENV": "production"
+                "BABEL_ENV": "production",
+                "LEGACY_EXPORTS": "true"
             }
         }
     },
@@ -63,7 +62,7 @@
     },
     "dependencies": {
         "flux": "3.1.3",
-        "i18next": "8.4.3",
+        "i18next": "9.0.0",
         "immutable": "3.8.1",
         "lodash": "3.10.1",
         "numeral": "2.0.6",
@@ -71,13 +70,12 @@
         "uuid": "3.1.0"
     },
     "devDependencies": {
-        "babel-jest": "20.0.3",
-        "babel-preset-focus": "0.7.0",
+        "babel-jest": "21.0.2",
+        "babel-preset-focus": "1.0.0-beta1",
         "better-npm-run": "0.1.0",
-        "eslint-config-focus": "git://github.com/KleeGroup/eslint-config-focus#master",
-        "focus-core": "2.1.1",
-        "jest-cli": "20.0.4",
-        "jsdom": "11.1.0",
+        "eslint-config-focus": "0.6.0",
+        "jest-cli": "21.0.2",
+        "jsdom": "11.2.0",
         "react": "15.4.2",
         "react-addons-test-utils": "15.4.2",
         "react-dom": "15.4.2"
