@@ -4,7 +4,7 @@
  * @returns {boolean} the check result
  */
 function isFunction(functionToCheck) {
-    var getType = {};
+    let getType = {};
     return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
 }
 
@@ -21,18 +21,18 @@ function cancellablePromiseBuilder(promiseFn, cancelHandler) {
     if (cancelHandler && !isFunction(cancelHandler)) {
         throw new Error(`Cancel handler ${cancelHandler} is not a function.`);
     }
-    var p = new Promise(promiseFn);
+    let p = new Promise(promiseFn);
     p.cancel = function cancelCurrentPromise() {
-        if(cancelHandler) { // cancel handler exists, call it
+        if (cancelHandler) { // cancel handler exists, call it
             cancelHandler.call(this, arguments);
         } else { // cancel handler does not exist but was called, send a warning
             console.warn('Cancel() called on a CancellablePromise but no cancel handler function was provided at object creation.', this);
         }
     };
-    p.isCancellable = function() {
+    p.isCancellable = function () {
         return cancelHandler !== undefined;
     };
     return p;
 }
 
-module.exports = cancellablePromiseBuilder;
+export default cancellablePromiseBuilder;

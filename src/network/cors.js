@@ -12,10 +12,10 @@ const ArgumentInvalidException = Error;
 * @param {object} options - The cors options.
 * @returns {XMLHttpRequest} - The CORS http request.
 */
-module.exports = function createCORSRequest(method, url, options = {}) {
+export default function createCORSRequest(method, url, options = {}) {
     const isCORS = options.isCORS || false;
     const noContentType = options.noContentType || false;
-    
+
     if (typeof method !== 'string') {
         throw new ArgumentInvalidException('The method should be a string in GET/POST/PUT/DELETE', method);
     }
@@ -35,29 +35,29 @@ module.exports = function createCORSRequest(method, url, options = {}) {
         } else if (typeof XDomainRequest !== 'undefined') {
             // XDomainRequest for IE.
             xhr = new XDomainRequest();
-            xhr.onprogress = () => {}; // Needs to be set to get it work on IE9 :/
-            xhr.ontimeout = () => {}; // Needs to be set to get it work on IE9 :/
+            xhr.onprogress = () => { }; // Needs to be set to get it work on IE9 :/
+            xhr.ontimeout = () => { }; // Needs to be set to get it work on IE9 :/
             xhr.open(method, url);
         } else {
             // CORS not supported.
             xhr = null;
         }
     }
-    
+
     const headers = options.headers || {};
     // Setting 'Content-Type' header only if not in options
     // Also handling noContentType options
-    if(!noContentType && !headers['Content-Type']){
+    if (!noContentType && !headers['Content-Type']) {
         if (xhr.setRequestHeader) {
             xhr.setRequestHeader('Content-Type', 'application/json');
         }
     }
     // Adding the other headers
-    for(let prop in headers) {
+    for (let prop in headers) {
         if (xhr.setRequestHeader) {
             xhr.setRequestHeader(prop, headers[prop]);
         }
     }
 
     return xhr;
-};
+}

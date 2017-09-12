@@ -1,8 +1,24 @@
-module.exports = {
-  cors: require('./cors'),
-  fetch: require('./fetch'),
-  cancellablePromiseBuilder: require('./cancellable-promise-builder'),
-  builtInStore: require('./built-in-store'),
-  config: require('./config'),
-  errorParsing: require('./error-parsing')
-};
+import cors from './cors';
+import fetch from './fetch';
+import cancellablePromiseBuilder from './cancellable-promise-builder';
+import builtInStore from './built-in-store';
+import config from './config';
+import errorParsing from './error-parsing';
+
+export default {
+    cors,
+    fetch,
+    cancellablePromiseBuilder,
+    builtInStore,
+    config,
+    errorParsing
+}
+
+export {
+    cors,
+    fetch,
+    cancellablePromiseBuilder,
+    builtInStore,
+    config,
+    errorParsing
+}

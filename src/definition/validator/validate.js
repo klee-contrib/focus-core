@@ -1,13 +1,14 @@
 //Dependency
-import {DependencyException} from '../../exception';
+import { DependencyException } from '../../exception';
 import assign from 'object-assign';
-import {translate} from '../../translation';
+import { translate } from '../../translation';
 //Focus validators
 import emailValidation from './email';
 import numberValidation from './number';
 import stringLength from './string-length';
 import dateValidation from './date';
-import {isNull, isUndefined} from 'lodash/lang';
+import isNull from 'lodash/lang/isNull';
+import isUndefined from 'lodash/lang/isUndefined';
 
 /**
 * Validae a property given validators.
@@ -50,9 +51,9 @@ function validateProperty(property, validator) {
     if (!property) {
         return void 0;
     }
-    const {value} = property;
-    const {options} = validator;
-    const isValueNullOrUndefined = isNull(value) || isUndefined(value );
+    const { value } = property;
+    const { options } = validator;
+    const isValueNullOrUndefined = isNull(value) || isUndefined(value);
     isValid = (() => {
         switch (validator.type) {
             case 'required':
@@ -99,7 +100,7 @@ function validateProperty(property, validator) {
 function getErrorLabel(type, fieldName, options = {}) {
     options = options || {};
     const translationKey = options.translationKey ? options.translationKey : `domain.validation.${type}`;
-    const opts = {fieldName: translate(fieldName), ...options};
+    const opts = { fieldName: translate(fieldName), ...options };
     return translate(translationKey, opts);
 }
 

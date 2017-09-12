@@ -1,1 +1,2 @@
-module.exports = require('./store');
+import MessageStore from './store';
+export default MessageStore;

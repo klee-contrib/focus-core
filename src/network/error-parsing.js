@@ -1,6 +1,10 @@
-import message from '../message';
-import {isObject, isArray, isString} from 'lodash/lang';
-import {translate} from '../translation';
+import isObject from 'lodash/lang/isObject';
+import isArray from 'lodash/lang/isArray';
+
+import { getAll as getDomains } from '../definition/domain/container';
+
+import { addMessage } from '../message';
+import { translate } from '../translation';
 /**
 * Define all the error types of the exceptions which are defined.
 * @type {object}
@@ -61,11 +65,11 @@ function configure(options) {
 */
 function _formatParameters(parameters) {
     let options = {},
-    formatter, value;
+        formatter, value;
     for (let prop in parameters) {
         if (parameters.hasOwnProperty(prop)) {
             if (parameters[prop].domain) {
-                let domain = metadataBuilder.getDomains()[parameters[prop].domain];
+                let domain = getDomains()[parameters[prop].domain];
                 formatter = domain ? domain.format : undefined;
             } else {
                 formatter = undefined;
@@ -85,9 +89,9 @@ function _treatGlobalMessagesPerType(messages, type) {
             options = _formatParameters(element.parameters);
             element = element.message;
         }
-        message.addMessage({
+        addMessage({
             type: type,
-            content: require('i18next-client').t(element, options),
+            content: translate(element, options),
             creationDate: Date.now()
         });
     });
@@ -107,7 +111,7 @@ function _treatGlobalErrors(responseJSON, options) {
         let globalMessagesContainer = [];
         let messages = responseJSON;
         //Looping through all messages types.
-        allMessagesTypes.forEach((globalMessageConf)=>{
+        allMessagesTypes.forEach((globalMessageConf) => {
             //Treat all the gloabe
             let msgs = messages[globalMessageConf.name];
             if (msgs) {
@@ -122,31 +126,38 @@ function _treatGlobalErrors(responseJSON, options) {
 }
 
 /**
+ * Treat an object of error by translating every error content.
+ * 
+ * @param {object} fieldErrors an object with key for fieldName, and values as error keys in i18n.
+ * @returns {object} a new object, with translated error
+ */
+function _treatEntityDetail(fieldErrors) {
+    return Object.keys(fieldErrors || {}).reduce(
+        (res, field) => {
+            // No reason to have several error on the same field, taking the first one
+            const error = fieldErrors[field];
+            res[field] = translate(error);
+            return res;
+        }, {});
+}
+
+/**
 * Treat the response json of an error.
 * @param  {object} responseJSON The json response from the server.
 * @param  {object} options The options containing the model. {model: Backbone.Model}
 * @return {object} The constructed object from the error response.
 */
 function _treatEntityExceptions(responseJSON = {}, options) {
-    const {node} = options;
+    const { node } = options;
     const fieldJSONError = responseJSON.fieldErrors || {};
     let fieldErrors = {};
-    if(isArray(node)){
-        node.forEach((nd)=>{fieldErrors[nd] = fieldJSONError[nd] || null; });
-    }else if(isString(node)){
-        fieldErrors = fieldJSONError;
-    }else {
-        fieldErrors = fieldJSONError;
+    if (isArray(node)) {
+        node.forEach((nd) => { fieldErrors[nd] = _treatEntityDetail(fieldJSONError[nd]); });
+    } else {
+        fieldErrors = _treatEntityDetail(fieldJSONError);
     }
 
-    return Object.keys(fieldErrors)
-        .reduce(
-            (res, field) => {
-                res[field] = translate(fieldErrors[field]);
-                return res;
-            }
-            , {}
-        );
+    return fieldErrors;
 }
 
 /**
@@ -174,10 +185,29 @@ function _treatBadRequestExceptions(responseJSON = {}, options) {
             case errorTypes.collection:
                 return _treatCollectionExceptions(responseJSON, options);
             default:
-            break;
+                break;
         }
     }
     return null;
+}
+
+
+/**
+ * Treat the field errors only if the status code is right (400, 401, 422).
+ * 
+ * @param {object} resErrors the errors to treat
+ * @param {object} opts the options for handling errors
+ * @returns {any} depends on the errors handled
+ */
+function _handleStatusError(resErrors, opts) {
+    switch (resErrors.status) {
+        case 400:
+        case 401:
+        case 422:
+            return _treatBadRequestExceptions(resErrors, opts);
+        default:
+            return null;
+    }
 }
 
 /**
@@ -211,7 +241,7 @@ function manageResponseErrors(response, options) {
                     globalErrorMessages: [response.responseText]
                 };
             }
-        }else {
+        } else {
             responseErrors = {};
         }
     }
@@ -219,23 +249,17 @@ function manageResponseErrors(response, options) {
     if (responseErrors.status) {
         return {
             globals: _treatGlobalErrors(responseErrors),
-            fields: ((resErrors, opts) => {
-                switch (responseErrors.status) {
-                    case 400:
-                    case 401:
-                    case 422:
-                        return _treatBadRequestExceptions(resErrors, opts);
-                    default:
-                        return null;
-                }
-                return null;
-            })(responseErrors, options)
+            fields: _handleStatusError(responseErrors, options)
         };
     }
     return null;
 }
 
-module.exports = {
-    configure: configure,
-    manageResponseErrors: manageResponseErrors
+export {
+    configure,
+    manageResponseErrors
+};
+export default {
+    configure,
+    manageResponseErrors
 };

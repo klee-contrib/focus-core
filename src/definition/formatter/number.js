@@ -1,11 +1,6 @@
 import numeral from 'numeral';
-
+// see http://numeraljs.com
 const DEFAULT_FORMAT = '0,0';
-
-//TODO change numeral lib and regroup initializers
-function language(key, conf) {
-    return numeral.language(key, conf);
-};
 
 /**
 * Format a number using a given format.
@@ -14,11 +9,25 @@ function language(key, conf) {
 * @return {string} - The formated number.
 */
 function format(number, format) {
-    format = format || DEFAULT_FORMAT;
     return numeral(number).format(format);
+}
+
+/**
+ * Initialize numeral locale and default format
+ * 
+ * @param {any} { format = DEFAULT_FORMAT, locale = 'fr' } 
+ */
+function init({ format = DEFAULT_FORMAT, locale = 'fr' }) {
+    numeral.locale(locale);
+    numeral.defaultFormat(format);
+}
+
+export default {
+    init,
+    format
 };
 
-module.exports = {
-    format,
-    language
+export {
+    init,
+    format
 };

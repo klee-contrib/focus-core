@@ -1,6 +1,18 @@
-module.exports = {
-  config: require('./config'),
-  builder: require('./builder'),
-  builtInAction: require('./built-in-action'),
-  storeGetter: require('./built-in-store')
+import config from './config';
+import builder from './builder';
+import builtInAction from './built-in-action';
+import storeGetter from './built-in-store';
+
+export {
+    config,
+    builder,
+    builtInAction,
+    storeGetter
+};
+
+export default {
+    config,
+    builder,
+    builtInAction,
+    storeGetter
 };

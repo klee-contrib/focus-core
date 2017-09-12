@@ -1,11 +1,19 @@
-//The store is an event emitter.
-const EventEmitter = require('events').EventEmitter;
-const assign = require('object-assign');
-const {isArray, isEmpty, isObject, isFunction} = require('lodash/lang');
-const {defer} = require('lodash/function');
-const capitalize = require('lodash/string/capitalize');
-const Immutable = require('immutable');
-const AppDispatcher = require('../dispatcher');
+/* eslint-disable filenames/match-regex */
+import { EventEmitter } from 'events';
+import assign from 'object-assign';
+
+import isArray from 'lodash/lang/isArray';
+import isFunction from 'lodash/lang/isFunction';
+
+import defer from 'lodash/function/defer';
+
+import intersection from 'lodash/array/intersection';
+import capitalize from 'lodash/string/capitalize';
+import Immutable from 'immutable';
+import AppDispatcher from '../dispatcher';
+
+const reservedNames = ['Error', 'Status'];
+
 const _instances = [];
 
 /**
@@ -31,16 +39,16 @@ class CoreStore extends EventEmitter {
         this.buildDefinition();
         this.buildEachNodeChangeEventListener();
         this.registerDispatcher();
-        if(!!__DEV__){
-          this._registerDevTools();
+        if (__DEV__) {
+            this._registerDevTools();
         }
     }
     // Get all the instances of core store.
-    get _instances(){
-      return [..._instances];
+    get _instances() {
+        return [..._instances];
     }
     // register the instances saving
-    _registerDevTools(){
+    _registerDevTools() {
         _instances.push(this);
     }
     /**
@@ -52,32 +60,38 @@ class CoreStore extends EventEmitter {
         * Build the definitions for the entity (may be a subject.)
         * @type {object}
         */
-        if(!this.config.definition){
+        if (!this.config.definition) {
             throw new Error('Core Store: missing definition', this.config);
         }
         this.definition = this.config.definition;
+
+        const properties = Object.keys(this.definition).map(elt => capitalize(elt));
+        const reservedProperties = properties.reduce((acc, elt) => acc.concat(reservedNames.map(w => w + elt)), []);
+        if (intersection(properties, reservedProperties).length > 0) {
+            throw new Error(`You have a name collision into this store : you cannot use a node named Blabla and anoter named ErrorBlabla, or StatusBlabla : ${intersection(properties, reservedProperties).join(' ')} `);
+        }
         return this.definition;
     }
     /**
     * Get the whole value of the
     * @return {[type]} [description]
     */
-    getValue(){
+    getValue() {
         return this.data ? this.data.toJS() : {};
     }
     /**
     * Getter on the identifier property.
     * @return {string} - Store identifier.
     */
-    get identifier(){
+    get identifier() {
         return this.config && this.config.identifier ? this.config.identifier : undefined;
     }
     /** Return the status of a definition.
     * @param {string} - The definition to load.
     * @returns {string} - The status of a definition.
     */
-    getStatus(def){
-        if (this.status.has(def)){
+    getStatus(def) {
+        if (this.status.has(def)) {
             return this.status.get(def);
         }
         return undefined;
@@ -85,9 +99,9 @@ class CoreStore extends EventEmitter {
     /**
     * Emit all events pending in the pendingEvents map.
     */
-    emitPendingEvents(){
-        this.pendingEvents.map((evtToEmit)=>{
-            let {name, data} = evtToEmit;
+    emitPendingEvents() {
+        this.pendingEvents.map((evtToEmit) => {
+            let { name, data } = evtToEmit;
             this.emit(name, data);
         });
     }
@@ -97,19 +111,19 @@ class CoreStore extends EventEmitter {
     * @param eventName {string} - The event name.
     * @param  data {object} - The event's associated data.
     */
-    willEmit(eventName, data){
-        this.pendingEvents = this.pendingEvents.reduce((result, current)=>{
-            if(current.name !== eventName){
+    willEmit(eventName, data) {
+        this.pendingEvents = this.pendingEvents.reduce((result, current) => {
+            if (current.name !== eventName) {
                 result.push(current);
             }
             return result;
-        }, [{name: eventName, data: data}]);
+        }, [{ name: eventName, data: data }]);
     }
 
     /**
     * Clear all pending events.
     */
-    clearPendingEvents(){
+    clearPendingEvents() {
         this.pendingEvents = [];
     }
     /**
@@ -121,121 +135,121 @@ class CoreStore extends EventEmitter {
         for (let definition in this.definition) {
             const capitalizeDefinition = capitalize(definition);
             //Creates the change listener
-            currentStore[`add${capitalizeDefinition}ChangeListener`] = function(def){
+            currentStore[`add${capitalizeDefinition}ChangeListener`] = (function (def) {
                 return function (cb) {
                     currentStore.addListener(`${def}:change`, cb);
                 }
-            }(definition);
+            }(definition));
             //Remove the change listener
-            currentStore[`remove${capitalizeDefinition}ChangeListener`] = function(def){
+            currentStore[`remove${capitalizeDefinition}ChangeListener`] = (function (def) {
                 return function (cb) {
                     currentStore.removeListener(`${def}:change`, cb);
                 }
-            }(definition);
+            }(definition));
             //Create an update method.
             //Should be named updateData to be more explicit
-            if(currentStore[`update${capitalizeDefinition}`] === undefined){
-                currentStore[`update${capitalizeDefinition}`] = function(def){
+            if (currentStore[`update${capitalizeDefinition}`] === undefined) {
+                currentStore[`update${capitalizeDefinition}`] = (function (def) {
                     return function (dataNode, status, informations) {
                         const immutableNode = isFunction(dataNode) ? dataNode : Immutable.fromJS(dataNode);
                         currentStore.data = currentStore.data.set(def, immutableNode);
                         //Update the status on the data.
                         currentStore.status = currentStore.status.set(def, status);
 
-                        currentStore.willEmit(`${def}:change`, {property: def, status: status, informations: informations});
+                        currentStore.willEmit(`${def}:change`, { property: def, status: status, informations: informations });
                     }
-                }(definition);
+                }(definition));
             }
 
             //Create a get method.
-            if(currentStore[`get${capitalizeDefinition}`] === undefined){
-                currentStore[`get${capitalizeDefinition}`] = function(def){
+            if (currentStore[`get${capitalizeDefinition}`] === undefined) {
+                currentStore[`get${capitalizeDefinition}`] = (function (def) {
                     return function () {
                         const hasData = currentStore.data.has(def);
-                        if(hasData){
+                        if (hasData) {
                             const rawData = currentStore.data.get(def);
-							if(rawData && rawData.toJS){
-								const data = rawData.toJS();
-								return isEmpty(data) ? undefined : data;
-							}
-							return rawData;
+                            if (rawData && rawData.toJS) {
+                                const data = rawData.toJS();
+                                return data;
+                            }
+                            return rawData;
                         }
                         return undefined;
                     };
-                }(definition);
+                }(definition));
             }
             //Creates the error change listener
-            currentStore[`add${capitalizeDefinition}ErrorListener`] = function(def){
+            currentStore[`add${capitalizeDefinition}ErrorListener`] = (function (def) {
                 return function (cb) {
                     currentStore.addListener(`${def}:error`, cb);
                 }
-            }(definition);
+            }(definition));
             //Remove the change listener
-            currentStore[`remove${capitalizeDefinition}ErrorListener`] = function(def){
+            currentStore[`remove${capitalizeDefinition}ErrorListener`] = (function (def) {
                 return function (cb) {
                     currentStore.removeListener(`${def}:error`, cb);
                 }
-            }(definition);
+            }(definition));
             //Create an update method.
-            currentStore[`updateError${capitalizeDefinition}`] = function(def){
+            currentStore[`updateError${capitalizeDefinition}`] = (function (def) {
                 return function (dataNode, status, informations) {
                     //CheckIsObject
-                    const immutableNode = Immutable[isArray(dataNode) ? "List" : "Map"](dataNode);
+                    const immutableNode = Immutable[isArray(dataNode) ? 'List' : 'Map'](dataNode);
                     currentStore.error = currentStore.error.set(def, immutableNode);
                     currentStore.status = currentStore.status.set(def, status);
-                    currentStore.willEmit(`${def}:error`, {property: def, status: status, informations: informations});
+                    currentStore.willEmit(`${def}:error`, { property: def, status: status, informations: informations });
                 }
-            }(definition);
+            }(definition));
             //Create a get method.
-            currentStore[`getError${capitalizeDefinition}`] = function(def){
-                return function(){
+            currentStore[`getError${capitalizeDefinition}`] = (function (def) {
+                return function () {
                     const hasData = currentStore.error.has(def);
                     return hasData ? currentStore.error.get(def).toJS() : undefined;
                 };
-            }(definition);
+            }(definition));
 
 
             // status
-            currentStore[`add${capitalizeDefinition}StatusListener`] = function(def){
+            currentStore[`add${capitalizeDefinition}StatusListener`] = (function (def) {
                 return function (cb) {
                     currentStore.addListener(`${def}:status`, cb);
                 }
-            }(definition);
+            }(definition));
             //Remove the change listener
-            currentStore[`remove${capitalizeDefinition}StatusListener`] = function(def){
+            currentStore[`remove${capitalizeDefinition}StatusListener`] = (function (def) {
                 return function (cb) {
                     currentStore.removeListener(`${def}:status`, cb);
                 }
-            }(definition);
+            }(definition));
             //Create an update method.
-            currentStore[`updateStatus${capitalizeDefinition}`] = function(def){
+            currentStore[`updateStatus${capitalizeDefinition}`] = (function (def) {
                 return function updateStatus(dataNode, status, informations) {
                     //CheckIsObject
-                    //console.log(`status  ${JSON.stringify(status)}`);
+                    //console.log(`status  ${JSON.stringify(status) }`);
                     const statusNode = status;//Immutable.fromJS(status); // mMaybe it is a part of the status only.
                     currentStore.status = currentStore.status.set(def, statusNode);
-                    currentStore.willEmit(`${def}:status`, {property: def, status: status, informations: informations});
+                    currentStore.willEmit(`${def}:status`, { property: def, status: status, informations: informations });
                 }
-            }(definition);
+            }(definition));
             //Create a get method.
-            currentStore[`getStatus${capitalizeDefinition}`] = function(def){
-                return function getStatus(){
+            currentStore[`getStatus${capitalizeDefinition}`] = (function (def) {
+                return function getStatus() {
                     const hasData = currentStore.status.has(def);
                     const data = hasData ? currentStore.status.get(def) : undefined;
                     return data.toJS ? data.toJS() : data;
                 };
-            }(definition);
+            }(definition));
         }
     }
 
-    delayPendingEvents(context){
+    delayPendingEvents(context) {
         //Delay all the change emit by the store to be sure it is done after the internal store propagation and to go out of the dispatch function.
-        defer(()=>{
+        defer(() => {
             context.emitPendingEvents();
             context.clearPendingEvents();
         });
     }
-    _buildInformations(incomingInfos){
+    _buildInformations(incomingInfos) {
         return {
             callerId: incomingInfos.action.callerId
         };
@@ -243,18 +257,18 @@ class CoreStore extends EventEmitter {
     /**
     * The store registrer itself on the dispatcher.
     */
-    registerDispatcher(){
+    registerDispatcher() {
         const currentStore = this;
-        this.dispatch = AppDispatcher.register(function(transferInfo) {
+        this.dispatch = AppDispatcher.register(function (transferInfo) {
             //Check if an identifier check is necessary.
-            if(currentStore.identifier){
+            if (currentStore.identifier) {
                 //If an identifier is needed a check is triggered.
-                if(!transferInfo || !transferInfo.action || !transferInfo.action.identifier || transferInfo.action.identifier !== currentStore.identifier){
+                if (!transferInfo || !transferInfo.action || !transferInfo.action.identifier || transferInfo.action.identifier !== currentStore.identifier) {
                     return;
                 }
             }
             //currentStore.clearPendingEvents();
-            if(currentStore.globalCustomHandler){
+            if (currentStore.globalCustomHandler) {
                 return currentStore.globalCustomHandler.call(currentStore, transferInfo);
             }
 
@@ -265,15 +279,15 @@ class CoreStore extends EventEmitter {
             const otherInformations = currentStore._buildInformations(transferInfo);
 
             //Call each node handler for the matching definition's node.
-            for(let node in rawData){
-                if(currentStore.definition[node]){
+            for (let node in rawData) {
+                if (currentStore.definition[node]) {
                     //Call a custom handler if this exists.
-                    if(currentStore.customHandler && currentStore.customHandler[node] && currentStore.customHandler[node][type]){
+                    if (currentStore.customHandler && currentStore.customHandler[node] && currentStore.customHandler[node][type]) {
                         currentStore.customHandler[node][type].call(currentStore, rawData[node], status[node], otherInformations);
-                    }else {
+                    } else {
                         //Update the data for the given node. and emit the change/.
-                        if(!isFunction(currentStore[`${type}${capitalize(node)}`])){
-                            throw new Error(`The listener you try to call is unavailable : ${type}${capitalize(node)}` );
+                        if (!isFunction(currentStore[`${type}${capitalize(node)}`])) {
+                            throw new Error(`The listener you try to call is unavailable : ${type} ${capitalize(node)} `);
                         }
                         currentStore[`${type}${capitalize(node)}`](rawData[node], status[node], otherInformations);
                     }
@@ -291,4 +305,4 @@ class CoreStore extends EventEmitter {
         this.on(eventName, cb);
     }
 }
-module.exports = CoreStore;
+export default CoreStore;
