@@ -1,12 +1,7 @@
-/**
-* Dependency on the CORS module.
-* @type {object}
-*/
-import createCORSRequest from './cors';
-import cancellablePromiseBuilder from './cancellable-promise-builder';
 import { v4 as uuid } from 'uuid';
+import merge from 'lodash/object/merge';
+
 import dispatcher from '../dispatcher';
-import isObject from 'lodash/lang/isObject';
 import { get as configGetter } from './config';
 
 /**
@@ -32,31 +27,41 @@ function updateRequestStatus(request) {
     });
     return request;
 }
+
 /**
-* Parse the response.
-* @param  {object} req - The requets object send back from the xhr.
-* @return {object}     - The parsed object.
-*/
-function jsonParser(req) {
-    if (null === req.responseText || null === req.responseText || '' === req.responseText) {
-        console.warn('The response of your request was empty');
-        return null;
+ * Extract the data from the response, and handle network or server errors or wrong data format.
+ *
+ * @param {Response} response the response to extract from
+ * @param {string} dataType the datatype (can be 'arrayBuffer', 'blob', 'formData', 'json' or 'text')
+ * @returns {Promise} a Promise containing response data, or error data
+ */
+function getResponseContent(response, dataType) {
+    const { type, status, ok } = response;
+
+    // Handling errors
+    if (type === 'opaque') {
+        console.error('You tried to make a Cross Domain Request with no-cors options');
+        return Promise.reject({ status: status, globalErrors: ['error.noCorsOptsOnCors'] });
     }
-    let parsedObject;
-    try {
-        parsedObject = JSON.parse(req.responseText);
-    } catch (error) {
-        parsedObject = {
-            globalErrors: [{
-                message: `${req.status} error when calling ${req.responseURL}`
-            }]
-        };
+
+    if (type === 'error') {
+        console.error('An unknown network issue has happened');
+        return Promise.reject({ status: status, globalErrors: ['error.unknownNetworkIssue'] });
     }
-    if (!isObject(parsedObject)) {
-        //Maybe this check should read the header content-type
-        console.warn('The response did not sent a JSON object');
+
+    if (!ok && dataType === 'json') {
+        return response.json().catch(err => Promise.reject({ globalErrors: [err] })).then(data => Promise.reject({ status, ...data }));
     }
-    return parsedObject;
+
+    if (!ok) {
+        return response.text().then(text => Promise.reject({ status, globalErrors: [text] }));
+    }
+
+    // Handling success
+    if (ok && status === '204') {
+        return Promise.resolve(null);
+    }
+    return ['arrayBuffer', 'blob', 'formData', 'json'].includes(dataType) ? response[dataType]().catch(err => Promise.reject({ globalErrors: [err] })) : response.text();
 }
 
 /**
@@ -65,62 +70,30 @@ function jsonParser(req) {
 * @param  {object} options - The options object.
 * @return {CancellablePromise} The promise of the execution of the HTTP request.
 */
-function fetch(obj, options = {}) {
-    options.parser = options.parser || jsonParser;
-    options.errorParser = options.errorParser || jsonParser;
-    let config = configGetter();
-    let request = createCORSRequest(obj.method, obj.url, { ...config, ...options });
+function wrappingFetch({ url, method, data }, options) {
     let requestStatus = createRequestStatus();
-    if (!request) {
-        throw new Error('You cannot perform ajax request on other domains.');
+    // Here we are using destruct to filter properties we do not want to give to fetch.
+    // CORS and isCORS are useless legacy code, xhrErrors is used only in error parsing
+    // eslint-disable-next-line no-unused-vars
+    let { CORS, isCORS, xhrErrors, ...config } = configGetter();
+    const reqOptions = merge({ headers: {} }, config, options, { method, body: JSON.stringify(data) });
+    //By default, add json content-type
+    if (!reqOptions.noContentType && !reqOptions.headers['Content-Type']) {
+        reqOptions.headers['Content-Type'] = 'application/json';
     }
-
-    return cancellablePromiseBuilder(function promiseFn(success, failure) {
-        //Request error handler
-        request.onerror = error => {
+    // Set the requesting as pending
+    updateRequestStatus({ id: requestStatus.id, status: 'pending' });
+    // Do the request
+    return fetch(url, reqOptions)
+        // Catch the possible TypeError from fetch
+        .catch(error => {
             updateRequestStatus({ id: requestStatus.id, status: 'error' });
-            failure(error);
-        };
-        //Request success handler
-        request.onload = () => {
-            let status = request.status;
-            if (status < 200 || status >= 300) {
-                let err = options.errorParser(request);
-                err.status = status;
-                if (config.xhrErrors[status]) {
-                    config.xhrErrors[status](request.response);
-                }
-                updateRequestStatus({ id: requestStatus.id, status: 'error' });
-                return failure(err);
-            }
-            let data;
-            if (204 === status) {
-                data = undefined;
-                updateRequestStatus({ id: requestStatus.id, status: 'success' });
-                return success(data);
-            }
-            let contentType = request.contentType ? request.contentType : request.getResponseHeader('content-type');
-            if (contentType && contentType.indexOf('application/json') !== -1) {
-                data = options.parser(request);
-            } else {
-                data = request.responseText;
-            }
-            updateRequestStatus({ id: requestStatus.id, status: 'success' });
-            return success(data);
-        };
-        updateRequestStatus({ id: requestStatus.id, status: 'pending' });
-        //Execute the request.
-        request.send(JSON.stringify(obj.data));
-    }, function cancelHandler() { // Promise cancel handler
-        if (request.status === 0) { // request has not yet ended
-            updateRequestStatus({ id: requestStatus.id, status: 'cancelled' });
-            request.abort();
-            return true;
-        } else { // trying to abort an ended request, send a warning to the console
-            console.warn('Tried to abort an already ended request', request);
-            return false;
-        }
-    });
+            return Promise.reject({ globalErrors: [error] });
+        }).then(response => {
+            updateRequestStatus({ id: requestStatus.id, status: response.ok ? 'success' : 'error' });
+            const contentType = response.headers.get('content-type');
+            return getResponseContent(response, reqOptions.dataType ? reqOptions.dataType : contentType && contentType.includes('application/json') ? 'json' : 'text');
+        });
 }
 
-export default fetch;
+export default wrappingFetch;
