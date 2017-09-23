@@ -9,7 +9,6 @@ import isObject from 'lodash/lang/isObject';
  */
 export default function assertIsObject(name, data) {
     if (data !== undefined && !isObject(data)) {
-        const ex = new ArgumentInvalidException(`${name} should be an object`, data);;
         throw new ArgumentInvalidException(`${name} should be an object`, data);
     }
-};
+}

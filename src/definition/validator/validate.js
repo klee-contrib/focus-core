@@ -1,6 +1,4 @@
 //Dependency
-import { DependencyException } from '../../exception';
-import assign from 'object-assign';
 import { translate } from '../../translation';
 //Focus validators
 import emailValidation from './email';

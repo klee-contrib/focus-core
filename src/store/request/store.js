@@ -1,11 +1,13 @@
-//Dependencies.
-import Immutable from 'immutable';
+import { v4 as uuid } from 'uuid';
+
 import CoreStore from '../CoreStore';
 import getDefinition from './definition';
-import { v4 as uuid } from 'uuid';
+import AppDispatcher from '../../dispatcher';
+import CloningMap from '../cloning-map';
+
 const CLEAR = 'clear';
 const UPDATE = 'update';
-import AppDispatcher from '../../dispatcher';
+
 
 /**
  * Class standing for the cartridge store.
@@ -19,15 +21,16 @@ class RequestStore extends CoreStore {
         conf = conf || {};
         conf.definition = conf.definition || getDefinition();
         super(conf);
-        this.pending = Immutable.Map({});
-        this.success = Immutable.Map({});
-        this.error = Immutable.Map({});
-        this.cancelled = Immutable.Map({});
+        this.pending = new CloningMap();
+        this.success = new CloningMap();
+        this.error = new CloningMap();
+        this.cancelled = new CloningMap();
     }
+
     /**
-   * Get a message from its identifier.
-   * @param {string} messageId - The message identifier.
-   * @returns {object} - The requested message.
+   * Get a request from its identifier.
+   * @param {string} requestId The request identifier.
+   * @returns {object} The request.
    */
     getRequest(requestId) {
         if (!this.data.has(requestId)) {
@@ -35,6 +38,7 @@ class RequestStore extends CoreStore {
         }
         return this.data.get(requestId);
     }
+
     /**
    * Get the requests by type
    * @return {object} An object with the total of request by type.
@@ -48,10 +52,11 @@ class RequestStore extends CoreStore {
             total: this.pending.size + this.cancelled.size + this.success.size + this.error.size
         };
     }
+
     /**
-   * Add a listener on the global change on the search store.
-   * @param {object} message - The message to add.
-   */
+    * Add a listener on the global change on the search store.
+    * @param {object} request The message to add.
+    */
     updateRequest(request) {
         request.id = request.id || `${uuid()}`;
         //If the status is supported
@@ -65,13 +70,15 @@ class RequestStore extends CoreStore {
         }
         this.emit(UPDATE, request.id);
     }
+
     /**
    * Clear all messages in the stack.
    */
     clearRequests() {
-        this.data = this.data.clear();
+        this.data.clear();
         this.emit(CLEAR);
     }
+
     /**
    * Add a listener on the global change on the search store.
    * @param {function} cb - The callback to call when a message is pushed.
@@ -79,6 +86,7 @@ class RequestStore extends CoreStore {
     addUpdateRequestListener(cb) {
         this.addListener(UPDATE, cb);
     }
+
     /**
    * Remove a listener on the global change on the search store.
    * @param {function} cb - The callback to called when a message is pushed.
@@ -94,6 +102,7 @@ class RequestStore extends CoreStore {
     addClearRequestsListener(cb) {
         this.addListener(CLEAR, cb);
     }
+
     /**
    * Remove a listener on the global change on the search store.
    * @param {function} cb - The callback to called when a message is pushed.
@@ -101,23 +110,26 @@ class RequestStore extends CoreStore {
     removeClearRequestsListener(cb) {
         this.removeListener(CLEAR, cb);
     }
+
+    /**
+     * The store register itself on the dispatcher.
+     *
+     * @memberof RequestStore
+     */
     registerDispatcher() {
-        let currentStore = this;
-        this.dispatch = AppDispatcher.register(function (transferInfo) {
-            let rawData = transferInfo.action.data;
-            let type = transferInfo.action.type;
-            if (!rawData || !rawData.request) { return; }
+        this.dispatch = AppDispatcher.register(({ action: { data: rawData, type } }) => {
+            if (!rawData || !rawData.request) {
+                return;
+            }
             switch (type) {
                 case 'update':
-                    if (rawData.request) {
-                        currentStore.updateRequest(rawData.request);
-                    }
+                    this.updateRequest(rawData.request);
                     break;
                 case 'clear':
-                    if (rawData.request) {
-                        currentStore.clearRequests();
-                    }
+                    this.clearRequests();
                     break;
+                default:
+                // Ignore the other events
             }
         });
     }

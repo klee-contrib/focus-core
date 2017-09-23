@@ -1,5 +1,6 @@
-//Dependencies.
-import Immutable from 'immutable';
+import merge from 'lodash/object/merge';
+
+import CloningMap from '../../store/cloning-map';
 import checkIsString from '../../util/string/check';
 import checkIsObject from '../../util/object/check';
 
@@ -13,18 +14,43 @@ const SEPARATOR = '.';
 * Container for the application entities.
 * @type {object}
 */
-let entitiesMap = Immutable.Map({});
+let entitiesMap = new CloningMap();
+
+/**
+* Get a node configuration given a node path "obj.prop.subProp".
+* @param {string} nodePath - The node path you want to get.
+* @param {object} extendedConfiguration - The object to extend the config.
+* @return {object} - The node configuration.
+*/
+function _getNode(nodePath, extendedConfiguration) {
+    checkIsString('nodePath', nodePath);
+    const pathArr = nodePath.split(SEPARATOR);
+    if (!entitiesMap.hasIn(pathArr)) {
+        console.warn(`
+            It seems the definition your are trying to use does not exists in the entity definitions of your project.
+            The definition you want is ${nodePath} and the definition map is:
+            `, entitiesMap.toJS()
+        );
+        throw new Error('Wrong definition path given, see warning for more details');
+    }
+    let conf = entitiesMap.getIn(pathArr);
+    if (extendedConfiguration) {
+        checkIsObject(extendedConfiguration);
+        conf = merge(conf, extendedConfiguration);
+    }
+    return conf;
+}
 
 /**
 * Get all entityDefinition in a JS Structure.
-* @param {string} - The node path (with .).
+* @param {string} nodePath - The node path (with .).
 * @param {object} extendedEntityConfiguration - The object to extend the config.
 * @return {object} - The entity configuration from a given path.
 */
 function getEntityConfiguration(nodePath, extendedEntityConfiguration) {
     //If a node is specified get the direct sub conf.
     if (nodePath) {
-        return _getNode(nodePath, extendedEntityConfiguration).toJS();
+        return _getNode(nodePath, extendedEntityConfiguration);
     }
     return entitiesMap.toJS();
 }
@@ -35,32 +61,7 @@ function getEntityConfiguration(nodePath, extendedEntityConfiguration) {
 */
 function setEntityConfiguration(newEntities) {
     checkIsObject('newEntities', newEntities);
-    entitiesMap = entitiesMap.mergeDeep(newEntities);
-}
-
-
-/**
-* Get a node configuration given a node path "obj.prop.subProp".
-* @param {string} nodePath - The node path you want to get.
-* @param {object} extendedConfiguration - The object to extend the config.
-* @return {object} - The node configuration.
-*/
-function _getNode(nodePath, extendedConfiguration) {
-    checkIsString('nodePath', nodePath);
-    if (!entitiesMap.hasIn(nodePath.split(SEPARATOR))) {
-        console.warn(`
-            It seems the definition your are trying to use does not exists in the entity definitions of your project.
-            The definition you want is ${nodePath} and the definition map is:
-            `, entitiesMap.toJS()
-        );
-        throw new Error('Wrong definition path given, see waning for more details');
-    }
-    let conf = entitiesMap.getIn(nodePath.split(SEPARATOR));
-    if (extendedConfiguration) {
-        checkIsObject(extendedConfiguration);
-        conf = conf.mergeDeep(extendedConfiguration);
-    }
-    return conf;
+    entitiesMap.mergeDeep(newEntities);
 }
 
 /**
@@ -70,7 +71,7 @@ function _getNode(nodePath, extendedConfiguration) {
 * @return {object} - The field configuration.
 */
 function getFieldConfiguration(fieldPath, customFieldConf) {
-    return _getNode(fieldPath, customFieldConf).toJS();
+    return _getNode(fieldPath, customFieldConf);
 }
 
 

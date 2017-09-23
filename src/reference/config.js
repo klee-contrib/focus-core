@@ -1,12 +1,15 @@
-import Immutable from 'immutable';
-let config = Immutable.Map({});
+import CloningMap from '../store/cloning-map';
 import checkIsObject from '../util/object/check';
 import checkIsString from '../util/string/check';
+
+let config = new CloningMap();
 
 let cacheDuration = 1000 * 60;
 
 /**
  * Sets the cache duration (defaults to 1 min).
+ *
+ * @param {number} newDuration new cache duration
  */
 function setCacheDuration(newDuration) {
     cacheDuration = newDuration;
@@ -14,6 +17,8 @@ function setCacheDuration(newDuration) {
 
 /**
  * Gets the cache duration.
+ *
+ * @returns {number} the cache duration
  */
 function getCacheDuration() {
     return cacheDuration;
@@ -26,7 +31,10 @@ function getCacheDuration() {
  */
 function setConfig(newConf, isClearPrevious) {
     checkIsObject(newConf);
-    config = isClearPrevious ? Immutable.fromJS(newConf) : config.merge(newConf);
+    if (isClearPrevious) {
+        config.clear();
+    }
+    config.merge(newConf);
 }
 
 /**
@@ -44,9 +52,7 @@ function getConfig() {
  */
 function getConfigElement(name) {
     checkIsString('name', name);
-    if (config.has(name)) {
-        return config.get(name);
-    }
+    return config.get(name);
 }
 
 export {

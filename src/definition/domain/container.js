@@ -1,8 +1,7 @@
-//Dependencies.
-import Immutable from 'immutable';
+import CloningMap from '../../store/cloning-map';
 import isObject from 'lodash/lang/isObject';
 import isString from 'lodash/lang/isString';
-const InvalidException = Error;
+
 import checkIsString from '../../util/string/check';
 import checkIsObject from '../../util/object/check';
 
@@ -10,7 +9,7 @@ import checkIsObject from '../../util/object/check';
 * Container for the application domains.
 * @type {object}
 */
-let domainsMap = Immutable.Map({});
+let domainsMap = new CloningMap();
 
 /**
  * Get all domains in a js object.
@@ -27,9 +26,9 @@ function getDomains() {
 */
 function setDomains(newDomains) {
     if (!isObject(newDomains)) {
-        throw new InvalidException('newDomains should be an object', newDomains);
+        throw new Error('newDomains should be an object', newDomains);
     }
-    domainsMap = domainsMap.merge(newDomains);
+    domainsMap.merge(newDomains);
 }
 
 
@@ -40,8 +39,7 @@ function setDomains(newDomains) {
 function setDomain(domain) {
     checkIsObject('domain', domain);
     checkIsString('doamin.name', domain.name);
-    //test domain, domain.name
-    domainsMap = domainsMap.set(domain.name, domain);
+    domainsMap.set(domain.name, domain);
 }
 
 /**
@@ -51,11 +49,11 @@ function setDomain(domain) {
 */
 function getDomain(domainName) {
     if (!isString(domainName)) {
-        throw new InvalidException('domaiName should extists and be a string', domainName);
+        throw new Error('domainName should exists and be a string', domainName);
     }
     if (!domainsMap.has(domainName)) {
         console.warn(`You are trying to access a non existing domain: ${domainName}`);
-        return Immutable.Map({});
+        return {};
     }
     return domainsMap.get(domainName);
 }

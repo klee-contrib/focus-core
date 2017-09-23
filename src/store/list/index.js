@@ -17,6 +17,12 @@ const DEFINITION = {
  * The list has almost the same data as the search store but instead of the facets, it can have a .
  */
 class ListStore extends CoreStore {
+
+    /**
+     * Creates an instance of ListStore.
+     * @param {any} conf store configuration
+     * @memberof ListStore
+     */
     constructor(conf) {
         conf = conf || {};
         if (!conf.identifier) {

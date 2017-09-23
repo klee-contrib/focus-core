@@ -1,11 +1,10 @@
 import { Dispatcher } from 'flux';
-import assign from 'object-assign';
 
 /**
 * Application dispatcher.
 * @type {Object}
 */
-const AppDispatcher = assign(new Dispatcher(), {
+const AppDispatcher = Object.assign(new Dispatcher(), {
     /**
     * @param {object} action The details of the action, including the action's
     * type and additional data coming from the server.

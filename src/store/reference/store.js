@@ -6,12 +6,24 @@ import buildDefinition from './definition';
  */
 class ReferenceStore extends CoreStore {
 
+    /**
+     * Creates an instance of ReferenceStore.
+     * @param {any} conf store configuration
+     * @memberof ReferenceStore
+     */
     constructor(conf) {
         conf = conf || {};
         conf.definition = conf.definition || buildDefinition();
         super(conf);
     }
 
+    /**
+     * Get the reference list by this names.
+     *
+     * @param {any} names the reference lists names
+     * @returns {object} an object with a reference key, containing the lists
+     * @memberof ReferenceStore
+     */
     getReference(names) {
         const refs = names.reduce((acc, name) => {
             if (this.data.has(name)) {
@@ -22,15 +34,26 @@ class ReferenceStore extends CoreStore {
         return { references: refs };
     }
 
+    /**
+     * Get all the reference lists.
+     *
+     * @returns {Object} an object with a reference key, containing the lists
+     * @memberof ReferenceStore
+     */
     getAllReference() {
         return { references: this.data.toJS() };
     }
 
+    /**
+     * Get a reference list by its name.
+     *
+     * @param {any} name the reference list name
+     * @returns {Array} the list
+     * @memberof ReferenceStore
+     */
     getReferenceList(name) {
         return this.data.get(name, []);
     }
-
-    setReference() { }
 
 }
 

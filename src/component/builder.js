@@ -1,5 +1,4 @@
 import React from 'react';
-import assign from 'object-assign';
 
 /**
 * Create a component with a mixin except id the component is mixin only.
@@ -21,7 +20,7 @@ function createComponent(mixin, isMixinOnly) {
 * @return {object} {mixin: 'the component mixin', component: 'the react instanciated component'}
 */
 export default function builder(componentMixin, isMixinOnly) {
-    return assign(
+    return Object.assign(
         { mixin: componentMixin },
         createComponent(componentMixin, isMixinOnly)
     );

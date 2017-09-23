@@ -1,11 +1,11 @@
 //Dependencies.
-import assign from 'object-assign';
 import isObject from 'lodash/lang/isObject';
-import _builder from './builder';
+import isString from 'lodash/lang/isString';
+
+import { pagination, orderAndSort, facets } from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
 import { manageResponseErrors } from '../../network/error-parsing';
-import isString from 'lodash/lang/isString';
 
 const ALL = 'ALL';
 const STAR = '*';
@@ -30,9 +30,7 @@ export default function searchActionBuilder(config) {
     const parser = config.parser && isObject(config.parser) ? { ..._parser, ...config.parser } : _parser;
     /**
     * Method call when there is an error.
-    * @param  {object} config -  The action builder configuration.
     * @param  {object} err    - The error from the API call.
-    * @return {object}     - The data from the manageResponseErrors function.
     */
     function _errorOnCall(err) {
         manageResponseErrors(err, config);
@@ -68,15 +66,15 @@ export default function searchActionBuilder(config) {
             query = STAR;
         }
         //Build URL data.
-        const urlData = assign(
-            _builder.pagination({ results, totalCount, isScroll, nbSearchElement }),
-            _builder.orderAndSort({ sortBy, sortAsc })
+        const urlData = Object.assign(
+            pagination({ results, totalCount, isScroll, nbSearchElement }),
+            orderAndSort({ sortBy, sortAsc })
         );
         //Build body data.
         const postData = {
             ...otherProps,
             criteria: { query, scope },
-            facets: selectedFacets ? _builder.facets(selectedFacets) : {},
+            facets: selectedFacets ? facets(selectedFacets) : {},
             group: groupingKey || ''
         };
         //Different call depending on the scope.

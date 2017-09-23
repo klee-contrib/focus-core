@@ -1,16 +1,20 @@
-import Immutable from 'immutable';
+import merge from 'lodash/object/merge';
+
+import CloningMap from '../../store/cloning-map';
+
 import checkIsString from '../../util/string/check';
 import checkIsObject from '../../util/object/check';
 import checkIsNotNull from '../../util/object/checkIsNotNull';
+
 const SEPARATOR = '.';
 
 /**
 * Pointer to the domain contaier.
 * @type {Object}
 */
-import domainContainer from '../domain/container';
-import entityContainer from './container';
-let computedEntityContainer = Immutable.Map({});
+import { get as getDomain } from '../domain/container';
+import { getFieldConfiguration, getEntityConfiguration } from './container';
+const computedEntityContainer = new CloningMap();
 
 /*
 binder
@@ -26,11 +30,24 @@ domain
 */
 
 /**
+ * Build the field informations.
+ * @param  {string} fieldPath - The field path.
+ * @return {object} - The immutable field description.
+ */
+function _buildFieldInformation(fieldPath) {
+    const fieldConf = getFieldConfiguration(fieldPath);
+    //Maybe add a domain check existance
+    let { domain } = fieldConf;
+    return merge({}, getDomain(domain), fieldConf);
+}
+
+
+/**
  * Build all entity information from entity name.
  * @param  {string} entityName - The entity name.
  */
 function _buildEntityInformation(entityName) {
-    const entityDomainInfos = entityContainer.getEntityConfiguration(entityName);
+    const entityDomainInfos = getEntityConfiguration(entityName);
     checkIsNotNull('entityDomainInfos', entityDomainInfos);
     let container = {};
     //Populate the domain values i
@@ -38,21 +55,9 @@ function _buildEntityInformation(entityName) {
         container[key] = _buildFieldInformation(`${entityName}${SEPARATOR}${key}`);
     }
     //Update the computed information map.
-    computedEntityContainer = computedEntityContainer.set(entityName, Immutable.Map(container));
+    computedEntityContainer.set(entityName, container);
 }
 
-/**
- * Build the field informations.
- * @param  {string} fieldPath - The field path.
- * @return {Immutable.Map} - The immutable field description.
- */
-function _buildFieldInformation(fieldPath) {
-    const fieldConf = entityContainer.getFieldConfiguration(fieldPath);
-    const immutableFieldConf = Immutable.Map(fieldConf);
-    //Maybe add a domain check existance
-    let { domain } = fieldConf;
-    return domainContainer.get(domain).mergeDeep(immutableFieldConf);
-}
 
 /**
 * Get the entity information from the entity name and given the extended informations.
@@ -63,11 +68,10 @@ function _buildFieldInformation(fieldPath) {
 function getEntityInformations(entityName, complementaryInformation) {
     checkIsString('entityName', entityName);
     checkIsObject('complementaryInformation', complementaryInformation);
-    const key = entityName.split(SEPARATOR);
-    if (!computedEntityContainer.hasIn(key)) {
+    if (!computedEntityContainer.has(entityName)) {
         _buildEntityInformation(entityName);
     }
-    return computedEntityContainer.get(entityName).mergeDeep(complementaryInformation).toJS();
+    return merge({}, computedEntityContainer.get(entityName), complementaryInformation);
 }
 
 /**
@@ -81,9 +85,9 @@ function getFieldInformations(fieldName, complementaryInformation) {
     checkIsObject('complementaryInformation', complementaryInformation);
     const fieldPath = fieldName.split(SEPARATOR);
     if (computedEntityContainer.hasIn(fieldPath)) {
-        return computedEntityContainer.getIn(fieldPath).toJS();
+        return computedEntityContainer.getIn(fieldPath);
     }
-    return _buildFieldInformation(fieldPath).mergeDeep(complementaryInformation).toJS();
+    return merge({}, _buildFieldInformation(fieldPath), complementaryInformation);
 }
 
 export {

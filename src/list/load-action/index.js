@@ -1,6 +1,4 @@
-//Dependencies.
-import assign from 'object-assign';
-import _builder from './builder';
+import { pagination, orderAndSort } from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
 import { manageResponseErrors } from '../../network/error-parsing';
@@ -52,9 +50,9 @@ export default function loadActionFn(config) {
         //Process the query if empty.
 
         //Build URL data.
-        const urlData = assign(
-            _builder.pagination({ dataList, totalCount, isScroll, nbElement }),
-            _builder.orderAndSort({ sortBy, sortAsc })
+        const urlData = Object.assign(
+            pagination({ dataList, totalCount, isScroll, nbElement }),
+            orderAndSort({ sortBy, sortAsc })
         );
         //Build body data.
         const postData = {
@@ -71,4 +69,4 @@ export default function loadActionFn(config) {
             .then(_dispatchResult)
             .catch(_errorOnCall);
     };
-};
+}

@@ -4,6 +4,13 @@ import CoreStore from '../CoreStore';
 * The state should be the complete state of the page.
 */
 class SearchStore extends CoreStore {
+
+    /**
+     * Get all the values of the store.
+     *
+     * @returns {object} the values
+     * @memberof SearchStore
+     */
     getValue() {
         return this.data.toJS();
     }
