@@ -14,7 +14,7 @@ const SEPARATOR = '.';
 * Container for the application entities.
 * @type {object}
 */
-let entitiesMap = new CloningMap();
+const entitiesMap = new CloningMap();
 
 /**
 * Get a node configuration given a node path "obj.prop.subProp".

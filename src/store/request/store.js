@@ -58,7 +58,7 @@ class RequestStore extends CoreStore {
     * @param {object} request The message to add.
     */
     updateRequest(request) {
-        request.id = request.id || `${uuid()}`;
+        request.id = request.id || uuid();
         //If the status is supported
         if (this.definition[request.status]) {
             //Update the associated collection

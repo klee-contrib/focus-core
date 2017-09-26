@@ -260,7 +260,7 @@ class CoreStore extends EventEmitter {
                     }
                 }
             }
-            this.delayPendingEvents(this);
+            this.delayPendingEvents();
         });
     }
 

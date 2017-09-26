@@ -9,7 +9,7 @@ import checkIsObject from '../../util/object/check';
 * Container for the application domains.
 * @type {object}
 */
-let domainsMap = new CloningMap();
+const domainsMap = new CloningMap();
 
 /**
  * Get all domains in a js object.

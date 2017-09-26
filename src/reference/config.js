@@ -2,7 +2,7 @@ import CloningMap from '../store/cloning-map';
 import checkIsObject from '../util/object/check';
 import checkIsString from '../util/string/check';
 
-let config = new CloningMap();
+const config = new CloningMap();
 
 let cacheDuration = 1000 * 60;
 

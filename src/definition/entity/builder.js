@@ -37,8 +37,7 @@ domain
 function _buildFieldInformation(fieldPath) {
     const fieldConf = getFieldConfiguration(fieldPath);
     //Maybe add a domain check existance
-    let { domain } = fieldConf;
-    return merge({}, getDomain(domain), fieldConf);
+    return merge({}, getDomain(fieldConf.domain), fieldConf);
 }
 
 

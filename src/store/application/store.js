@@ -21,7 +21,7 @@ class ApplicationStore extends CoreStore {
      * @param  {object} dataNode - The value of the data.
      */
     updateMode(dataNode) {
-        let modeData = this.data.get('mode') || {};
+        const modeData = this.data.get('mode') || {};
         modeData[dataNode.newMode] = 1;
         modeData[dataNode.previousMode] = 0;
         this.data.set('mode', modeData);
