@@ -1,4 +1,7 @@
 import entries from 'lodash/object/pairs';
+import isArray from 'lodash/lang/isArray';
+import isObject from 'lodash/lang/isObject';
+
 import fetch from './fetch';
 import urlBuilder from '../util/url/builder';
 import rename from '../util/function/rename';
@@ -7,10 +10,54 @@ const defaultMethod = 'GET';
 
 const preFetchActions = [];
 
+
+/**
+ * Utility function, to build a query string from an object
+ * 
+ * @param {object} obj the object to serialize in a query string
+ * @param {string} [prefix=''] the name of the object in the query string
+ * @returns {string} the built query string
+ */
+const buildQueryString = (obj, prefix = '') => {
+    let queryString = '';
+    if (isObject(obj)) {
+        queryString = entries(obj).reduce((acc, [key, value]) => {
+            return acc + (acc && acc !== '' && !acc.endsWith('&') ? '&' : '') + buildQueryString(value, prefix !== '' ? prefix + '.' + key : key);
+        }, '');
+    } else if (prefix && prefix !== '') {
+        queryString = prefix + '=' + encodeURIComponent(obj);
+    }
+    return queryString;
+};
+
+/**
+ * Utility method that ensure that data passed in the url is properly encoded
+ * 
+ * @param {any} urlData the data to pass in the url
+ * @returns {any} the data properly encoded
+ */
+const urlDataObjectBuilder = (urlData) => {
+    let escapedUrlData = {};
+    let propData = {};
+    for (let prop in urlData) {
+        propData = urlData[prop];
+
+        if (isArray(propData)) {
+            escapedUrlData[prop] = propData.map(urlDataObjectBuilder);
+        } else if (isObject(propData)) {
+            escapedUrlData[prop] = urlDataObjectBuilder(propData);
+        } else {
+            escapedUrlData[prop] = encodeURIComponent(propData);
+        }
+    }
+
+    return escapedUrlData;
+};
+
 /**
  * Register a function to transform data before giving it to. It can be to add headers, etc.
  * The function must take one argument, an object {urlData, data, options} and return an object of the same format.
- * All registered functions are called sequentially on data.
+ * All registered functions are called sequentially on data.    
  *
  * @param {function} action a function to transform an object to another object of the same format
  */
@@ -33,7 +80,7 @@ const registerPreFetchTransform = (action) => {
 const fetchCall = (urlFunc, urlData, bodyData, options) => (
     fetch(
         urlFunc({
-            urlData: urlData || {},
+            urlData: urlDataObjectBuilder(urlData || {}),
             data: bodyData
         }), options
     )
@@ -48,10 +95,11 @@ const fetchCall = (urlFunc, urlData, bodyData, options) => (
  */
 const buildApiDriverMethod = ({ url, method = defaultMethod }, funcName) => {
     /* eslint-disable require-jsdoc */
-    const toRename = (urlData, data, options) => {
+    const toRename = (urlData, data, optionsArg) => {
+        const options = optionsArg || {};
         const transformed = preFetchActions.reduce((data, func) => (func(data)), { urlData, data, options });
         return fetchCall(
-            urlBuilder(url, method || defaultMethod),
+            urlBuilder(url + (options.queryObj ? '?' + buildQueryString(options.queryObj) : ''), method),
             transformed.urlData,
             transformed.data,
             transformed.options
