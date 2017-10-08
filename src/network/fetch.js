@@ -8,27 +8,23 @@ import { v4 as uuid } from 'uuid';
 import dispatcher from '../dispatcher';
 import isObject from 'lodash/lang/isObject';
 import { get as configGetter } from './config';
-
-/**
-* Create a pending status.
-* @return {object} The instanciated request status.
-*/
-function createRequestStatus() {
-    return {
-        id: uuid(),
-        status: 'pending'
-    };
-}
+import requestStore from './built-in-store';
 /**
 * Update the request status.
 * @param  {object} request - The request to treat.
 * @return {object} - The request to dispatch.
 */
-function updateRequestStatus(request) {
-    if (!request || !request.id || !request.status) { return; }
+function updateRequestStatus(id, status) {
+    if (!request.id || !request.status) { return; }
     dispatcher.handleViewAction({
-        data: { request: request },
-        type: 'update'
+        data: {
+            request: {
+                id,
+                status
+            }
+        },
+        type: 'update',
+        identifier: requestStore.identifier
     });
     return request;
 }
@@ -70,7 +66,7 @@ function fetch(obj, options = {}) {
     options.errorParser = options.errorParser || jsonParser;
     let config = configGetter();
     let request = createCORSRequest(obj.method, obj.url, { ...config, ...options });
-    let requestStatus = createRequestStatus();
+    let requestId = uuid();
     if (!request) {
         throw new Error('You cannot perform ajax request on other domains.');
     }
@@ -78,7 +74,7 @@ function fetch(obj, options = {}) {
     return cancellablePromiseBuilder(function promiseFn(success, failure) {
         //Request error handler
         request.onerror = error => {
-            updateRequestStatus({ id: requestStatus.id, status: 'error' });
+            updateRequestStatus(requestId, 'error');
             failure(error);
         };
         //Request success handler
@@ -90,13 +86,13 @@ function fetch(obj, options = {}) {
                 if (config.xhrErrors[status]) {
                     config.xhrErrors[status](request.response);
                 }
-                updateRequestStatus({ id: requestStatus.id, status: 'error' });
+                updateRequestStatus(requestId, 'error');
                 return failure(err);
             }
             let data;
             if (204 === status) {
                 data = undefined;
-                updateRequestStatus({ id: requestStatus.id, status: 'success' });
+                updateRequestStatus(requestId, 'success');
                 return success(data);
             }
             let contentType = request.contentType ? request.contentType : request.getResponseHeader('content-type');
@@ -105,15 +101,15 @@ function fetch(obj, options = {}) {
             } else {
                 data = request.responseText;
             }
-            updateRequestStatus({ id: requestStatus.id, status: 'success' });
+            updateRequestStatus(requestId, 'success');
             return success(data);
         };
-        updateRequestStatus({ id: requestStatus.id, status: 'pending' });
+        updateRequestStatus(requestId, 'pending');
         //Execute the request.
         request.send(JSON.stringify(obj.data));
     }, function cancelHandler() { // Promise cancel handler
         if (request.status === 0) { // request has not yet ended
-            updateRequestStatus({ id: requestStatus.id, status: 'cancelled' });
+            updateRequestStatus(requestId, 'cancelled');
             request.abort();
             return true;
         } else { // trying to abort an ended request, send a warning to the console

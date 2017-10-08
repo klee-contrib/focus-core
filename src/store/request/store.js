@@ -20,7 +20,9 @@ class RequestStore extends CoreStore {
     constructor(conf) {
         conf = conf || {};
         conf.definition = conf.definition || getDefinition();
+        conf.identifier = 'INNER_FOCUS_REQUEST';
         super(conf);
+
         this.pending = new CloningMap();
         this.success = new CloningMap();
         this.error = new CloningMap();
@@ -117,7 +119,11 @@ class RequestStore extends CoreStore {
      * @memberof RequestStore
      */
     registerDispatcher() {
-        this.dispatch = AppDispatcher.register(({ action: { data: rawData, type } }) => {
+        this.dispatch = AppDispatcher.register(({ action: { data: rawData, type, identifier } }) => {
+            if (this.identifier && identifier !== this.identifier) {
+                return;
+            }
+
             if (!rawData || !rawData.request) {
                 return;
             }

@@ -1,4 +1,3 @@
-//Dependencies.
 import CoreStore from '../CoreStore';
 import getDefinition from './definition';
 import { v4 as uuid } from 'uuid';
@@ -19,6 +18,7 @@ class MessageStore extends CoreStore {
     constructor(conf) {
         conf = conf || {};
         conf.definition = conf.definition || getDefinition();
+        conf.identifier = 'INNER_FOCUS_MESSAGE';
         super(conf);
     }
 
@@ -53,7 +53,7 @@ class MessageStore extends CoreStore {
    * @param {object} message - The message to add.
    */
     pushMessage(message) {
-        message.id = `${uuid()}`;
+        message.id = uuid();
         this.data.set(message.id, message);
         this.emit(PUSH, message.id);
     }
@@ -104,9 +104,10 @@ class MessageStore extends CoreStore {
      * @memberof MessageStore
      */
     registerDispatcher() {
-        this.dispatch = AppDispatcher.register((transferInfo) => {
-            let rawData = transferInfo.action.data;
-            let type = transferInfo.action.type;
+        this.dispatch = AppDispatcher.register(({ action: { data: rawData, type, identifier } }) => {
+            if (this.identifier && identifier !== this.identifier) {
+                return;
+            }
 
             switch (type) {
                 case 'push':

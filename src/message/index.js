@@ -21,7 +21,8 @@ function _parseString(message) {
 function addMessage(message) {
     dispatcher.handleServerAction({
         data: { message: message },
-        type: 'push'
+        type: 'push',
+        identifier: builtInStore.identifier
     });
 }
 
@@ -65,7 +66,7 @@ function addSuccessMessage(message) {
 }
 
 function clearMessages() {
-    dispatcher.handleServerAction({ data: { messages: {} }, type: 'clear' });
+    dispatcher.handleServerAction({ data: { messages: {} }, identifier: builtInStore.identifier, type: 'clear' });
 }
 
 export {
