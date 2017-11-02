@@ -65,6 +65,21 @@ function getResponseContent(response, dataType) {
 }
 
 /**
+ *  Check if a special treatment is specify for a specific error code
+ * 
+ * @param {Object} response The fetch response
+ * @param {Object} xhrErrors The specific treatment
+ */
+function checkErrors(response, xhrErrors) {
+    let { status, ok } = response;
+    if (!ok) {
+        if (xhrErrors[status]) {
+            xhrErrors[status](response);
+        }
+    }
+}
+
+/**
 * Fetch function to ease http request.
 * @param  {object} obj - method: http verb, url: http url, data:The json to save.
 * @param  {object} options - The options object.
@@ -92,6 +107,7 @@ function wrappingFetch({ url, method, data }, options) {
         }).then(response => {
             updateRequestStatus({ id: requestStatus.id, status: response.ok ? 'success' : 'error' });
             const contentType = response.headers.get('content-type');
+            checkErrors(response, xhrErrors);
             return getResponseContent(response, reqOptions.dataType ? reqOptions.dataType : contentType && contentType.includes('application/json') ? 'json' : 'text');
         });
 }
