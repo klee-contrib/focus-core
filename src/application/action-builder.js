@@ -1,11 +1,11 @@
 import dispatcher from '../dispatcher';
 import { manageResponseErrors } from '../network/error-parsing';
-import isArray from 'lodash/lang/isArray';
 import identity from 'lodash/utility/identity';
 
 /**
  * Method call before the service.
- * @param  {Object} config - The action builder config.
+ * @param {object} config The action builder config.
+ * @param {obejct} payload Payload to dispatch.
  */
 function _preServiceCall({ node, type, preStatus, callerId, shouldDumpStoreOnActionCall }, payload) {
     //There is a problem if the node is empty. //Node should be an array
@@ -14,7 +14,7 @@ function _preServiceCall({ node, type, preStatus, callerId, shouldDumpStoreOnAct
     const STATUS = { name: preStatus, isLoading: true };
     type = shouldDumpStoreOnActionCall ? 'update' : 'updateStatus';
     // When there is a multi node update it should be an array.
-    if (isArray(node)) {
+    if (Array.isArray(node)) {
         node.forEach((nd) => {
             data[nd] = shouldDumpStoreOnActionCall ? null : (payload && payload[nd]) || null;
             status[nd] = STATUS;
@@ -26,13 +26,15 @@ function _preServiceCall({ node, type, preStatus, callerId, shouldDumpStoreOnAct
     //Dispatch store cleaning.
     dispatcher.handleViewAction({ data, type, status, callerId });
 }
+
 /**
  * Method call after the service call.
- * @param  {Object} config - Action builder config.
- * @param  {object} json   - The data return from the service call.
+ * @param {object} config Action builder config.
+ * @param {object} json  The data return from the service call.
+ * @returns {promise} Update information.
  */
 function _dispatchServiceResponse({ node, type, status, callerId }, json) {
-    const isMultiNode = isArray(node);
+    const isMultiNode = Array.isArray(node);
     const data = isMultiNode ? json : { [node]: json };
     const postStatus = { name: status, isLoading: false };
     let newStatus = {};
@@ -47,12 +49,22 @@ function _dispatchServiceResponse({ node, type, status, callerId }, json) {
         status: newStatus,
         callerId
     });
+
+    // Update information similar to store::afterChange
+    return Promise.resolve({
+        properties: Object.keys(data),
+        status: newStatus,
+        informations: { callerId }
+    });
 }
+
 /**
  * The main objective of this function is to cancel the loading state on all the nodes concerned by the service call.
+ * @param {obejct} config Action builder config.
+ * @param {object} errorResult Error returned.
  */
 function _dispatchFieldErrors({ node, callerId }, errorResult) {
-    const isMultiNode = isArray(node);
+    const isMultiNode = Array.isArray(node);
     const data = {};
     if (isMultiNode) {
         node.forEach((nd) => {
@@ -82,30 +94,24 @@ function _dispatchFieldErrors({ node, callerId }, errorResult) {
     });
 }
 
-function _dispatchGlobalErrors(conf, errors) {
-    //console.warn('NOT IMPLEMENTED', conf, errors);
-}
-
 /**
  * Method call when there is an error.
- * @param  {object} config -  The action builder configuration.
- * @param  {object} err    - The error from the API call.
- * @return {object}     - The data from the manageResponseErrors function.
+ * @param {object} config The action builder configuration.
+ * @param {object} err The error from the API call.
  */
 function _errorOnCall(config, err) {
     const errorResult = manageResponseErrors(err, config);
-    _dispatchGlobalErrors(config, errorResult.globals);
     _dispatchFieldErrors(config, errorResult.fields);
 }
 
 /**
  * Action builder function.
- * @param  {object} config - The action builder configuration should contain:
- *                         - type(:string) - Is the action an update, a load, a save.
- *                         - preStatus(:string) The status to dispatch before the calling.
- *                         - service(:function) The service to call for the action. Should return a Promise.
- *                         - status(:string)} The status after the action.
- * @return {function} - The build action from the configuration. This action dispatch the preStatus, call the service and dispatch the result from the server.
+ * @param  {object} config The action builder configuration should contain:
+ *                         type(:string) - Is the action an update, a load, a save.
+ *                         preStatus(:string) The status to dispatch before the calling.
+ *                         service(:function) The service to call for the action. Should return a Promise.
+ *                         status(:string)} The status after the action.
+ * @returns {function} The build action from the configuration. This action dispatch the preStatus, call the service and dispatch the result from the server.
  */
 export default function actionBuilder(config = {}) {
     config.type = config.type || 'update';
@@ -120,8 +126,9 @@ export default function actionBuilder(config = {}) {
     if (!config.node) {
         throw new Error('You shoud specify the store node name impacted by the action');
     }
+
     return function actionBuilderFn(payload, context) {
-        context = context || this;
+        context = context || this || {};
         const conf = {
             callerId: context._identifier,
             postService: identity, ...config
