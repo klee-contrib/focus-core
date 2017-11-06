@@ -51,11 +51,12 @@ function _dispatchServiceResponse({ node, type, status, callerId }, json) {
     });
 
     // Update information similar to store::afterChange
-    return Promise.resolve({
+    return {
         properties: Object.keys(data),
+        data,
         status: newStatus,
         informations: { callerId }
-    });
+    };
 }
 
 /**
