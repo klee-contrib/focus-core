@@ -48,12 +48,16 @@ let globalMessages = [{
     type: 'error'
 }];
 
+/**
+ * Configure the global messages and the error types.
+ *
+ * @param {object} options object containing global messages or error types
+ */
 function configure(options) {
-    options = options || {};
-    if (isArray(options.globalMessages)) {
+    if (options && isArray(options.globalMessages)) {
         globalMessages = options.globalMessages;
     }
-    if (isObject(options.errorTypes)) {
+    if (options && isObject(options.errorTypes)) {
         errorTypes = options.errorTypes;
     }
 }
@@ -82,6 +86,12 @@ function _formatParameters(parameters) {
 }
 
 
+/**
+ * Treat the message (formatting), and dispatch them.
+ *
+ * @param {Array} messages array of message
+ * @param {string} type the type of message
+ */
 function _treatGlobalMessagesPerType(messages, type) {
     messages.forEach(function convertErrorsIntoNotification(element) {
         let options = {};
@@ -102,7 +112,7 @@ function _treatGlobalMessagesPerType(messages, type) {
 * Treat the global errors.
 * @param  {object} responseJSON - Treat the global errors.
 * @param {object} options - Options for error handling.{isDisplay:[true/false], globalMessages: [{type: "error", name: "propertyName"}]}
-* @return {}
+* @return {array} array of all treated message
 */
 function _treatGlobalErrors(responseJSON, options) {
     options = options || {};
@@ -112,7 +122,7 @@ function _treatGlobalErrors(responseJSON, options) {
         let messages = responseJSON;
         //Looping through all messages types.
         allMessagesTypes.forEach((globalMessageConf) => {
-            //Treat all the gloabe
+            //Treat all the globals
             let msgs = messages[globalMessageConf.name];
             if (msgs) {
                 globalMessagesContainer = [...globalMessagesContainer, ...msgs];
@@ -127,16 +137,14 @@ function _treatGlobalErrors(responseJSON, options) {
 
 /**
  * Treat an object of error by translating every error content.
- * 
+ *
  * @param {object} fieldErrors an object with key for fieldName, and values as error keys in i18n.
  * @returns {object} a new object, with translated error
  */
 function _treatEntityDetail(fieldErrors) {
     return Object.keys(fieldErrors || {}).reduce(
         (res, field) => {
-            // No reason to have several error on the same field, taking the first one
-            const error = fieldErrors[field];
-            res[field] = translate(error);
+            res[field] = translate(fieldErrors[field]);
             return res;
         }, {});
 }
@@ -164,7 +172,6 @@ function _treatEntityExceptions(responseJSON = {}, options) {
 * Treat the collection exceptions.
 * @param  {object} responseJSON The JSON response from the server.
 * @param  {object} options Options for error handling. {isDisplay: boolean, model: Backbone.Model}
-* @return {object} The constructed object from the error response.
 */
 function _treatCollectionExceptions(responseJSON, options) {
     console.error('Not yet implemented as collection are not savable.', responseJSON, options);
@@ -194,7 +201,7 @@ function _treatBadRequestExceptions(responseJSON = {}, options) {
 
 /**
  * Treat the field errors only if the status code is right (400, 401, 422).
- * 
+ *
  * @param {object} resErrors the errors to treat
  * @param {object} opts the options for handling errors
  * @returns {any} depends on the errors handled
@@ -212,47 +219,16 @@ function _handleStatusError(resErrors, opts) {
 
 /**
 * Transform errors send by API to application errors. Dispatch depending on the response http code.
-* @param  {object} response - Object whic
-* @param  {object} options  - Options for the exceptions teratement such as the model, {model: modelVar}.
-* @return {object}          - The parsed error response.
+* @param  {object} responseErrors Errors from fetch call
+* @param  {object} options Options for the exceptions teratement such as the model, {model: modelVar}.
+* @return {object} The parsed error response.
 */
-function manageResponseErrors(response, options) {
-    if (!response) {
-        console.warn('You are not dealing with any response');
-        return false;
-    }
-    //Rethrow the error if it is one.
-    if (isObject(response) && response instanceof Error) {
-        throw response;
-    }
-    //Parse the response.
-    options = options || {};
-    response = response || {};
-    let responseErrors = response.responseJSON || response;
-    if (responseErrors === undefined) {
-        if (response.responseText !== undefined) {
-            try {
-                //The first try is to parse the response in JSON. Maybe the return mime type is not correct.
-                responseErrors = JSON.parse(response.responseText);
-            } catch (e) {
-                //Construt an error with the text.
-                responseErrors = {
-                    status: response.status,
-                    globalErrorMessages: [response.responseText]
-                };
-            }
-        } else {
-            responseErrors = {};
-        }
-    }
-    responseErrors.status = responseErrors.status || response.status;
-    if (responseErrors.status) {
-        return {
-            globals: _treatGlobalErrors(responseErrors),
-            fields: _handleStatusError(responseErrors, options)
-        };
-    }
-    return null;
+function manageResponseErrors(responseErrors, options) {
+
+    return {
+        globals: _treatGlobalErrors(responseErrors),
+        fields: _handleStatusError(responseErrors, options)
+    };
 }
 
 export {
