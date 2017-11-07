@@ -9,6 +9,7 @@ import rename from '../util/function/rename';
 const defaultMethod = 'GET';
 
 const preFetchActions = [];
+const postFetchActions = [];
 
 
 /**
@@ -69,6 +70,20 @@ const registerPreFetchTransform = (action) => {
 };
 
 /**
+ * Register a function to transform data after the fetch return.
+ * The function must take one argument, an object {data, options} and return an object of the same format.
+ * All registered functions are called sequentially on data.    
+ *
+ * @param {function} action a function to transform an object to another object of the same format
+ */
+const registerPostFetchTransform = (action) => {
+    if (!action || typeof (action) !== 'function') {
+        throw new Error('A transform action must be a function');
+    }
+    postFetchActions.push(action);
+};
+
+/**
  * Private function, to simplify call to fetch.
  *
  * @param {function} urlFunc the result of the call to urlBuilder.
@@ -103,7 +118,11 @@ const buildApiDriverMethod = ({ url, method = defaultMethod }, funcName) => {
             transformed.urlData,
             transformed.data,
             transformed.options
-        );
+        ).then((dataResult) => {
+            return postFetchActions.reduce((data, func) => {
+                return func(data, options);
+            }, dataResult)
+        });
     }
     rename(toRename, funcName);
     return toRename;
@@ -134,4 +153,4 @@ const apiDriverBuilder = (urls) => {
 }
 
 export default apiDriverBuilder;
-export { registerPreFetchTransform };
+export { registerPreFetchTransform, registerPostFetchTransform };
