@@ -13,11 +13,12 @@ function format(number, format) {
 }
 
 /**
- * Initialize numeral locale and default format
+ * Initialize numeral locale and default format.
  * 
- * @param {any} { format = DEFAULT_FORMAT, locale = 'fr' } 
+ * @param {string} [format='0,0'] format to use 
+ * @param {string} [locale='fr'] locale to use
  */
-function init({ format = DEFAULT_FORMAT, locale = 'fr' }) {
+function init(format = DEFAULT_FORMAT, locale = 'fr') {
     numeral.locale(locale);
     numeral.defaultFormat(format);
 }
