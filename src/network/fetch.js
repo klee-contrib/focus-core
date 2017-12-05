@@ -85,13 +85,14 @@ function checkErrors(response, xhrErrors) {
 * @param  {object} options - The options object.
 * @return {CancellablePromise} The promise of the execution of the HTTP request.
 */
-function wrappingFetch({ url, method, data }, options) {
+function wrappingFetch({ url, method, data }, optionsArg) {
     let requestStatus = createRequestStatus();
     // Here we are using destruct to filter properties we do not want to give to fetch.
     // CORS and isCORS are useless legacy code, xhrErrors is used only in error parsing
     // eslint-disable-next-line no-unused-vars
     let { CORS, isCORS, xhrErrors, ...config } = configGetter();
-    const reqOptions = merge({ headers: {} }, config, options, { method, body: JSON.stringify(data) });
+    const { noStringify, ...options } = optionsArg || {};
+    const reqOptions = merge({ headers: {} }, config, options, { method, body: noStringify ? data : JSON.stringify(data) });
     //By default, add json content-type
     if (!reqOptions.noContentType && !reqOptions.headers['Content-Type']) {
         reqOptions.headers['Content-Type'] = 'application/json';
@@ -107,8 +108,10 @@ function wrappingFetch({ url, method, data }, options) {
         }).then(response => {
             updateRequestStatus({ id: requestStatus.id, status: response.ok ? 'success' : 'error' });
             const contentType = response.headers.get('content-type');
-            checkErrors(response, xhrErrors);
             return getResponseContent(response, reqOptions.dataType ? reqOptions.dataType : contentType && contentType.includes('application/json') ? 'json' : 'text');
+        }).catch(data => {
+            checkErrors(data, xhrErrors);
+            return Promise.reject(data);
         });
 }
 
