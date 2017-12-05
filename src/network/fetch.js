@@ -107,8 +107,10 @@ function wrappingFetch({ url, method, data }, options) {
         }).then(response => {
             updateRequestStatus({ id: requestStatus.id, status: response.ok ? 'success' : 'error' });
             const contentType = response.headers.get('content-type');
-            checkErrors(response, xhrErrors);
             return getResponseContent(response, reqOptions.dataType ? reqOptions.dataType : contentType && contentType.includes('application/json') ? 'json' : 'text');
+        }).catch(data => {
+            checkErrors(data, xhrErrors);
+            return Promise.reject(data);
         });
 }
 
