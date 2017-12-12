@@ -5,7 +5,7 @@
 * If this limit is reached, the rate limiting enters in "cooldown mode" : 
 * the calls are evenly scheduled making cooldownNb calls in cooldownPeriod period.
 
-* @param {function} The function we need to rate limit
+* @param {function} fn The function we need to rate limit
 * @param {number} burstNb The number of call allowed in burst mode
 * @param {number} burstPeriod The period of time in ms in burst mode
 * @param {number} cooldownNb The number of calls allowed in cooldown mode
@@ -19,30 +19,30 @@ export default function ratelimiter(fn, burstNb, burstPeriod, cooldownNb, cooldo
     let calls = [];
     let dequeueTimer;
 
-    const dequeue =  function() {
+    const dequeue = function dequeue() {
         const now = Date.now();
-        
+
         if (burstMode) {
-            priorExecsBurst = priorExecsBurst.filter( execTime => now - execTime < burstPeriod);
+            priorExecsBurst = priorExecsBurst.filter(execTime => now - execTime < burstPeriod);
 
             while (priorExecsBurst.length < burstNb && calls.length > 0) {
                 priorExecsBurst.push(now);
 
-                const currentCall = calls.shift();
-                fn.apply(null, currentCall);
+                const [resolve, ...currentCall] = calls.shift();
+                resolve(fn.apply(null, currentCall));
             }
         } else {
-            priorExecsCooldown = priorExecsCooldown.filter( execTime => now - execTime < cooldownPeriod);
-            
+            priorExecsCooldown = priorExecsCooldown.filter(execTime => now - execTime < cooldownPeriod);
+
             if (priorExecsCooldown.length < cooldownNb && calls.length > 0) {
                 priorExecsCooldown.push(now);
 
-                const currentCall = calls.shift();
-                fn.apply(null, currentCall);
+                const [resolve, ...currentCall] = calls.shift();
+                resolve(fn.apply(null, currentCall));
             }
         }
 
-        if ((!burstMode && priorExecsCooldown.length == 0) || (burstMode && priorExecsBurst.length == 0)) {
+        if ((!burstMode && priorExecsCooldown.length === 0) || (burstMode && priorExecsBurst.length === 0)) {
             // No call to process. We can unregister our dequeue loop.
             clearTimeout(dequeueTimer);
             dequeueTimer = null;
@@ -51,24 +51,26 @@ export default function ratelimiter(fn, burstNb, burstPeriod, cooldownNb, cooldo
             dequeueTimer = setTimeout(dequeue, timeout);
         }
 
-        if (burstMode && priorExecsBurst.length == burstNb) {
+        if (burstMode && priorExecsBurst.length === burstNb) {
             // We have reached the number of call allowed in burst mode.
             // Entering in cooldown mode.
             burstMode = false;
-        } else if (!burstMode && priorExecsCooldown.length == 0) {
+        } else if (!burstMode && priorExecsCooldown.length === 0) {
             // We have dequeued all the requests in cooldown mode.
             // We are allowed to enter in burst mode again.
             burstMode = true;
         }
     }
-    
-    let registerCall = function () {
-        //We register the call.
-        calls.push([...arguments]);
-        if (!dequeueTimer) {
-            // This call will be processed by the dequeue reactor function.
-            dequeueTimer = setTimeout(dequeue, 0);
-        }
+
+    let registerCall = function registerCall() {
+        return new Promise((resolve, reject) => {
+            //We register the call.
+            calls.push([resolve, ...arguments]);
+            if (!dequeueTimer) {
+                // This call will be processed by the dequeue reactor function.
+                dequeueTimer = setTimeout(dequeue, 0);
+            }
+        });
     }
 
     return registerCall;

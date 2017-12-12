@@ -3,18 +3,33 @@ import merge from 'lodash/object/merge';
 
 import dispatcher from '../dispatcher';
 import { get as configGetter } from './config';
-import ratelimiter from './ratelimiter';
+import ratelimiter from './rate-limiter';
+
+let rateLimitedFetch = null;
+/**
+ * Proxy function for fetch
+ * 
+ * @param {any} url see fetch documentation
+ * @param {any} reqOptions see fetch documentation
+ * @returns {Promise} The promise of the execution of the HTTP request.
+ */
+function sendRequest(url, reqOptions) {
+    return fetch(url, reqOptions);
+}
 
 /**
-* Create a pending status.
-* @return {object} The instanciated request status.
-*/
-function createRequestStatus() {
-    return {
-        id: uuid(),
-        status: 'pending'
-    };
+ * Get fetch function, with limited rate.
+ * 
+ * @returns {function} the rate limited function
+ */
+function getRateLimitedFetch() {
+    if (!rateLimitedFetch) {
+        const { rateLimiter: { burstNb, burstPeriod, cooldownNb, cooldownPeriod } } = configGetter();
+        rateLimitedFetch = ratelimiter(sendRequest, burstNb, burstPeriod, cooldownNb, cooldownPeriod);
+    }
+    return rateLimitedFetch;
 }
+
 /**
 * Update the request status.
 * @param  {object} request - The request to treat.
@@ -80,47 +95,36 @@ function checkErrors(response, xhrErrors) {
     }
 }
 
-let networkConfig = require('./config').get();
-let sendRequest = (request, obj) => request.send(JSON.stringify(obj.data));
-let sendRequestRateLimited = ratelimiter(sendRequest, networkConfig.burstNb, networkConfig.burstPeriod, networkConfig.cooldownNb, networkConfig.cooldownPeriod);
-
 /**
 * Fetch function to ease http request.
 * @param  {object} obj - method: http verb, url: http url, data:The json to save.
-* @param  {object} options - The options object.
-* @return {CancellablePromise} The promise of the execution of the HTTP request.
+* @param  {object} optionsArg - The options object.
+* @return {Promise} The promise of the execution of the HTTP request.
 */
 function wrappingFetch({ url, method, data }, optionsArg) {
-    let requestStatus = createRequestStatus();
+    let requestId = uuid();
     // Here we are using destruct to filter properties we do not want to give to fetch.
     // CORS and isCORS are useless legacy code, xhrErrors is used only in error parsing
     // eslint-disable-next-line no-unused-vars
-    let { CORS, isCORS, xhrErrors, ...config } = configGetter();
-    const { noStringify, ...options } = optionsArg || {};
+    let { CORS, isCORS, xhrErrors, rateLimiter, ...config } = configGetter();
+    const { noStringify, noRateLimiter, ...options } = optionsArg || {};
     const reqOptions = merge({ headers: {} }, config, options, { method, body: noStringify ? data : JSON.stringify(data) });
     //By default, add json content-type
     if (!reqOptions.noContentType && !reqOptions.headers['Content-Type']) {
         reqOptions.headers['Content-Type'] = 'application/json';
     }
     // Set the requesting as pending
-    updateRequestStatus({ id: requestStatus.id, status: 'pending' });
+    updateRequestStatus({ id: requestId, status: 'pending' });
     // Do the request
-/*
+    const sendFunc = noRateLimiter || !rateLimiter.enableRateLimiter ? fetch : getRateLimitedFetch();
 
-   //Execute the request.
-        if (config.enableRateLimiter) {
-            sendRequestRateLimited(request, obj);
-        } else {
-            request.send(JSON.stringify(obj.data));
-        }
-*/
-    return fetch(url, reqOptions)
+    return sendFunc(url, reqOptions)
         // Catch the possible TypeError from fetch
         .catch(error => {
-            updateRequestStatus({ id: requestStatus.id, status: 'error' });
+            updateRequestStatus({ id: requestId, status: 'error' });
             return Promise.reject({ globalErrors: [error] });
         }).then(response => {
-            updateRequestStatus({ id: requestStatus.id, status: response.ok ? 'success' : 'error' });
+            updateRequestStatus({ id: requestId, status: response.ok ? 'success' : 'error' });
             const contentType = response.headers.get('content-type');
             return getResponseContent(response, reqOptions.dataType ? reqOptions.dataType : contentType && contentType.includes('application/json') ? 'json' : 'text');
         }).catch(data => {
