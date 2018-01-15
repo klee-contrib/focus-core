@@ -59,6 +59,7 @@
     "peerDependencies": {
         "moment": "^2.20.1",
         "numeral": "^2.0.6",
+        "prop-types": "^15.6.0",
         "react": "^16.2.0",
         "react-dom": "^16.2.0"
     },
@@ -81,7 +82,6 @@
         "numeral": "2.0.6",
         "prop-types": "15.6.0",
         "react": "16.2.0",
-        "react-addons-test-utils": "15.6.2",
         "react-dom": "16.2.0"
     }
 }
