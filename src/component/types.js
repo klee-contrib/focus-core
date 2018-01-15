@@ -1,5 +1,5 @@
 //Dependencies.
-import React from 'react';
+import PropTypes from 'prop-types';
 import isString from 'lodash/lang/isString';
 import isArray from 'lodash/lang/isArray';
 
@@ -19,12 +19,12 @@ export default function types(type, isRequired) {
     let propTypeToReturn;
     //Array case.
     if (isStringType) {
-        propTypeToReturn = React.PropTypes[type];
+        propTypeToReturn = PropTypes[type];
     } else {
-        propTypeToReturn = React.PropTypes.oneOfType(
+        propTypeToReturn = PropTypes.oneOfType(
             type.map(
                 (t) => {
-                    return React.PropTypes[t];
+                    return PropTypes[t];
                 }));
     }
     //Mandatory case
