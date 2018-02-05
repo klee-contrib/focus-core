@@ -8,8 +8,11 @@
  */
 function renameFunction(func, newName) {
     // eslint-disable-next-line no-unused-vars
-    const { value, ...others } = Object.getOwnPropertyDescriptor(func, 'name');
-    Object.defineProperty(func, 'name', { value: newName, ...others });
+    const prop = Object.getOwnPropertyDescriptor(func, 'name');
+    if (prop) {
+        const { value, ...others } = prop;
+        Object.defineProperty(func, 'name', { value: newName, ...others });
+    }
 }
 
 export default renameFunction;
