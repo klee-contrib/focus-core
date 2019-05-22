@@ -28,10 +28,11 @@ function pagination(opts) {
         if (dataList.length < totalCount) {
             return { top: nbElement, skip: dataList.length };
         }
-    }
-    return {
-        top: nbElement,
-        skip: 0
+    } else {
+        return {
+            top: nbElement,
+            skip: 0
+        }
     }
 }
 
