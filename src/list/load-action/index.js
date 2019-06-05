@@ -4,6 +4,7 @@ import _builder from './builder';
 import _parser from './parser';
 import dispatcher from '../../dispatcher';
 import { manageResponseErrors } from '../../network/error-parsing';
+import { isArray } from 'lodash';
 
 
 /**
@@ -46,6 +47,11 @@ export default function loadActionFn(config) {
             groupingKey, sortBy, sortAsc,
             dataList, totalCount
         } = config.getListOptions();
+
+        // Exit if the number of elements is equal or over the total number of available items
+        if (isScroll && isArray(dataList) && dataList.length >= totalCount) {
+            return;
+        }
 
         //Number of element to search on each search.
         const nbElement = config.nbElement;
